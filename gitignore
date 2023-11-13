@@ -1,0 +1,15 @@
+__pycache__/
+__pycache__
+.pytest_cache/
+venv/
+venv
+.venv
+.DS_Store
+DS_Store
+events.db
+test/
+.test
+env/
+.env
+src/__pycache__
+
