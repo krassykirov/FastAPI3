@@ -1,0 +1,20 @@
+
+{% extends "base.html" %}
+
+{% block html_read %}
+
+{% if current_user %}
+<p style="margin: 20px;">Logged in User: {{ current_user }}  </p>
+{% else %}
+<p>Anonymous User, Please login</p>
+{% endif %}
+
+{% if access_token %}
+<p style="margin: 20px;">access_token: {{ access_token }}  </p>
+{% endif %}
+
+{% if expires %}
+<p style="margin: 20px;">expires: {{ expires }}  </p>
+{% endif %}
+
+{% endblock %}

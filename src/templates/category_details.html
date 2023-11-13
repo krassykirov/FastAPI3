@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+Categories
+{%  if categories  %}
+<ul>
+{% for c in categories %}
+  <li>
+      {{c}}
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+
+{% endblock %}
