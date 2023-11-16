@@ -1,5 +1,6 @@
 from fastapi import APIRouter, status, Form
 from fastapi import Request, Depends, HTTPException
+from fastapi.responses import JSONResponse
 from src.db import get_session
 from sqlalchemy.orm import Session
 from src.crud import CategoryActions
@@ -24,25 +25,28 @@ def get_categoriess(request: Request, skip: int = 0, limit: int = 100, db: Sessi
     categories = CategoryActions().get_categories(db=db, skip=skip, limit=limit)
     if categories is None:
         raise HTTPException(status_code=404, detail=f"No categories found")
-    return categories
+    return categories # JSONResponse(content= categories)
 
-@category_router.get("/category_events/", status_code=status.HTTP_200_OK, response_model=CategoryEvents)
+
+@category_router.get("/category_items/", status_code=status.HTTP_200_OK, response_model=CategoryEvents)
 def get_category_events(request: Request, name: str, db: Session = Depends(get_session)):
-    """ Return all events in a category """
+    """ Return all items in a category """
     category = CategoryActions().get_category_by_name(db=db, name=name)
     if category is None:
         raise HTTPException(status_code=404, detail=f"No category with id {id} found")
-    print("category.events", category, type(category))
     return category
 
 @category_router.post("/", status_code=status.HTTP_201_CREATED, response_model=Category)
 def create_category(request: Request, category: src.models.Category, db: Session = Depends(get_session)):
     """ Create category """
     c = CategoryActions().get_category_by_name(db=db, name=category.name)
+    print('c:', c)
     if c is not None:
-        raise HTTPException(status_code=404, detail=f"Category with name:'{c.name}' already exist")
-    CategoryActions().create_category(db=db, category=category)
-    return category
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Category with name:'{c.name}' already exist")
+    if category.name =='':
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Category Name is required!")
+    cat = CategoryActions().create_category(db=db, category=category)
+    return cat
 
 @category_router.delete("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_category(request: Request, category_id: int, db: Session = Depends(get_session)):

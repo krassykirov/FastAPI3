@@ -12,7 +12,7 @@ import datetime
 class Category(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(sa_column=Column("name", VARCHAR, unique=True))
-    events: Optional[List['Event']] = Relationship(back_populates='category')
+    items: Optional[List['Item']] = Relationship(back_populates='category')
     # class Config:
     #     schema_extra = {
     #         "example": {
@@ -20,14 +20,14 @@ class Category(SQLModel, table=True):
     #           }
     #         }
 
-
-class Event(SQLModel, table=True):
+class Item(SQLModel, table=True):
     id:           Optional[int] = Field(default=None, primary_key=True)
+    name:         Optional[str] = Field(default=None, unique=True)
     product_code: Optional[str] = Field(sa_column=Column("product_code", VARCHAR, unique=True))
     date:         Optional[datetime.datetime]
     price:        Optional[decimal.Decimal]
     category_id:  Optional[int] = Field(default=None, foreign_key="category.id")
-    category:     Optional['Category'] = Relationship(back_populates='events')
+    category:     Optional['Category'] = Relationship(back_populates='items')
     # class Config:
     #     schema_extra = {
     #     "example": {
