@@ -5,9 +5,11 @@ from src.db import get_session
 from sqlalchemy.orm import Session
 from src.crud.crud import CommentActions, ItemActions
 from src.schemas import Comment
+from src.auth.oauth import get_current_user
 
+PROTECTED = [Depends(get_current_user)]
 
-comments_router = APIRouter(prefix='/api/comments', tags=["comments"],
+comments_router = APIRouter(prefix='/api/comments', tags=["comments"], dependencies=PROTECTED,
                             responses={404: {"description": "Not found"}},)
 
 

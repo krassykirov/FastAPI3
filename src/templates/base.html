@@ -25,7 +25,7 @@
 
 <body style="margin-left:30; margin-right:30">
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <!-- <a class="navbar-brand" href="#">Test</a> -->
+    <a class="navbar-brand" href="/">Home</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -33,54 +33,38 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="{{ url_for('home')}}">Home <span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="{{ url_for('get_items')}}">Items <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('get_items')}}">Items</a>
-          <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCar">Add</button> -->
+          <a class="nav-link" href="{{ url_for('get_details')}}">Details</a>
         </li>
         <li class="nav-item dropdown">
-             <a class="nav-link" href="{{ url_for('get_details')}}">Details</a>
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Cars
+          </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="#">Something else here</a>
           </div>
         </li>
       </ul>
+      {% if current_user %}
+      <form class="form-inline my-2 my-lg-0">
+         <input onclick="location.href='{{ url_for('route_logout_and_remove_cookie') }}';" value="Logout" class="btn btn-primary" type="button">
+      </form>
+      {% else %}
+      <form class="form-inline my-2 my-lg-0">
+        <input onclick="location.href='{{ url_for('login') }}';" value="Login" class="btn btn-primary" type="button" style="margin: 2px;">
+     </form>
+      <form class="form-inline my-2 my-lg-0">
+        <input onclick="location.href='{{ url_for('signup') }}';" value="SignUp" class="btn btn-info" type="button">
+     </form>
+      {% endif %}
     </div>
+    <!-- <form class="form-inline my-2 my-lg-0" action="logout" method="get">
+      <button type="submit" class="btn btn-info">Logout</button>
+   </form> -->
   </nav>
-  <!-- <div style="display: inline;">
-      Category Name: <input type="text" id="cat-name" required >
-      <button class="btn btn-primary" id="create-cat">Create Category</button>
-  </div>
-  <div id="responseDiv";></div>
-<hr>
-  Categories: <button id="fetch-button" class="btn btn-primary"> Show Categories </button>
-  <div id="categories" style="display: none;"></div>
-  <hr>
-</br>
-  Items: <button id="fetch-button2" class="btn btn-primary"> Show Items </button>
-  <div id="events" style="display: none;"></div>
-  <hr>
-
-
-<div class="table">
-  <table id="catalog-table" style="display: none">
-      <thead>
-      <tr>
-          <th scope="col">&nbsp;</th>
-          <th scope="col">Name</th>
-          <th scope="col">Product Code</th>
-          <th scope="col">Date</th>
-          <th scope="col">Price</th>
-          <th scope="col">&nbsp;</th>
-      </tr>
-      </thead>
-      <tbody>
-
-      </tbody>
-  </table>
-</div> -->
 
 
 {% block html_read %}

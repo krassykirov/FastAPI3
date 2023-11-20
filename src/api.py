@@ -7,27 +7,32 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import JSONResponse,RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from sqlmodel import SQLModel, Session
 from src.db import engine
 from src.routers.categories import category_router
 from src.routers.items import items_router
 from src.routers.comments import comments_router
-from src.models import Item, Category, Comment
+from src.models import Item, Category, Comment, User
 from src.crud.crud import CategoryActions, ItemActions, CommentActions
+from src.auth.oauth import route_logout_and_remove_cookie, login, login_access_token
+from src.helper import delete_item_dir
 import src.schemas
 import json, os, shutil
 from os.path import abspath
 import decimal
+from src.auth.oauth import oauth_router, get_current_user
 
 PROJECT_ROOT = Path(__file__).parent.parent
+
+templates = Jinja2Templates(directory="src/templates")
 
 app = FastAPI()
 app.include_router(category_router)
 app.include_router(items_router)
 app.include_router(comments_router)
-templates = Jinja2Templates(directory="src/templates")
+app.include_router(oauth_router)
 
 @app.on_event("startup")
 def on_startup():
@@ -38,7 +43,7 @@ async def home(request: Request):
     return templates.TemplateResponse("base.html", {"request": request})
 
 @app.post("/create_cat", status_code=status.HTTP_201_CREATED, response_model=Category, include_in_schema=False)
-async def create_cat(request: Request, name: str, db: Session = Depends(get_session)):
+async def create_cat(request: Request, name: str, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     """ Create category """
     # form_data = await request.form()
     # print('form_data:', form_data)
@@ -51,13 +56,13 @@ async def create_cat(request: Request, name: str, db: Session = Depends(get_sess
 
 @app.get("/details")
 @app.get("/items/details")
-def get_details(request: Request, db: Session = Depends(get_session)):
+def get_details(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     items = ItemActions().get_items(db=db)
-    return templates.TemplateResponse("items.html", {"request":request, 'items': items})
+    return templates.TemplateResponse("items.html", {"request":request, 'items': items, 'current_user': user.username})
 
 @app.post("/create_item", include_in_schema=False)
 @app.post("/items/create_item", include_in_schema=False)
-async def create_item(request: Request, db: Session = Depends(get_session)):
+async def create_item(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
         form_data = await request.form()
         file = form_data['file']
         filename = form_data['file'].filename
@@ -77,7 +82,7 @@ async def create_item(request: Request, db: Session = Depends(get_session)):
                os.makedirs(path,exist_ok=True)
         with open(f"src/static/img/{item_name}/{filename}", 'wb') as f:
             f.write(content)
-            item = Item(name=item_name, price=price, image=filename)
+            item = Item(name=item_name, price=price, image=filename, username=user.username)
         db.add(item)
         db.commit()
         redirect_url = request.url_for('get_details')
@@ -86,7 +91,8 @@ async def create_item(request: Request, db: Session = Depends(get_session)):
 
 @app.post("/delete_item")
 @app.post("/items/delete_item")
-async def delete_item(request: Request, background_tasks: BackgroundTasks, id: int=Form(None), db: Session=Depends(get_session))-> None:
+async def delete_item(request: Request, background_tasks: BackgroundTasks, id: int=Form(None), db: Session=Depends(get_session),
+                      user: User = Depends(get_current_user))-> None:
      item = db.query(Item).where(Item.id == id).first()
      if item:
         db.delete(item)
@@ -105,25 +111,10 @@ async def delete_item(request: Request, background_tasks: BackgroundTasks, id: i
         raise HTTPException(status_code=404,detail=f"No item with id={id}")
 
 @app.get("/items/{id}") # http://127.0.0.1:8000/api/items?name=12
-async def read_item(request: Request, id: int, db: Session=Depends(get_session)):
+async def read_item(request: Request, id: int, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     item = ItemActions().get_item_by_id(db=db, id=id)
     # item =  db.get(Item, id)
-    return templates.TemplateResponse("item_details.html", {"request":request, 'item': item})
-
-# Update with Form
-# @app.post("/update_item", include_in_schema=False)
-# @app.post("/items/update_item", include_in_schema=False)
-# def update_item(request: Request, id: int = Form(None), price: int=Form(None), db:Session=Depends(get_session)):
-#     item = db.get(Item, id)
-#     if not item:
-#         raise HTTPException(status_code=404, detail="Item not found")
-#     new_data = Item(id=id, price=price).dict(exclude_unset=True)
-#     for key, value in new_data.items():
-#         setattr(item, key, value)
-#         db.commit()
-#     redirect_url = request.url_for('read_item', id=item.id)
-#     response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
-#     return response
+    return templates.TemplateResponse("item_details.html", {"request":request, 'item': item, 'current_user': user.username})
 
 @app.post("/update_item_ajax", include_in_schema=False, response_model=src.schemas.Item)
 async def update_item_api(request: Request, db: Session=Depends(get_session)):
@@ -153,7 +144,7 @@ async def create_comment(request: Request, db: Session=Depends(get_session)):
     return comment
 
 @app.post("/comment", status_code=status.HTTP_201_CREATED, include_in_schema=True)
-async def create_comment(request: Request, text:str, item_id: int, db: Session=Depends(get_session)):
+async def create_comment(request: Request, text:str, item_id: int, db: Session=Depends(get_session),user: User = Depends(get_current_user)):
     item = ItemActions().get_item_by_id(db=db, id=item_id)
     comment = Comment(text=text, item=item, item_id=item.id)
     db.add(comment)
@@ -161,19 +152,11 @@ async def create_comment(request: Request, text:str, item_id: int, db: Session=D
     db.refresh(comment)
     return comment
 
-# @app.get("/get-comment", status_code=status.HTTP_201_CREATED, include_in_schema=True)
-# async def get_comments(request: Request, db: Session=Depends(get_session)):
-#     comments = db.query(Comment).all()
-#     return comments
-
-def delete_item_dir(path):
-    try:
-        print(f"Deleting item directory: {path}")
-        shutil.rmtree(path) # onerror={'error'}
-    except OSError as e:
-        print(f"Error deleting the directory: {path}, {e}")
-    except Exception as e:
-        print(f"Something went wrong, error: {e}")
-    return True
+@app.get("/logout", include_in_schema=False)
+def route_logout_and_remove_cookie(request: Request):
+    response = RedirectResponse("login.html", status_code=302)
+    response = templates.TemplateResponse("login.html",{"request":request, 'current_user': None})
+    response.delete_cookie(key="access_token")
+    return response
 
 app.mount("/static", StaticFiles(directory="src/static", html=True))

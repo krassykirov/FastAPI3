@@ -1,6 +1,6 @@
 import os
 import datetime
-from ..models import Item, Category
+from src.models import Item, Category
 from sqlmodel import SQLModel, Session, create_engine
 
 

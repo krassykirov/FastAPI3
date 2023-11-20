@@ -6,8 +6,11 @@ from sqlalchemy.orm import Session
 from src.crud.crud import CategoryActions
 from src.schemas import Category, CategoryEvents
 import src.models
+from src.auth.oauth import get_current_user
 
-category_router = APIRouter(prefix='/api/categories', tags=["categories"],
+PROTECTED = [Depends(get_current_user)]
+
+category_router = APIRouter(prefix='/api/categories', tags=["categories"], dependencies=PROTECTED,
                             responses={404: {"description": "Not found"}},)
 
 @category_router.get("/{id}", status_code=status.HTTP_200_OK, response_model=Category)

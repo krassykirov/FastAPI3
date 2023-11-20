@@ -48,7 +48,7 @@
       <hr>
       <a href="{{ url_for('read_item', id=item.id) }}"><button>Purchase Details</button></a>
       <div class="card-footer">
-        <small class="text-muted">Created: {{ item.date }}</small>
+        <small class="text-muted">Created: {{ item.date }} by {{ item.username }}</small>
       </div>
     </div>
     </div>
@@ -80,10 +80,7 @@
             <div class="form-group" form-group-file>
               <label for="file" class="col-form-label">Upload Photo:</label>
               <input type="file" id="file" name="file" class="form-control" data-filesize="1000000" data-filesize-error="File must be smaller then 1MB" accept="image/*" required/>
-              <!-- <div class="invalid-feedback">Example invalid form file feedback</div>
-              <div class="help-block with-errors"> -->
             </div>
-            <!-- <input type="text" name="username" value="{{ current_user }}" required hidden> -->
             <button id="submit-button" class="btn btn-primary">Add</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </form>

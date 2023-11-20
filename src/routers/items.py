@@ -6,10 +6,13 @@ from src.schemas import Item
 import src.models
 from src.crud.crud import ItemActions, CategoryActions
 from typing import Union
+from src.auth.oauth import get_current_user
 
+PROTECTED = [Depends(get_current_user)]
 
-items_router = APIRouter(prefix='/api/items', tags=["items"],
+items_router = APIRouter(prefix='/api/items', tags=["items"], dependencies=PROTECTED,
                           responses={404: {"description": "Not found"}})
+
 
 
 @items_router.get("/item/{id}", status_code=status.HTTP_200_OK, response_model=Item)
