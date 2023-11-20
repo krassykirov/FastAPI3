@@ -3,11 +3,11 @@ from fastapi import Request, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from src.db import get_session
 from sqlalchemy.orm import Session
-from src.crud import CategoryActions
+from src.crud.crud import CategoryActions
 from src.schemas import Category, CategoryEvents
 import src.models
 
-category_router = APIRouter(prefix='/categories', tags=["categories"],
+category_router = APIRouter(prefix='/api/categories', tags=["categories"],
                             responses={404: {"description": "Not found"}},)
 
 @category_router.get("/{id}", status_code=status.HTTP_200_OK, response_model=Category)

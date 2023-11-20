@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block html_read %}
+<!-- https://stackoverflow.com/questions/71221076/how-i-can-filter-my-cards-with-searchbox-bootstrap-5-and-javascript -->
+<!-- https://getbootstrap.com/docs/4.0/components/modal/ -->
+<!-- https://stackoverflow.com/questions/39488774/how-to-use-bootstrap-validator-to-validate-file-size-and-file-type -->
+<style>
+.card-img-top {
+    width: 100%;
+    height: 12vw;
+    object-fit: cover;
+}
+
+.card{
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    border: 3px solid #969696;
+    text-align: center;
+}
+</style>
+
+    <div class="container">
+      <div class="row pt-2">
+        <div class="col-12">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCar">Add</button>
+          <input class="form-control" id="filter" type="text" placeholder="Search fo item..">
+        </div>
+      </div>
+<br/>
+
+<div class="row">
+  {% if message %}
+  {{ message }}
+  {%  endif  %}
+  <div class="card-group col-12" id="mycard";>
+    {% for item in items %}
+    <div class="col-lg-auto">
+    <div class="card" style="width: 18rem;">
+      <div class="card-body"  style="cursor: pointer"; onclick="location.href='{{ url_for('read_item', id=item.id) }}'" >
+       <h5 class="card-title">{{ item.name }}</h5>
+       <!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6> -->
+        <p class="card-text">Price: ${{ '%0.2f'|format(item.price|float)  }}</p>
+        <!-- <p class="card-text">Product_code: {{ item.product_code }}</p> -->
+        {% if item.image %}
+        <img class="card-img-top" src="/static/img/{{item.name}}/{{ item.image }}">
+        {% endif %}
+      <br/>
+      <hr>
+      <a href="{{ url_for('read_item', id=item.id) }}"><button>Purchase Details</button></a>
+      <div class="card-footer">
+        <small class="text-muted">Created: {{ item.date }}</small>
+      </div>
+    </div>
+    </div>
+</div>
+    {% endfor %}
+  </div>
+  </div>
+
+  <div class="modal fade" id="addCar" tabindex="-1" role="dialog" aria-labelledby="addItemlLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addItemLabel">Add new Item</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="create_item" method="post" enctype="multipart/form-data" data-toggle="validator" id="newModalForm">
+            <div class="form-group">
+              <label for="name" class="col-form-label">Name:</label>
+              <input type="text" name="name" id="item-name" placeholder="Item Name" required>
+              <!-- <input type="text" name="name" id="item-name" pattern="^[a-zA-Z]*" oninvalid="setCustomValidity('Please use only letters')" placeholder="Item Name"  required> -->
+            </div>
+            <div class="form-group">
+              <label for="price" class="col-form-label">Price:</label>
+              <input type="number" step="any" name="price" id="item-price" placeholder="99.99" required>
+            </div>
+            <div class="form-group" form-group-file>
+              <label for="file" class="col-form-label">Upload Photo:</label>
+              <input type="file" id="file" name="file" class="form-control" data-filesize="1000000" data-filesize-error="File must be smaller then 1MB" accept="image/*" required/>
+              <!-- <div class="invalid-feedback">Example invalid form file feedback</div>
+              <div class="help-block with-errors"> -->
+            </div>
+            <!-- <input type="text" name="username" value="{{ current_user }}" required hidden> -->
+            <button id="submit-button" class="btn btn-primary">Add</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<script>
+    $("#filter").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#mycard > div").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+
+// function createItem2(item){
+// console.log('createItem2 is running')
+// let item_name = $("#item-name").val()
+// let price = $("#item-price").val()
+// let filename = $('input[type=file]').val().split('\\').pop()
+// let file = $('input[type=file]').get(0).files[0]
+// console.log("DATA:", name, price, file)
+// $.ajax({
+//     url: "/create_item",
+//     method: "post",
+//     headers: { "Content-Type": "application/json",},
+//     data:  JSON.stringify({
+//             "name": `${item_name}`,
+//             "price": `${price}`,
+//             "file":  `${file}`,
+//             "filename":  `${filename}`,
+//     }),
+//     success: data => {
+//         console.log('data:', data)
+        // const FormattedData = data.map(item => `Name: ${item.name}
+        //                                         Product_code: ${item.product_code},
+        //                                         Date: ${item.date},
+        //                                         Price: ${item.price},`)
+//       // console.log('FormattedData:', FormattedData)
+//     },
+//     error: (error) => {
+//       console.log('error:', error)
+//     }
+//   });
+// }
+
+// document.getElementById('submit-button').onclick = createItem2;
+
+ </script>
+
+
+{% endblock %}
+
+

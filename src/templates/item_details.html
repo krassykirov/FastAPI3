@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block html_read %}
+
+<style>
+  .card-img-top {
+      width: 100%;
+      height: 15vw;
+      object-fit: cover;
+  }
+
+  .card{
+      margin-bottom: auto;
+      margin-left: 50%;
+      margin-right: auto;
+      border: 15px solid #969696;
+      text-align: center;
+}
+
+  </style>
+
+<!-- <div style="text-align: center;"> Item Details</div> -->
+</br>
+<div class="row">
+    <div class="card-group col-12" id="mycard">
+      <div class="col-lg-auto">
+      <div class="card" style="width: 30rem;">
+          <div class="card-body">
+          <h5 class="card-title">{{item.name}}</h5>
+          <p class="card-text" id="item-details">Name: {{ item.name }} Price: ${{ '%0.2f'|format(item.price|float)  }}</p>
+          <input type="number" name="id" value="{{ item.id }}" hidden>
+          {% if item.image %}
+          <img class="card-img-top" src="/static/img/{{item.name}}/{{ item.image }}">
+          {% endif %}
+        </div>
+        <div>
+          <a class="btn btn-primary mt-auto align-self-start" data-toggle="modal" data-target="#EditCar" id="myModal" style="margin: 15px;; text-align:center; display:block;">Edit</a>
+        <a class="btn btn-primary" data-toggle="modal" data-target="#addPhoto" id="myModal" style="margin:15px; text-align:center; display:block;">Add Comment</a>
+        <a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" id="myModal" style="margin:15px; text-align:center; display:block;">Delete</a>
+      </div>
+        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Please confirm.</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+              You're about to delete <b>{{item.name}} </b>. Are you sure?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <form action="delete_item" method="post" style="margin: 20px;">
+                  <input type="number" name="id" value="{{ item.id }}" required hidden>
+                  <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br/>
+        <div class="card-footer">
+          <small id="small" class="text-muted">Created: {{ item.date }}</small>
+        </div>
+      </div>
+  </div>
+    </div>
+    </div>
+    </div>
+    {%  if message  %}
+    <p> <b> {{  message  }} </b></p>
+    {%  endif %}
+    <div class="modal fade" id="EditCar" tabindex="-1" role="dialog" aria-labelledby="EditCarlLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editCarLabel">Edit {{ item.name }}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- <form action="" method="post" enctype="multipart/form-data" data-toggle="validator" id="newModalForm"> -->
+               <input type="number" name="id" value="{{ item.id }}" id="edit-id" required hidden>
+              <div class="form-group">
+                <label for="price" class="col-form-label">Price:</label>
+                <input type="number" name="price" id="id-price">
+              </div>
+              <!-- <input type="text" name="username" required hidden> -->
+              <button type="submit" class="btn btn-primary" id="edit-button">Edit</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close">Close</button>
+            <!-- </form> -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="addPhoto" tabindex="-1" role="dialog" aria-labelledby="addPhotolLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addPhotoLabel">Add new comment</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <input type="text" name="comment" id="comment" required>
+              <input type="number" id="comment-id" value="{{ item.id }}" required hidden>
+              <button type="submit" class="btn btn-primary" id="create_comment">Add</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn-comment">Close</button>
+          </div>
+          <!-- <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add</button>
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+<button id="load-comments" class="btn btn-secondary">Show Comments</button>
+
+
+  <div id="review" style="display: none;" >
+    {% if item.comments %}
+    Comments: </br>
+    {% for comment in item.comments %}
+    <li>{{ comment.text }} </li>
+    {% endfor %}
+  {% endif %}
+  </div>
+
+
+<script>
+
+function editItem() {
+
+      let id = $("#edit-id").val()
+      let price = $("#id-price").val()
+      // console.log("DATA:", name, price)
+    $.ajax({
+        url: "/update_item_ajax",
+        method: "post",
+        headers: { "Content-Type": "application/json",},
+        data:  JSON.stringify({
+                "id": `${id}`,
+                "price": `${price}`,
+        }),
+        success: data => {
+            console.log('data:', data);
+            document.getElementById('item-details').innerText = `Name: ${data.name} Price: $${parseFloat(data.price).toFixed(2)}`
+            document.getElementById('close').click()
+        },
+        error: (error) => {
+            console.log('error:', error);
+        }
+      });
+}
+document.getElementById('edit-button').onclick = editItem;
+
+
+function addComment() {
+
+      let comment = $("#comment").val()
+      let id = $("#comment-id").val()
+      console.log('id:', id)
+    $.ajax({
+        url: "/comment_ajax",
+        method: "post",
+        headers: { "Content-Type": "application/json",},
+        data:  JSON.stringify({
+                "text": `${comment}`,
+                "item_id": `${id}`
+        }),
+        success: data => {
+            const reviewDiv = document.getElementById('review')
+            console.log('data:', data);
+            $("#review").append(`<li>${data.text}</li>`);
+            document.getElementById('btn-comment').click()
+            reviewDiv.style.display = "block";
+        },
+        error: (error) => {
+            console.log('error:', error);
+        }
+      });
+}
+document.getElementById('create_comment').onclick = addComment;
+
+
+function toggle(){
+  let updatedDiv = document.getElementById("review");
+  if (updatedDiv.style.display === "none") {
+          updatedDiv.style.display = "block";
+          document.getElementById('load-comments').innerHTML = "Hide Comments"
+        } else {
+          updatedDiv.style.display = "none";
+          document.getElementById('load-comments').innerHTML = "Show Comments"
+        }
+}
+
+document.getElementById('load-comments').onclick = toggle;
+
+</script>
+{% endblock %}

@@ -2,15 +2,30 @@
 <head>
     <title>Demo</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="../static/css/main.css"> -->
     <script src="../static/js/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
+<style>
+  .footer {
+    position: fixed;
+    min-height:30px;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: rgb(225, 220, 220);
+    color: white;
+    text-align: center;
+  }
 
-<body style="margin-left:10; margin-right:10">
+  </style>
+
+<body style="margin-left:30; margin-right:30">
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Test</a>
+    <!-- <a class="navbar-brand" href="#">Test</a> -->
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -21,14 +36,12 @@
           <a class="nav-link" href="{{ url_for('home')}}">Home <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('get_items')}}">Events</a>
+          <a class="nav-link" href="{{ url_for('get_items')}}">Items</a>
+          <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCar">Add</button> -->
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Cars
-          </a>
+             <a class="nav-link" href="{{ url_for('get_details')}}">Details</a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="#">Something else here</a>
           </div>
@@ -36,11 +49,11 @@
       </ul>
     </div>
   </nav>
-
-  <div style="display: inline;">
+  <!-- <div style="display: inline;">
       Category Name: <input type="text" id="cat-name" required >
       <button class="btn btn-primary" id="create-cat">Create Category</button>
   </div>
+  <div id="responseDiv";></div>
 <hr>
   Categories: <button id="fetch-button" class="btn btn-primary"> Show Categories </button>
   <div id="categories" style="display: none;"></div>
@@ -50,37 +63,33 @@
   <div id="events" style="display: none;"></div>
   <hr>
 
-  <button class="btn btn-primary" id="btn-test">Test</button>
-<div id="responseDiv";></div>
-
-<!-- <div style="display: flex; justify-content: space-around">
-  <div id="categories" style="display: none;">Left</div>
-  <div id="responseDiv" style="display: none">Middle</div>
-  <div id="events" style="display: none;">Right</div>
-</div> -->
 
 <div class="table">
   <table id="catalog-table" style="display: none">
       <thead>
       <tr>
-          <!-- <th scope="col">&nbsp;</th> -->
+          <th scope="col">&nbsp;</th>
           <th scope="col">Name</th>
           <th scope="col">Product Code</th>
           <th scope="col">Date</th>
           <th scope="col">Price</th>
           <th scope="col">&nbsp;</th>
-          <!-- <th scope="col">&nbsp;</th> -->
       </tr>
       </thead>
       <tbody>
 
       </tbody>
   </table>
-</div>
+</div> -->
+
+
+{% block html_read %}
+
+{% endblock %}
 
 
 <script>
-// fetchCategories
+//fetchCategories
 function fetchCategories() {
      fetch('/categories')
     .then(response => response.json())
@@ -103,8 +112,8 @@ function fetchCategories() {
 }
 document.getElementById('fetch-button').onclick = fetchCategories;
 
-// fetchEvents
-function fetchEvents() {
+//fetchEvents
+function fetchItems() {
      fetch('/items')
     .then(response => response.json())
     .then(data => {
@@ -125,9 +134,9 @@ function fetchEvents() {
     })
     .catch(error => console.log("error:", error))
 }
-document.getElementById('fetch-button2').onclick = fetchEvents;
+document.getElementById('fetch-button2').onclick = fetchItems;
 
-// createCategory
+createCategory
 async function createCategory() {
   const categoryName = document.getElementById('cat-name').value
 
@@ -155,54 +164,109 @@ async function createCategory() {
 
 document.getElementById('create-cat').onclick = createCategory;
 
-// Test Function
-async function postData() {
-  const response = await fetch("/api/data", {
-    method: "POST",
-    headers: { "Content-Type": "application/json",},
-    body: JSON.stringify({"name":"test"}), // body data type must match "Content-Type" header
-  })
-  .then(response => response.json())
-  .then(result => {
-   console.log('result:', result.name)
-})
-}
+//Test Function
 
-document.getElementById('btn-test').onclick = postData;
-
-// table
+// async function postData() {
+//   $.ajax({
+//         url: "/api/data",
+//         method: "post",
+//         headers: { "Content-Type": "application/json",},
+//         // body: JSON.stringify({"name":"test"}),
+//         success: data => {
+//             console.log(data)
+//         },
+//         error: (_, textStatus, errorThrown) => {
+//             $("#loading p")[0].innerText = `${textStatus}: ${errorThrown}`;
+//         }
+//       });
+// }
 
 function addItem(item) {
-            console.log(item);
-            $("#catalog-table").append(
-                `<tr>
-                <td class="event-product_code">${item.name}</td>
-                <td class="event-product_code">${item.product_code}</td>
-                <td class="event-date">${item.date}</td>
-                <td class="event-price">$${parseFloat(item.price).toFixed(2)}</td>
-                <td class="event-purchase-button"><a href="/details.html?id=${event.id}"><button>Purchase Details</button></a></td>
-                </tr>`);
-        }
+        console.log(item);
+        $("#catalog-table").append(
+            `<tr>
+            <td class="event-product_code">${item.name}</td>
+            <td class="event-product_code">${item.product_code}</td>
+            <td class="event-date">${item.date}</td>
+            <td class="event-price">$${parseFloat(item.price).toFixed(2)}</td>
+            <td class="event-purchase-button"><a href="/items/1"><button>Purchase Details</button></a></td>
+            </tr>`);
+    }
 
 
 $(document).ready(function () {
+    $.ajax({
+        url: "/items/",
+        success: data => {
+            data.map(item => addItem(item));
+            $("#catalog-table").show();
+        },
+        error: (_, textStatus, errorThrown) => {
+            $("#loading p")[0].innerText = `${textStatus}: ${errorThrown}`;
+        }
+      });
+});
+
+function createItem(item){
+
+    let name = $("#id-name").val()
+    let price = $("#id-price").val()
+    console.log("DATA:", name, price)
+  $.ajax({
+        url: "/items",
+        method: "post",
+        headers: { "Content-Type": "application/json",},
+        data:  JSON.stringify({
+                "name": `${name}`,
+                "price": `${price}`,
+        }),
+        success: data => {
+            console.log('data:', data)
+            addItem(data);
+            $("#catalog-table").show();
+        },
+        error: (error) => {
+          console.log("error:", error)
+        }
+      });
+}
+document.getElementById('create-item').onclick = createItem;
+
+
+function loadItems(){
 
   $.ajax({
       url: "/items/",
       success: data => {
-          $("#loading").hide();
-          data.map(item => addItem(item));
-          $("#catalog-table").show();
+        const updatedDiv = document.getElementById('items')
+        console.log('data', data)
+        const FormattedData = data.map(item => `Name: ${item.name}
+                                                Product_code: ${item.product_code},
+                                                Date: ${item.date},
+                                                Price: ${item.price},
+                                                Category: ${item.price}`).join('<br>')
+      updatedDiv.innerHTML = FormattedData
+      if (updatedDiv.style.display === "none") {
+          updatedDiv.style.display = "block";
+          document.getElementById('fetch-button3').innerHTML = "Hide Events"
+        } else {
+          updatedDiv.style.display = "none";
+          document.getElementById('fetch-button3').innerHTML = "Show Events"
+        }
       },
       error: (_, textStatus, errorThrown) => {
           $("#loading p")[0].innerText = `${textStatus}: ${errorThrown}`;
       }
     });
-});
+};
+
+document.getElementById('fetch-button3').onclick = loadItems;
 
 
 
 </script>
-
+  <div class="footer">
+    <p> </p>
+  </div>
 </body>
 </html>

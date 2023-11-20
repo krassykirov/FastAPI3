@@ -3,7 +3,7 @@ import datetime
 import decimal
 from typing import List, Optional
 from src.models import Item, Category
-
+import uuid
 class Category(BaseModel):
     name: str
     id: int
@@ -18,13 +18,17 @@ class CategoryEvents(BaseModel):
         orm_mode = True
 
 class Item(BaseModel):
+    # id: Optional[int]
     name: str
-    product_code: str
-    date: datetime.datetime
-    price: decimal.Decimal
-    # category_id: int
-    category: Optional[Category]
+    price: Optional[decimal.Decimal]
+    # comments: Optional[List]
+    class Config:
+        orm_mode = True
 
+class Comment(BaseModel):
+
+    text:    Optional[str]
+    item_id: Optional[int]
     class Config:
         orm_mode = True
 
