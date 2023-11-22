@@ -6,8 +6,8 @@ import datetime
 # Events
 class ItemActions:
     def get_item_by_id(self, db: Session, id: int):
-        item = db.query(Item).filter(Item.id == id).first()
-        # item = db.get(Item, id)
+        # item = db.query(Item).filter(Item.id == id).first()
+        item = db.get(Item, id)
         return item
 
     def get_item_by_name(self, db: Session, name: str):
@@ -22,7 +22,8 @@ class ItemActions:
         return items
 
     def delete_item_by_id(self, db: Session, id: int):
-        item = db.query(Item).filter(Item.id == id).first()
+        # item = db.query(Item).filter(Item.id == id).first()
+        item = db.get(Item, id)
         if item:
             db.delete(item)
             db.commit()
@@ -36,7 +37,8 @@ class ItemActions:
 class CategoryActions:
 
     def get_category_by_id(self, db: Session, id: int):
-        category = db.query(Category).filter(Category.id == id).first()
+        # category = db.query(Category).filter(Category.id == id).first()
+        category = db.get(Category, id)
         return category
 
     def get_category_by_name(self, db: Session, name: str):
@@ -53,7 +55,8 @@ class CategoryActions:
         return category
 
     def delete_category(self, db: Session, id: int):
-        category = db.query(Category).filter(Category.id == id).first()
+        # category = db.query(Category).filter(Category.id == id).first()
+        category = db.get(Category, id)
         if category:
             db.delete(category)
             db.commit()
@@ -61,7 +64,8 @@ class CategoryActions:
 class CommentActions:
 
      def get_comment_by_id(self, db: Session, id: int):
-        comment = db.query(Comment).filter(Comment.id == id).first()
+        # comment = db.query(Comment).filter(Comment.id == id).first()
+        comment = db.get(Comment, id)
         return comment
 
      def get_item_comments(self, db: Session, item_id: int):

@@ -22,6 +22,6 @@ if __name__ == "__main__":
         category = Category(name="Category-1")
         session.add(category)
         session.commit()
-        item = Item(product_code="12345", date=datetime.datetime.now(),price="12.12", category=category)
+        item = Item(product_code="12345", date=datetime.datetime.now(), price="12.12", category=category)
         session.add(item)
         session.commit()

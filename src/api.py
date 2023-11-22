@@ -14,7 +14,7 @@ from src.db import engine
 from src.routers.categories import category_router
 from src.routers.items import items_router
 from src.routers.comments import comments_router
-from src.models import Item, Category, Comment, User, ItemRead
+from src.models import Item, Category, Comment, User, ItemRead, UserRead
 from src.crud.crud import CategoryActions, ItemActions, CommentActions
 from src.auth.oauth import logout, login, login_access_token
 from src.helper import delete_item_dir
@@ -54,7 +54,7 @@ async def create_cat(request: Request, name: str, db: Session = Depends(get_sess
     # category = CategoryActions().create_category(db=db, category=Category(name=form_data.get('name')))
     # return  templates.TemplateResponse("base.html", {"request":request, 'category': category})
 
-@app.get("/details")
+@app.get("/details", include_in_schema=False)
 @app.get("/items/details", response_model=ItemRead)
 def get_details(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     items_db = ItemActions().get_items(db=db, user=user.username)
@@ -76,12 +76,12 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
             print(f"item with that name already exists!")
             return templates.TemplateResponse("items.html", {"request":request, 'items':items,
                                                                    'message': "Item with that name already exists!"})
-        IMG_DIR = os.path.join(PROJECT_ROOT, 'src/static/img/')
+        IMG_DIR = os.path.join(PROJECT_ROOT, f'src/static/img/{user.username}')
         content = await file.read()
         path = os.path.join(IMG_DIR, item_name)
         if not os.path.exists(path):
                os.makedirs(path,exist_ok=True)
-        with open(f"src/static/img/{item_name}/{filename}", 'wb') as f:
+        with open(f"src/static/img/{user.username}/{item_name}/{filename}", 'wb') as f:
             f.write(content)
             item = Item(name=item_name, price=price, image=filename, username=user.username)
         db.add(item)
@@ -90,16 +90,16 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
         return response
 
-@app.post("/delete_item")
+@app.post("/delete_item", include_in_schema=False)
 @app.post("/items/delete_item")
 async def delete_item(request: Request, background_tasks: BackgroundTasks, id: int=Form(None), db: Session=Depends(get_session),
                       user: User = Depends(get_current_user))-> None:
-     item = db.query(Item).where(Item.id == id).first()
+     item = db.get(Item, id)
      if item:
         db.delete(item)
         db.commit()
         try:
-            dir_to_delete = abspath(f"src/static/img/{item.name}/")
+            dir_to_delete = abspath(f"src/static/img/{user.username}/{item.name}/")
             background_tasks.add_task(delete_item_dir, path=dir_to_delete)
             print("Notification sent in the background")
             redirect_url = request.url_for('get_details')
@@ -153,12 +153,8 @@ async def create_comment(text :str, item_id: int, db: Session=Depends(get_sessio
     db.refresh(comment)
     return comment
 
-@app.get("/logout", include_in_schema=False)
-def logout(request: Request):
-    response = RedirectResponse("login.html", status_code=302)
-    response = templates.TemplateResponse("login.html",{"request":request, 'current_user': None})
-    response.delete_cookie(key="access_token")
-    return response
-
+@app.get("/user/me", response_model=UserRead, include_in_schema=False)
+async def home( user: User = Depends(get_current_user)):
+    return user
 
 app.mount("/static", StaticFiles(directory="src/static", html=True))

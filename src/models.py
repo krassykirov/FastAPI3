@@ -26,6 +26,10 @@ class User(SQLModel, table=True):
     def verify_password(self,password):
         return pwd_context.verify(password,self.password_hash)
 
+class UserRead(SQLModel):
+    id: int
+    username: Optional[str]
+
 class Item(SQLModel, table=True):
     id:           Optional[int] = Field(default=None, primary_key=True)
     name:         Optional[str] = Field(default=None, unique=True)

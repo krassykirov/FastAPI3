@@ -26,11 +26,11 @@
       <div class="col-lg-auto">
       <div class="card" style="width: 30rem;">
           <div class="card-body">
-          <h5 class="card-title">{{item.name}} Owner: {{ item.owner }} </h5>
+          <h5 class="card-title">{{item.name}} </h5>
           <p class="card-text" id="item-details">Name: {{ item.name }} Price: ${{ '%0.2f'|format(item.price|float)  }}</p>
           <input type="number" name="id" value="{{ item.id }}" hidden>
           {% if item.image %}
-          <img class="card-img-top" src="/static/img/{{item.name}}/{{ item.image }}">
+          <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
           {% endif %}
         </div>
         <div>
