@@ -37,7 +37,7 @@
     <div class="col-lg-auto">
     <div class="card" style="width: 18rem;">
       <div class="card-body"  style="cursor: pointer"; onclick="location.href='{{ url_for('read_item', id=item.id) }}'" >
-       <h5 class="card-title">{{ item.name }}</h5>
+       <h5 class="card-title">{{ item.name }} </h5>
        <!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6> -->
         <p class="card-text">Price: ${{ '%0.2f'|format(item.price|float)  }}</p>
         <!-- <p class="card-text">Product_code: {{ item.product_code }}</p> -->

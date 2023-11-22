@@ -5,7 +5,6 @@ from src.db import get_session
 from sqlalchemy.orm import Session
 from src.crud.crud import CategoryActions
 from src.schemas import Category, CategoryEvents
-import src.models
 from src.auth.oauth import get_current_user
 
 PROTECTED = [Depends(get_current_user)]
@@ -40,7 +39,7 @@ def get_category_events(request: Request, name: str, db: Session = Depends(get_s
     return category
 
 @category_router.post("/", status_code=status.HTTP_201_CREATED, response_model=Category)
-def create_category(request: Request, category: src.models.Category, db: Session = Depends(get_session)):
+def create_category(request: Request, category: Category, db: Session = Depends(get_session)):
     """ Create category """
     c = CategoryActions().get_category_by_name(db=db, name=category.name)
     print('c:', c)

@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from src.db import get_session
 from sqlalchemy.orm import Session
 from src.crud.crud import CommentActions, ItemActions
-from src.schemas import Comment
+from src.schemas  import Comment
 from src.auth.oauth import get_current_user
 
 PROTECTED = [Depends(get_current_user)]
@@ -14,7 +14,7 @@ comments_router = APIRouter(prefix='/api/comments', tags=["comments"], dependenc
 
 
 @comments_router.get("/{id}", status_code=status.HTTP_200_OK, response_model=Comment)
-def get_comment_by_id(request: Request, id: int, db: Session = Depends(get_session)):
+def get_comment_by_id( id: int, db: Session = Depends(get_session)):
     """ Return comment by given id"""
     comment = CommentActions().get_comment_by_id(db=db, id=id)
     if comment is None:
@@ -22,7 +22,7 @@ def get_comment_by_id(request: Request, id: int, db: Session = Depends(get_sessi
     return comment
 
 @comments_router.get("/", status_code=status.HTTP_200_OK, response_model=list[Comment])
-def get_item_comments(request: Request, item_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):
+def get_item_comments( item_id: int, db: Session = Depends(get_session)):
     """ Return all comments of an Item """
     comments = CommentActions().get_item_comments(db=db, item_id=item_id)
     if comments is None:

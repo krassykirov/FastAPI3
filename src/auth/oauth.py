@@ -12,12 +12,13 @@ import src.models
 from jose import JWTError, jwt, ExpiredSignatureError
 from fastapi import BackgroundTasks
 from datetime import datetime, timedelta
-from src.auth.schemas import OAuth2PasswordBearerCookie
+from src.auth.oauth_schemas import OAuth2PasswordBearerCookie
 from passlib.context import CryptContext
-from typing import Optional, List
-import datetime
-pwd_context = CryptContext(schemes="bcrypt")
+from typing import Optional
 
+import datetime, decimal
+
+pwd_context = CryptContext(schemes="bcrypt")
 
 templates = Jinja2Templates(directory="src/templates")
 oauth_router = APIRouter()
@@ -96,9 +97,10 @@ def login_access_token(*, request: Request, response: Response, form_data: OAuth
         access_token = create_access_token(
             data={"sub": user.username}, expires_delta=access_token_expires
         )
-        # return {"access_token": access_token, "token_type": "bearer"} to work with /docs
         response = RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
         response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True)
+        # return {"access_token": access_token, "token_type": "bearer"} to work with /docs
+        # response.headers["Authorization"] = f"Bearer {access_token}"
         return response
 
     else:
@@ -133,8 +135,9 @@ async def signup(request: Request, db: Session = Depends(get_session)):
     return response
 
 @oauth_router.get("/logout", include_in_schema=False)
-def route_logout_and_remove_cookie(request: Request):
+def logout(request: Request):
     response = RedirectResponse("login.html", status_code=302)
     response = templates.TemplateResponse("login.html",{"request":request, 'current_user': None})
     response.delete_cookie(key="access_token")
     return response
+

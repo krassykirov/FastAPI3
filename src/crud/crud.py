@@ -14,7 +14,10 @@ class ItemActions:
         item = db.query(Item).filter(Item.name == name).first()
         return item
 
-    def get_items(self, db: Session, skip: int = 0, limit: int = 100):
+    def get_items(self, db: Session, skip: int = 0, limit: int = 100, user= None):
+        if user:
+            items = db.query(Item).filter(Item.username==user).offset(skip).limit(limit).all()
+            return items
         items = db.query(Item).offset(skip).limit(limit).all()
         return items
 
@@ -24,9 +27,10 @@ class ItemActions:
             db.delete(item)
             db.commit()
 
-    def create_item(self, db: Session, item: src.schemas.Item):
+    def create_item(self, db: Session, item: Item):
         db.add(item)
         db.commit()
+        db.refresh(item)
         return item
 
 class CategoryActions:
@@ -53,7 +57,6 @@ class CategoryActions:
         if category:
             db.delete(category)
             db.commit()
-
 
 class CommentActions:
 

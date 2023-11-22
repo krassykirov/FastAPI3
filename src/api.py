@@ -14,9 +14,9 @@ from src.db import engine
 from src.routers.categories import category_router
 from src.routers.items import items_router
 from src.routers.comments import comments_router
-from src.models import Item, Category, Comment, User
+from src.models import Item, Category, Comment, User, ItemRead
 from src.crud.crud import CategoryActions, ItemActions, CommentActions
-from src.auth.oauth import route_logout_and_remove_cookie, login, login_access_token
+from src.auth.oauth import logout, login, login_access_token
 from src.helper import delete_item_dir
 import src.schemas
 import json, os, shutil
@@ -55,9 +55,10 @@ async def create_cat(request: Request, name: str, db: Session = Depends(get_sess
     # return  templates.TemplateResponse("base.html", {"request":request, 'category': category})
 
 @app.get("/details")
-@app.get("/items/details")
+@app.get("/items/details", response_model=ItemRead)
 def get_details(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
-    items = ItemActions().get_items(db=db)
+    items_db = ItemActions().get_items(db=db, user=user.username)
+    items = [ItemRead.from_orm(item) for item in items_db]
     return templates.TemplateResponse("items.html", {"request":request, 'items': items, 'current_user': user.username})
 
 @app.post("/create_item", include_in_schema=False)
@@ -110,10 +111,10 @@ async def delete_item(request: Request, background_tasks: BackgroundTasks, id: i
      else:
         raise HTTPException(status_code=404,detail=f"No item with id={id}")
 
-@app.get("/items/{id}") # http://127.0.0.1:8000/api/items?name=12
+@app.get("/items/{id}", response_model=ItemRead, include_in_schema=False) # http://127.0.0.1:8000/api/items?name=12
 async def read_item(request: Request, id: int, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
-    item = ItemActions().get_item_by_id(db=db, id=id)
-    # item =  db.get(Item, id)
+    item_db = ItemActions().get_item_by_id(db=db, id=id)
+    item = ItemRead.from_orm(item_db)
     return templates.TemplateResponse("item_details.html", {"request":request, 'item': item, 'current_user': user.username})
 
 @app.post("/update_item_ajax", include_in_schema=False, response_model=src.schemas.Item)
@@ -144,7 +145,7 @@ async def create_comment(request: Request, db: Session=Depends(get_session)):
     return comment
 
 @app.post("/comment", status_code=status.HTTP_201_CREATED, include_in_schema=True)
-async def create_comment(request: Request, text:str, item_id: int, db: Session=Depends(get_session),user: User = Depends(get_current_user)):
+async def create_comment(text :str, item_id: int, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     item = ItemActions().get_item_by_id(db=db, id=item_id)
     comment = Comment(text=text, item=item, item_id=item.id)
     db.add(comment)
@@ -153,10 +154,11 @@ async def create_comment(request: Request, text:str, item_id: int, db: Session=D
     return comment
 
 @app.get("/logout", include_in_schema=False)
-def route_logout_and_remove_cookie(request: Request):
+def logout(request: Request):
     response = RedirectResponse("login.html", status_code=302)
     response = templates.TemplateResponse("login.html",{"request":request, 'current_user': None})
     response.delete_cookie(key="access_token")
     return response
+
 
 app.mount("/static", StaticFiles(directory="src/static", html=True))
