@@ -42,11 +42,6 @@ def on_startup():
 async def home(request: Request, user: User = Depends(get_current_user)):
     return templates.TemplateResponse("base.html", {"request": request, 'current_user': user.username})
 
-@app.get("/login", include_in_schema=False)
-def login(request: Request, user: User = Depends(get_current_user)):
-    response = templates.TemplateResponse("login.html",{"request":request, 'current_user': user.username})
-    return response
-
 @app.post("/create_cat", status_code=status.HTTP_201_CREATED, response_model=Category, include_in_schema=False)
 async def create_cat(request: Request, name: str, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     """ Create category """
@@ -159,7 +154,7 @@ async def create_comment(text :str, item_id: int, db: Session=Depends(get_sessio
     return comment
 
 @app.get("/user/me", response_model=UserRead, include_in_schema=False)
-async def home( user: User = Depends(get_current_user)):
+async def get_user( user: User = Depends(get_current_user)):
     return user
 
 app.mount("/static", StaticFiles(directory="src/static", html=True))

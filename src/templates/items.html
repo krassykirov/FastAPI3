@@ -3,27 +3,16 @@
 <!-- https://stackoverflow.com/questions/71221076/how-i-can-filter-my-cards-with-searchbox-bootstrap-5-and-javascript -->
 <!-- https://getbootstrap.com/docs/4.0/components/modal/ -->
 <!-- https://stackoverflow.com/questions/39488774/how-to-use-bootstrap-validator-to-validate-file-size-and-file-type -->
-<style>
-.card-img-top {
-    width: 100%;
-    height: 12vw;
-    object-fit: cover;
-}
 
-.card{
-    margin-bottom: 1rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
-    border: 3px solid #969696;
-    text-align: center;
-}
-</style>
 
+<div class="dropdown">
+  <button class="dropbtn" data-toggle="modal" data-target="#addItem">Add Item</button>
+</div>
     <div class="container">
       <div class="row pt-2">
-        <div class="col-12">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCar">Add</button>
-          <input class="form-control" id="filter" type="text" placeholder="Search fo item..">
+        <div class="col-md-11">
+            <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addItem">Add</button> -->
+          <input class="form-control" id="filter" onkeyup="Search()" type="text" placeholder="Search fo item..">
         </div>
       </div>
 <br/>
@@ -35,7 +24,7 @@
   <div class="card-group col-12" id="mycard";>
     {% for item in items %}
     <div class="col-lg-auto">
-    <div class="card" style="width: 18rem;">
+    <div class="card" style="width: 21rem;">
       <div class="card-body"  style="cursor: pointer"; onclick="location.href='{{ url_for('read_item', id=item.id) }}'" >
        <h5 class="card-title">{{ item.name }} </h5>
        <!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6> -->
@@ -44,9 +33,10 @@
         {% if item.image %}
         <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
         {% endif %}
-      <br/>
       <hr>
-      <a href="{{ url_for('read_item', id=item.id) }}"><button>Purchase Details</button></a>
+      <div class="dropdown">
+      <a href="{{ url_for('read_item', id=item.id) }}"><button class="dropbtn">Purchase Details</button></a>
+    </div>
       <div class="card-footer">
         <small class="text-muted">Created: {{ item.date }} by {{ item.username }}</small>
       </div>
@@ -57,7 +47,7 @@
   </div>
   </div>
 
-  <div class="modal fade" id="addCar" tabindex="-1" role="dialog" aria-labelledby="addItemlLabel" aria-hidden="true">
+  <div class="modal fade" id="addItem" tabindex="-1" role="dialog" aria-labelledby="addItemlLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -91,13 +81,28 @@
 
 
 <script>
-    $("#filter").on("keyup", function() {
-    var value = $(this).val().toLowerCase();
-    $("#mycard > div").filter(function() {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-    });
-  });
+  //   $("#filter").on("keyup", function() {
+  //   var value = $(this).val().toLowerCase();
+  //   $("#mycard > div").filter(function() {
+  //     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+  //   });
+  // });
 
+  function Search() {
+    var input, filter, cards, cardContainer, h5, title, i;
+    input = document.getElementById("filter");
+    filter = input.value.toUpperCase();
+    cardContainer = document.getElementById("mycard");
+    cards = cardContainer.getElementsByClassName("card");
+    for (i = 0; i < cards.length; i++) {
+        title = cards[i].querySelector(".card-body h5.card-title");
+        if (title.innerText.toUpperCase().indexOf(filter) > -1) {
+            cards[i].style.display = "";
+        } else {
+            cards[i].style.display = "none";
+        }
+    }
+}
 
 // function createItem2(item){
 // console.log('createItem2 is running')

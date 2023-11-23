@@ -89,7 +89,7 @@ def get_current_user(request: Request, token: str = Depends(oauth2_scheme), db: 
 
 @oauth_router.post('/token', include_in_schema=False)
 def login_access_token(*, request: Request, response: Response, form_data: OAuth2PasswordRequestForm=Depends(),
-                db: Session = Depends(get_session)):
+                db: Session = Depends(get_session), background_tasks: BackgroundTasks ):
     query = select(src.models.User).where(src.models.User.username == form_data.username)
     user = db.exec(query).first()
     if user and user.verify_password(form_data.password):
@@ -108,8 +108,8 @@ def login_access_token(*, request: Request, response: Response, form_data: OAuth
         return templates.TemplateResponse("login.html", context)
 
 @oauth_router.post('/api/token', include_in_schema=True)
-def get_token(*, request: Request, response: Response, form_data: OAuth2PasswordRequestForm=Depends(),
-                db: Session = Depends(get_session)):
+def login_access_token(*, request: Request, response: Response, form_data: OAuth2PasswordRequestForm=Depends(),
+                db: Session = Depends(get_session), background_tasks: BackgroundTasks ):
     query = select(src.models.User).where(src.models.User.username == form_data.username)
     user = db.exec(query).first()
     if user and user.verify_password(form_data.password):
@@ -118,16 +118,17 @@ def get_token(*, request: Request, response: Response, form_data: OAuth2Password
             data={"sub": user.username}, expires_delta=access_token_expires
         )
         return {"access_token": access_token, "token_type": "bearer"}
-
+        # response.headers["Authorization"] = f"Bearer {access_token}"
+        # return response
 
     else:
         context = {'request': request, 'message': "Username or password are incorrect!"}
         return templates.TemplateResponse("login.html", context)
 
-# @oauth_router.get("/login", include_in_schema=False)
-# def login(request: Request):
-#     response = templates.TemplateResponse("login.html",{"request":request})
-#     return response
+@oauth_router.get("/login", include_in_schema=False)
+def login(request: Request):
+    response = templates.TemplateResponse("login.html",{"request":request})
+    return response
 
 @oauth_router.get("/signup", include_in_schema=False)
 def login(request: Request):
