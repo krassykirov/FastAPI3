@@ -39,20 +39,25 @@ def on_startup():
     SQLModel.metadata.create_all(engine)
 
 @app.get("/", include_in_schema=False)
-async def home(request: Request):
-    return templates.TemplateResponse("base.html", {"request": request})
+async def home(request: Request, user: User = Depends(get_current_user)):
+    return templates.TemplateResponse("base.html", {"request": request, 'current_user': user.username})
+
+@app.get("/login", include_in_schema=False)
+def login(request: Request, user: User = Depends(get_current_user)):
+    response = templates.TemplateResponse("login.html",{"request":request, 'current_user': user.username})
+    return response
 
 @app.post("/create_cat", status_code=status.HTTP_201_CREATED, response_model=Category, include_in_schema=False)
 async def create_cat(request: Request, name: str, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     """ Create category """
-    # form_data = await request.form()
-    # print('form_data:', form_data)
+    form_data = await request.form()
+    print('form_data:', form_data)
     print('name:', name)
-    # c = CategoryActions().get_category_by_name(db=db, name=form_data.get('name'))
-    # if c is not None:
-    #     raise HTTPException(status_code=404, detail=f"Category with name:'{c.name}' already exist")
-    # category = CategoryActions().create_category(db=db, category=Category(name=form_data.get('name')))
-    # return  templates.TemplateResponse("base.html", {"request":request, 'category': category})
+    c = CategoryActions().get_category_by_name(db=db, name=form_data.get('name'))
+    if c is not None:
+        raise HTTPException(status_code=404, detail=f"Category with name:'{c.name}' already exist")
+    category = CategoryActions().create_category(db=db, category=Category(name=form_data.get('name')))
+    return  templates.TemplateResponse("base.html", {"request":request, 'category': category})
 
 @app.get("/details", include_in_schema=False)
 @app.get("/items/details", response_model=ItemRead)
