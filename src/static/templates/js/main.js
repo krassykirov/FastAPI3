@@ -133,7 +133,6 @@ function RatingHide(){
   ratingDiv.style.display = "none"
 }
 
-
 function AddReview(){
   document.getElementById('RatingCard').style.display = "block"
 }
