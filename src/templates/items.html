@@ -7,6 +7,7 @@
 
 <div class="dropdown">
   <button class="dropbtn" data-toggle="modal" data-target="#addItem">Add Item</button>
+  <!-- <button class="dropbtn">My Items</button> -->
 </div>
     <div class="container">
       <div class="row pt-2">
@@ -30,7 +31,9 @@
        <!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6> -->
         <p class="card-text">Price: ${{ '%0.2f'|format(item.price|float)  }}</p>
         <!-- <p class="card-text">Product_code: {{ item.product_code }}</p> -->
-        {% if item.image %}
+        {% if  'no-image.png' == item.image %}
+        <img class="card-img-top" src="/static/img/{{ item.image }}">
+        {% else %}
         <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
         {% endif %}
       <hr>
@@ -81,12 +84,6 @@
 
 
 <script>
-  //   $("#filter").on("keyup", function() {
-  //   var value = $(this).val().toLowerCase();
-  //   $("#mycard > div").filter(function() {
-  //     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-  //   });
-  // });
 
   function Search() {
     var input, filter, cards, cardContainer, h5, title, i;
@@ -103,39 +100,6 @@
         }
     }
 }
-
-// function createItem2(item){
-// console.log('createItem2 is running')
-// let item_name = $("#item-name").val()
-// let price = $("#item-price").val()
-// let filename = $('input[type=file]').val().split('\\').pop()
-// let file = $('input[type=file]').get(0).files[0]
-// console.log("DATA:", name, price, file)
-// $.ajax({
-//     url: "/create_item",
-//     method: "post",
-//     headers: { "Content-Type": "application/json",},
-//     data:  JSON.stringify({
-//             "name": `${item_name}`,
-//             "price": `${price}`,
-//             "file":  `${file}`,
-//             "filename":  `${filename}`,
-//     }),
-//     success: data => {
-//         console.log('data:', data)
-        // const FormattedData = data.map(item => `Name: ${item.name}
-        //                                         Product_code: ${item.product_code},
-        //                                         Date: ${item.date},
-        //                                         Price: ${item.price},`)
-//       // console.log('FormattedData:', FormattedData)
-//     },
-//     error: (error) => {
-//       console.log('error:', error)
-//     }
-//   });
-// }
-
-// document.getElementById('submit-button').onclick = createItem2;
 
  </script>
 

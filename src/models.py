@@ -21,6 +21,7 @@ class User(SQLModel, table=True):
     username: Optional[str]= Field(sa_column=Column("username", VARCHAR, unique=True, index=True))
     password_hash: str = ""
     items: List['Item'] = Relationship(sa_relationship_kwargs={"cascade": "delete"}, back_populates="owner")
+    reviews: List['Review'] = Relationship(sa_relationship_kwargs={"cascade": "delete"}, back_populates="user")
     def set_password(self,password):
         self.password_hash = pwd_context.hash(password)
     def verify_password(self,password):
@@ -36,12 +37,14 @@ class Item(SQLModel, table=True):
     product_code: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, nullable=False)
     date:         Optional[datetime.datetime] = Field(default=datetime.datetime.now().replace(microsecond=0), nullable=False)
     price:        Optional[decimal.Decimal]
-    image:        Optional[str]
-    comments:     Optional[List['Comment']] = Relationship(back_populates='item')
+    image:        Optional[str] = Field(default="no-image.png")
+    reviews:      Optional[List['Review']] = Relationship(sa_relationship_kwargs={"cascade": "delete"}, back_populates='item')
     category_id:  Optional[int] = Field(default=None, foreign_key="category.id")
     category:     Optional['Category'] = Relationship(back_populates='items')
     owner:        Optional[User] = Relationship(back_populates="items")
     username:     Optional[str] = Field(default=None, foreign_key="user.username")
+    description:  Optional[str]
+
 
 class ItemRead(BaseModel):
     id:   Optional[int]
@@ -50,6 +53,8 @@ class ItemRead(BaseModel):
     price: Optional[decimal.Decimal]
     image: Optional[str]
     username: Optional[str]
+    reviews: Optional[List]
+    description:  Optional[str]
     class Config:
         orm_mode = True
         schema_extra = {
@@ -65,6 +70,7 @@ class ItemRead(BaseModel):
 class ItemCreate(BaseModel):
     name: Optional[str]
     price: Optional[decimal.Decimal]
+    description:  Optional[str]
     username: Optional[str]
     class Config:
         orm_mode = True
@@ -72,6 +78,7 @@ class ItemCreate(BaseModel):
         "example": {
             "name": "Item-Name",
             "price": 12.12,
+            "description": "Item Description"
            }
         }
 
@@ -86,9 +93,11 @@ class Category(SQLModel, table=True):
               }
             }
 
-class Comment(SQLModel, table=True):
+class Review(SQLModel, table=True):
     id:           Optional[int]    = Field(default=None, primary_key=True)
     text:         Optional[str]    = Field(default=None)
-    item:         Optional['Item'] = Relationship(back_populates='comments')
+    item:         Optional['Item'] = Relationship(back_populates='reviews')
     item_id:      Optional[int]    = Field(default=None, foreign_key="item.id")
-    # item_id:      Optional[int] = Relationship(back_populates='comments')
+    rating:       Optional[int]    = Field(default=None)
+    created_by:   Optional[str]    = Field(default=None, foreign_key="user.username")
+    user:         Optional['User'] = Relationship(back_populates='reviews')

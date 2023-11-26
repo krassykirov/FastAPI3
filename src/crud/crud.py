@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from src.models import Item, Category, Comment
+from src.models import Item, Category, Review
 import src.schemas
 import datetime
 
@@ -22,7 +22,6 @@ class ItemActions:
         return items
 
     def delete_item_by_id(self, db: Session, id: int):
-        # item = db.query(Item).filter(Item.id == id).first()
         item = db.get(Item, id)
         if item:
             db.delete(item)
@@ -33,6 +32,16 @@ class ItemActions:
         db.commit()
         db.refresh(item)
         return item
+
+    # def get_item_rating(self, id: int, db: Session):
+    #     item = self.get_item_by_id(db=db,id=id)
+    #     result = [item.rating for item in item.reviews]
+    #     print('result:', result)
+    #     if result:
+    #         rating = sum(result) / len(result)
+    #         print('result round:', rating, round(rating))
+    #         return round(rating)
+    #     return 0
 
 class CategoryActions:
 
@@ -61,15 +70,26 @@ class CategoryActions:
             db.delete(category)
             db.commit()
 
-class CommentActions:
+class ReviewActions:
 
-     def get_comment_by_id(self, db: Session, id: int):
+     def get_review_by_id(self, db: Session, id: int):
         # comment = db.query(Comment).filter(Comment.id == id).first()
-        comment = db.get(Comment, id)
+        comment = db.get(Review, id)
         return comment
 
-     def get_item_comments(self, db: Session, item_id: int):
-        item = ItemActions().get_item_by_id(db=db, id=item_id)
-        comments = item.comments
-        return comments
+     def get_item_reviews(self, db: Session, id: int):
+        item = ItemActions().get_item_by_id(db=db, id=id)
+        reviews = item.reviews
+        return reviews
+
+     def get_item_reviews_rating(self, id: int, db: Session):
+        reviews = self.get_item_reviews(db=db, id=id)
+        print('reviews', reviews)
+        result = [item.rating for item in reviews if item.rating]
+        print('result:', result)
+        if result:
+            rating = sum(result) / len(result)
+            print({'rating':round(rating), 'review_number': len(result), 'rating_float': rating })
+            return {'rating':round(rating), 'review_number': len(result), 'rating_float': sum(result) / len(result) }
+        return {'rating':0, 'review_number': 0, 'rating_float': 0 }
 

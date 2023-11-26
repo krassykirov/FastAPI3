@@ -2,6 +2,7 @@
 <head>
     <title>Demo</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- <link rel="stylesheet" href="../static/css/main.css"> -->
     <script src="../static/js/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
@@ -68,8 +69,7 @@
 
 .dropdown:hover .dropdown-content {display: block;}
 
-.dropdown:hover .dropbtn {background-color: #818288;}
-
+.dropdown:hover .dropbtn {background-color: #606c97;}
   </style>
 
 <body style="margin-left:30; margin-right:30">
@@ -87,15 +87,9 @@
         <li class="nav-item" active>
           <a class="nav-link" href="{{ url_for('get_details')}}">Products <span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Items
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Something else here</a>
-          </div>
-        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('get_user_items')}}">My Items </a>
+         </li>
       </ul>
       {% if current_user %}
       <form class="form-inline my-2 my-lg-0" style="margin-right: 30px;">
@@ -128,159 +122,159 @@
 
 <script>
 //fetchCategories
-function fetchCategories() {
-     fetch('/categories')
-    .then(response => response.json())
-    .then(data => {
-      const updatedDiv = document.getElementById('categories')
-      console.log('data', data)
-      const FormattedData = data.map(item=> `Name: ${item.name}, ID: ${item.id}`).join('<br>')
-      // $("#categories").show();
-      // updatedDiv.innerHTML = `<p> Name: ${data.name}, ID ${data.id} <\p>`
-      updatedDiv.innerHTML = FormattedData
-      if (updatedDiv.style.display === "none") {
-          updatedDiv.style.display = "block";
-          document.getElementById('fetch-button').innerHTML = "Hide Categories"
-        } else {
-          updatedDiv.style.display = "none";
-          document.getElementById('fetch-button').innerHTML = "Show Categories"
-        }
-    })
-    .catch(error => console.log("error:", error))
-}
-document.getElementById('fetch-button').onclick = fetchCategories;
+// function fetchCategories() {
+//      fetch('/categories')
+//     .then(response => response.json())
+//     .then(data => {
+//       const updatedDiv = document.getElementById('categories')
+//       console.log('data', data)
+//       const FormattedData = data.map(item=> `Name: ${item.name}, ID: ${item.id}`).join('<br>')
+//       // $("#categories").show();
+//       // updatedDiv.innerHTML = `<p> Name: ${data.name}, ID ${data.id} <\p>`
+//       updatedDiv.innerHTML = FormattedData
+//       if (updatedDiv.style.display === "none") {
+//           updatedDiv.style.display = "block";
+//           document.getElementById('fetch-button').innerHTML = "Hide Categories"
+//         } else {
+//           updatedDiv.style.display = "none";
+//           document.getElementById('fetch-button').innerHTML = "Show Categories"
+//         }
+//     })
+//     .catch(error => console.log("error:", error))
+// }
+// document.getElementById('fetch-button').onclick = fetchCategories;
 
 //fetchEvents
-function fetchItems() {
-     fetch('/items')
-    .then(response => response.json())
-    .then(data => {
-      const updatedDiv = document.getElementById('events')
-      console.log('data', data)
-      const FormattedData = data.map(item => `Product_code: ${item.product_code},
-                                              Date: ${item.date},
-                                              Price: ${item.price},
-                                              Category: ${item.price}`).join('<br>')
-      updatedDiv.innerHTML = FormattedData
-      if (updatedDiv.style.display === "none") {
-          updatedDiv.style.display = "block";
-          document.getElementById('fetch-button2').innerHTML = "Hide Events"
-        } else {
-          updatedDiv.style.display = "none";
-          document.getElementById('fetch-button2').innerHTML = "Show Events"
-        }
-    })
-    .catch(error => console.log("error:", error))
-}
-document.getElementById('fetch-button2').onclick = fetchItems;
+// function fetchItems() {
+//      fetch('/items')
+//     .then(response => response.json())
+//     .then(data => {
+//       const updatedDiv = document.getElementById('events')
+//       console.log('data', data)
+//       const FormattedData = data.map(item => `Product_code: ${item.product_code},
+//                                               Date: ${item.date},
+//                                               Price: ${item.price},
+//                                               Category: ${item.price}`).join('<br>')
+//       updatedDiv.innerHTML = FormattedData
+//       if (updatedDiv.style.display === "none") {
+//           updatedDiv.style.display = "block";
+//           document.getElementById('fetch-button2').innerHTML = "Hide Events"
+//         } else {
+//           updatedDiv.style.display = "none";
+//           document.getElementById('fetch-button2').innerHTML = "Show Events"
+//         }
+//     })
+//     .catch(error => console.log("error:", error))
+// }
+// document.getElementById('fetch-button2').onclick = fetchItems;
 
-createCategory
-async function createCategory() {
-  const categoryName = document.getElementById('cat-name').value
+// createCategory
+// async function createCategory() {
+//   const categoryName = document.getElementById('cat-name').value
 
-  await fetch('/categories', {
-       method: "POST",
-       headers: {"Content-Type": "application/json",},
-       body: JSON.stringify({"name": categoryName}), // body data type must match "Content-Type" header
-  })
-  .then(response => response.json())
-  .then(result => {
-       const responseDiv = document.getElementById('responseDiv');
-       console.log('result', result)
-       if (result.detail){
-        responseDiv.innerHTML = `${result.detail}`
-       }
-       else {
-       responseDiv.innerHTML = `Created Category: ${result.name}, ID: ${result.id} `;
-       }
-       if (responseDiv.style.display === "none") {
-        responseDiv.style.display = "block";
-        }
-})
-  .catch(error => console.log("error:", error));
-}
+//   await fetch('/categories', {
+//        method: "POST",
+//        headers: {"Content-Type": "application/json",},
+//        body: JSON.stringify({"name": categoryName}), // body data type must match "Content-Type" header
+//   })
+//   .then(response => response.json())
+//   .then(result => {
+//        const responseDiv = document.getElementById('responseDiv');
+//        console.log('result', result)
+//        if (result.detail){
+//         responseDiv.innerHTML = `${result.detail}`
+//        }
+//        else {
+//        responseDiv.innerHTML = `Created Category: ${result.name}, ID: ${result.id} `;
+//        }
+//        if (responseDiv.style.display === "none") {
+//         responseDiv.style.display = "block";
+//         }
+// })
+//   .catch(error => console.log("error:", error));
+// }
 
-document.getElementById('create-cat').onclick = createCategory;
+// document.getElementById('create-cat').onclick = createCategory;
 
-function addItem(item) {
-        console.log(item);
-        $("#catalog-table").append(
-            `<tr>
-            <td class="event-product_code">${item.name}</td>
-            <td class="event-product_code">${item.product_code}</td>
-            <td class="event-date">${item.date}</td>
-            <td class="event-price">$${parseFloat(item.price).toFixed(2)}</td>
-            <td class="event-purchase-button"><a href="/items/1"><button>Purchase Details</button></a></td>
-            </tr>`);
-    }
+// function addItem(item) {
+//         $("#catalog-table").append(
+//             `<tr>
+//             <td class="event-product_code">${item.name}</td>
+//             <td class="event-product_code">${item.product_code}</td>
+//             <td class="event-date">${item.date}</td>
+//             <td class="event-price">$${parseFloat(item.price).toFixed(2)}</td>
+//             <td class="event-purchase-button"><a href="/items/1"><button>Purchase Details</button></a></td>
+//             </tr>`);
+//     }
 
 
-$(document).ready(function () {
-    $.ajax({
-        url: "/items/",
-        success: data => {
-            data.map(item => addItem(item));
-            $("#catalog-table").show();
-        },
-        error: (_, textStatus, errorThrown) => {
-            $("#loading p")[0].innerText = `${textStatus}: ${errorThrown}`;
-        }
-      });
-});
+// $(document).ready(function () {
+//     $.ajax({
+//         url: "/items/",
+//         success: data => {
+//             data.map(item => addItem(item));
+//             $("#catalog-table").show();
+//         },
+//         error: (_, textStatus, errorThrown) => {
+//             $("#loading p")[0].innerText = `${textStatus}: ${errorThrown}`;
+//         }
+//       });
+// });
 
-function createItem(item){
+// function createItem(item){
 
-    let name = $("#id-name").val()
-    let price = $("#id-price").val()
-    console.log("DATA:", name, price)
-  $.ajax({
-        url: "/items",
-        method: "post",
-        headers: { "Content-Type": "application/json",},
-        data:  JSON.stringify({
-                "name": `${name}`,
-                "price": `${price}`,
-        }),
-        success: data => {
-            console.log('data:', data)
-            addItem(data);
-            $("#catalog-table").show();
-        },
-        error: (error) => {
-          console.log("error:", error)
-        }
-      });
-}
-document.getElementById('create-item').onclick = createItem;
+//     let name = $("#id-name").val()
+//     let price = $("#id-price").val()
+//     console.log("DATA:", name, price)
+//   $.ajax({
+//         url: "/items",
+//         method: "post",
+//         headers: { "Content-Type": "application/json",},
+//         data:  JSON.stringify({
+//                 "name": `${name}`,
+//                 "price": `${price}`,
+//         }),
+//         success: data => {
+//             console.log('data:', data)
+//             addItem(data);
+//             $("#catalog-table").show();
+//         },
+//         error: (error) => {
+//           console.log("error:", error)
+//         }
+//       });
+// }
+// document.getElementById('create-item').onclick = createItem;
 
-function loadItems(){
 
-  $.ajax({
-      url: "/items/",
-      success: data => {
-        const updatedDiv = document.getElementById('items')
-        console.log('data', data)
-        const FormattedData = data.map(item => `Name: ${item.name}
-                                                Product_code: ${item.product_code},
-                                                Date: ${item.date},
-                                                Price: ${item.price},
-                                                Category: ${item.price}`).join('<br>')
-      updatedDiv.innerHTML = FormattedData
-      if (updatedDiv.style.display === "none") {
-          updatedDiv.style.display = "block";
-          document.getElementById('fetch-button3').innerHTML = "Hide Events"
-        } else {
-          updatedDiv.style.display = "none";
-          document.getElementById('fetch-button3').innerHTML = "Show Events"
-        }
-      },
-      error: (_, textStatus, errorThrown) => {
-          $("#loading p")[0].innerText = `${textStatus}: ${errorThrown}`;
-      }
-    });
-};
+// function loadItems(){
 
-document.getElementById('fetch-button3').onclick = loadItems;
+//   $.ajax({
+//       url: "/items/",
+//       success: data => {
+//         const updatedDiv = document.getElementById('items')
+//         console.log('data', data)
+//         const FormattedData = data.map(item => `Name: ${item.name}
+//                                                 Product_code: ${item.product_code},
+//                                                 Date: ${item.date},
+//                                                 Price: ${item.price},
+//                                                 Category: ${item.price}`).join('<br>')
+//       updatedDiv.innerHTML = FormattedData
+//       if (updatedDiv.style.display === "none") {
+//           updatedDiv.style.display = "block";
+//           document.getElementById('fetch-button3').innerHTML = "Hide Events"
+//         } else {
+//           updatedDiv.style.display = "none";
+//           document.getElementById('fetch-button3').innerHTML = "Show Events"
+//         }
+//       },
+//       error: (_, textStatus, errorThrown) => {
+//           $("#loading p")[0].innerText = `${textStatus}: ${errorThrown}`;
+//       }
+//     });
+// };
+
+// document.getElementById('fetch-button3').onclick = loadItems;
 
 
 </script>

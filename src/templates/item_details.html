@@ -11,15 +11,120 @@
 
   .card{
       margin-bottom: auto;
-      margin-left: 50%;
-      margin-right: auto;
-      border: 15px solid #969696;
+      margin-left: auto;
+      margin-right: 50%;
+      /* border: 15px solid #969696; */
       text-align: center;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+.comment-box {
+padding: 5px
+}
+.comment-area textarea {
+resize: none;
+border: 1px solid #9797ca
+}
+.form-control:focus {
+color: #495057;
+background-color: #fff;
+border-color: #ffffff;
+outline: 0;
+box-shadow: 0 0 0 1px rgb(139, 133, 133) !important
+}
+.send {
+color: #fff;
+background-color: #13b942;
+border-color: #ff0000
+}
+.send:hover {
+color: #fff;
+background-color: #029cf5;
+border-color: #02b0f5
+}
+.rating {
+display: flex;
+margin-top: -10px;
+flex-direction: row-reverse;
+margin-left: -4px;
+float: left
+}
+.rating>input {
+display: none
+}
+.rating>label {
+position: relative;
+width: 19px;
+font-size: 25px;
+color: #00ff95;
+cursor: pointer
+}
+.rating>label::before {
+content: "\2605";
+position: absolute;
+opacity: 0
+}
+.rating>label:hover:before,
+.rating>label:hover~label:before {
+opacity: 1 !important
+}
+.rating>input:checked~label:before {
+opacity: 1
+}
+.rating:hover>input:checked~label:before {
+opacity: 0.4
+}
+.price {
+  color: grey;
+  font-size: 22px;
 }
 
-  </style>
+.card button:hover {
+  opacity: 0.7;
+}
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
 
-<!-- <div style="text-align: center;"> Item Details</div> -->
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+.checked {
+  color: orange;
+}
+
+</style>
+
+
 </br>
 
 <div class="row">
@@ -27,17 +132,20 @@
       <div class="col-lg-auto">
       <div class="card" style="width: 30rem;">
           <div class="card-body">
-          <h5 class="card-title">{{item.name}} </h5>
-          <p class="card-text" id="item-details">Name: {{ item.name }} Price: ${{ '%0.2f'|format(item.price|float)  }}</p>
-          <input type="number" name="id" value="{{ item.id }}" hidden>
-          {% if item.image %}
+          <h4 class="card-title">{{item.name}} </h5>
+          <p class="price" id="item-details">Price: ${{ '%0.2f'|format(item.price|float)  }}</p>
+          <input type="number" name="id" value="{{ item.id }}" id="id" hidden>
+          <input type="text" id="username" value="{{ current_user }}"  hidden>
+          {% if  'no-image.png' == item.image %}
+          <img class="card-img-top" src="/static/img/{{ item.image }}">
+          {% else %}
           <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
           {% endif %}
         </div>
         <div>
-          <a class="btn btn-primary mt-auto align-self-start" data-toggle="modal" data-target="#EditCar" id="myModal" style="margin: 15px;; text-align:center; display:block;">Edit</a>
-        <a class="btn btn-primary" data-toggle="modal" data-target="#addPhoto" id="myModal" style="margin:15px; text-align:center; display:block;">Add Comment</a>
-        <a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" id="myModal" style="margin:15px; text-align:center; display:block;">Delete</a>
+          <a class="btn btn-secondary btn-sm mt-auto align-self-start" data-toggle="modal" data-target="#EditCar" id="myModal" style="margin: 15px;; text-align:center; display:block;">Update Price</a>
+        <!-- <a class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#AddReview" id="myModal" style="margin:15px; text-align:center; display:block;">Add Review</a> -->
+        <a class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#deleteModal" id="myModal" style="margin:15px; text-align:center; display:block;">Delete</a>
       </div>
         <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
@@ -63,11 +171,10 @@
         </div>
         <br/>
         <div class="card-footer">
-          <small id="small" class="text-muted">Created: {{ item.date }}</small>
+          <small id="small" class="text-muted">Created at: <b>{{ item.date }} </b> by <b> {{ item.username }}</b></small>
         </div>
       </div>
   </div>
-    </div>
     </div>
     </div>
     {%  if message  %}
@@ -90,69 +197,137 @@
                 <input type="number" name="price" id="id-price">
               </div>
               <!-- <input type="text" name="username" required hidden> -->
-              <button type="submit" class="btn btn-primary" id="edit-button">Edit</button>
+              <button type="submit" class="btn btn-primary" id="edit-button">Update Price</button>
               <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close">Close</button>
             <!-- </form> -->
           </div>
         </div>
       </div>
+</div>
+<hr>
+<p>
+ <i> Product Overall Rating </i> 
+<span class="fa fa-star checked" id="star1"></span>
+<span class="fa fa-star checked" id="star2"></span>
+<span class="fa fa-star checked" id="star3"></span>
+<span class="fa fa-star" id="star4"></span>
+<span class="fa fa-star" id="star5"></span>
+<span id="overall-rating"> No rating Yet </span>
+</p>
+
+  <div class="tab" id="tabs" >
+      <button class="tablinks" onclick="openTab(event, 'Description')" id="defaultOpen"> Description</button>
+      <button class="tablinks" onclick="openTab(event, 'ReviewTab')" id="ReviewtOpen" >Reviews</button>
+      <!-- <button class="tablinks" onclick="openTab(event, 'Others')">Others</button> -->
     </div>
 
-    <div class="modal fade" id="addPhoto" tabindex="-1" role="dialog" aria-labelledby="addPhotolLabel" aria-hidden="true">
+    <div id="Description" class="tabcontent">
+      <div class="form-group">
+        <input type="number" name="id" value="{{ item.id }}" id="item-id" required hidden>
+        <label for="description" class="col-form-label">Description:</label>
+        <input type="text" name="description" id="id-description">
+        <button class="btn btn-secondary btn-sm" id="update-description-btn"> Update</button>
+      </div>
+      {%  if item.description  %}
+      <p id="description-text"> <i> {{ item.description}} </i> </p>
+      {% else %}
+      <p id="description-text"> <i> Product has no Description yet </i> </p>
+      {%  endif %}
+    </div>
+
+<div id="ReviewTab" class="tabcontent">
+    <button class="btn btn-success btn-sm" id="AddReview">Add Review </button>
+    <hr>
+    <div class="card" id="RatingCard" style="display: none;">
+        <div class="row">
+        <!-- <div class="col-2"> <img src="http://upload.wikimedia.org/wikipedia/commons/5/57/Face-wink.svg" width="40" class="rounded-circle mt-2"> </div> -->
+        <div class="col-12">
+        <div class="comment-box ml-2">
+        <h4>Write a review</h4>
+        <input type="number" id="comment-item-id" value="{{ item.id }}" required hidden>
+        <div class="rating"> <input type="radio" name="rating" value="5" id="5"><label for="5">☆</label> <input type="radio" name="rating" value="4" id="4"><label for="4">☆</label> <input type="radio" name="rating" value="3" id="3"><label for="3">☆</label> <input type="radio" name="rating" value="2" id="2"><label for="2">☆</label> <input type="radio" name="rating" value="1" id="1"><label for="1">☆</label> </div>
+        <div class="comment-area"> <textarea class="form-control" placeholder="what is your view?" rows="4" id="comment-area"></textarea> </div>
+        <div class="comment-btns mt-2">
+        <div class="row">
+        <div class="col-6">
+        <div class="pull-left"> <button class="btn btn-success btn-sm" id="RatingCancel">Cancel</button> </div>
+        </div>
+        <div class="col-6">
+        <div class="pull-right"> <button class="btn btn-success send btn-sm" id="SendRaiting"> Submit </button> </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+   </div>
+</div>
+    <!-- <h5 id="review-number"> Reviews </h5> -->
+    <!-- <hr> -->
+    <div>
+      {%  if item.reviews  %}
+      {% for review in item.reviews %}
+      <p> Review by: {{ review.created_by }} Rating: {{ review.rating }}, Comments: {{ review.text }} </p>
+      {% else %}
+      NO Review Yet
+      {% endfor %}
+      {%  endif %}
+    </div>
+    </div>
+    </div>
+    </div>
+
+    <!-- <div class="modal fade" id="AddReview" tabindex="-1" role="dialog" aria-labelledby="AddReview" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="addPhotoLabel">Add new comment</h5>
+            <h5 class="modal-title" id="AddReview">Write Review</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
+            </button></div>
           <div class="modal-body">
-              <input type="text" name="comment" id="comment" required>
-              <input type="number" id="comment-id" value="{{ item.id }}" required hidden>
+              <input type="text" name="review" id="review" required>
+              <input type="number" id="review-id" value="{{ item.id }}" required hidden>
               <button type="submit" class="btn btn-primary" id="create_comment">Add</button>
               <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn-comment">Close</button>
           </div>
-          <!-- <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Add</button>
-          </div> -->
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
-
-<button id="load-comments" class="btn btn-secondary">Show Comments</button>
-
-
-  <div id="review" style="display: none;" >
-    {% if item.comments %}
-    Comments: </br>
-    {% for comment in item.comments %}
-    <li>{{ comment.text }} </li>
-    {% endfor %}
-  {% endif %}
-  </div>
-
 
 <script>
+
+document.getElementById("defaultOpen").click();
+
+function openTab(evt, Description) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(Description).style.display = "block";
+  evt.currentTarget.className += " active";
+}
 
 function editItem() {
 
       let id = $("#edit-id").val()
       let price = $("#id-price").val()
-      // console.log("DATA:", name, price)
     $.ajax({
-        url: "/update_item_ajax",
+        url: "/update_price_ajax",
         method: "post",
         headers: { "Content-Type": "application/json",},
         data:  JSON.stringify({
                 "id": `${id}`,
-                "price": `${price}`,
+                "price": `${price}`
         }),
         success: data => {
             console.log('data:', data);
-            document.getElementById('item-details').innerText = `Name: ${data.name} Price: $${parseFloat(data.price).toFixed(2)}`
+            document.getElementById('item-details').innerText = `Price: $${parseFloat(data.price).toFixed(2)}`;
             document.getElementById('close').click()
         },
         error: (error) => {
@@ -162,25 +337,56 @@ function editItem() {
 }
 document.getElementById('edit-button').onclick = editItem;
 
+function updateDescription() {
 
-function addComment() {
-
-      let comment = $("#comment").val()
-      let id = $("#comment-id").val()
-      console.log('id:', id)
+      let id = $("#item-id").val()
+      let description = $("#id-description").val()
     $.ajax({
-        url: "/comment_ajax",
+        url: "/update_description_ajax",
         method: "post",
         headers: { "Content-Type": "application/json",},
         data:  JSON.stringify({
-                "text": `${comment}`,
-                "item_id": `${id}`
+                "id": `${id}`,
+                "description": `${description}`
         }),
         success: data => {
-            const reviewDiv = document.getElementById('review')
             console.log('data:', data);
-            $("#review").append(`<li>${data.text}</li>`);
-            document.getElementById('btn-comment').click()
+            document.getElementById('description-text').innerText = `${data.description}`;
+            document.getElementById('close').click()
+        },
+        error: (error) => {
+            console.log('error:', error);
+        }
+      });
+}
+
+document.getElementById('update-description-btn').onclick = updateDescription;
+
+function addReview() {
+
+      let review = $("#comment-area").val()
+      let id = $("#comment-item-id").val()
+      let username = $("#username").val()
+      let rating = document.querySelector('input[name="rating"]:checked').value;
+      console.log('review, id, rating, username', review, id, username)
+    $.ajax({
+        url: "/create_review_ajax",
+        method: "post",
+        headers: { "Content-Type": "application/json",},
+        data:  JSON.stringify({
+                "text": `${review}`,
+                "item_id": `${id}`,
+                "rating": `${rating}`,
+                "created_by": `${username}`
+        }),
+        success: data => {
+           const reviewDiv = document.getElementById('ReviewTab')
+           console.log('data:', data, data.rating)
+           $("#ReviewTab").append("<p>" + `${data.text}`);
+            document.getElementById('RatingCancel').click()
+            document.getElementById("ReviewtOpen").click();
+            document.getElementById('RatingCard').style.display = "none"
+            getItemRating()
             reviewDiv.style.display = "block";
         },
         error: (error) => {
@@ -188,21 +394,56 @@ function addComment() {
         }
       });
 }
-document.getElementById('create_comment').onclick = addComment;
 
-
-function toggle(){
-  let updatedDiv = document.getElementById("review");
-  if (updatedDiv.style.display === "none") {
-          updatedDiv.style.display = "block";
-          document.getElementById('load-comments').innerHTML = "Hide Comments"
-        } else {
-          updatedDiv.style.display = "none";
-          document.getElementById('load-comments').innerHTML = "Show Comments"
+function getItemRating(){
+  let id = $("#id").val()
+  console.log('getItemRating running: id is:', id);
+  $.ajax({
+        url: "/api/reviews/item/rating",
+        method: "get",
+        headers: { "Content-Type": "application/json",},
+        data:  {
+                "id": `${id}`
+        },
+        success: data => {
+          for (var i=1; i<=5; i++ ){
+            var star = document.getElementById('star'+ i )
+            if ( i <= data.rating ){
+                star.classList.add('checked');
+            }
+            else { star.classList.remove('checked')}
+          }
+        document.getElementById('overall-rating').innerText = parseFloat(data.rating_float).toFixed(2) + ' from ' + data.review_number + ' reviews'
+        },
+        error: (error) => {
+            console.log('error:', error);
         }
-}
+      });
+   }
 
-document.getElementById('load-comments').onclick = toggle;
+getItemRating()
+
+document.getElementById('SendRaiting').onclick = addReview;
+// document.getElementById('create_comment').onclick = addReview;
+
+function RatingHide(){
+  ratingDiv = document.getElementById('RatingCard')
+  ratingDiv.style.display = "none"
+}
+document.getElementById('RatingCancel').onclick = RatingHide
+
+function AddReview(){
+  document.getElementById('RatingCard').style.display = "block"
+}
+document.getElementById('AddReview').onclick = AddReview
+
+// $(':radio').change(function() {
+//   console.log('New star rating: ' + this.value);
+// });
+
+// $(document).ready(function () {
+//   document.querySelector('input[name="stars"]:checked').value = 
+// });
 
 </script>
 {% endblock %}

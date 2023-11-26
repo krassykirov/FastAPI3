@@ -13,9 +13,9 @@ from sqlmodel import SQLModel, Session
 from src.db import engine
 from src.routers.categories import category_router
 from src.routers.items import items_router
-from src.routers.comments import comments_router
-from src.models import Item, Category, Comment, User, ItemRead, UserRead
-from src.crud.crud import CategoryActions, ItemActions, CommentActions
+from src.routers.reviews import reviews_router
+from src.models import Item, Category, Review, User, ItemRead, UserRead
+from src.crud.crud import CategoryActions, ItemActions, ReviewActions
 from src.auth.oauth import logout, login, login_access_token
 from src.helper import delete_item_dir
 import src.schemas
@@ -31,7 +31,7 @@ templates = Jinja2Templates(directory="src/templates")
 app = FastAPI()
 app.include_router(category_router)
 app.include_router(items_router)
-app.include_router(comments_router)
+app.include_router(reviews_router)
 app.include_router(oauth_router)
 
 @app.on_event("startup")
@@ -42,12 +42,10 @@ def on_startup():
 async def home(request: Request, user: User = Depends(get_current_user)):
     return templates.TemplateResponse("base.html", {"request": request, 'current_user': user.username})
 
-@app.post("/create_cat", status_code=status.HTTP_201_CREATED, response_model=Category, include_in_schema=False)
+@app.post("/create_category", status_code=status.HTTP_201_CREATED, response_model=Category, include_in_schema=False)
 async def create_cat(request: Request, name: str, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     """ Create category """
     form_data = await request.form()
-    print('form_data:', form_data)
-    print('name:', name)
     c = CategoryActions().get_category_by_name(db=db, name=form_data.get('name'))
     if c is not None:
         raise HTTPException(status_code=404, detail=f"Category with name:'{c.name}' already exist")
@@ -57,13 +55,15 @@ async def create_cat(request: Request, name: str, db: Session = Depends(get_sess
 @app.get("/details", include_in_schema=False)
 @app.get("/items/details", response_model=ItemRead)
 def get_details(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
-    items_db = ItemActions().get_items(db=db, user=user.username)
+    """ Return all Items """
+    items_db = ItemActions().get_items(db=db) #, user=user.username
     items = [ItemRead.from_orm(item) for item in items_db]
-    return templates.TemplateResponse("items.html", {"request":request, 'items': items, 'current_user': user.username})
+    return templates.TemplateResponse("items.html", {"request": request, 'items': items, 'current_user': user.username})
 
 @app.post("/create_item", include_in_schema=False)
 @app.post("/items/create_item", include_in_schema=False)
 async def create_item(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+        """ Create an Item """
         form_data = await request.form()
         file = form_data['file']
         filename = form_data['file'].filename
@@ -115,46 +115,59 @@ async def delete_item(request: Request, background_tasks: BackgroundTasks, id: i
 async def read_item(request: Request, id: int, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     item_db = ItemActions().get_item_by_id(db=db, id=id)
     item = ItemRead.from_orm(item_db)
-    return templates.TemplateResponse("item_details.html", {"request":request, 'item': item, 'current_user': user.username})
+    item_rating = ReviewActions().get_item_reviews_rating(db=db,id=id)
+    print('item_rating', item_rating)
+    return templates.TemplateResponse("item_details.html", {"request":request, 'item': item,
+                                                             'current_user': user.username,
+                                                             'rating' : item_rating})
 
-@app.post("/update_item_ajax", include_in_schema=False, response_model=src.schemas.Item)
+@app.post("/update_price_ajax", include_in_schema=False, response_model=ItemRead)
 async def update_item_api(request: Request, db: Session=Depends(get_session)):
     data = await request.json()
-    id = data.get('id')
-    price = data.get('price')
-    item = ItemActions().get_item_by_id(db=db, id=id)
+    print('data', data)
+    item = ItemActions().get_item_by_id(db=db, id=data.get('id'))
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
-    new_data = Item(id=id, price=price).dict(exclude_unset=True)
+    new_data = Item(**data).dict(exclude_unset=True, exclude_none=True)
     for key, value in new_data.items():
         setattr(item, key, value)
         db.commit()
         db.refresh(item)
     return item
 
-@app.post("/comment_ajax", status_code=status.HTTP_201_CREATED, include_in_schema=False)
-async def create_comment(request: Request, db: Session=Depends(get_session)):
+@app.post("/update_description_ajax", status_code=status.HTTP_200_OK, response_model=ItemRead, include_in_schema=False)
+async def update_description_ajax(request: Request, db: Session=Depends(get_session)):
     data = await request.json()
-    item_id = data.get('item_id')
-    text = data.get('text')
-    item = ItemActions().get_item_by_id(db=db, id=item_id)
-    comment = Comment(text=text, item=item, item_id=item.id)
-    db.add(comment)
-    db.commit()
-    db.refresh(comment)
-    return comment
+    item = ItemActions().get_item_by_id(db=db, id=data.get('id'))
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    new_data = Item(**data).dict(exclude_unset=True, exclude_none=True)
+    for key, value in new_data.items():
+        setattr(item, key, value)
+        db.commit()
+        db.refresh(item)
+    return item
 
-@app.post("/comment", status_code=status.HTTP_201_CREATED, include_in_schema=True)
-async def create_comment(text :str, item_id: int, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
-    item = ItemActions().get_item_by_id(db=db, id=item_id)
-    comment = Comment(text=text, item=item, item_id=item.id)
-    db.add(comment)
+@app.post("/create_review_ajax", status_code=status.HTTP_200_OK, response_model=Review, include_in_schema=False)
+async def create_review_ajax(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
+    data = await request.json()
+    item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    review = Review(**data, item=item)
+    db.add(review)
     db.commit()
-    db.refresh(comment)
-    return comment
+    db.refresh(review)
+    return review
 
-@app.get("/user/me", response_model=UserRead, include_in_schema=False)
-async def get_user( user: User = Depends(get_current_user)):
-    return user
+@app.get("/user/items", response_model=ItemRead, include_in_schema=False)
+async def get_user_items( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
+    items = ItemActions().get_items(db=db, user=user.username)
+    return templates.TemplateResponse("items.html", {"request":request, 'items':items, 'current_user': user.username})
+
+# @app.get("/rating", include_in_schema=False)
+# async def get_item_rating( request: Request, id: int, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
+#     item_rating = ItemActions().get_item_rating(db=db,id=id)
+#     return item_rating
 
 app.mount("/static", StaticFiles(directory="src/static", html=True))

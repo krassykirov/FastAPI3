@@ -12,7 +12,6 @@ PROTECTED = [Depends(get_current_user)]
 items_router = APIRouter(prefix='/api/items', tags=["items"], dependencies=PROTECTED,
                           responses={404: {"description": "Not found"}})
 
-
 @items_router.get("/item/{id}", status_code=status.HTTP_200_OK, response_model=ItemRead)
 def get_item_by_id( id: int, db: Session = Depends(get_session)) -> ItemRead:
     item = ItemActions().get_item_by_id(db=db, id=id)
@@ -40,9 +39,10 @@ async def update_item(id: int, price: str, db: Session=Depends(get_session)) -> 
         db.refresh(item)
     return item
 
-@items_router.post("/", status_code=status.HTTP_201_CREATED) #response_model=ItemRead
+@items_router.post("/", status_code=status.HTTP_201_CREATED, response_model=ItemRead)
 def create_item(item: ItemCreate, db: Session = Depends(get_session), user: User = Depends(get_current_user)) -> ItemRead:
-    item = Item.from_orm(item, {'username': user.username })
+    item = Item.from_orm(item, {'username': user.username})
+    print('ietm', item)
     db.add(item)
     db.commit()
     db.refresh(item)
@@ -51,5 +51,13 @@ def create_item(item: ItemCreate, db: Session = Depends(get_session), user: User
 @items_router.delete("/delete/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_item_by_id(item_id: int, db: Session = Depends(get_session)):
     ItemActions().delete_item_by_id(db=db, id=item_id)
+
+# @items_router.get("/item/{id}/rating", status_code=status.HTTP_200_OK, include_in_schema=True)
+# def get_item_rating(id: int, db: Session=Depends(get_session)):
+#     rating = ItemActions().get_item_rating(db=db,id=id)
+#     print('rating:', rating)
+#     return rating
+
+
 
 
