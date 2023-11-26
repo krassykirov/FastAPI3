@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block html_read %}
+{% block javascript %}
+    <script type="text/javascript">
+        {% include "js/main.js" %}
+    </script>
+{% endblock %}
+</br>
+
+<div class="row">
+    <div class="card-group col-12" id="mycard">
+      <div class="col-lg-auto">
+      <div class="card" style="width: 30rem;">
+          <div class="card-body">
+          <h4 class="card-title">{{item.name}} </h5>
+          <p class="price" id="item-details">Price: ${{ '%0.2f'|format(item.price|float)  }}</p>
+          <input type="number" name="id" value="{{ item.id }}" id="id" hidden>
+          <input type="text" id="username" value="{{ current_user }}"  hidden>
+          {% if  'no-image.png' == item.image %}
+          <img class="card-img-top" src="/static/img/{{ item.image }}">
+          {% else %}
+          <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
+          {% endif %}
+        </div>
+        <div>
+          <a class="btn btn-secondary btn-sm mt-auto align-self-start" data-toggle="modal" data-target="#EditCar" id="myModal" style="margin: 15px;; text-align:center; display:block;">Update Price</a>
+        <!-- <a class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#AddReview" id="myModal" style="margin:15px; text-align:center; display:block;">Add Review</a> -->
+        <a class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#deleteModal" id="myModal" style="margin:15px; text-align:center; display:block;">Delete</a>
+      </div>
+        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Please confirm.</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+              You're about to delete <b>{{item.name}} </b>. Are you sure?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <form action="delete_item" method="post" style="margin: 20px;">
+                  <input type="number" name="id" value="{{ item.id }}" required hidden>
+                  <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br/>
+        <div class="card-footer">
+          <small id="small" class="text-muted">Created at: <b>{{ item.date }} </b> by <b> {{ item.username }}</b></small>
+        </div>
+      </div>
+  </div>
+    </div>
+    </div>
+    {%  if message  %}
+    <p> <b> {{  message  }} </b></p>
+    {%  endif %}
+    <div class="modal fade" id="EditCar" tabindex="-1" role="dialog" aria-labelledby="EditCarlLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editCarLabel">Edit {{ item.name }}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- <form action="" method="post" enctype="multipart/form-data" data-toggle="validator" id="newModalForm"> -->
+               <input type="number" name="id" value="{{ item.id }}" id="edit-id" required hidden>
+              <div class="form-group">
+                <label for="price" class="col-form-label">Price:</label>
+                <input type="number" name="price" id="id-price">
+              </div>
+              <!-- <input type="text" name="username" required hidden> -->
+              <button type="submit" class="btn btn-primary" id="edit-button">Update Price</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close">Close</button>
+            <!-- </form> -->
+          </div>
+        </div>
+      </div>
+</div>
+<hr>
+<p>
+ <i> Product Overall Rating
+<span class="fa fa-star checked" id="star1"></span>
+<span class="fa fa-star checked" id="star2"></span>
+<span class="fa fa-star checked" id="star3"></span>
+<span class="fa fa-star" id="star4"></span>
+<span class="fa fa-star" id="star5"></span>
+<span id="overall-rating"> No rating Yet </span></i>
+</p>
+
+  <div class="tab" id="tabs" >
+      <button class="tablinks" onclick="openTab(event, 'ReviewTab')" id="ReviewtOpen" >Reviews</button>
+      <button class="tablinks" onclick="openTab(event, 'Description')" id="defaultOpen"> Description</button>
+  </div>
+
+<div id="ReviewTab" class="tabcontent" style="max-width: 50%;">
+    <button class="btn btn-success btn-sm" id="AddReview">Add Review </button>
+    <hr>
+    <div class="card" id="RatingCard" style="display: none;">
+        <div class="row">
+        <!-- <div class="col-2"> <img src="http://upload.wikimedia.org/wikipedia/commons/5/57/Face-wink.svg" width="40" class="rounded-circle mt-2"> </div> -->
+        <div class="col-12" style="margin-bottom: 5px;">
+        <div class="comment-box ml-2">
+        <h7>Write a review</h7>
+        <input type="number" id="comment-item-id" value="{{ item.id }}" required hidden>
+        <div class="rating"> <input type="radio" name="rating" value="5" id="5"><label for="5">☆</label> <input type="radio" name="rating" value="4" id="4"><label for="4">☆</label> <input type="radio" name="rating" value="3" id="3"><label for="3">☆</label> <input type="radio" name="rating" value="2" id="2"><label for="2">☆</label> <input type="radio" name="rating" value="1" id="1"><label for="1">☆</label> </div>
+        <div class="comment-area"> <textarea class="form-control" placeholder="what is your view?" rows="4" id="comment-area"></textarea> </div>
+        <div class="comment-btns mt-2">
+        <div class="row">
+        <div class="col-6">
+        <div class="pull-left"> <button class="btn btn-success btn-sm" id="RatingCancel">Cancel</button> </div>
+        </div>
+        <div class="col-6">
+        <div class="pull-right"> <button class="btn btn-success send btn-sm" id="SendRaiting"> Submit </button> </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+   </div>
+</div>
+    <div>
+      {%  if item.reviews  %}
+      {% for review in item.reviews %}
+      <p> Review by: {{ review.created_by }} Rating: {{ review.rating }}, Comments: {{ review.text }} </p>
+      {% else %}
+      NO Review Yet
+      {% endfor %}
+      {%  endif %}
+    </div>
+    </div>
+    </div>
+    </div>
+
+ <div id="Description" class="tabcontent" style="max-width: 50%;">
+      <div class="form-group">
+        <input type="number" name="id" value="{{ item.id }}" id="item-id" required hidden>
+        <label for="description" class="col-form-label">Description:</label>
+        <input type="text" name="description" id="id-description">
+        <button class="btn btn-secondary btn-sm" id="update-description-btn"> Update</button>
+      </div>
+      {%  if item.description  %}
+      <p id="description-text"> <i> {{ item.description}} </i> </p>
+      {% else %}
+      <p id="description-text"> <i> Product has no Description yet </i> </p>
+      {%  endif %}
+</div>
+    <!-- <div class="modal fade" id="AddReview" tabindex="-1" role="dialog" aria-labelledby="AddReview" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="AddReview">Write Review</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button></div>
+          <div class="modal-body">
+              <input type="text" name="review" id="review" required>
+              <input type="number" id="review-id" value="{{ item.id }}" required hidden>
+              <button type="submit" class="btn btn-primary" id="create_comment">Add</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btn-comment">Close</button>
+          </div>
+        </div>
+      </div>
+    </div> -->
+  <!-- </div> -->
+
+
+{% endblock %}

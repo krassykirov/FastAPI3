@@ -1,13 +1,13 @@
 from sqlalchemy.orm import Session
-from src.models import Item, Category, Review
+from src.models import Item, Category, Review, ItemCreate, ItemUpdate
 import src.schemas
 import datetime
 
 # Events
 class ItemActions:
     def get_item_by_id(self, db: Session, id: int):
-        # item = db.query(Item).filter(Item.id == id).first()
-        item = db.get(Item, id)
+        item = db.query(Item).filter(Item.id == id).first()
+        # item = db.get(Item, id)
         return item
 
     def get_item_by_name(self, db: Session, name: str):
@@ -22,7 +22,7 @@ class ItemActions:
         return items
 
     def delete_item_by_id(self, db: Session, id: int):
-        item = db.get(Item, id)
+        item = self.get_item_by_id(db=db, id=id)
         if item:
             db.delete(item)
             db.commit()
@@ -31,6 +31,19 @@ class ItemActions:
         db.add(item)
         db.commit()
         db.refresh(item)
+        return item
+
+    def update_item(self, id: int, db: Session, item: ItemUpdate):
+        item_exist = self.get_item_by_id(db=db, id=id)
+        print("item:", dict(item), type(item), id)
+        if not item_exist:
+            return "Item not found"
+        new_data = Item(**dict(item), id=item_exist.id).dict(exclude_unset=True, exclude_none=True)
+        print("new_data:", new_data)
+        for key, value in new_data.items():
+            setattr(item, key, value)
+            db.commit()
+            db.refresh(item)
         return item
 
     # def get_item_rating(self, id: int, db: Session):
@@ -73,8 +86,8 @@ class CategoryActions:
 class ReviewActions:
 
      def get_review_by_id(self, db: Session, id: int):
-        # comment = db.query(Comment).filter(Comment.id == id).first()
-        comment = db.get(Review, id)
+        comment = db.query(Review).filter(Review.id == id).first()
+        # comment = db.get(Review, id)
         return comment
 
      def get_item_reviews(self, db: Session, id: int):

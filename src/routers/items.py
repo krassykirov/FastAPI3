@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from fastapi import Request, Depends, HTTPException, status
 from src.db import get_session
 from sqlalchemy.orm import Session
-from src.models import Item, ItemRead, User, ItemCreate
+from src.models import Item, ItemRead, User, ItemCreate, ItemUpdate
 from src.crud.crud import ItemActions, CategoryActions
 from typing import Optional, List, Annotated, Union
 from src.auth.oauth import get_current_user
@@ -32,7 +32,19 @@ async def update_item(id: int, price: str, db: Session=Depends(get_session)) -> 
     item = ItemActions().get_item_by_id(db=db, id=id)
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
-    new_data = Item(id=id, price=price, name=item.name).dict(exclude_unset=True)
+    new_data = Item(id=id, price=price).dict(exclude_unset=True)
+    for key, value in new_data.items():
+        setattr(item, key, value)
+        db.commit()
+        db.refresh(item)
+    return item
+
+@items_router.put("/update_item_new/{id}", include_in_schema=True, response_model=ItemRead)
+async def update_item(id: int, item_update: ItemUpdate, db: Session=Depends(get_session)) -> ItemRead:
+    item = ItemActions().get_item_by_id(db=db, id=id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    new_data = Item(**dict(item_update), id=item).dict(exclude_unset=True, exclude_none=True)
     for key, value in new_data.items():
         setattr(item, key, value)
         db.commit()

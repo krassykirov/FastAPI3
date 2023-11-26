@@ -23,16 +23,20 @@ import json, os, shutil
 from os.path import abspath
 import decimal
 from src.auth.oauth import oauth_router, get_current_user
+from src.my_logger import detailed_logger
+
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
-templates = Jinja2Templates(directory="src/templates")
+templates = Jinja2Templates(directory="src/static/templates")
 
 app = FastAPI()
 app.include_router(category_router)
 app.include_router(items_router)
 app.include_router(reviews_router)
 app.include_router(oauth_router)
+
+logger = detailed_logger()
 
 @app.on_event("startup")
 def on_startup():
@@ -48,6 +52,7 @@ async def create_cat(request: Request, name: str, db: Session = Depends(get_sess
     form_data = await request.form()
     c = CategoryActions().get_category_by_name(db=db, name=form_data.get('name'))
     if c is not None:
+        logger.error(f"Category with name:'{c.name}' already exist")
         raise HTTPException(status_code=404, detail=f"Category with name:'{c.name}' already exist")
     category = CategoryActions().create_category(db=db, category=Category(name=form_data.get('name')))
     return  templates.TemplateResponse("base.html", {"request":request, 'category': category})
@@ -73,9 +78,12 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         item = [item for item in query]
         items = ItemActions().get_items(db=db)
         if item:
-            print(f"item with that name already exists!")
+            logger.error(f"item with that name already exists!")
             return templates.TemplateResponse("items.html", {"request":request, 'items':items,
                                                                    'message': "Item with that name already exists!"})
+            # redirect_url = request.url_for('get_details')
+            # response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+            # return response
         IMG_DIR = os.path.join(PROJECT_ROOT, f'src/static/img/{user.username}')
         content = await file.read()
         path = os.path.join(IMG_DIR, item_name)
@@ -94,19 +102,19 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
 @app.post("/items/delete_item")
 async def delete_item(request: Request, background_tasks: BackgroundTasks, id: int=Form(None), db: Session=Depends(get_session),
                       user: User = Depends(get_current_user))-> None:
-     item = db.get(Item, id)
+     item = ItemActions().get_item_by_id(db=db, id=id)
      if item:
         db.delete(item)
         db.commit()
         try:
             dir_to_delete = abspath(f"src/static/img/{user.username}/{item.name}/")
             background_tasks.add_task(delete_item_dir, path=dir_to_delete)
-            print("Notification sent in the background")
+            logger.info("Notification sent in the background")
             redirect_url = request.url_for('get_details')
             response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
             return response
         except Exception as e:
-            print(f"Something went wrong, error: {e}")
+            logger.error(f"Something went wrong, error: {e}")
             return HTTPException(status_code=400, detail=f"Something went wrong, error {e}")
      else:
         raise HTTPException(status_code=404,detail=f"No item with id={id}")
@@ -116,17 +124,18 @@ async def read_item(request: Request, id: int, db: Session=Depends(get_session),
     item_db = ItemActions().get_item_by_id(db=db, id=id)
     item = ItemRead.from_orm(item_db)
     item_rating = ReviewActions().get_item_reviews_rating(db=db,id=id)
-    print('item_rating', item_rating)
+    logger.info('item_rating', item_rating)
     return templates.TemplateResponse("item_details.html", {"request":request, 'item': item,
                                                              'current_user': user.username,
                                                              'rating' : item_rating})
 
 @app.post("/update_price_ajax", include_in_schema=False, response_model=ItemRead)
-async def update_item_api(request: Request, db: Session=Depends(get_session)):
+async def update_item_api(request: Request, db: Session=Depends(get_session)) -> ItemRead:
     data = await request.json()
-    print('data', data)
+    logger.info('data', data)
     item = ItemActions().get_item_by_id(db=db, id=data.get('id'))
     if not item:
+        logger.error("Item not found")
         raise HTTPException(status_code=404, detail="Item not found")
     new_data = Item(**data).dict(exclude_unset=True, exclude_none=True)
     for key, value in new_data.items():
@@ -136,10 +145,11 @@ async def update_item_api(request: Request, db: Session=Depends(get_session)):
     return item
 
 @app.post("/update_description_ajax", status_code=status.HTTP_200_OK, response_model=ItemRead, include_in_schema=False)
-async def update_description_ajax(request: Request, db: Session=Depends(get_session)):
+async def update_description_ajax(request: Request, db: Session=Depends(get_session)) -> ItemRead:
     data = await request.json()
     item = ItemActions().get_item_by_id(db=db, id=data.get('id'))
     if not item:
+        logger.error("Item not found")
         raise HTTPException(status_code=404, detail="Item not found")
     new_data = Item(**data).dict(exclude_unset=True, exclude_none=True)
     for key, value in new_data.items():
@@ -149,10 +159,11 @@ async def update_description_ajax(request: Request, db: Session=Depends(get_sess
     return item
 
 @app.post("/create_review_ajax", status_code=status.HTTP_200_OK, response_model=Review, include_in_schema=False)
-async def create_review_ajax(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
+async def create_review_ajax(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)) -> Review:
     data = await request.json()
     item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
     if not item:
+        logger.error("Item not found")
         raise HTTPException(status_code=404, detail="Item not found")
     review = Review(**data, item=item)
     db.add(review)
@@ -165,9 +176,5 @@ async def get_user_items( request: Request, db: Session=Depends(get_session), us
     items = ItemActions().get_items(db=db, user=user.username)
     return templates.TemplateResponse("items.html", {"request":request, 'items':items, 'current_user': user.username})
 
-# @app.get("/rating", include_in_schema=False)
-# async def get_item_rating( request: Request, id: int, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
-#     item_rating = ItemActions().get_item_rating(db=db,id=id)
-#     return item_rating
 
 app.mount("/static", StaticFiles(directory="src/static", html=True))

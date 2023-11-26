@@ -1,0 +1,57 @@
+<html>
+<head>
+    <title>Demo</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../static/css/main.css">
+    <script src="../static/js/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body style="margin-left:30; margin-right:30; margin-bottom: 30;">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="{{ url_for('get_details')}}">Home</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item" active>
+          <a class="nav-link" href="{{ url_for('get_details')}}">Products <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('get_user_items')}}">My Items </a>
+         </li>
+      </ul>
+      {% if current_user %}
+      <form class="form-inline my-2 my-lg-0" style="margin-right: 30px;">
+        <div class="dropdown">
+          <button class="dropbtn">{{ current_user }} </button>
+          <div class="dropdown-content">
+            <a href="{{ url_for('logout') }}">Logout</a>
+          </div>
+        </div>
+     </form>
+      {% else %}
+      <form class="form-inline my-2 my-lg-0">
+        <input onclick="location.href='{{ url_for('home') }}';" value="Login" class="btn btn-primary" type="button" style="margin: 2px;">
+     </form>
+      <form class="form-inline my-2 my-lg-0">
+        <input onclick="location.href='{{ url_for('signup') }}';" value="SignUp" class="btn btn-info" type="button">
+     </form>
+      {% endif %}
+    </div>
+  </nav>
+
+{% block html_read %}
+
+{% endblock %}
+
+  <div class="footer">
+  </div>
+</body>
+</html>

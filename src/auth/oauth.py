@@ -20,7 +20,7 @@ import datetime, decimal
 
 pwd_context = CryptContext(schemes="bcrypt")
 
-templates = Jinja2Templates(directory="src/templates")
+templates = Jinja2Templates(directory="src/static/templates")
 oauth_router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearerCookie(tokenUrl="/api/token")

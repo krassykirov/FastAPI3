@@ -1,126 +1,144 @@
-<html>
-<head>
-    <title>Demo</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!-- <link rel="stylesheet" href="../static/css/main.css"> -->
-    <script src="../static/js/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-</head>
-<style>
-  .footer {
-    position: fixed;
-    min-height:30px;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    background-color: rgb(225, 220, 220);
-    color: white;
-    text-align: center;
+
+function openTab(evt, Description) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
   }
-  .card-img-top {
-    width: 100%;
-    height: 12vw;
-    object-fit: cover;
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(Description).style.display = "block";
+  evt.currentTarget.className += " active";
 }
 
-.card{
-    margin-bottom: 1rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
-    border: 3px solid #969696;
-    text-align: center;
+function editItem() {
+
+      let id = $("#edit-id").val()
+      let price = $("#id-price").val()
+    $.ajax({
+        url: "/update_price_ajax",
+        method: "post",
+        headers: { "Content-Type": "application/json",},
+        data:  JSON.stringify({
+                "id": `${id}`,
+                "price": `${price}`
+        }),
+        success: data => {
+            console.log('data:', data);
+            document.getElementById('item-details').innerText = `Price: $${parseFloat(data.price).toFixed(2)}`;
+            document.getElementById('close').click()
+        },
+        error: (error) => {
+            console.log('error:', error);
+        }
+      });
 }
 
-.dropbtn {
-  background-color: #919d98;
-  color: white;
-  padding: 14px;
-  font-size: 14px;
-  border: none;
-  border-radius: 4em;
+function updateDescription() {
+
+      let id = $("#item-id").val()
+      let description = $("#id-description").val()
+    $.ajax({
+        url: "/update_description_ajax",
+        method: "post",
+        headers: { "Content-Type": "application/json",},
+        data:  JSON.stringify({
+                "id": `${id}`,
+                "description": `${description}`
+        }),
+        success: data => {
+            console.log('data:', data);
+            document.getElementById('description-text').innerText = `${data.description}`;
+            document.getElementById('close').click()
+        },
+        error: (error) => {
+            console.log('error:', error);
+        }
+      });
 }
 
-.dropdown {
-  position: relative;
-  display: inline-block;
+function addReview() {
+
+      let review = $("#comment-area").val()
+      let id = $("#comment-item-id").val()
+      let username = $("#username").val()
+      let rating = document.querySelector('input[name="rating"]:checked').value;
+      console.log('review, id, rating, username', review, id, username)
+    $.ajax({
+        url: "/create_review_ajax",
+        method: "post",
+        headers: { "Content-Type": "application/json",},
+        data:  JSON.stringify({
+                "text": `${review}`,
+                "item_id": `${id}`,
+                "rating": `${rating}`,
+                "created_by": `${username}`
+        }),
+        success: data => {
+           const reviewDiv = document.getElementById('ReviewTab')
+           console.log('data:', data, data.rating)
+           $("#ReviewTab").append("<p>" + `${data.text}`);
+            document.getElementById('RatingCancel').click()
+            document.getElementById("ReviewtOpen").click();
+            document.getElementById('RatingCard').style.display = "none"
+            getItemRating()
+            reviewDiv.style.display = "block";
+        },
+        error: (error) => {
+            console.log('error:', error);
+        }
+      });
 }
 
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f1f1f1;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
+function getItemRating(){
+  let id = $("#id").val()
+  console.log('getItemRating running: id is:', id);
+  $.ajax({
+        url: "/api/reviews/item/rating",
+        method: "get",
+        headers: { "Content-Type": "application/json",},
+        data:  {
+                "id": `${id}`
+        },
+        success: data => {
+          for (var i=1; i<=5; i++ ){
+            var star = document.getElementById('star'+ i )
+            if ( i <= data.rating ){
+                star.classList.add('checked');
+            }
+            else { star.classList.remove('checked')}
+          }
+        document.getElementById('overall-rating').innerText = parseFloat(data.rating_float).toFixed(2) + ' from (' + data.review_number +' reviews)'
+        },
+        error: (error) => {
+            console.log('error:', error);
+        }
+      });
+   }
+
+$(document).ready(function() {
+    getItemRating()
+    // document.getElementById("ReviewtOpen").click();
+    document.getElementById('edit-button').onclick = editItem;
+    document.getElementById('SendRaiting').onclick = addReview;
+    document.getElementById('RatingCancel').onclick = RatingHide
+    document.getElementById('AddReview').onclick = AddReview
+    document.getElementById('update-description-btn').onclick = updateDescription;
+});
+
+function RatingHide(){
+  ratingDiv = document.getElementById('RatingCard')
+  ratingDiv.style.display = "none"
 }
 
-.dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
+
+function AddReview(){
+  document.getElementById('RatingCard').style.display = "block"
 }
 
-.dropdown-content a:hover {background-color: #ddd;}
 
-.dropdown:hover .dropdown-content {display: block;}
-
-.dropdown:hover .dropbtn {background-color: #606c97;}
-  </style>
-
-<body style="margin-left:30; margin-right:30">
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="{{ url_for('get_details')}}">Home</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
-        <!-- <li class="nav-item active">
-          <a class="nav-link" href="">Items <span class="sr-only">(current)</span></a>
-        </li> -->
-        <li class="nav-item" active>
-          <a class="nav-link" href="{{ url_for('get_details')}}">Products <span class="sr-only">(current)</span></a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('get_user_items')}}">My Items </a>
-         </li>
-      </ul>
-      {% if current_user %}
-      <form class="form-inline my-2 my-lg-0" style="margin-right: 30px;">
-        <div class="dropdown">
-          <button class="dropbtn">{{ current_user }} </button>
-          <div class="dropdown-content">
-            <!-- <button type="button" class="btn btn-info">Logout</button> -->
-            <a href="{{ url_for('logout') }}">Logout</a>
-          </div>
-        </div>
-     </form>
-      {% else %}
-      <form class="form-inline my-2 my-lg-0">
-        <input onclick="location.href='{{ url_for('home') }}';" value="Login" class="btn btn-primary" type="button" style="margin: 2px;">
-     </form>
-      <form class="form-inline my-2 my-lg-0">
-        <input onclick="location.href='{{ url_for('signup') }}';" value="SignUp" class="btn btn-info" type="button">
-     </form>
-      {% endif %}
-    </div>
-  </nav>
-  <!-- <hr> -->
-
-
-
-{% block html_read %}
-
-{% endblock %}
-
-
-<script>
 //fetchCategories
 // function fetchCategories() {
 //      fetch('/categories')
@@ -275,11 +293,3 @@
 // };
 
 // document.getElementById('fetch-button3').onclick = loadItems;
-
-
-</script>
-  <div class="footer">
-    <p> </p>
-  </div>
-</body>
-</html>

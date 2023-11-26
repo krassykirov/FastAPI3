@@ -61,10 +61,23 @@ class ItemRead(BaseModel):
         "example": {
             "id":1,
             "name": "Item-Name",
-            "price": 12.12,
+            "price": 99.99,
             "date": "2023-11-22 13:50:51",
             "image": "image.pgn",
-            "username": "Username"
+            "username": "Krassy",
+            "description": "description"
+           }
+        }
+
+class ItemUpdate(BaseModel):
+    price: Optional[decimal.Decimal]
+    description:  Optional[str]
+    class Config:
+        orm_mode = True
+        schema_extra = {
+        "example": {
+            "price": 99.99,
+             "description": "description"
            }
         }
 class ItemCreate(BaseModel):
@@ -77,8 +90,8 @@ class ItemCreate(BaseModel):
         schema_extra = {
         "example": {
             "name": "Item-Name",
-            "price": 12.12,
-            "description": "Item Description"
+            "price": 99.99,
+            "description": "description"
            }
         }
 
