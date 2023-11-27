@@ -28,6 +28,7 @@ class ItemActions:
             db.commit()
 
     def create_item(self, db: Session, item: Item):
+        print('item', item)
         db.add(item)
         db.commit()
         db.refresh(item)
@@ -59,8 +60,8 @@ class ItemActions:
 class CategoryActions:
 
     def get_category_by_id(self, db: Session, id: int):
-        # category = db.query(Category).filter(Category.id == id).first()
-        category = db.get(Category, id)
+        category = db.query(Category).filter(Category.id == id).first()
+        # category = db.get(Category, id)
         return category
 
     def get_category_by_name(self, db: Session, name: str):
@@ -71,14 +72,15 @@ class CategoryActions:
         categories = db.query(Category).offset(skip).limit(limit).all()
         return categories
 
-    def create_category(self, db: Session, category: src.schemas.Category):
+    def create_category(self, db: Session, category: Category):
         db.add(category)
         db.commit()
+        db.refresh(category)
         return category
 
     def delete_category(self, db: Session, id: int):
-        # category = db.query(Category).filter(Category.id == id).first()
-        category = db.get(Category, id)
+        category = db.query(Category).filter(Category.id == id).first()
+        # category = db.get(Category, id)
         if category:
             db.delete(category)
             db.commit()

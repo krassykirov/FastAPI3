@@ -1,19 +1,36 @@
 from pydantic import BaseModel
 import datetime
 from typing import List, Optional
-from src.models import Item, Category
+from src.models import Item
 import decimal
 
-class Category(BaseModel):
+class CategoryCreate(BaseModel):
     name: str
-    id: int
-    events: Optional[List[Item]]
     class Config:
         orm_mode = True
+        schema_extra = {
+        "example": {
+            "name": "Category-Name",
+           }
+        }
 
-class CategoryEvents(BaseModel):
+class CategoryRead(BaseModel):
     name: str
-    events: Optional[List[Item]]
+    id:   Optional[int]
+    # items: Optional[List[Item]]
+    class Config:
+        orm_mode = True
+        schema_extra = {
+        "example": {
+            "id": 1,
+            "name": "Category-Name",
+           }
+        }
+
+class CategoryItems(BaseModel):
+    id:   Optional[int]
+    name: str
+    items: Optional[List[Item]]
     class Config:
         orm_mode = True
 
