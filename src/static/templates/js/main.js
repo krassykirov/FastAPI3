@@ -92,51 +92,6 @@ function addReview() {
       });
 }
 
-function getItemRating(){
-  let id = $("#id").val()
-  console.log('getItemRating running: id is:', id);
-  $.ajax({
-        url: "/api/reviews/item/rating",
-        method: "get",
-        headers: { "Content-Type": "application/json",},
-        data:  {
-                "id": `${id}`
-        },
-        success: data => {
-          for (var i=1; i<=5; i++ ){
-            var star = document.getElementById('star'+ i )
-            if ( i <= data.rating ){
-                star.classList.add('checked');
-            }
-            else { star.classList.remove('checked')}
-          }
-        document.getElementById('overall-rating').innerText = parseFloat(data.rating_float).toFixed(2) + ' from (' + data.review_number +' reviews)'
-        },
-        error: (error) => {
-            console.log('error:', error);
-        }
-      });
-   }
-
-$(document).ready(function() {
-    getItemRating()
-    // document.getElementById("ReviewtOpen").click();
-    document.getElementById('edit-button').onclick = editItem;
-    document.getElementById('SendRaiting').onclick = addReview;
-    document.getElementById('RatingCancel').onclick = RatingHide
-    document.getElementById('AddReview').onclick = AddReview
-    document.getElementById('update-description-btn').onclick = updateDescription;
-});
-
-function RatingHide(){
-  ratingDiv = document.getElementById('RatingCard')
-  ratingDiv.style.display = "none"
-}
-
-function AddReview(){
-  document.getElementById('RatingCard').style.display = "block"
-}
-
 
 //fetchCategories
 // function fetchCategories() {

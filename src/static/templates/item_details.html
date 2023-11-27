@@ -87,14 +87,15 @@
 </div>
 <hr>
 <p>
- <i> Product Overall Rating
-<span class="fa fa-star checked" id="star1"></span>
-<span class="fa fa-star checked" id="star2"></span>
-<span class="fa fa-star checked" id="star3"></span>
-<span class="fa fa-star" id="star4"></span>
-<span class="fa fa-star" id="star5"></span>
-<span id="overall-rating"> No rating Yet </span></i>
-</p>
+  <p>
+    <i> Product Overall Rating
+   <span class="fa fa-star checked" id="star1"></span>
+   <span class="fa fa-star checked" id="star2"></span>
+   <span class="fa fa-star checked" id="star3"></span>
+   <span class="fa fa-star" id="star4"></span>
+   <span class="fa fa-star" id="star5"></span>
+   <span id="overall-rating"> No rating Yet </span></i>
+   </p>
 
   <div class="tab" id="tabs" >
       <button class="tablinks" onclick="openTab(event, 'ReviewTab')" id="ReviewtOpen" >Reviews</button>
@@ -109,7 +110,7 @@
         <!-- <div class="col-2"> <img src="http://upload.wikimedia.org/wikipedia/commons/5/57/Face-wink.svg" width="40" class="rounded-circle mt-2"> </div> -->
         <div class="col-12" style="margin-bottom: 5px;">
         <div class="comment-box ml-2">
-        <h7>Write a review</h7>
+        <h8>Write a review</h8>
         <input type="number" id="comment-item-id" value="{{ item.id }}" required hidden>
         <div class="rating"> <input type="radio" name="rating" value="5" id="5"><label for="5">☆</label> <input type="radio" name="rating" value="4" id="4"><label for="4">☆</label> <input type="radio" name="rating" value="3" id="3"><label for="3">☆</label> <input type="radio" name="rating" value="2" id="2"><label for="2">☆</label> <input type="radio" name="rating" value="1" id="1"><label for="1">☆</label> </div>
         <div class="comment-area"> <textarea class="form-control" placeholder="what is your view?" rows="4" id="comment-area"></textarea> </div>
@@ -171,6 +172,53 @@
       </div>
     </div> -->
   <!-- </div> -->
+<script>
 
+function getItemRating(){
+  let id = $("#id").val()
+  console.log('id:', id)
+  $.ajax({
+        url: "/api/reviews/item/rating",
+        method: "get",
+        headers: { "Content-Type": "application/json",},
+        data:  { "id": `${id}`
+        },
+        success: data => {
+          for (var i=1; i<=5; i++ ){
+            var star = document.getElementById('star' + i )
+            if ( i <= data.rating ){
+                star.classList.add('checked');
+            }
+            else { star.classList.remove('checked')}
+          }
+        document.getElementById('overall-rating').innerText = parseFloat(data.rating_float).toFixed(2) + ' avaerage based on (' + data.review_number +' reviews)'
+        },
+        error: (error) => {
+            console.log('error:', error);
+        }
+      });
+   }
+
+$(document).ready(function() {
+    getItemRating()
+    // document.getElementById("ReviewtOpen").click();
+    document.getElementById('edit-button').onclick = editItem;
+    document.getElementById('SendRaiting').onclick = addReview;
+    document.getElementById('RatingCancel').onclick = RatingHide
+    document.getElementById('AddReview').onclick = AddReview
+    document.getElementById('update-description-btn').onclick = updateDescription;
+});
+
+function RatingHide(){
+  ratingDiv = document.getElementById('RatingCard')
+  ratingDiv.style.display = "none"
+}
+
+function AddReview(){
+  document.getElementById('RatingCard').style.display = "block"
+}
+
+
+</script>
 
 {% endblock %}
