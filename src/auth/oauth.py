@@ -15,8 +15,7 @@ from datetime import datetime, timedelta
 from src.auth.oauth_schemas import OAuth2PasswordBearerCookie
 from passlib.context import CryptContext
 from typing import Optional
-
-import datetime, decimal
+import datetime
 
 pwd_context = CryptContext(schemes="bcrypt")
 
@@ -99,7 +98,6 @@ def login_access_token(*, request: Request, response: Response, form_data: OAuth
         )
         response = RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
         response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True)
-        # return {"access_token": access_token, "token_type": "bearer"} to work with /docs
         # response.headers["Authorization"] = f"Bearer {access_token}"
         return response
 
@@ -118,12 +116,8 @@ def login_access_token(*, request: Request, response: Response, form_data: OAuth
             data={"sub": user.username}, expires_delta=access_token_expires
         )
         return {"access_token": access_token, "token_type": "bearer"}
-        # response.headers["Authorization"] = f"Bearer {access_token}"
-        # return response
-
     else:
-        context = {'request': request, 'message': "Username or password are incorrect!"}
-        return templates.TemplateResponse("login.html", context)
+        return {'message': "Username or password are incorrect!"}
 
 @oauth_router.get("/login", include_in_schema=False)
 def login(request: Request):

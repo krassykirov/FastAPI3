@@ -99,12 +99,9 @@ class ReviewActions:
 
      def get_item_reviews_rating(self, id: int, db: Session):
         reviews = self.get_item_reviews(db=db, id=id)
-        print('reviews', reviews)
         result = [item.rating for item in reviews if item.rating]
-        print('result:', result)
         if result:
             rating = sum(result) / len(result)
-            print({'rating':round(rating), 'review_number': len(result), 'rating_float': rating })
             return {'rating':round(rating), 'review_number': len(result), 'rating_float': sum(result) / len(result) }
         return {'rating':0, 'review_number': 0, 'rating_float': 0 }
 

@@ -106,7 +106,7 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         return response
 
 @app.post("/delete_item", include_in_schema=False)
-@app.post("/items/delete_item")
+@app.post("/items/delete_item", include_in_schema=False)
 async def delete_item(request: Request, background_tasks: BackgroundTasks, id: int=Form(None), db: Session=Depends(get_session),
                       user: User = Depends(get_current_user))-> None:
      item = ItemActions().get_item_by_id(db=db, id=id)
