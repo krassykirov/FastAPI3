@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from src.models import Item, Category, Review, ItemCreate, ItemUpdate
+from src.models import Item, Category, Review
 import src.schemas
 import datetime
 
@@ -33,12 +33,12 @@ class ItemActions:
         db.refresh(item)
         return item
 
-    def update_item(self, id: int, db: Session, item: ItemUpdate):
+    def update_item(self, id: int, db: Session, item: src.schemas.ItemUpdate):
         item_exist = self.get_item_by_id(db=db, id=id)
         print("item:", dict(item), type(item), id)
         if not item_exist:
             return "Item not found"
-        new_data = Item(**dict(item), id=item_exist.id).dict(exclude_unset=True, exclude_none=True)
+        new_data = Item(**dict(item), id=item_exist).dict(exclude_unset=True, exclude_none=True)
         print("new_data:", new_data)
         for key, value in new_data.items():
             setattr(item, key, value)

@@ -45,56 +45,6 @@ class Item(SQLModel, table=True):
     username:     Optional[str] = Field(default=None, foreign_key="user.username")
     description:  Optional[str]
 
-
-class ItemRead(BaseModel):
-    id:   Optional[int]
-    name: Optional[str]
-    date: Optional[datetime.datetime]
-    price: Optional[decimal.Decimal]
-    image: Optional[str]
-    username: Optional[str]
-    reviews: Optional[List]
-    description:  Optional[str]
-    class Config:
-        orm_mode = True
-        schema_extra = {
-        "example": {
-            "id":1,
-            "name": "Item-Name",
-            "price": 99.99,
-            "date": "2023-11-22 13:50:51",
-            "image": "image.pgn",
-            "username": "Krassy",
-            "description": "description"
-           }
-        }
-
-class ItemUpdate(BaseModel):
-    price: Optional[decimal.Decimal]
-    description:  Optional[str]
-    class Config:
-        orm_mode = True
-        schema_extra = {
-        "example": {
-            "price": 99.99,
-             "description": "description"
-           }
-        }
-class ItemCreate(BaseModel):
-    name: Optional[str]
-    price: Optional[decimal.Decimal]
-    description:  Optional[str]
-    username: Optional[str]
-    class Config:
-        orm_mode = True
-        schema_extra = {
-        "example": {
-            "name": "Item-Name",
-            "price": 99.99,
-            "description": "description"
-           }
-        }
-
 class Category(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(sa_column=Column("name", VARCHAR, unique=True))

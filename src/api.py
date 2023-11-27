@@ -14,7 +14,7 @@ from src.db import engine
 from src.routers.categories import category_router
 from src.routers.items import items_router
 from src.routers.reviews import reviews_router
-from src.models import Item, Category, Review, User, ItemRead, UserRead
+from src.models import Item, Category, Review, User, UserRead
 from src.crud.crud import CategoryActions, ItemActions, ReviewActions
 from src.auth.oauth import logout, login, login_access_token
 from src.helper import delete_item_dir
@@ -58,11 +58,11 @@ async def create_cat(request: Request, name: str, db: Session = Depends(get_sess
     return  templates.TemplateResponse("base.html", {"request":request, 'category': category})
 
 @app.get("/details", include_in_schema=False)
-@app.get("/items/details", response_model=ItemRead)
+@app.get("/items/details", response_model=src.schemas.ItemRead)
 def get_details(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     """ Return all Items """
     items_db = ItemActions().get_items(db=db) #, user=user.username
-    items = [ItemRead.from_orm(item) for item in items_db]
+    items = [src.schemas.ItemRead.from_orm(item) for item in items_db]
     return templates.TemplateResponse("items.html", {"request": request, 'items': items, 'current_user': user.username})
 
 @app.post("/create_item", include_in_schema=False)
@@ -119,18 +119,18 @@ async def delete_item(request: Request, background_tasks: BackgroundTasks, id: i
      else:
         raise HTTPException(status_code=404,detail=f"No item with id={id}")
 
-@app.get("/items/{id}", response_model=ItemRead, include_in_schema=False) # http://127.0.0.1:8000/api/items?name=12
+@app.get("/items/{id}", response_model=src.schemas.ItemRead, include_in_schema=False) # http://127.0.0.1:8000/api/items?name=12
 async def read_item(request: Request, id: int, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     item_db = ItemActions().get_item_by_id(db=db, id=id)
-    item = ItemRead.from_orm(item_db)
+    item = src.schemas.ItemRead.from_orm(item_db)
     item_rating = ReviewActions().get_item_reviews_rating(db=db,id=id)
     logger.info('item_rating', item_rating)
     return templates.TemplateResponse("item_details.html", {"request":request, 'item': item,
                                                              'current_user': user.username,
                                                              'rating' : item_rating})
 
-@app.post("/update_price_ajax", include_in_schema=False, response_model=ItemRead)
-async def update_item_api(request: Request, db: Session=Depends(get_session)) -> ItemRead:
+@app.post("/update_price_ajax", include_in_schema=False, response_model=src.schemas.ItemRead)
+async def update_item_api(request: Request, db: Session=Depends(get_session)) -> src.schemas.ItemRead:
     data = await request.json()
     logger.info('data', data)
     item = ItemActions().get_item_by_id(db=db, id=data.get('id'))
@@ -144,8 +144,8 @@ async def update_item_api(request: Request, db: Session=Depends(get_session)) ->
         db.refresh(item)
     return item
 
-@app.post("/update_description_ajax", status_code=status.HTTP_200_OK, response_model=ItemRead, include_in_schema=False)
-async def update_description_ajax(request: Request, db: Session=Depends(get_session)) -> ItemRead:
+@app.post("/update_description_ajax", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead, include_in_schema=False)
+async def update_description_ajax(request: Request, db: Session=Depends(get_session)) -> src.schemas.ItemRead:
     data = await request.json()
     item = ItemActions().get_item_by_id(db=db, id=data.get('id'))
     if not item:
@@ -171,7 +171,7 @@ async def create_review_ajax(request: Request, db: Session=Depends(get_session),
     db.refresh(review)
     return review
 
-@app.get("/user/items", response_model=ItemRead, include_in_schema=False)
+@app.get("/user/items", response_model=src.schemas.ItemRead, include_in_schema=False)
 async def get_user_items( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     items = ItemActions().get_items(db=db, user=user.username)
     return templates.TemplateResponse("items.html", {"request":request, 'items':items, 'current_user': user.username})
