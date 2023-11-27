@@ -1,4 +1,11 @@
-from fastapi import Depends, HTTPException, Request, APIRouter, status, Form, BackgroundTasks
+from fastapi import (
+    Depends,
+    HTTPException,
+    Request,
+    APIRouter,
+    status,
+    Form,
+    BackgroundTasks )
 from fastapi.responses import RedirectResponse
 from src.db import get_session
 from sqlalchemy.orm import Session
@@ -7,7 +14,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from sqlmodel import SQLModel, Session
 from src.db import engine
@@ -16,7 +23,7 @@ from src.routers.items import items_router
 from src.routers.reviews import reviews_router
 from src.models import Item, Category, Review, User, UserRead
 from src.crud.crud import CategoryActions, ItemActions, ReviewActions
-from src.auth.oauth import logout, login, login_access_token
+# from src.auth.oauth import logout, login, login_access_token
 from src.helper import delete_item_dir
 import src.schemas
 import json, os, shutil
@@ -166,6 +173,7 @@ async def create_review_ajax(request: Request, db: Session=Depends(get_session),
         logger.error("Item not found")
         raise HTTPException(status_code=404, detail="Item not found")
     review = Review(**data, item=item)
+    logger.info(f"Creating review {review}")
     db.add(review)
     db.commit()
     db.refresh(review)
