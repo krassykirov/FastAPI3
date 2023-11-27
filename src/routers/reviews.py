@@ -21,6 +21,17 @@ def get_review_by_id( id: int, db: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail=f"No comment with id {id} found")
     return comment
 
+@reviews_router.get("/item/by_user", status_code=status.HTTP_200_OK, response_model=list[Review])
+def get_item_reviews_by_user( item_id: int, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+    """ Return all reviews of an Item """
+    reviews = ReviewActions().get_item_reviews(db=db, id=item_id)
+    print('review by user:', reviews)
+    review =  [item for item in reviews if item.created_by == user.username]
+    print('review by user:', review)
+    if review is None:
+        raise HTTPException(status_code=404, detail=f"No reviews found")
+    return review # JSONResponse(content= comments)
+
 @reviews_router.get("/", status_code=status.HTTP_200_OK, response_model=list[Review])
 def get_item_reviews( item_id: int, db: Session = Depends(get_session)):
     """ Return all reviews of an Item """
@@ -40,7 +51,7 @@ async def create_review(text: str, item_id: int, db: Session=Depends(get_session
     """ Create a review for an Item """
     item = ItemActions().get_item_by_id(db=db, id=item_id)
     review = Review(text=text, item=item, item_id=item.id, created_by=user.username)
+    print('item', item.reviews)
     db.add(review)
-    db.commit()
     db.refresh(review)
     return review

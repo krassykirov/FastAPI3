@@ -97,6 +97,7 @@ class ReviewActions:
         reviews = item.reviews
         return reviews
 
+
      def get_item_reviews_rating(self, id: int, db: Session):
         reviews = self.get_item_reviews(db=db, id=id)
         result = [item.rating for item in reviews if item.rating]

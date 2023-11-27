@@ -73,9 +73,11 @@ def get_details(request: Request, db: Session = Depends(get_session), user: User
     return templates.TemplateResponse("items.html", {"request": request, 'items': items, 'current_user': user.username})
 
 @app.post("/create_item", include_in_schema=False)
+@app.post("/user/create_item", include_in_schema=False)
 @app.post("/items/create_item", include_in_schema=False)
 async def create_item(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
         """ Create an Item """
+        logger.info(f"URL: {request.url}")
         form_data = await request.form()
         file = form_data['file']
         filename = form_data['file'].filename
@@ -101,7 +103,10 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
             item = Item(name=item_name, price=price, image=filename, username=user.username)
         db.add(item)
         db.commit()
-        redirect_url = request.url_for('get_details')
+        if 'user/create_item' in str(request.url):
+            redirect_url = request.url_for('get_user_items')
+        else:
+           redirect_url = request.url_for('get_details')
         response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
         return response
 
@@ -139,7 +144,6 @@ async def read_item(request: Request, id: int, db: Session=Depends(get_session),
 @app.post("/update_price_ajax", include_in_schema=False, response_model=src.schemas.ItemRead)
 async def update_item_api(request: Request, db: Session=Depends(get_session)) -> src.schemas.ItemRead:
     data = await request.json()
-    logger.info('data', data)
     item = ItemActions().get_item_by_id(db=db, id=data.get('id'))
     if not item:
         logger.error("Item not found")
@@ -178,6 +182,25 @@ async def create_review_ajax(request: Request, db: Session=Depends(get_session),
     db.commit()
     db.refresh(review)
     return review
+
+# if Review exists
+# @app.post("/create_review_ajax", status_code=status.HTTP_200_OK, response_model=Review, include_in_schema=False)
+# async def create_review_ajax(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
+#     data = await request.json()
+#     item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
+#     if not item:
+#         logger.error("Item not found")
+#         raise HTTPException(status_code=404, detail="Item not found")
+#     review_exist =  [item for item in item.reviews if item.created_by == user.username]
+#     if review_exist is None:
+#         review = review = Review(**data, item=item)
+#         logger.info(f"Creating review {review}")
+#         db.add(review)
+#         db.refresh(review)
+#         return review
+#     else:
+#         logger.info('review_exist')
+#         return {'review_exist': review_exist}
 
 @app.get("/user/items", response_model=src.schemas.ItemRead, include_in_schema=False)
 async def get_user_items( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):

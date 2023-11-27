@@ -52,6 +52,7 @@ function updateDescription() {
             console.log('data:', data);
             document.getElementById('description-text').innerText = `${data.description}`;
             document.getElementById('close').click()
+            document.getElementById("description-div").style.display = 'none'
         },
         error: (error) => {
             console.log('error:', error);
@@ -79,7 +80,7 @@ function addReview() {
         success: data => {
            const reviewDiv = document.getElementById('ReviewTab')
            console.log('data:', data, data.rating)
-           $("#ReviewTab").append("<p>" + `${data.text}`);
+           $("#ReviewTab").append("<div class='content'>" + `${data.text}`);
             document.getElementById('RatingCancel').click()
             document.getElementById("ReviewtOpen").click();
             document.getElementById('RatingCard').style.display = "none"
