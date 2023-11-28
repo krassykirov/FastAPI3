@@ -32,7 +32,7 @@ border: 1px solid #9797ca
 }
 
 #loadMore {
-  width: 20rem;
+  width: 30rem;
   color: #fff;
   display: block;
   text-align: center;
@@ -171,22 +171,17 @@ border: 1px solid #9797ca
         </div>
         </div>
    </div>
- </div>
-      <hr>
-      <div class="content">
+  </div>
+      <div>
+        <hr style="max-width: 35%;">
         {%  if item.reviews  %}
         <p>Other reviews</p>
-        <hr>
+        <hr style="max-width: 35%;">
         {% for review in item.reviews %}
 
-      <div class="card" id="card{{review.id}}" style="display: block;">
+      <div class="card" id="card{{review.id}}" style="display: none;">
           <div class="row">
           <div class="col-12" style="margin-bottom: 5px;" style="max-width: 35%;">
-          <!-- <div class="rating"> <input type="radio" name="rating" value="5" id="{{ review.id }}"><label for="5">☆</label> 
-            <input type="radio" name="rating" value="4" id="4"><label for="4">☆</label> <input type="radio" name="rating" value="3" id="3">
-            <label for="3">☆</label> <input type="radio" name="rating" value="2" id="2"><label for="2">☆</label> 
-            <input type="radio" name="rating" value="1" id="1"><label for="1">☆</label> 
-          </div> -->
           <p>
             <span class="fa fa-star checked" id="star{{ review.id }}1"></span>
             <span class="fa fa-star checked" id="star{{ review.id }}2"></span>
@@ -198,12 +193,10 @@ border: 1px solid #9797ca
           </div>
           </div>
       </div>
-          {% else %}
-          NO Review Yet
           {% endfor %}
           {%  endif %}
-      </div>
           <a href="#" id="loadMore">Load More</a>
+      </div>
         </div>
       </div>
       </div>
@@ -253,7 +246,6 @@ function getItemRating(){
         data:  { "id": `${id}`
         },
         success: data => {
-          console.log('data:', data)
           for (var i=1; i<=5; i++ ){
             var star = document.getElementById('star' + i )
             if ( i <= data.rating ){
@@ -269,24 +261,19 @@ function getItemRating(){
       });
    }
 
-
 function UpdateStarRatings(review_id, rating){
-          console.log("review", review_id, 'rating', rating)
           for (var i=1; i<=5; i++ ){
             var star = document.getElementById('star'+ review_id + i)
-            console.log('star_id:', star)
             if ( i <= rating ){
                 star.classList.add('checked');
-                console.log('adding checked:', star)
             }
             else { 
-              console.log('removing checked:', star)
               star.classList.remove('checked');
             }
           }
    }
 
-  function setRveiewsRating(){
+function setRveiewsRating(){
   let id = $("#id").val()
   $.ajax({
         url: "/api/reviews",
@@ -295,9 +282,7 @@ function UpdateStarRatings(review_id, rating){
         data:  { "item_id": `${id}`
         },
         success: data => {
-          console.log('data:', data)
           data.forEach(review => {
-            console.log('review_id', review.id, 'rating', review.rating)
             UpdateStarRatings(review.id, review.rating)
           });
         },
@@ -311,10 +296,6 @@ function UpdateStarRatings(review_id, rating){
 $(document).ready(function() {
     getItemRating()
     setRveiewsRating()
-    // document.getElementById("ReviewtOpen").click();
-    document.getElementById('edit-button').onclick = editItem;
-    document.getElementById('SendRaiting').onclick = addReview;
-    document.getElementById('update-description-btn').onclick = updateDescription;
 });
 
 function ShowDescription() {
@@ -336,11 +317,11 @@ function ShowReview(){
 }
 
 $(document).ready(function(){
-  $(".content").slice(0, 4).show();
+  $(".card").slice(1, 4).show();
   $("#loadMore").on("click", function(e){
     e.preventDefault();
-    $(".content:hidden").slice(0, 4).slideDown();
-    if($(".content:hidden").length == 0) {
+    $(".card:hidden").slice(0, 4).slideDown();
+    if($(".card:hidden").length == 0) {
       $("#loadMore").text("No More Reviews").addClass("noContent");
     }
   });
@@ -349,6 +330,10 @@ $(document).ready(function(){
 function RatingHide(){
   document.getElementById('RatingCard').style.display = "none"
 }
+
+document.getElementById('edit-button').onclick = editItem;
+document.getElementById('SendRaiting').onclick = addReview;
+document.getElementById('update-description-btn').onclick = updateDescription;
 
 </script>
 
