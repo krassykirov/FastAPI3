@@ -14,6 +14,10 @@ class ItemActions:
         item = db.query(Item).filter(Item.name == name).first()
         return item
 
+    def get_user_item_reviews(self, db: Session, name: str):
+        item = db.query(Item).filter(Item.name == name and Item.username=='kr').first()
+        return item
+
     def get_items(self, db: Session, skip: int = 0, limit: int = 100, user= None):
         if user:
             items = db.query(Item).filter(Item.username==user).offset(skip).limit(limit).all()

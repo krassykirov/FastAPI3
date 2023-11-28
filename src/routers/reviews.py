@@ -33,11 +33,10 @@ def get_item_reviews_by_user( item_id: int, db: Session = Depends(get_session), 
 @reviews_router.get("/", status_code=status.HTTP_200_OK, response_model=list[Review])
 def get_item_reviews( item_id: int, db: Session = Depends(get_session)):
     """ Return all reviews of an Item """
-    comments = ReviewActions().get_item_reviews(db=db, id=item_id)
-    print('comments:', comments)
-    if comments is None:
+    reviews = ReviewActions().get_item_reviews(db=db, id=item_id)
+    if reviews is None:
         raise HTTPException(status_code=404, detail=f"No reviews found")
-    return comments # JSONResponse(content= comments)
+    return reviews # JSONResponse(content= comments)
 
 @reviews_router.get("/item/rating", status_code=status.HTTP_200_OK, include_in_schema=True)
 def get_item_rating(id: int, db: Session=Depends(get_session)):

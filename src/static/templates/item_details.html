@@ -194,8 +194,9 @@ border: 1px solid #9797ca
           </div>
       </div>
           {% endfor %}
-          {%  endif %}
           <a href="#" id="loadMore">Load More</a>
+          {%  endif %}
+
       </div>
         </div>
       </div>
@@ -317,7 +318,7 @@ function ShowReview(){
 }
 
 $(document).ready(function(){
-  $(".card").slice(1, 4).show();
+  $(".card").slice(0, 4).show();
   $("#loadMore").on("click", function(e){
     e.preventDefault();
     $(".card:hidden").slice(0, 4).slideDown();
