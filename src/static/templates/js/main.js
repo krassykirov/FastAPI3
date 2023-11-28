@@ -66,7 +66,6 @@ function addReview() {
       let id = $("#comment-item-id").val()
       let username = $("#username").val()
       let rating = document.querySelector('input[name="rating"]:checked').value;
-      console.log('review, id, rating, username', review, id, username)
     $.ajax({
         url: "/create_review_ajax",
         method: "post",

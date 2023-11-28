@@ -151,9 +151,8 @@ border: 1px solid #9797ca
 <div id="ReviewTab" class="tabcontent" style="max-width: 35%;">
     <button class="btn btn-secondary btn-sm" id="AddReview" onclick="ShowReview()">Add Review </button>
     <hr>
-    <div class="card" id="RatingCard" style="display: none;">
+ <div class="card" id="RatingCard" style="display: none;">
         <div class="row">
-        <!-- <div class="col-2"> <img src="http://upload.wikimedia.org/wikipedia/commons/5/57/Face-wink.svg" width="40" class="rounded-circle mt-2"> </div> -->
         <div class="col-12" style="margin-bottom: 5px;" style="max-width: 35%;">
         <div class="comment-box ml-2">
         <input type="number" id="comment-item-id" value="{{ item.id }}" required hidden>
@@ -172,24 +171,44 @@ border: 1px solid #9797ca
         </div>
         </div>
    </div>
-</div>
-    <div>
+ </div>
       <hr>
-      {%  if item.reviews  %}
-      <p>Other reviews</p>
-      <hr>
-      {% for review in item.reviews %}
-      <div class="content" style="display: none;"> Review by: {{ review.created_by }} Rating: {{ review.rating }}, Comments: {{ review.text }} </div>
-      {% else %}
-      NO Review Yet
-      {% endfor %}
-      {%  endif %}
-      <a href="#" id="loadMore">Load More</a>
-    </div>
-    </div>
-    </div>
-    </div>
+      <div class="content">
+        {%  if item.reviews  %}
+        <p>Other reviews</p>
+        <hr>
+        {% for review in item.reviews %}
 
+      <div class="card" id="card{{review.id}}" style="display: block;">
+          <div class="row">
+          <div class="col-12" style="margin-bottom: 5px;" style="max-width: 35%;">
+          <!-- <div class="rating"> <input type="radio" name="rating" value="5" id="{{ review.id }}"><label for="5">☆</label> 
+            <input type="radio" name="rating" value="4" id="4"><label for="4">☆</label> <input type="radio" name="rating" value="3" id="3">
+            <label for="3">☆</label> <input type="radio" name="rating" value="2" id="2"><label for="2">☆</label> 
+            <input type="radio" name="rating" value="1" id="1"><label for="1">☆</label> 
+          </div> -->
+          <p>
+            <span class="fa fa-star checked" id="star{{ review.id }}1"></span>
+            <span class="fa fa-star checked" id="star{{ review.id }}2"></span>
+            <span class="fa fa-star checked" id="star{{ review.id }}3"></span>
+            <span class="fa fa-star" id="star{{ review.id}}4"></span>
+            <span class="fa fa-star" id="star{{ review.id }}5"></span>
+            </p>
+              <div> Review by: {{ review.created_by }} Rating: {{ review.rating }}, Comments: {{ review.text }} </div>
+          </div>
+          </div>
+      </div>
+          {% else %}
+          NO Review Yet
+          {% endfor %}
+          {%  endif %}
+      </div>
+          <a href="#" id="loadMore">Load More</a>
+        </div>
+      </div>
+      </div>
+      </div>
+    </div>
  <div id="Description" class="tabcontent" style="max-width: 35%;">
   <button class="btn btn-secondary btn-sm" id="show-description-btn" onclick="ShowDescription()"> Update</button>
       <div class="form-group" id="description-div" style="display: none;">
@@ -234,6 +253,7 @@ function getItemRating(){
         data:  { "id": `${id}`
         },
         success: data => {
+          console.log('data:', data)
           for (var i=1; i<=5; i++ ){
             var star = document.getElementById('star' + i )
             if ( i <= data.rating ){
@@ -249,24 +269,53 @@ function getItemRating(){
       });
    }
 
+
+function UpdateStarRatings(review_id, rating){
+          console.log("review", review_id, 'rating', rating)
+          for (var i=1; i<=5; i++ ){
+            var star = document.getElementById('star'+ review_id + i)
+            console.log('star_id:', star)
+            if ( i <= rating ){
+                star.classList.add('checked');
+                console.log('adding checked:', star)
+            }
+            else { 
+              console.log('removing checked:', star)
+              star.classList.remove('checked');
+            }
+          }
+   }
+
+  function setRveiewsRating(){
+  let id = $("#id").val()
+  $.ajax({
+        url: "/api/reviews",
+        method: "get",
+        headers: { "Content-Type": "application/json",},
+        data:  { "item_id": `${id}`
+        },
+        success: data => {
+          console.log('data:', data)
+          data.forEach(review => {
+            console.log('review_id', review.id, 'rating', review.rating)
+            UpdateStarRatings(review.id, review.rating)
+          });
+        },
+        error: (error) => {
+            console.log('error:', error);
+        }
+      });
+   }
+
+
 $(document).ready(function() {
     getItemRating()
+    setRveiewsRating()
     // document.getElementById("ReviewtOpen").click();
     document.getElementById('edit-button').onclick = editItem;
     document.getElementById('SendRaiting').onclick = addReview;
     document.getElementById('update-description-btn').onclick = updateDescription;
 });
-
-
-// function ShowReview(){
-//   var x = document.getElementById('RatingCard')
-//   if (x.style.display === "none") {
-//     x.style.display = "block";
-//   } else {
-//     x.style.display = "none";
-//     document.getElementById('RatingCancel').click()
-//   }
-// }
 
 function ShowDescription() {
   var x = document.getElementById("description-div");
@@ -285,7 +334,6 @@ function ShowReview(){
     x.style.display = "none";
   }
 }
-
 
 $(document).ready(function(){
   $(".content").slice(0, 4).show();
