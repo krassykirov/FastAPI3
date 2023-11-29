@@ -52,14 +52,7 @@ border: 1px solid #9797ca
   background-color: transparent !important;
   pointer-events: none;
 }
-.avatar {
-  vertical-align: middle;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-}
 </style>
-
 
 <div class="row">
     <div class="card-group col-12" id="mycard">
@@ -189,7 +182,7 @@ border: 1px solid #9797ca
           <div class="row">
           <div class="col-12" style="margin-bottom: 5px;" style="max-width: 35%;">
           <p>
-            <img src="/static/img/img_avatar.png" class="avatar" style="margin-top: 5px;">
+            <img src="/static/img/img_avatar.png" class="avatar">
             {{ review.created_by }}
             <span class="fa fa-star checked" id="star{{ review.id }}1"></span>
             <span class="fa fa-star checked" id="star{{ review.id }}2"></span>

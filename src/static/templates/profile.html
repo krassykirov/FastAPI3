@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block html_read %}
+
+<style>
+    .card {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      max-width: 300px;
+      margin: auto;
+      text-align: center;
+      font-family: arial;
+    }
+
+    .title {
+      color: grey;
+      font-size: 18px;
+    }
+
+    button {
+      border: none;
+      outline: 0;
+      display: inline-block;
+      padding: 8px;
+      color: white;
+      background-color: #000;
+      text-align: center;
+      cursor: pointer;
+      width: 100%;
+      font-size: 18px;
+    }
+
+    a {
+      text-decoration: none;
+      /* font-size: 22px; */
+      color: black;
+    }
+
+    button:hover, a:hover {
+      opacity: 0.7;
+    }
+    </style>
+
+{% if profile %}
+    <div class="card">
+      <img src="/static/img/{{ current_user }}/profile/{{ profile.avatar }}" style="width:100%">
+      <h1>{{ current_user }}</h1>
+      <p class="title">CEO & Founder, Birds</p>
+      <p>Birds University</p>
+      <p>Email: {{ profile.email }}</p>
+      <p>Phone: {{ profile.number }}</p>
+      <p>Address: {{ profile.address }}</p>
+      <div style="margin: 24px 0;">
+        <a href="#"><i class="fa fa-dribbble"></i></a> 
+        <a href="#"><i class="fa fa-twitter"></i></a>  
+        <a href="#"><i class="fa fa-linkedin"></i></a>  
+        <a href="#"><i class="fa fa-facebook"></i></a> 
+      </div>
+      <p><button>Contact</button></p>
+    </div>
+{%  else  %}
+<h2 style="text-align:center">No Profile yet, create one?</h2>
+<button class="dropbtn" data-toggle="modal" data-target="#addProfile" style="float: left;">Add Profile Details</button>
+    {% endif %}
+
+    <div class="modal fade" id="addProfile" tabindex="-1" role="dialog" aria-labelledby="addProfileLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="addProfileLabel">Profile</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="create_profile" method="post" enctype="multipart/form-data" data-toggle="validator" id="newModalForm">
+                <div class="form-group">
+                  <label for="email" class="col-form-label">Email:</label>
+                  <input type="email" name="email" id="email" placeholder="Email" required>
+                  <!-- <input type="text" name="name" id="item-name" pattern="^[a-zA-Z]*" oninvalid="setCustomValidity('Please use only letters')" placeholder="Item Name"  required> -->
+                </div>
+                <div class="form-group">
+                  <label for="number" class="col-form-label">Number:</label>
+                  <input type="tel" name="number" id="tel-number" placeholder="Telephone number" required>
+               </div>
+
+                <div class="form-group">
+                  <label for="address" class="col-form-label">Number:</label>
+                  <input type="text" name="address" id="address" placeholder="Address">
+               </div>
+                <div class="form-group" form-group-file>
+                  <label for="file" class="col-form-label">Upload Avatar Photo:</label>
+                  <input type="file" id="file" name="file" class="form-control" data-filesize="1000000" data-filesize-error="File must be smaller then 1MB" accept="image/*" required/>
+                </div>
+                <button id="submit-button" class="btn btn-primary">Submit</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+{% endblock %}

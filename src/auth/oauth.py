@@ -152,4 +152,3 @@ def logout(request: Request):
     response = templates.TemplateResponse("login.html",{"request":request, 'current_user': None})
     response.delete_cookie(key="access_token")
     return response
-

@@ -17,11 +17,12 @@ class TokenData(BaseModel):
     expires: Optional[datetime.datetime]
 
 class User(SQLModel, table=True):
-    id: int = Field(primary_key=True,default=None)
+    id: int = Field(primary_key=True, default=None)
     username: Optional[str]= Field(sa_column=Column("username", VARCHAR, unique=True, index=True))
     password_hash: str = ""
     items: List['Item'] = Relationship(sa_relationship_kwargs={"cascade": "delete"}, back_populates="owner")
     reviews: List['Review'] = Relationship(sa_relationship_kwargs={"cascade": "delete"}, back_populates="user")
+    profile: Optional['UserProfile'] = Relationship(sa_relationship_kwargs={"cascade": "delete"},back_populates='user')
     def set_password(self,password):
         self.password_hash = pwd_context.hash(password)
     def verify_password(self,password):
@@ -30,6 +31,16 @@ class User(SQLModel, table=True):
 class UserRead(SQLModel):
     id: int
     username: Optional[str]
+
+class UserProfile(SQLModel, table=True):
+    id: int = Field(default=None, primary_key=True)
+    profile_id: int = Field(default=None, foreign_key="user.id", unique=True)
+    user:    Optional['User']  = Relationship(back_populates='profile')
+    email:   Optional[str]
+    number:  Optional[str]
+    address: Optional[str]
+    avatar:  Optional[str]
+
 
 class Item(SQLModel, table=True):
     id:           Optional[int] = Field(default=None, primary_key=True)

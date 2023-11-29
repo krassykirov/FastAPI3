@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from src.models import Item, Category, Review
+from src.models import Item, Category, Review, UserProfile
 import src.schemas
 import datetime
 
@@ -110,3 +110,8 @@ class ReviewActions:
             return {'rating':round(rating), 'review_number': len(result), 'rating_float': sum(result) / len(result) }
         return {'rating':0, 'review_number': 0, 'rating_float': 0 }
 
+class ProfileActions:
+
+    def get_profile_by_user_id(self, db: Session, user_id: int):
+        profile = db.query(UserProfile).filter(UserProfile.profile_id == user_id).first()
+        return profile

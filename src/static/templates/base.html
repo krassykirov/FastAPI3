@@ -10,7 +10,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
-
+<style>
+  .avatar {
+  vertical-align: middle;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+</style>
 <body style="margin-left:30; margin-right:30; margin-bottom: 30;">
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="{{ url_for('get_details')}}">Home</a>
@@ -30,8 +37,9 @@
       {% if current_user %}
       <form class="form-inline my-2 my-lg-0" style="margin-right: 30px;">
         <div class="dropdown">
-          <button class="dropbtn">{{ current_user }} </button>
+          {{ current_user}} <img src="/static/img/img_avatar.png" class="avatar" alt="{{ current_user}}">
           <div class="dropdown-content">
+            <a href="{{ url_for('get_user_profile') }}">Profile</a>
             <a href="{{ url_for('logout') }}">Logout</a>
           </div>
         </div>

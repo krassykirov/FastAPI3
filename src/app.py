@@ -1,11 +1,5 @@
-from fastapi import (
-    Depends,
-    HTTPException,
-    Request,
-    APIRouter,
-    status,
-    Form,
-    BackgroundTasks )
+from fastapi import Depends,HTTPException,Request,APIRouter,status,Form, BackgroundTasks
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import RedirectResponse
 from src.db import get_session
 from sqlalchemy.orm import Session
@@ -21,8 +15,9 @@ from src.db import engine
 from src.routers.categories import category_router
 from src.routers.items import items_router
 from src.routers.reviews import reviews_router
-from src.models import Item, Category, Review, User, UserRead
-from src.crud.crud import CategoryActions, ItemActions, ReviewActions
+from src.routers.profile import profile_router
+from src.models import Item, Category, Review, User, UserRead, UserProfile
+from src.crud.crud import CategoryActions, ItemActions, ReviewActions, ProfileActions
 # from src.auth.oauth import logout, login, login_access_token
 from src.helper import delete_item_dir
 import src.schemas
@@ -42,6 +37,9 @@ app.include_router(category_router)
 app.include_router(items_router)
 app.include_router(reviews_router)
 app.include_router(oauth_router)
+app.include_router(profile_router)
+
+app.mount("/static", StaticFiles(directory="src/static", html=True))
 
 logger = detailed_logger()
 
@@ -207,5 +205,47 @@ async def get_user_items( request: Request, db: Session=Depends(get_session), us
     items = ItemActions().get_items(db=db, user=user.username)
     return templates.TemplateResponse("items.html", {"request":request, 'items':items, 'current_user': user.username})
 
+@app.get("/user/profile", response_model=UserRead, include_in_schema=False)
+async def get_user_profile( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
+    profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
+    logger.info(f"User Profile: {profile}")
+    return templates.TemplateResponse("profile.html", {"request": request,
+                                                       'current_user': user.username,
+                                                       'profile': profile })
 
-app.mount("/static", StaticFiles(directory="src/static", html=True))
+
+@app.post("/create_profile", include_in_schema=True)
+@app.post("/user/create_profile", include_in_schema=True)
+async def create_profile(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+    form_data = await request.form()
+    print('form_data', form_data)
+    filename = form_data['file'].filename
+    file = form_data['file']
+    email = form_data.get('email')
+    number = form_data.get('number')
+    address = form_data.get('address')
+    query = select(User).where(User.username == user.username)
+    user_db = db.exec(query).first()
+    if user_db:
+        try:
+            IMG_DIR = os.path.join(PROJECT_ROOT, f'src/static/img/{user.username}/profile')
+            print('IMG_DIR', IMG_DIR)
+            content = await file.read()
+            if not os.path.exists(IMG_DIR):
+                os.makedirs(IMG_DIR, exist_ok=True)
+            with open(f"src/static/img/{user.username}/profile/{filename}", 'wb') as f:
+                f.write(content)
+        except Exception as e:
+            logger.error(f"Something went wrong, error: {e}")
+        user_profile = UserProfile(profile_id=user.id,
+                                   email=email,
+                                   number=number,
+                                   address=address,
+                                   avatar=filename)
+        db.add(user_profile)
+        db.commit()
+        db.refresh(user_profile)
+    return templates.TemplateResponse("profile.html", {"request": request,
+                                                       'current_user': user.username,
+                                                       'profile': user_profile })
+
