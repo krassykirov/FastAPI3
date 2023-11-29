@@ -52,6 +52,12 @@ border: 1px solid #9797ca
   background-color: transparent !important;
   pointer-events: none;
 }
+.avatar {
+  vertical-align: middle;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
 </style>
 
 
@@ -84,13 +90,13 @@ border: 1px solid #9797ca
                 </button>
               </div>
               <div class="modal-body">
-              You're about to delete <b>{{item.name}} </b>. Are you sure?
+              <p style="text-align: left;">You're about to delete <b>{{item.name}}! </b>Are you sure?</p>
               </div>
-              <div class="modal-footer">
+              <div class="modal-footer justify-content-center">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <form action="delete_item" method="post" style="margin: 20px;">
+                <form action="delete_item" method="post">
                   <input type="number" name="id" value="{{ item.id }}" required hidden>
-                  <button type="submit" class="btn btn-danger">Delete</button>
+                  <button type="submit" class="btn btn-danger" style="text-align: left;">Delete</button>
               </form>
               </div>
             </div>
@@ -143,7 +149,7 @@ border: 1px solid #9797ca
    <span id="overall-rating"> No rating Yet </span></i>
    </p>
 
-  <div class="tab" id="tabs" >
+  <div class="tab" id="tabs">
       <button class="tablinks" onclick="openTab(event, 'ReviewTab')" id="ReviewtOpen" >Reviews</button>
       <button class="tablinks" onclick="openTab(event, 'Description')" id="defaultOpen"> Description</button>
   </div>
@@ -183,13 +189,16 @@ border: 1px solid #9797ca
           <div class="row">
           <div class="col-12" style="margin-bottom: 5px;" style="max-width: 35%;">
           <p>
+            <img src="/static/img/img_avatar.png" class="avatar" style="margin-top: 5px;">
+            {{ review.created_by }}
             <span class="fa fa-star checked" id="star{{ review.id }}1"></span>
             <span class="fa fa-star checked" id="star{{ review.id }}2"></span>
             <span class="fa fa-star checked" id="star{{ review.id }}3"></span>
             <span class="fa fa-star" id="star{{ review.id}}4"></span>
             <span class="fa fa-star" id="star{{ review.id }}5"></span>
+            <div>  <i>{{ review.text }} </i></div>
             </p>
-              <div> Review by: {{ review.created_by }} Rating: {{ review.rating }}, Comments: {{ review.text }} </div>
+
           </div>
           </div>
       </div>
