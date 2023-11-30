@@ -1,6 +1,6 @@
 from fastapi import Depends,HTTPException,Request, APIRouter, status, Form, BackgroundTasks
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 from src.db import get_session
 from sqlalchemy.orm import Session
 from sqlalchemy import select
@@ -251,6 +251,8 @@ async def create_profile(request: Request, db: Session = Depends(get_session), u
         db.add(user_profile)
         db.commit()
         db.refresh(user_profile)
+    # json_compatible_item_data = jsonable_encoder(user_profile)
+    # return JSONResponse(content=json_compatible_item_data)
     return templates.TemplateResponse("profile.html", {"request": request,
                                                        'current_user': user.username,
                                                        'profile': user_profile })
@@ -284,7 +286,9 @@ async def update_profile(request: Request, db: Session = Depends(get_session), u
             setattr(db_profile, key, value)
             db.commit()
             db.refresh(db_profile)
-    return templates.TemplateResponse("profile.html", {"request": request,
-                                                       'current_user': user.username,
-                                                       'profile': db_profile })
+    json_compatible_item_data = jsonable_encoder(db_profile)
+    return JSONResponse(content=json_compatible_item_data)
+    # return templates.TemplateResponse("profile.html", {"request": request,
+    #                                                    'current_user': user.username,
+    #                                                    'profile': db_profile })
 

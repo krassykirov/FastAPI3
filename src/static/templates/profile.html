@@ -42,13 +42,12 @@
 
 {% if profile %}
     <div class="card">
-      <img src="/static/img/{{ current_user }}/profile/{{ profile.avatar }}" style="width:100%">
-      <h1>{{ current_user }}</h1>
+      <img src="/static/img/{{ current_user }}/profile/{{ profile.avatar }}" id="avatar-image" style="width:100%">
+      <h1 id="current_user">{{ current_user }}</h1>
       <p class="title">CEO & Founder, Birds</p>
-      <p>Birds University</p>
-      <p>Email: {{ profile.email }}</p>
-      <p>Phone: {{ profile.number }}</p>
-      <p>Address: {{ profile.address }}</p>
+      <p id="card-email">Email: {{ profile.email }}</p>
+      <p id="card-phone">Phone: {{ profile.number }}</p>
+      <p id="card-address">Address: {{ profile.address }}</p>
       <div style="margin: 24px 0;">
         <a href="#"><i class="fa fa-dribbble"></i></a> 
         <a href="#"><i class="fa fa-twitter"></i></a>  
@@ -70,7 +69,7 @@
               <h5 class="modal-title" id="addProfileLabel">Create Profile</h5>
             </div>
             <div class="modal-body">
-              <form action="create_profile" method="post" enctype="multipart/form-data" data-toggle="validator" id="newModalForm">
+              <form action="create_profile" id=create-profile method="post" enctype="multipart/form-data" data-toggle="validator" id="addProfileForm">
                 <div class="form-group">
                   <label for="email" class="col-form-label">Email:</label>
                   <input type="email" name="email" id="email" placeholder="Email" required>
@@ -90,7 +89,7 @@
                   <input type="file" id="file" name="file" class="form-control" data-filesize="1000000" data-filesize-error="File must be smaller then 1MB" accept="image/*" required/>
                 </div>
                 <button id="submit-button" class="btn btn-primary">Submit</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="Close-Profile" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
               </form>
             </div>
           </div>
@@ -132,7 +131,6 @@
         </div>
       </div>
 
-
 <script>
 
 $(document).ready(function() {
@@ -146,7 +144,10 @@ $(document).ready(function() {
         contentType: false,
         data: formData,
         success: function(data){
-           window.location.href = "/user/profile"
+            console.log('data', data)
+            $('#UpdateProfile').modal('hide')
+            updateCard(data)
+        //  window.location.href = "/user/profile"
         },
         error: function (xhr) {
             if (xhr.status === 404) {
@@ -157,5 +158,39 @@ $(document).ready(function() {
    }
 )});
 
+// $(document).ready(function() {
+//   $('#create-profile').submit(function(e) {
+//     console.log("creating profile")
+//     e.preventDefault();
+//     var formData = new FormData(this)
+//     $.ajax({
+//         url: "/user/create_profile",
+//         type: "POST",
+//         processData: false,
+//         contentType: false,
+//         data: formData,
+//         success: function(data){
+//               console.log("data", data)
+//               $('#addProfile').modal('hide')
+//               window.location.href = "/user/profile"
+//         },
+//         error: function (xhr) {
+//             if (xhr.status === 404) {
+//                $('#UpdateProfileLabel').text('Unable to process Profile update, please try again later!')
+//             }
+//         }
+//       });
+//    }
+// )});
+
+function updateCard(data){
+
+    var user = '{{ current_user }}'
+    var img_path = `/static/img/${user}/profile/${data.avatar}`;
+    $('#card-email').text(`Email: ${data.email}`)
+    $('#card-address').text(`Address: ${data.address}`)
+    $('#card-phone').text(`Address: ${data.number}`)
+    $('#avatar-image').attr('src', img_path);
+}
 </script>
 {% endblock %}
