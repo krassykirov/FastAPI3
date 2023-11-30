@@ -98,7 +98,7 @@ border: 1px solid #9797ca
         </div>
         <div class="modal-body">
           <form enctype="multipart/form-data" data-toggle="validator" id="createItem">
-            <p id="error" style="text-align: left;"></p>
+            <b> <p id="error" style="text-align: left;"></p>
             <div class="form-group">
               <label for="name" class="col-form-label">Name:</label>
               <input type="text" name="name" id="item-name" placeholder="Item Name" required>
@@ -182,7 +182,7 @@ $(document).ready(function() {
         },
         error: function (xhr) {
             if (xhr.status === 403) {
-               $('#error').text('Item with that name already exist')
+               $('#error').text('Item with that name already exists!')
             }
         }
       });

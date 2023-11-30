@@ -13,10 +13,6 @@ class ItemActions:
         item = db.query(Item).filter(Item.name == name).first()
         return item
 
-    def get_user_item_reviews(self, db: Session, name: str):
-        item = db.query(Item).filter(Item.name == name and Item.username=='kr').first()
-        return item
-
     def get_items(self, db: Session, skip: int = 0, limit: int = 100, user= None):
         if user:
             items = db.query(Item).filter(Item.username==user).offset(skip).limit(limit).all()
@@ -31,7 +27,6 @@ class ItemActions:
             db.commit()
 
     def create_item(self, db: Session, item: Item):
-        print('item', item)
         db.add(item)
         db.commit()
         db.refresh(item)
@@ -39,7 +34,6 @@ class ItemActions:
 
     def update_item(self, id: int, db: Session, item: src.schemas.ItemUpdate):
         item_exist = self.get_item_by_id(db=db, id=id)
-        print("item:", dict(item), type(item), id)
         if not item_exist:
             return "Item not found"
         new_data = Item(**dict(item), id=item_exist).dict(exclude_unset=True, exclude_none=True)
@@ -102,7 +96,6 @@ class ReviewActions:
             return reviews
         return None
 
-
      def get_item_reviews_rating(self, id: int, db: Session):
         reviews = self.get_item_reviews(db=db, id=id)
         result = [item.rating for item in reviews if item.rating]
@@ -116,3 +109,23 @@ class ProfileActions:
     def get_profile_by_user_id(self, db: Session, user_id: int):
         profile = db.query(UserProfile).filter(UserProfile.profile_id == user_id).first()
         return profile
+
+    # def update_profile_by_user_id(self, db: Session, user_id: int, profile: UserProfile, user: User = Depends(get_current_user)):
+    #      db_profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user_id)
+    #      if db_profile is None:
+    #             raise {f"No profile with user_id: {user_id} found"}
+    #      new_data = UserProfile(**dict(profile), user=user).dict(exclude_unset=True)
+    #      print("new_data:", new_data)
+    #      for key, value in new_data.items():
+    #         setattr(db_profile, key, value)
+    #         db.commit()
+    #         db.refresh(db_profile)
+    #      return db_profile
+
+    def delete_profile_by_user_id(self, db: Session, user_id: int):
+        profile = db.query(UserProfile).filter(UserProfile.profile_id == user_id).first()
+        if profile:
+            db.delete(profile)
+            db.commit()
+
+

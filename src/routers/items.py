@@ -55,14 +55,13 @@ async def update_item(id: int, item_update: src.schemas.ItemUpdate, db: Session=
 @items_router.post("/", status_code=status.HTTP_201_CREATED, response_model=src.schemas.ItemRead)
 def create_item(item: src.schemas.ItemCreate, db: Session = Depends(get_session), user: User = Depends(get_current_user)) -> src.schemas.ItemRead:
     item = Item.from_orm(item, {'username': user.username})
-    print('ietm', item)
     db.add(item)
     db.commit()
     db.refresh(item)
     return item
 
 @items_router.delete("/delete/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_item_by_id(item_id: int, db: Session = Depends(get_session)):
+def delete_item_by_id(item_id: int, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     ItemActions().delete_item_by_id(db=db, id=item_id)
 
 # @items_router.get("/item/{id}/rating", status_code=status.HTTP_200_OK, include_in_schema=True)

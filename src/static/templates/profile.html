@@ -57,19 +57,17 @@
       </div>
       <p><button>Contact</button></p>
     </div>
+    <button class="dropbtn" data-toggle="modal" data-target="#UpdateProfile" style="float: left;">Update Profile</button>
 {%  else  %}
 <h2 style="text-align:center">No Profile yet, create one?</h2>
-<button class="dropbtn" data-toggle="modal" data-target="#addProfile" style="float: left;">Add Profile Details</button>
+<button class="dropbtn" data-toggle="modal" data-target="#addProfile" style="float: left;">Add Profile</button>
     {% endif %}
 
     <div class="modal fade" id="addProfile" tabindex="-1" role="dialog" aria-labelledby="addProfileLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="addProfileLabel">Profile</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
+              <h5 class="modal-title" id="addProfileLabel">Create Profile</h5>
             </div>
             <div class="modal-body">
               <form action="create_profile" method="post" enctype="multipart/form-data" data-toggle="validator" id="newModalForm">
@@ -99,4 +97,65 @@
         </div>
       </div>
 
+
+    <div class="modal fade" id="UpdateProfile" tabindex="-1" role="dialog" aria-labelledby="UpdateProfileLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="UpdateProfileLabel"> Update Profile</h5>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form id="update-profile" enctype="multipart/form-data" data-toggle="validator" id="UpdateModalForm">
+                <div class="form-group">
+                  <label for="email" class="col-form-label">Email:</label>
+                  <input type="email" name="email" id="email" placeholder="Email">
+             </div>
+                <div class="form-group">
+                  <label for="number" class="col-form-label">Number:</label>
+                  <input type="tel" name="number" id="tel-number" placeholder="Telephone number">
+               </div>
+
+                <div class="form-group">
+                  <label for="address" class="col-form-label">Address:</label>
+                  <input type="text" name="address" id="address" placeholder="Address">
+               </div>
+                <div class="form-group" form-group-file>
+                  <label for="file" class="col-form-label">Upload Avatar Photo:</label>
+                  <input type="file" id="file" name="file" class="form-control" data-filesize="1000000" data-filesize-error="File must be smaller then 1MB" accept="image/*"/>
+                </div>
+                <button id="submit-button" class="btn btn-primary">Submit</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+<script>
+
+$(document).ready(function() {
+  $('#update-profile').submit(function(e) {
+    e.preventDefault();
+    var formData = new FormData(this)
+    $.ajax({
+        url: "/user/update_profile",
+        type: "POST",
+        processData: false,
+        contentType: false,
+        data: formData,
+        success: function(data){
+           window.location.href = "/user/profile"
+        },
+        error: function (xhr) {
+            if (xhr.status === 404) {
+               $('#UpdateProfileLabel').text('Unable to process Profile update, please try again later!')
+            }
+        }
+      });
+   }
+)});
+
+</script>
 {% endblock %}

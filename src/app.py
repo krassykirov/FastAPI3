@@ -72,23 +72,19 @@ def get_details(request: Request, db: Session = Depends(get_session), user: User
                                                      'current_user': user.username,
                                                      'profile': profile})
 
-@app.post("/create_item", include_in_schema=False)
-@app.post("/user/create_item", include_in_schema=False)
-@app.post("/items/create_item", include_in_schema=False)
+@app.post("/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
+@app.post("/user/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
+@app.post("/items/create_item", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
 async def create_item(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
         """ Create an Item """
-        logger.info(f"URL: {request.url}")
         form_data = await request.form()
-        print('form_data', form_data)
         file = form_data['file']
         filename = form_data['file'].filename
         item_name =form_data['name']
         price=form_data['price']
-        query = db.query(Item).where(Item.name == item_name).all()
-        item = [item for item in query]
-        items = ItemActions().get_items(db=db)
+        item = db.query(Item).where(Item.name == item_name).first()
         if item:
-            logger.error(f"item with that name already exists!")
+            logger.error(f"Item with that name already exists!")
             raise HTTPException(status_code=403,detail=f"Item with that name already exists!")
             # return templates.TemplateResponse("items.html", {"request": request, 'items':items,
             #                                                        'message': "Item with that name already exists!"})
@@ -133,7 +129,7 @@ async def delete_item(request: Request, background_tasks: BackgroundTasks, id: i
      else:
         raise HTTPException(status_code=403,detail=f"User is not allowed to delete this item")
 
-@app.get("/items/{id}", response_model=src.schemas.ItemRead, include_in_schema=False) # http://127.0.0.1:8000/api/items?name=12
+@app.get("/items/{id}", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead, include_in_schema=False) # http://127.0.0.1:8000/api/items?name=12
 async def read_item(request: Request, id: int, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     item_db = ItemActions().get_item_by_id(db=db, id=id)
     if item_db:
@@ -150,7 +146,7 @@ async def read_item(request: Request, id: int, db: Session=Depends(get_session),
         response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
         return response
 
-@app.post("/update_price_ajax", include_in_schema=False, response_model=src.schemas.ItemRead)
+@app.post("/update_price_ajax", status_code=status.HTTP_200_OK, include_in_schema=False, response_model=src.schemas.ItemRead)
 async def update_item_api(request: Request, db: Session=Depends(get_session)) -> src.schemas.ItemRead:
     data = await request.json()
     item = ItemActions().get_item_by_id(db=db, id=data.get('id'))
@@ -211,7 +207,7 @@ async def create_review_ajax(request: Request, db: Session=Depends(get_session),
 #         logger.info('review_exist')
 #         return {'review_exist': review_exist}
 
-@app.get("/user/items", response_model=src.schemas.ItemRead, include_in_schema=False)
+@app.get("/user/items", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead, include_in_schema=False)
 async def get_user_items( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     items = ItemActions().get_items(db=db, user=user.username)
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
@@ -225,11 +221,10 @@ async def get_user_profile( request: Request, db: Session=Depends(get_session), 
                                                        'profile': profile })
 
 
-@app.post("/create_profile", include_in_schema=True)
-@app.post("/user/create_profile", include_in_schema=True)
+@app.post("/create_profile", status_code=status.HTTP_201_CREATED, include_in_schema=False)
+@app.post("/user/create_profile", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
 async def create_profile(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     form_data = await request.form()
-    print('form_data', form_data)
     filename = form_data['file'].filename
     file = form_data['file']
     email = form_data.get('email')
@@ -259,4 +254,37 @@ async def create_profile(request: Request, db: Session = Depends(get_session), u
     return templates.TemplateResponse("profile.html", {"request": request,
                                                        'current_user': user.username,
                                                        'profile': user_profile })
+
+
+@app.post("/update_profile", status_code=status.HTTP_200_OK, include_in_schema=False)
+@app.post("/user/update_profile", status_code=status.HTTP_200_OK, include_in_schema=False)
+async def update_profile(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+    form_data = await request.form()
+    json_data = dict(form_data)
+    for k, v in json_data.items():
+        if v == '':
+            json_data[k] = None
+    filename = form_data['file'].filename
+    db_profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
+    if db_profile is None:
+        raise HTTPException(status_code=404, detail=f"No profile with user_id: {user.id} found")
+    query = select(User).where(User.username == user.username)
+    user_db = db.exec(query).first()
+    if user_db:
+        try:
+            content = await form_data['file'].read()
+            with open(f"src/static/img/{user.username}/profile/{form_data['file'].filename}", 'wb') as f:
+                f.write(content)
+        except Exception as e:
+            logger.error(f"Something went wrong, error: {e}")
+        new_data = UserProfile(**dict(json_data), user=user, avatar=filename if filename else None).dict(exclude_unset=True,
+                                                                                                          exclude_none=True)
+        print("new_data:", new_data)
+        for key, value in new_data.items():
+            setattr(db_profile, key, value)
+            db.commit()
+            db.refresh(db_profile)
+    return templates.TemplateResponse("profile.html", {"request": request,
+                                                       'current_user': user.username,
+                                                       'profile': db_profile })
 
