@@ -1,4 +1,4 @@
-from fastapi import Depends,HTTPException,Request,APIRouter,status, Form, BackgroundTasks
+from fastapi import Depends,HTTPException,Request, APIRouter, status, Form, BackgroundTasks
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import RedirectResponse
 from src.db import get_session
@@ -18,12 +18,10 @@ from src.routers.reviews import reviews_router
 from src.routers.profile import profile_router
 from src.models import Item, Category, Review, User, UserRead, UserProfile
 from src.crud.crud import CategoryActions, ItemActions, ReviewActions, ProfileActions
-# from src.auth.oauth import logout, login, login_access_token
 from src.helper import delete_item_dir
 import src.schemas
-import json, os, shutil
+import os
 from os.path import abspath
-import decimal
 from src.auth.oauth import oauth_router, get_current_user
 from src.my_logger import detailed_logger
 
@@ -81,6 +79,7 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         """ Create an Item """
         logger.info(f"URL: {request.url}")
         form_data = await request.form()
+        print('form_data', form_data)
         file = form_data['file']
         filename = form_data['file'].filename
         item_name =form_data['name']
@@ -90,8 +89,9 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         items = ItemActions().get_items(db=db)
         if item:
             logger.error(f"item with that name already exists!")
-            return templates.TemplateResponse("items.html", {"request":request, 'items':items,
-                                                                   'message': "Item with that name already exists!"})
+            raise HTTPException(status_code=403,detail=f"Item with that name already exists!")
+            # return templates.TemplateResponse("items.html", {"request": request, 'items':items,
+            #                                                        'message': "Item with that name already exists!"})
             # redirect_url = request.url_for('get_details')
             # response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
             # return response
@@ -124,7 +124,6 @@ async def delete_item(request: Request, background_tasks: BackgroundTasks, id: i
         try:
             dir_to_delete = abspath(f"src/static/img/{user.username}/{item.name}/")
             background_tasks.add_task(delete_item_dir, path=dir_to_delete)
-            logger.info("Notification sent in the background")
             redirect_url = request.url_for('get_details')
             response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
             return response

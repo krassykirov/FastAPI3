@@ -42,7 +42,7 @@ border: 1px solid #9797ca
     <div class="container">
       <div class="row pt-2">
         <div class="col-md-11">
-          <input class="form-control" id="filter" onkeyup="Search()" type="text" placeholder="Search fo item..">
+          <input class="form-control" id="filter" onkeyup="Search()" type="text" placeholder="Search for items..">
         </div>
       </div>
 <br/>
@@ -97,7 +97,8 @@ border: 1px solid #9797ca
           </button>
         </div>
         <div class="modal-body">
-          <form action="create_item" method="post" enctype="multipart/form-data" data-toggle="validator" id="newModalForm">
+          <form enctype="multipart/form-data" data-toggle="validator" id="createItem">
+            <p id="error" style="text-align: left;"></p>
             <div class="form-group">
               <label for="name" class="col-form-label">Name:</label>
               <input type="text" name="name" id="item-name" placeholder="Item Name" required>
@@ -164,6 +165,31 @@ getItemRating(item_id)
         }
     }
 }
+
+
+$(document).ready(function() {
+  $('#createItem').submit(function(e) {
+    e.preventDefault();
+    var formData = new FormData(this)
+    $.ajax({
+        url: "/user/create_item",
+        type: "POST",
+        processData: false,
+        contentType: false,
+        data: formData,
+        success: function(data){
+          window.location.href = "/user/items"
+        },
+        error: function (xhr) {
+            if (xhr.status === 403) {
+               $('#error').text('Item with that name already exist')
+            }
+        }
+      });
+   }
+)});
+
+
 
  </script>
 
