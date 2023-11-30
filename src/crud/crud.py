@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 from src.models import Item, Category, Review, UserProfile
 import src.schemas
-import datetime
 
 # Events
 class ItemActions:
@@ -98,8 +97,10 @@ class ReviewActions:
 
      def get_item_reviews(self, db: Session, id: int):
         item = ItemActions().get_item_by_id(db=db, id=id)
-        reviews = item.reviews
-        return reviews
+        if item:
+            reviews = item.reviews
+            return reviews
+        return None
 
 
      def get_item_reviews_rating(self, id: int, db: Session):

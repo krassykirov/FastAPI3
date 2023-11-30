@@ -1,4 +1,4 @@
-from fastapi import Depends,HTTPException,Request,APIRouter,status,Form, BackgroundTasks
+from fastapi import Depends,HTTPException,Request,APIRouter,status, Form, BackgroundTasks
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import RedirectResponse
 from src.db import get_session
@@ -112,12 +112,12 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
         return response
 
-@app.post("/delete_item", include_in_schema=False)
-@app.post("/items/delete_item", include_in_schema=False)
-async def delete_item(request: Request, background_tasks: BackgroundTasks, id: int=Form(None), db: Session=Depends(get_session),
+@app.post("/delete_item/", include_in_schema=False)
+@app.post("/items/{id}", include_in_schema=False)
+async def delete_item(request: Request, background_tasks: BackgroundTasks, id: int, db: Session=Depends(get_session),
                       user: User = Depends(get_current_user))-> None:
      item = ItemActions().get_item_by_id(db=db, id=id)
-     json_user= jsonable_encoder(item).get('username')
+     json_user = jsonable_encoder(item).get('username')
      if item and user.username == json_user:
         db.delete(item)
         db.commit()
@@ -132,19 +132,24 @@ async def delete_item(request: Request, background_tasks: BackgroundTasks, id: i
             logger.error(f"Something went wrong, error: {e}")
             return HTTPException(status_code=400, detail=f"Something went wrong, error {e}")
      else:
-        raise HTTPException(status_code=403,detail=f"You are not allowed to delete item: {id}")
+        raise HTTPException(status_code=403,detail=f"User is not allowed to delete this item")
 
 @app.get("/items/{id}", response_model=src.schemas.ItemRead, include_in_schema=False) # http://127.0.0.1:8000/api/items?name=12
 async def read_item(request: Request, id: int, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     item_db = ItemActions().get_item_by_id(db=db, id=id)
-    item = src.schemas.ItemRead.from_orm(item_db)
-    item_rating = ReviewActions().get_item_reviews_rating(db=db,id=id)
-    logger.info('item_rating', item_rating)
-    profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
-    return templates.TemplateResponse("item_details.html", {"request":request, 'item': item,
-                                                             'current_user': user.username,
-                                                             'rating' : item_rating,
-                                                             'profile': profile})
+    if item_db:
+        item = src.schemas.ItemRead.from_orm(item_db)
+        item_rating = ReviewActions().get_item_reviews_rating(db=db,id=id)
+        logger.info('item_rating', item_rating)
+        profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
+        return templates.TemplateResponse("item_details.html", {"request":request, 'item': item,
+                                                                'current_user': user.username,
+                                                                'rating' : item_rating,
+                                                                'profile': profile})
+    else:
+        redirect_url = request.url_for('get_details')
+        response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+        return response
 
 @app.post("/update_price_ajax", include_in_schema=False, response_model=src.schemas.ItemRead)
 async def update_item_api(request: Request, db: Session=Depends(get_session)) -> src.schemas.ItemRead:
