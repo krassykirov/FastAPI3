@@ -67,8 +67,12 @@ async def create_cat(request: Request, name: str, db: Session = Depends(get_sess
 def get_details(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     """ Return all Items """
     items_db = ItemActions().get_items(db=db) #, user=user.username
+    profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
     items = [src.schemas.ItemRead.from_orm(item) for item in items_db]
-    return templates.TemplateResponse("items.html", {"request": request, 'items': items, 'current_user': user.username})
+    return templates.TemplateResponse("items.html", {"request": request, 
+                                                     'items': items, 
+                                                     'current_user': user.username,
+                                                     'profile': profile})
 
 @app.post("/create_item", include_in_schema=False)
 @app.post("/user/create_item", include_in_schema=False)
@@ -113,7 +117,8 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
 async def delete_item(request: Request, background_tasks: BackgroundTasks, id: int=Form(None), db: Session=Depends(get_session),
                       user: User = Depends(get_current_user))-> None:
      item = ItemActions().get_item_by_id(db=db, id=id)
-     if item:
+     json_user= jsonable_encoder(item).get('username')
+     if item and user.username == json_user:
         db.delete(item)
         db.commit()
         try:
@@ -127,7 +132,7 @@ async def delete_item(request: Request, background_tasks: BackgroundTasks, id: i
             logger.error(f"Something went wrong, error: {e}")
             return HTTPException(status_code=400, detail=f"Something went wrong, error {e}")
      else:
-        raise HTTPException(status_code=404,detail=f"No item with id={id}")
+        raise HTTPException(status_code=403,detail=f"You are not allowed to delete item: {id}")
 
 @app.get("/items/{id}", response_model=src.schemas.ItemRead, include_in_schema=False) # http://127.0.0.1:8000/api/items?name=12
 async def read_item(request: Request, id: int, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
@@ -135,9 +140,11 @@ async def read_item(request: Request, id: int, db: Session=Depends(get_session),
     item = src.schemas.ItemRead.from_orm(item_db)
     item_rating = ReviewActions().get_item_reviews_rating(db=db,id=id)
     logger.info('item_rating', item_rating)
+    profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
     return templates.TemplateResponse("item_details.html", {"request":request, 'item': item,
                                                              'current_user': user.username,
-                                                             'rating' : item_rating})
+                                                             'rating' : item_rating,
+                                                             'profile': profile})
 
 @app.post("/update_price_ajax", include_in_schema=False, response_model=src.schemas.ItemRead)
 async def update_item_api(request: Request, db: Session=Depends(get_session)) -> src.schemas.ItemRead:
@@ -203,12 +210,12 @@ async def create_review_ajax(request: Request, db: Session=Depends(get_session),
 @app.get("/user/items", response_model=src.schemas.ItemRead, include_in_schema=False)
 async def get_user_items( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     items = ItemActions().get_items(db=db, user=user.username)
-    return templates.TemplateResponse("items.html", {"request":request, 'items':items, 'current_user': user.username})
+    profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
+    return templates.TemplateResponse("items.html", {"request":request, 'items':items, 'current_user': user.username, 'profile': profile})
 
 @app.get("/user/profile", response_model=UserRead, include_in_schema=False)
 async def get_user_profile( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
-    logger.info(f"User Profile: {profile}")
     return templates.TemplateResponse("profile.html", {"request": request,
                                                        'current_user': user.username,
                                                        'profile': profile })

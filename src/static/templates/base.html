@@ -37,7 +37,11 @@
       {% if current_user %}
       <form class="form-inline my-2 my-lg-0" style="margin-right: 30px;">
         <div class="dropdown">
-          {{ current_user}} <img src="/static/img/img_avatar.png" class="avatar" alt="{{ current_user}}">
+          {% if profile %}
+          {{ current_user }} <img src="/static/img/{{ current_user }}/profile/{{ profile.avatar }}" class="avatar" alt="{{ current_user}}">
+          {% else %}
+          {{ current_user }} <img src="/static/img/img_avatar.png" class="avatar" alt="{{ current_user}}">
+          {% endif %}
           <div class="dropdown-content">
             <a href="{{ url_for('get_user_profile') }}">Profile</a>
             <a href="{{ url_for('logout') }}">Logout</a>

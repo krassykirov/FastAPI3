@@ -14,7 +14,6 @@ from fastapi import BackgroundTasks
 from datetime import datetime, timedelta
 from src.auth.oauth_schemas import OAuth2PasswordBearerCookie
 from passlib.context import CryptContext
-from typing import Optional
 import datetime
 
 pwd_context = CryptContext(schemes="bcrypt")
@@ -43,7 +42,10 @@ def home(request: Request):
             if datetime.datetime.now() < converted_expires:
                 # context = {'request': request, 'current_user': username, 'access_token': access_token, 'expires': converted_expires}
                 # print("context: ", context)
-                return templates.TemplateResponse("base.html",{"request":request, 'current_user': username})
+                redirect_url = request.url_for('get_details')
+                response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+                return response
+                # return templates.TemplateResponse("base.html",{"request":request, 'current_user': username})
         else:
             context = {'request': request, 'message': "Not Authorized please login"}
             return templates.TemplateResponse("login.html", context)
