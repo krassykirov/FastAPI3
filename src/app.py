@@ -135,7 +135,6 @@ async def read_item(request: Request, id: int, db: Session=Depends(get_session),
     if item_db:
         item = src.schemas.ItemRead.from_orm(item_db)
         item_rating = ReviewActions().get_item_reviews_rating(db=db,id=id)
-        logger.info('item_rating', item_rating)
         profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
         return templates.TemplateResponse("item_details.html", {"request":request, 'item': item,
                                                                 'current_user': user.username,
@@ -181,33 +180,17 @@ async def create_review_ajax(request: Request, db: Session=Depends(get_session),
     if not item:
         logger.error("Item not found")
         raise HTTPException(status_code=404, detail="Item not found")
-    review = Review(**data, item=item)
-    db.add(review)
-    db.commit()
-    db.refresh(review)
-    logger.info(f"Creating review {review}")
-    review_new = review
-    print("ajax review_new", review_new)
-    return review
-
-# if Review exists
-# @app.post("/create_review_ajax", status_code=status.HTTP_200_OK, response_model=Review, include_in_schema=False)
-# async def create_review_ajax(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
-#     data = await request.json()
-#     item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
-#     if not item:
-#         logger.error("Item not found")
-#         raise HTTPException(status_code=404, detail="Item not found")
-#     review_exist =  [item for item in item.reviews if item.created_by == user.username]
-#     if review_exist is None:
-#         review = Review(**data, item=item)
-#         logger.info(f"Creating review {review}")
-#         db.add(review)
-#         db.refresh(review)
-#         return review
-#     else:
-#         logger.info('review_exist')
-#         return {'review_exist': review_exist}
+    review_exist =  [item for item in item.reviews if item.created_by == user.username]
+    logger.error(f"review_exist {review_exist}")
+    if not review_exist:
+            review = Review(**data, item=item)
+            logger.info(f"Creating review {review}")
+            db.add(review)
+            db.commit()
+            db.refresh(review)
+            return review
+    logger.info('Review_exist, You can write only one review for this item')
+    raise HTTPException(status_code=403,detail=f"You can write only one review for this item.")
 
 @app.get("/user/items", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead, include_in_schema=False)
 async def get_user_items( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):

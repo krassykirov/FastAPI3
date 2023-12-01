@@ -87,8 +87,10 @@ function addReview() {
             reviewDiv.style.display = "block";
             window.location.href = `/items/${id}`
         },
-        error: (error) => {
-            console.log('error:', error);
+        error: (response) => {
+          if (response.status === 403) {
+            $("#comment-area").val(response.responseJSON.detail)
+         }
         }
       });
 }
