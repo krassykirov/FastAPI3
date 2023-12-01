@@ -95,11 +95,6 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         if item:
             logger.error(f"Item with that name already exists!")
             raise HTTPException(status_code=403,detail=f"Item with that name already exists!")
-            # return templates.TemplateResponse("items.html", {"request": request, 'items':items,
-            #                                                        'message': "Item with that name already exists!"})
-            # redirect_url = request.url_for('get_details')
-            # response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
-            # return response
         IMG_DIR = os.path.join(PROJECT_ROOT, f'src/static/img/{user.username}')
         content = await file.read()
         path = os.path.join(IMG_DIR, item_name)
@@ -155,12 +150,17 @@ async def read_item(request: Request, id: int, db: Session=Depends(get_session),
         return response
 
 @app.post("/update_price_ajax", status_code=status.HTTP_200_OK, include_in_schema=False, response_model=src.schemas.ItemRead)
-async def update_item_api(request: Request, db: Session=Depends(get_session)) -> src.schemas.ItemRead:
+async def update_item_api(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)) -> src.schemas.ItemRead:
     data = await request.json()
     item = ItemActions().get_item_by_id(db=db, id=data.get('id'))
     if not item:
         logger.error("Item not found")
         raise HTTPException(status_code=404, detail="Item not found")
+    logger.info(f"{user.username} != {item.username}")
+    print(f" USERNAME: {user.username} {item.username}")
+    if user.username != item.username:
+        logger.info('Review_exist, You can write only one review for this item')
+        raise HTTPException(status_code=403, detail=f"User cannot update this item")
     new_data = Item(**data).dict(exclude_unset=True, exclude_none=True)
     for key, value in new_data.items():
         setattr(item, key, value)

@@ -70,7 +70,7 @@ border: 1px solid #9797ca
           {% endif %}
         </div>
         <div>
-          <a class="btn btn-secondary btn-sm mt-auto align-self-start" data-toggle="modal" data-target="#EditCar" id="myModal" style="margin: 15px;; text-align:center; display:block;">Update Price</a>
+          <a class="btn btn-secondary btn-sm mt-auto align-self-start" data-toggle="modal" data-target="#EditPrice" id="myModal" style="margin: 15px;; text-align:center; display:block;">Update Price</a>
         <a class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#deleteModal" id="myModal" style="margin:15px; text-align:center; display:block;">Delete</a>
       </div>
         <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -106,11 +106,11 @@ border: 1px solid #9797ca
     {%  if message  %}
     <p> <b> {{  message  }} </b></p>
     {%  endif %}
-    <div class="modal fade" id="EditCar" tabindex="-1" role="dialog" aria-labelledby="EditCarlLabel" aria-hidden="true">
+    <div class="modal fade" id="EditPrice" tabindex="-1" role="dialog" aria-labelledby="EditPricelLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="editCarLabel">Edit {{ item.name }}</h5>
+            <h5 class="modal-title" id="EditPriceLabel">Update Price</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>

@@ -30,8 +30,10 @@ function editItem() {
             document.getElementById('item-details').innerText = `Price: $${parseFloat(data.price).toFixed(2)}`;
             document.getElementById('close').click()
         },
-        error: (error) => {
-            console.log('error:', error);
+        error: (response) => {
+          if (response.status === 403) {
+            $("#EditPriceLabel").text(response.responseJSON.detail)
+         }
         }
       });
 }
@@ -55,7 +57,7 @@ function updateDescription() {
             document.getElementById("description-div").style.display = 'none'
         },
         error: (error) => {
-            console.log('error:', error);
+            console.log('error:', error)
         }
       });
 }
