@@ -25,6 +25,8 @@ def get_review_by_id( id: int, db: Session = Depends(get_session)):
 def get_item_reviews_by_user( item_id: int, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     """ Return all reviews of an Item """
     reviews = ReviewActions().get_item_reviews(db=db, id=item_id)
+    if reviews is None:
+        raise HTTPException(status_code=404, detail=f"No item with id '{item_id}' found")
     review =  [item for item in reviews if item.created_by == user.username]
     if review is None:
         raise HTTPException(status_code=404, detail=f"No reviews found")
@@ -48,6 +50,8 @@ def get_item_rating(id: int, db: Session=Depends(get_session)):
 async def create_review(text: str, item_id: int, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     """ Create a review for an Item """
     item = ItemActions().get_item_by_id(db=db, id=item_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail=f"No item with id '{item_id}' found")
     review = Review(text=text, item=item, item_id=item.id, created_by=user.username)
     db.add(review)
     db.refresh(review)

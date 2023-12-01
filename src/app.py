@@ -182,10 +182,12 @@ async def create_review_ajax(request: Request, db: Session=Depends(get_session),
         logger.error("Item not found")
         raise HTTPException(status_code=404, detail="Item not found")
     review = Review(**data, item=item)
-    logger.info(f"Creating review {review}")
     db.add(review)
     db.commit()
     db.refresh(review)
+    logger.info(f"Creating review {review}")
+    review_new = review
+    print("ajax review_new", review_new)
     return review
 
 # if Review exists
@@ -198,7 +200,7 @@ async def create_review_ajax(request: Request, db: Session=Depends(get_session),
 #         raise HTTPException(status_code=404, detail="Item not found")
 #     review_exist =  [item for item in item.reviews if item.created_by == user.username]
 #     if review_exist is None:
-#         review = review = Review(**data, item=item)
+#         review = Review(**data, item=item)
 #         logger.info(f"Creating review {review}")
 #         db.add(review)
 #         db.refresh(review)

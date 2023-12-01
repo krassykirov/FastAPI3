@@ -116,16 +116,13 @@ border: 1px solid #9797ca
             </button>
           </div>
           <div class="modal-body">
-            <!-- <form action="" method="post" enctype="multipart/form-data" data-toggle="validator" id="newModalForm"> -->
                <input type="number" name="id" value="{{ item.id }}" id="edit-id" required hidden>
               <div class="form-group">
                 <label for="price" class="col-form-label">Price:</label>
                 <input type="number" name="price" id="id-price">
               </div>
-              <!-- <input type="text" name="username" required hidden> -->
               <button type="submit" class="btn btn-primary" id="edit-button">Update Price</button>
               <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close">Close</button>
-            <!-- </form> -->
           </div>
         </div>
       </div>
@@ -270,7 +267,7 @@ function UpdateStarRatings(review_id, rating){
             if ( i <= rating ){
                 star.classList.add('checked');
             }
-            else { 
+            else {
               star.classList.remove('checked');
             }
           }
@@ -340,10 +337,10 @@ function ShowReview(){
 }
 
 $(document).ready(function(){
-  $(".card").slice(0, 4).show();
+  $(".card").slice(0, 5).show();
   $("#loadMore").on("click", function(e){
     e.preventDefault();
-    $(".card:hidden").slice(0, 4).slideDown();
+    $(".card:hidden").slice(0, 5).slideDown();
     if($(".card:hidden").length == 0) {
       $("#loadMore").text("No More Reviews").addClass("noContent");
     }

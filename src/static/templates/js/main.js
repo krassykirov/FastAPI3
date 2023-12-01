@@ -79,12 +79,13 @@ function addReview() {
         success: data => {
            const reviewDiv = document.getElementById('ReviewTab')
            console.log('data:', data, data.rating)
-           $("#ReviewTab").append("<div class='content'>" + `${data.text}`);
+          //  $("#ReviewTab").append("<div class='content'>" + `${data.text}`);
             document.getElementById('RatingCancel').click()
             document.getElementById("ReviewtOpen").click();
             document.getElementById('RatingCard').style.display = "none"
             getItemRating()
             reviewDiv.style.display = "block";
+            window.location.href = `/items/${id}`
         },
         error: (error) => {
             console.log('error:', error);
