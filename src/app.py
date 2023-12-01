@@ -1,4 +1,5 @@
 from fastapi import Depends,HTTPException,Request, APIRouter, status, Form, BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import RedirectResponse, JSONResponse
 from src.db import get_session
@@ -36,6 +37,14 @@ app.include_router(items_router)
 app.include_router(reviews_router)
 app.include_router(oauth_router)
 app.include_router(profile_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins="*",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.mount("/static", StaticFiles(directory="src/static", html=True))
 
