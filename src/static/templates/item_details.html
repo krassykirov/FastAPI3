@@ -19,11 +19,17 @@
     width: 30rem;
     margin-bottom: auto;
     margin-right: auto;
-    margin-left: 1rem;
+    margin-right: auto;
+    margin-left: 50%;
     /* border: 15px solid #969696; */
     text-align: center;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   }
+  
+  .card.group1 {
+    margin-left: 12%
+  }
+
   .comment-box {
   padding: 15px
   }
@@ -53,6 +59,46 @@
     background-color: transparent !important;
     pointer-events: none;
   }
+
+  .tab {
+    margin-left: 13%;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    }
+    
+    /* Style the buttons inside the tab */
+    .tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 15px;
+    }
+    
+    /* Change background color of buttons on hover */
+    .tab button:hover {
+    background-color: #ddd;
+    }
+    
+    /* Create an active/current tablink class */
+    .tab button.active {
+    background-color: #ccc;
+    }
+    
+    /* Style the tab content */
+    .tabcontent {
+    margin-left: 13%;
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+    margin-bottom: 5px;
+    max-width: 35%;
+    }
 </style>
 
 <div class="row">
@@ -60,15 +106,15 @@
       <div class="col-lg-auto">
       <div class="card">
           <div class="card-body">
+            {% if  'no-image.png' == item.image %}
+            <img class="card-img-top" src="/static/img/{{ item.image }}">
+            {% else %}
+            <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
+            {% endif %}
           <h4 class="card-title">{{item.name}} </h5>
           <p class="price" id="item-details">Price: ${{ '%0.2f'|format(item.price|float)  }}</p>
           <input type="number" name="id" value="{{ item.id }}" id="id" hidden>
           <input type="text" id="username" value="{{ current_user }}"  hidden>
-          {% if  'no-image.png' == item.image %}
-          <img class="card-img-top" src="/static/img/{{ item.image }}">
-          {% else %}
-          <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
-          {% endif %}
         </div>
         <p>
           <i> Overall Rating
@@ -80,8 +126,8 @@
         <span id="overall-rating"> No rating Yet </span></i>
       </p>
         <div>
-          <a class="btn btn-secondary btn-sm mt-auto align-self-start" data-toggle="modal" data-target="#EditPrice" id="myModal" style="margin: 15px;; text-align:center; display:block;">Update Price</a>
-        <a class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#deleteModal" id="myModal" style="margin:15px; text-align:center; display:block;">Delete</a>
+          <a class="btn btn-secondary stretched-link" data-toggle="modal" data-target="#EditPrice" id="myModal" style="margin: 15px;; text-align:center; display:block;">Update Price</a>
+        <a class="btn btn-danger stretched-link" data-toggle="modal" data-target="#deleteModal" id="myModal" style="margin:15px; text-align:center; display:block;">Delete</a>
       </div>
         <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
@@ -139,15 +185,16 @@
 </div>
 <hr>
 
-  <div class="tab" id="tabs" style="margin-left: 30px;">
+
+  <div class="tab" id="tabs" style="text-align: center">
       <button class="tablinks" onclick="openTab(event, 'ReviewTab')" id="ReviewOpen">Reviews</button>
       <button class="tablinks" onclick="openTab(event, 'Description')" id="defaultOpen"> Description</button>
   </div>
 
-<div id="ReviewTab" class="tabcontent">
-    <button class="btn btn-secondary btn-sm" id="AddReview" onclick="ShowReview()" style="margin-left: 30px;">Add Review </button>
+<div id="ReviewTab" class="tabcontent" style="text-align: center;">
+    <button class="btn btn-secondary btn-sm" id="AddReview" onclick="ShowReview()">Add Review </button>
     <hr>
- <div class="card" id="RatingCard">
+ <div class="card" id="RatingCard" style="margin-left: 12%;">
         <div class="row">
         <div class="col-12" style="margin-bottom: 5px;" style="max-width: 35%;">
         <div class="comment-box ml-2">
@@ -168,14 +215,14 @@
         </div>
    </div>
   </div>
-        <hr style="max-width: 35%;">
+        <hr>
         {%  if item.reviews  %}
-        <p style="margin: left 1rem; text-align:center ">Other reviews</p>
-        <hr style="max-width: 35%;">
+        <div class="card.group2" style="text-align: center;"> Reviews</div>
+        <hr>
         {% for review in item.reviews %}
       <div class="card group1" id="card{{review.id}}" style="display: none;">
           <div class="row">
-          <div class="col-12" style="margin-bottom: 5px;" style="max-width: 35%;">
+          <div class="col-12" style="margin-bottom: 5px;">
           <p>
             <img src="/static/img/img_avatar.png" class="avatar">
             {{ review.created_by }}
@@ -192,13 +239,13 @@
         </div> 
       {% endfor %}
       {%  endif %}
-      <!-- <a href="#" id="loadMore" style="margin-left:3%">Load More</a> -->
+      <a href="#" id="loadMore" style="margin-left:12%">Load More</a>
       </div>
       </div>
       </div>
       </div>
     </div>
- <div id="Description" class="tabcontent" style="max-width: 35%;">
+ <div id="Description" class="tabcontent" style="text-align: center; margin-left: 13%;">
   <button class="btn btn-secondary btn-sm" id="show-description-btn" onclick="ShowDescription()"> Update</button>
       <div class="form-group" id="description-div" style="display: none;">
         <input type="number" name="id" value="{{ item.id }}" id="item-id" required hidden>

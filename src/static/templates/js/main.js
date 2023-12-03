@@ -83,7 +83,7 @@ function addReview() {
            const reviewDiv = document.getElementById('ReviewTab')
            console.log('data:', data, data.rating)
            const newCard = `
-           <div class="card group1" id="card${data.id}" style="display: flex;">
+           <div class="card group1" id="card${data.id}" style="display: flex; margin-left:7%">
                 <div class="row">
                 <div class="col-12" style="margin-bottom: 5px;" style="max-width: 35%;">
                 <p>
@@ -141,6 +141,10 @@ $(document).ready(function() {
    }
 )});
 
+// $(".navbar-item").on("click", function() {
+//   $(".navbar-item").removeClass("active");
+//   $(this).addClass("active");
+// }); 
 //fetchCategories
 // function fetchCategories() {
 //      fetch('/categories')

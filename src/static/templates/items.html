@@ -52,18 +52,18 @@ border: 1px solid #9797ca
     <div class="col-lg-auto">
     <div class="card"  id="card{{ item.id }}">
       <div class="card-body"  style="cursor: pointer"; onclick="location.href='{{ url_for('read_item', id=item.id) }}'" >
-       <h5 class="card-title">{{ item.name }} </h5>
-       <!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6> -->
-        <p class="card-text">Price: ${{ '%0.2f'|format(item.price|float)  }}</p>
-        <!-- <p class="card-text">Product_code: {{ item.product_code }}</p> -->
         {% if  'no-image.png' == item.image %}
         <img class="card-img-top" src="/static/img/{{ item.image }}">
         {% else %}
         <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
         {% endif %}
+       <h5 class="card-title">{{ item.name }} </h5>
+       <!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6> -->
+        <p class="card-text">Price: ${{ '%0.2f'|format(item.price|float)  }}</p>
+        <!-- <p class="card-text">Product_code: {{ item.product_code }}</p> -->
       <hr>
       <div class="dropdown">
-      <a href="{{ url_for('read_item', id=item.id) }}"><button class="dropbtn">Purchase Details</button></a>
+      <a href="{{ url_for('read_item', id=item.id) }}"><button class="btn btn-secondary stretched-link">Purchase Details</button></a>
     </div>
     <p>
     <span class="fa fa-star checked" id="star{{ item.id }}1"></span>
