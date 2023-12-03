@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_new.html" %}
 
 {% block html_read %}
 {% block javascript %}
@@ -7,51 +7,52 @@
     </script>
 {% endblock %}
 </br>
+
 <style>
- .card-img-top {
-  width: 100%;
-  height: 15vw;
-  object-fit: cover;
-}
-
-.card{
-  width: 30rem;
-  margin-bottom: auto;
-  margin-left: auto;
-  margin-right: 50%;
-  /* border: 15px solid #969696; */
-  text-align: center;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-}
-.comment-box {
-padding: 15px
-}
-.comment-area textarea {
-resize: none;
-border: 1px solid #9797ca
-}
-
-#loadMore {
-  width: 30rem;
-  color: #fff;
-  display: block;
-  text-align: center;
-  border-radius: 10px;
-  border: 1px solid transparent;
-  background-color: blue;
-  transition: .3s;
-}
-#loadMore:hover {
-  color: blue;
-  background-color: #fff;
-  border: 1px solid blue;
-  text-decoration: none;
-}
-.noContent {
-  color: #000 !important;
-  background-color: transparent !important;
-  pointer-events: none;
-}
+  .card-img-top {
+    width: 100%;
+    height: 15vw;
+    object-fit: cover;
+  }
+  
+  .card{
+    width: 30rem;
+    margin-bottom: auto;
+    margin-right: auto;
+    margin-left: 1rem;
+    /* border: 15px solid #969696; */
+    text-align: center;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  }
+  .comment-box {
+  padding: 15px
+  }
+  .comment-area textarea {
+  resize: none;
+  border: 1px solid #9797ca
+  }
+  
+  #loadMore {
+    width: 30rem;
+    color: #fff;
+    display: block;
+    text-align: center;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background-color: blue;
+    transition: .3s;
+  }
+  #loadMore:hover {
+    color: blue;
+    background-color: #fff;
+    border: 1px solid blue;
+    text-decoration: none;
+  }
+  .noContent {
+    color: #000 !important;
+    background-color: transparent !important;
+    pointer-events: none;
+  }
 </style>
 
 <div class="row">
@@ -69,6 +70,15 @@ border: 1px solid #9797ca
           <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
           {% endif %}
         </div>
+        <p>
+          <i> Overall Rating
+        <span class="fa fa-star checked" id="star1"></span>
+        <span class="fa fa-star checked" id="star2"></span>
+        <span class="fa fa-star checked" id="star3"></span>
+        <span class="fa fa-star" id="star4"></span>
+        <span class="fa fa-star" id="star5"></span>
+        <span id="overall-rating"> No rating Yet </span></i>
+      </p>
         <div>
           <a class="btn btn-secondary btn-sm mt-auto align-self-start" data-toggle="modal" data-target="#EditPrice" id="myModal" style="margin: 15px;; text-align:center; display:block;">Update Price</a>
         <a class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#deleteModal" id="myModal" style="margin:15px; text-align:center; display:block;">Delete</a>
@@ -128,26 +138,16 @@ border: 1px solid #9797ca
       </div>
 </div>
 <hr>
-<p>
-  <p>
-    <i> Product Overall Rating
-   <span class="fa fa-star checked" id="star1"></span>
-   <span class="fa fa-star checked" id="star2"></span>
-   <span class="fa fa-star checked" id="star3"></span>
-   <span class="fa fa-star" id="star4"></span>
-   <span class="fa fa-star" id="star5"></span>
-   <span id="overall-rating"> No rating Yet </span></i>
-   </p>
 
-  <div class="tab" id="tabs">
-      <button class="tablinks" onclick="openTab(event, 'ReviewTab')" id="ReviewtOpen" >Reviews</button>
+  <div class="tab" id="tabs" style="margin-left: 30px;">
+      <button class="tablinks" onclick="openTab(event, 'ReviewTab')" id="ReviewOpen">Reviews</button>
       <button class="tablinks" onclick="openTab(event, 'Description')" id="defaultOpen"> Description</button>
   </div>
 
-<div id="ReviewTab" class="tabcontent" style="max-width: 35%;">
-    <button class="btn btn-secondary btn-sm" id="AddReview" onclick="ShowReview()">Add Review </button>
+<div id="ReviewTab" class="tabcontent">
+    <button class="btn btn-secondary btn-sm" id="AddReview" onclick="ShowReview()" style="margin-left: 30px;">Add Review </button>
     <hr>
- <div class="card" id="RatingCard" style="display: none;">
+ <div class="card" id="RatingCard">
         <div class="row">
         <div class="col-12" style="margin-bottom: 5px;" style="max-width: 35%;">
         <div class="comment-box ml-2">
@@ -168,14 +168,12 @@ border: 1px solid #9797ca
         </div>
    </div>
   </div>
-      <div>
         <hr style="max-width: 35%;">
         {%  if item.reviews  %}
-        <p>Other reviews</p>
+        <p style="margin: left 1rem; text-align:center ">Other reviews</p>
         <hr style="max-width: 35%;">
         {% for review in item.reviews %}
-
-      <div class="card" id="card{{review.id}}" style="display: none;">
+      <div class="card group1" id="card{{review.id}}" style="display: none;">
           <div class="row">
           <div class="col-12" style="margin-bottom: 5px;" style="max-width: 35%;">
           <p>
@@ -191,13 +189,11 @@ border: 1px solid #9797ca
 
           </div>
           </div>
+        </div> 
+      {% endfor %}
+      {%  endif %}
+      <!-- <a href="#" id="loadMore" style="margin-left:3%">Load More</a> -->
       </div>
-          {% endfor %}
-          <a href="#" id="loadMore">Load More</a>
-          {%  endif %}
-
-      </div>
-        </div>
       </div>
       </div>
       </div>
@@ -319,15 +315,30 @@ function ShowReview(){
 }
 
 $(document).ready(function(){
-  $(".card").slice(0, 5).show();
-  $("#loadMore").on("click", function(e){
+  var hiddenCardsOnLoad = $(".card:hidden").length;
+  if (hiddenCardsOnLoad === 0) {
+    $("#loadMore").hide();
+  }
+  // Initially show the first 4 cards
+  $("#ReviewTab > .card.group1").slice(0, 4).show();
+  // Use event delegation to handle click on dynamically added elements
+  $("#ReviewTab").on("click", "#loadMore", function(e){
     e.preventDefault();
-    $(".card:hidden").slice(0, 5).slideDown();
-    if($(".card:hidden").length == 0) {
-      $("#loadMore").text("No More Reviews").addClass("noContent");
+
+    // Check if the button is in "Show Less" state
+    if ($("#loadMore").text() === "Show Less") {
+      // Hide 2 cards
+      $(".card.group1:visible:last").prev().addBack().slideUp();
+      $("#loadMore").text("Load More"); // Change button text to "Load More"
+    } else {
+      // Show the next set of cards
+      $(".card.group1:hidden").slice(0, 4).slideDown();
+      $("#loadMore").text("Show Less"); // Change button text to "Show Less"
     }
   });
-})
+});
+
+
 
 function RatingHide(){
   document.getElementById('RatingCard').style.display = "none"

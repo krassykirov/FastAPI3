@@ -62,6 +62,7 @@ function updateDescription() {
       });
 }
 
+
 function addReview() {
 
       let review = $("#comment-area").val()
@@ -81,13 +82,33 @@ function addReview() {
         success: data => {
            const reviewDiv = document.getElementById('ReviewTab')
            console.log('data:', data, data.rating)
-          //  $("#ReviewTab").append("<div class='content'>" + `${data.text}`);
-            document.getElementById('RatingCancel').click()
-            document.getElementById("ReviewtOpen").click();
-            document.getElementById('RatingCard').style.display = "none"
+           const newCard = `
+           <div class="card group1" id="card${data.id}" style="display: flex;">
+                <div class="row">
+                <div class="col-12" style="margin-bottom: 5px;" style="max-width: 35%;">
+                <p>
+                  <img src="/static/img/img_avatar.png" class="avatar">
+                  ${data.created_by}
+                  <span class="fa fa-star checked" id="star${data.id}1"></span>
+                  <span class="fa fa-star checked" id="star${data.id}2"></span>
+                  <span class="fa fa-star checked" id="star${data.id}3"></span>
+                  <span class="fa fa-star" id="star${data.id}4"></span>
+                  <span class="fa fa-star" id="star${data.id}5"></span>
+                  <div>  <i>${data.text} </i></div>
+                </p>
+                </div>
+                </div>
+           </div >       
+           `
             getItemRating()
+            document.getElementById('RatingCancel').click()
+            // $('.card-container').after(newCard);
+            $("#ReviewTab").append(newCard)
+            $("#ReviewTab").append('<a href="#" id="loadMore" style="margin-left:3%">Load More</a>');
+            // document.getElementById("ReviewtOpen").click();
+            // document.getElementById('RatingCard').style.display = "none"
             reviewDiv.style.display = "block";
-            window.location.href = `/items/${id}`
+            // window.location.href = `/items/${id}`
         },
         error: (response) => {
           if (response.status === 403) {
@@ -97,6 +118,28 @@ function addReview() {
       });
 }
 
+
+$(document).ready(function() {
+  $('#createItem').submit(function(e) {
+    e.preventDefault();
+    var formData = new FormData(this)
+    $.ajax({
+        url: "/user/create_item",
+        type: "POST",
+        processData: false,
+        contentType: false,
+        data: formData,
+        success: function(data){
+          window.location.href = "/user/items"
+        },
+        error: function (xhr) {
+            if (xhr.status === 403) {
+               $('#error').text('Item with that name already exists!')
+            }
+        }
+      });
+   }
+)});
 
 //fetchCategories
 // function fetchCategories() {

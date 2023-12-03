@@ -54,9 +54,10 @@ logger = detailed_logger()
 def on_startup():
     SQLModel.metadata.create_all(engine)
 
+
 @app.get("/", include_in_schema=False)
 async def home(request: Request, user: User = Depends(get_current_user)):
-    return templates.TemplateResponse("base.html", {"request": request, 'current_user': user.username})
+    return templates.TemplateResponse("base_new.html", {"request": request, 'current_user': user.username})
 
 @app.post("/create_category", status_code=status.HTTP_201_CREATED, response_model=Category, include_in_schema=False)
 async def create_cat(request: Request, name: str, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -84,6 +85,7 @@ def get_details(request: Request, db: Session = Depends(get_session), user: User
 @app.post("/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @app.post("/user/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @app.post("/items/create_item", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
+@app.post("/user/profile/create_item", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
 async def create_item(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
         """ Create an Item """
         form_data = await request.form()

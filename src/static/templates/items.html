@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_new.html" %}
 {% block html_read %}
 
 <style>
@@ -10,7 +10,7 @@
 }
 
 .card{
-  width: 16rem;
+  width: 14rem;
   margin-bottom: 10px;
   margin-left: auto;
   margin-right: 50%;
@@ -28,19 +28,17 @@ border: 1px solid #9797ca
 }
 
 </style>
+
 {% block javascript %}
     <script type="text/javascript">
         {% include "js/main.js" %}
     </script>
 {% endblock %}
 
-<div class="dropdown">
-  <button class="dropbtn" data-toggle="modal" data-target="#addItem" style="float: left;">Add Item</button>
-</div>
     <div class="container">
       <div class="row pt-2">
         <div class="col-md-11">
-          <input class="form-control" id="filter" onkeyup="Search()" type="text" placeholder="Search for items..">
+          <input class="form-control mr-sm-2" id="filter" onkeyup="Search()" type="text" placeholder="Search for items..">
         </div>
       </div>
 <br/>
@@ -83,39 +81,6 @@ border: 1px solid #9797ca
 </div>
     {% endfor %}
   </div>
-  </div>
-
-  <div class="modal fade" id="addItem" tabindex="-1" role="dialog" aria-labelledby="addItemlLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="addItemLabel">Add new Item</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form enctype="multipart/form-data" data-toggle="validator" id="createItem">
-            <b> <p id="error" style="text-align: left;"></p>
-            <div class="form-group">
-              <label for="name" class="col-form-label">Name:</label>
-              <input type="text" name="name" id="item-name" placeholder="Item Name" required>
-              <!-- <input type="text" name="name" id="item-name" pattern="^[a-zA-Z]*" oninvalid="setCustomValidity('Please use only letters')" placeholder="Item Name"  required> -->
-            </div>
-            <div class="form-group">
-              <label for="price" class="col-form-label">Price:</label>
-              <input type="number" step="any" name="price" id="item-price" placeholder="99.99" required>
-            </div>
-            <div class="form-group" form-group-file>
-              <label for="file" class="col-form-label">Upload Photo:</label>
-              <input type="file" id="file" name="file" class="form-control" data-filesize="1000000" data-filesize-error="File must be smaller then 1MB" accept="image/*" required/>
-            </div>
-            <button id="submit-button" class="btn btn-primary">Add</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          </form>
-        </div>
-      </div>
-    </div>
   </div>
 
 
@@ -163,31 +128,6 @@ getItemRating(item_id)
         }
     }
 }
-
-
-$(document).ready(function() {
-  $('#createItem').submit(function(e) {
-    e.preventDefault();
-    var formData = new FormData(this)
-    $.ajax({
-        url: "/user/create_item",
-        type: "POST",
-        processData: false,
-        contentType: false,
-        data: formData,
-        success: function(data){
-          window.location.href = "/user/items"
-        },
-        error: function (xhr) {
-            if (xhr.status === 403) {
-               $('#error').text('Item with that name already exists!')
-            }
-        }
-      });
-   }
-)});
-
-
 
  </script>
 
