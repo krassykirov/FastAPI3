@@ -1,5 +1,6 @@
 <html>
 <head>
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -40,9 +41,9 @@
           Items
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addItem"><i class="fa fa-plus-square" aria-hidden="true"> Add Product</i></a>
+          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addItem"> Add Product </a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="{{ url_for('get_user_items')}}"><i class="fa fa-plus-square" aria-hidden="true">  My Items</i></a>
+          <a class="dropdown-item" href="{{ url_for('get_user_items')}}"> My Items</a>
           <div class="dropdown-divider"></div>
           <!-- <a class="dropdown-item" href="#">Something else here</a> -->
         </div>

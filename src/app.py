@@ -31,7 +31,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 
 templates = Jinja2Templates(directory="src/static/templates")
 
-app = FastAPI()
+app = FastAPI() # docs_url=None
 app.include_router(category_router)
 app.include_router(items_router)
 app.include_router(reviews_router)
@@ -71,7 +71,7 @@ async def create_cat(request: Request, name: str, db: Session = Depends(get_sess
     return  templates.TemplateResponse("base.html", {"request":request, 'category': category})
 
 @app.get("/details", include_in_schema=False)
-@app.get("/items/details", response_model=src.schemas.ItemRead)
+@app.get("/items/details", include_in_schema=False, response_model=src.schemas.ItemRead)
 def get_details(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     """ Return all Items """
     items_db = ItemActions().get_items(db=db) #, user=user.username

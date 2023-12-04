@@ -102,11 +102,8 @@ function addReview() {
            `
             getItemRating()
             document.getElementById('RatingCancel').click()
-            // $('.card-container').after(newCard);
             $("#ReviewTab").append(newCard)
-            $("#ReviewTab").append('<a href="#" id="loadMore" style="margin-left:3%">Load More</a>');
-            // document.getElementById("ReviewtOpen").click();
-            // document.getElementById('RatingCard').style.display = "none"
+            $("#ReviewTab").append('<a href="#" id="loadMore" style="margin-left:7%">Load More</a>');
             reviewDiv.style.display = "block";
             // window.location.href = `/items/${id}`
         },
