@@ -25,7 +25,7 @@ def get_category_by_id(request: Request, id: int, db: Session = Depends(get_sess
     return category
 
 @category_router.get("/", status_code=status.HTTP_200_OK, response_model=list[CategoryRead])
-def get_categoriess(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):
+def get_categories(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):
     """ Return all categories """
     categories = CategoryActions().get_categories(db=db, skip=skip, limit=limit)
     if categories is None:
@@ -34,7 +34,7 @@ def get_categoriess(request: Request, skip: int = 0, limit: int = 100, db: Sessi
     return categories # JSONResponse(content= categories)
 
 @category_router.get("/category_items/", status_code=status.HTTP_200_OK, response_model=CategoryItems)
-def get_category_events(request: Request, name: str, db: Session = Depends(get_session)):
+def get_category_items(request: Request, name: str, db: Session = Depends(get_session)):
     """ Return all items in a category """
     category = CategoryActions().get_category_by_name(db=db, name=name)
     logger.info(f'category: {category}')

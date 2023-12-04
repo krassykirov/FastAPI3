@@ -17,9 +17,9 @@ from src.routers.categories import category_router
 from src.routers.items import items_router
 from src.routers.reviews import reviews_router
 from src.routers.profile import profile_router
-from src.models import Item, Category, Review, User, UserRead, UserProfile
+from src.models import Item, Category, Review, User, UserRead, UserProfile, Categories
 from src.crud.crud import CategoryActions, ItemActions, ReviewActions, ProfileActions
-from src.helper import delete_item_dir
+from src.helper import delete_item_dir, create_categories
 import src.schemas
 import os
 from os.path import abspath
@@ -53,11 +53,15 @@ logger = detailed_logger()
 @app.on_event("startup")
 def on_startup():
     SQLModel.metadata.create_all(engine)
-
+    create_categories(engine)
 
 @app.get("/", include_in_schema=False)
 async def home(request: Request, user: User = Depends(get_current_user)):
     return templates.TemplateResponse("base_new.html", {"request": request, 'current_user': user.username})
+
+@app.get("/new", include_in_schema=False)
+async def home(request: Request, user: User = Depends(get_current_user)):
+    return templates.TemplateResponse("base.html", {"request": request, 'current_user': user.username})
 
 @app.post("/create_category", status_code=status.HTTP_201_CREATED, response_model=Category, include_in_schema=False)
 async def create_cat(request: Request, name: str, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -74,6 +78,7 @@ async def create_cat(request: Request, name: str, db: Session = Depends(get_sess
 @app.get("/items/details", include_in_schema=False, response_model=src.schemas.ItemRead)
 def get_details(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     """ Return all Items """
+    logger.info(f'{user.username}')
     items_db = ItemActions().get_items(db=db) #, user=user.username
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
     items = [src.schemas.ItemRead.from_orm(item) for item in items_db]
@@ -93,6 +98,9 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         filename = form_data['file'].filename
         item_name =form_data['name']
         price=form_data['price']
+        category_select = form_data['Category']
+        category = CategoryActions().get_category_by_name(db=db, name=category_select)
+        print('category', category_select, type(category_select))
         item = db.query(Item).where(Item.name == item_name).first()
         if item:
             logger.error(f"Item with that name already exists!")
@@ -104,9 +112,10 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
                os.makedirs(path,exist_ok=True)
         with open(f"src/static/img/{user.username}/{item_name}/{filename}", 'wb') as f:
             f.write(content)
-            item = Item(name=item_name, price=price, image=filename, username=user.username)
+            item = Item(name=item_name, price=price, image=filename, username=user.username, category=category)
         db.add(item)
         db.commit()
+        db.refresh(item)
         if 'user/create_item' in str(request.url):
             redirect_url = request.url_for('get_user_items')
         else:
@@ -215,8 +224,6 @@ async def get_user_profile( request: Request, db: Session=Depends(get_session), 
     return templates.TemplateResponse("profile.html", {"request": request,
                                                        'current_user': user.username,
                                                        'profile': profile })
-
-
 @app.post("/create_profile", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @app.post("/user/create_profile", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
 async def create_profile(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -231,7 +238,6 @@ async def create_profile(request: Request, db: Session = Depends(get_session), u
     if user_db:
         try:
             IMG_DIR = os.path.join(PROJECT_ROOT, f'src/static/img/{user.username}/profile')
-            print('IMG_DIR', IMG_DIR)
             content = await file.read()
             if not os.path.exists(IMG_DIR):
                 os.makedirs(IMG_DIR, exist_ok=True)
@@ -277,7 +283,6 @@ async def update_profile(request: Request, db: Session = Depends(get_session), u
             logger.error(f"Something went wrong, error: {e}")
         new_data = UserProfile(**dict(json_data), user=user, avatar=filename if filename else None).dict(exclude_unset=True,
                                                                                                           exclude_none=True)
-        print("new_data:", new_data)
         for key, value in new_data.items():
             setattr(db_profile, key, value)
             db.commit()
@@ -288,3 +293,9 @@ async def update_profile(request: Request, db: Session = Depends(get_session), u
     #                                                    'current_user': user.username,
     #                                                    'profile': db_profile })
 
+@app.get("/category/{category_name}", status_code=status.HTTP_200_OK, include_in_schema=False)
+async def get_category(request: Request, category_name: str, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+    category = CategoryActions().get_category_by_name(db=db, name=category_name)
+    return templates.TemplateResponse("categories.html", {"request": request,
+                                                         'current_user': user.username,
+                                                         'items': category.items })

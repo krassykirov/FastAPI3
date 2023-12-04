@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import desc
 from src.models import Item, Category, Review, UserProfile
 import src.schemas
 
@@ -15,9 +16,10 @@ class ItemActions:
 
     def get_items(self, db: Session, skip: int = 0, limit: int = 100, user= None):
         if user:
-            items = db.query(Item).filter(Item.username==user).offset(skip).limit(limit).all()
+            items = db.query(Item).filter(Item.username==user).order_by(Item.name).offset(skip).limit(limit).all()
             return items
-        items = db.query(Item).offset(skip).limit(limit).all()
+        items = db.query(Item).order_by(Item.name).offset(skip).limit(limit).all()
+        # items = db.query(Item).order_by(desc(Item.name)).offset(skip).limit(limit).all()
         return items
 
     def delete_item_by_id(self, db: Session, id: int):

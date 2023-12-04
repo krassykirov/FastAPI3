@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 import datetime
 from typing import List, Optional
-from src.models import Item
+from src.models import Item, Category
 import decimal
 
 class CategoryCreate(BaseModel):
@@ -43,6 +43,7 @@ class ItemRead(BaseModel):
     username: Optional[str]
     reviews: Optional[List]
     description:  Optional[str]
+    category:  Optional[Category]
     class Config:
         orm_mode = True
         schema_extra = {

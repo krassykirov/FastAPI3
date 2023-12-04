@@ -47,7 +47,7 @@ def home(request: Request):
                 return response
                 # return templates.TemplateResponse("base.html",{"request":request, 'current_user': username})
         else:
-            context = {'request': request, 'message': "Not Authorized please login"}
+            context = {'request': request}
             return templates.TemplateResponse("login.html", context)
     except ExpiredSignatureError:
         context = {'request': request, 'message': "Session expired please login"}

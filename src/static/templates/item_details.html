@@ -27,7 +27,7 @@
   }
   
   .card.group1 {
-    margin-left: 12%
+    margin-left: 7%
   }
 
   .comment-box {
@@ -113,6 +113,7 @@
             {% endif %}
           <h4 class="card-title">{{item.name}} </h5>
           <p class="price" id="item-details">Price: ${{ '%0.2f'|format(item.price|float)  }}</p>
+          <p class="category" id="category"> Category: {{ item.category.name.split('.')[-1]  }}</p>
           <input type="number" name="id" value="{{ item.id }}" id="id" hidden>
           <input type="text" id="username" value="{{ current_user }}"  hidden>
         </div>
@@ -194,7 +195,7 @@
 <div id="ReviewTab" class="tabcontent" style="text-align: center;">
     <button class="btn btn-secondary btn-sm" id="AddReview" onclick="ShowReview()">Add Review </button>
     <hr>
- <div class="card" id="RatingCard" style="margin-left: 12%;">
+ <div class="card" id="RatingCard" style="margin-left: 7%;">
         <div class="row">
         <div class="col-12" style="margin-bottom: 5px;" style="max-width: 35%;">
         <div class="comment-box ml-2">

@@ -98,7 +98,7 @@ function addReview() {
                 </p>
                 </div>
                 </div>
-           </div >       
+           </div >
            `
             getItemRating()
             document.getElementById('RatingCancel').click()

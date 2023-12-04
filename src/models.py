@@ -4,9 +4,13 @@ import decimal
 from pydantic import BaseModel
 from typing import Optional, Union
 from sqlmodel import SQLModel, Field, Relationship, Column, VARCHAR
+from sqlalchemy_utils import ChoiceType
+import enum
+# from enum import Enum as enum
 from typing import Optional, List
 import datetime
 import uuid
+from enum import Enum
 from src.auth.oauth import pwd_context
 
 class Token(BaseModel):
@@ -56,9 +60,16 @@ class Item(SQLModel, table=True):
     username:     Optional[str] = Field(default=None, foreign_key="user.username")
     description:  Optional[str]
 
+class Categories(str, enum.Enum):
+    Finance = "Finance"
+    IT = "IT"
+    TV = "TV"
+    Services = "Services"
+    Miscellaneous = "Miscellaneous"
+
 class Category(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(sa_column=Column("name", VARCHAR, unique=True))
+    name: Optional[Categories] = Field(sa_column=Column(ChoiceType(Categories), unique=True))
     items: Optional[List['Item']] = Relationship(back_populates='category')
     class Config:
         schema_extra = {

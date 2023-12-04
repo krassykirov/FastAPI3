@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -30,8 +30,26 @@
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('get_details')}}">
           <i class="bi bi-bricks"> </i>
-          Products 
+          Products
         </a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="bi bi-bag-dash">
+            <span class="badge badge-primary"></span>
+          </i>
+          Categories
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href=""> Categories</a>
+          <ul class="subnav">
+            <li><a class="dropdown-item" href="{{ url_for('get_category', category_name='Finance')}}">Finance</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('get_category', category_name='IT')}}">IT</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('get_category', category_name='TV')}}">TV</a> </li>
+            <li><a class="dropdown-item" href="{{ url_for('get_category', category_name='Services')}}">Services</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('get_category', category_name='Miscellaneous')}}">Miscellaneous</a></li>
+          </ul>
+        </div>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -73,9 +91,6 @@
       <form class="form-inline my-2 my-lg-0">
         <input onclick="location.href='{{ url_for('home') }}';" value="Login" class="btn btn-primary" type="button" style="margin: 2px;">
      </form>
-      <form class="form-inline my-2 my-lg-0">
-        <input onclick="location.href='{{ url_for('signup') }}';" value="SignUp" class="btn btn-info" type="button">
-     </form>
       {% endif %}
     </ul>
   </div>
@@ -104,6 +119,16 @@
             <div class="form-group" form-group-file>
               <label for="file" class="col-form-label">Upload Photo:</label>
               <input type="file" id="file" name="file" class="form-control" data-filesize="1000000" data-filesize-error="File must be smaller then 1MB" accept="image/*" required/>
+            </div>
+            <div class="form-group">
+              <label for="Category" class="col-form-label">Category:</label>
+              <select name="Category">
+                  <option value="Finance">Finance</option>
+                  <option value="IT">IT</option>
+                  <option value="TV">TV</option>
+                  <option value="Services">Services</option>
+                  <option value="Miscellaneous">Miscellaneous</option>
+              </select>
             </div>
             <button id="submit-button" class="btn btn-primary">Add</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

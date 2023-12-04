@@ -1,5 +1,8 @@
 import shutil
 from functools import wraps
+from src.models import Categories, Category
+from src.db import get_session
+from sqlalchemy.orm import Session
 
 
 def delete_item_dir(path):
@@ -25,3 +28,12 @@ def write_log(message=""):
     with open("log.txt", mode="a") as log_file:
         content = f"Log message: {message}"+ '\n'
         log_file.write(content)
+
+def create_categories(engine):
+    with Session(engine) as session:
+        cat = session.query(Category).all()
+        if not cat:
+            for c in Categories:
+                category = Category(name=c)
+                session.add(category)
+            session.commit()

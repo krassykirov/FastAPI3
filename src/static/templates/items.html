@@ -35,13 +35,13 @@ border: 1px solid #9797ca
     </script>
 {% endblock %}
 
-    <div class="container">
+  <div class="container">
       <div class="row pt-2">
         <div class="col-md-11">
           <input class="form-control mr-sm-2" id="filter" onkeyup="Search()" type="text" placeholder="Search for items..">
         </div>
       </div>
-<br/>
+    <br/>
 
 <div class="row">
   {% if message %}
@@ -58,7 +58,7 @@ border: 1px solid #9797ca
         <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
         {% endif %}
        <h5 class="card-title">{{ item.name }} </h5>
-       <!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6> -->
+       <h6 class="card-subtitle mb-2 text-muted">{{ item.category.name.split('.')[-1] }}</h6>
         <p class="card-text">Price: ${{ '%0.2f'|format(item.price|float)  }}</p>
         <!-- <p class="card-text">Product_code: {{ item.product_code }}</p> -->
       <hr>
@@ -74,7 +74,7 @@ border: 1px solid #9797ca
     <span id="overall-rating{{ item.id }}"> No rating Yet </span>
     </p>
       <div class="card-footer">
-        <small class="text-muted">Created: {{ item.date }} by {{ item.username }}</small>
+        <small class="text-muted">Created: {{ item.date.strftime('%Y-%m-%d') }} by {{ item.username }}</small>
       </div>
     </div>
     </div>
