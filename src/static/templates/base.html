@@ -1,0 +1,157 @@
+
+<html>
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="../static/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+</head>
+
+<div class="superNav border-bottom py-2 bg-light">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 centerOnMobile">
+          <select  class="me-3 border-0 bg-light">
+            <option value="en-us">EN-US</option>
+          </select>
+          <span class="d-none d-lg-inline-block d-md-inline-block d-sm-inline-block d-xs-none me-3"><strong>info@krassy.com</strong></span>
+          <span class="me-3"><i class="fa-solid fa-phone me-1 text-warning"></i> <strong>1-800-123-1234</strong></span>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 d-none d-lg-block d-md-block-d-sm-block d-xs-none text-end">
+          <span class="me-3"><i class="fa-solid fa-truck text-muted me-1"></i><a class="text-muted" href="#">Shipping</a></span>
+          <span class="me-3"><i class="fa-solid fa-file  text-muted me-2"></i><a class="text-muted" href="#">Policy</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <nav class="navbar navbar-expand-lg bg-white sticky-top navbar-light p-3 shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="/"><i class="fa-solid fa-shop me-2"></i> <strong>KRASSY SHOP</strong></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="mx-auto my-3 d-lg-none d-sm-block d-xs-block">
+        <div class="input-group">
+          <span class="border-warning input-group-text bg-warning text-white"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input type="text" class="form-control border-warning" style="color:#7a7a7a">
+          <button class="btn btn-warning text-white">Search</button>
+        </div>
+      </div>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav ms-auto ">
+          <li class="nav-item">
+            <a class="nav-link mx-2 text-uppercase active" aria-current="page" href="#">Offers</a>
+          </li>
+          <div class="dropdown">
+          <li class="nav-item">
+            <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_products')}}">Products</a>
+                  <div class="dropdown-content">
+                    <a class="nav-link" data-toggle="modal" data-target="#addItem" href="#">Add Product</a>
+                  </div>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_user_items')}}">Catalog</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link mx-2 text-uppercase" href="#">Services</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link mx-2 text-uppercase" href="#">About</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ms-auto ">
+          <li class="nav-item">
+            <a class="nav-link mx-2 text-uppercase" href="#"><i class="fa-solid fa-cart-shopping me-1"></i> Cart</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link mx-2 text-uppercase" href="#"><i class="fa-solid fa-circle-user me-1"></i> Account</a>
+          </li>
+        </ul>
+      </div>
+        <form class="form-inline my-2 my-lg-0">
+            <div class="dropdown">
+              {% if profile %}
+              {{ current_user }} <img src="/static/img/{{ current_user }}/profile/{{ profile.avatar }}" class="avatar" alt="{{ current_user}}">
+              {% else %}
+               <img src="/static/img/img_avatar.png" class="avatar" alt="{{ current_user}}">
+              {% endif %}
+              <div class="dropdown-content">
+                <a href="{{ url_for('get_user_profile') }}"> Profile</a>
+                <a href="{{ url_for('logout') }}"> Logout</a>
+              </div>
+            </div>
+         </form>
+    </div>
+  </nav>
+
+  <section class="top-nav">
+    <div>
+      Categories
+    </div>
+    <input id="menu-toggle" type="checkbox" />
+    <label class='menu-button-container' for="menu-toggle">
+    <div class='menu-button'></div>
+  </label>
+    <ul class="menu">
+      <li onclick="location.href='{{ url_for('get_category',category_name='IT')}}'" style="cursor: pointer";>IT</li>
+      <li onclick="location.href='{{ url_for('get_category',category_name='TV')}}'" style="cursor: pointer";>TV</li>
+      <li onclick="location.href='{{ url_for('get_category', category_name='Finance')}}'" style="cursor: pointer";>Finance</li>
+      <li onclick="location.href='{{ url_for('get_category',category_name='Services')}}'" style="cursor: pointer";>Services</li>
+      <li onclick="location.href='{{ url_for('get_category', category_name='Miscellaneous')}}'" style="cursor: pointer";>Miscellaneous</li>
+    </ul>
+  </section>
+
+  <div class="container" style="margin-left:auto">
+  {% block html_read %}
+
+  {% endblock %}
+</div>
+
+{%block modals%}
+  <div class="modal fade" id="addItem" role="dialog" aria-labelledby="addItemlLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addItemLabel">Add Product</h5>
+        </div>
+        <div class="modal-body">
+          <form enctype="multipart/form-data" data-toggle="validator" id="createItem">
+            <b> <p id="error" style="text-align: left;"></p>
+            <div class="form-group">
+              <label for="name" class="col-form-label">Name:</label>
+              <input type="text" name="name" id="item-name" placeholder="Item Name"  maxlength="15" required>
+             </div>
+            <div class="form-group">
+              <label for="price" class="col-form-label">Price: </label>
+              <input type="number" step="any" name="price" id="item-price" placeholder="99.99" required>
+            </div>
+            <div class="form-group" form-group-file>
+              <label for="file" class="col-form-label">Upload Photo:</label>
+              <input type="file" id="file" name="file" class="form-control" data-filesize="1000000" data-filesize-error="File must be smaller then 1MB" accept="image/*" required/>
+            </div>
+            <div class="form-group">
+              <label for="Category" class="col-form-label">Category:</label>
+              <select name="Category">
+                  <option value="Finance">Finance</option>
+                  <option value="IT">IT</option>
+                  <option value="TV">TV</option>
+                  <option value="Services">Services</option>
+                  <option value="Miscellaneous">Miscellaneous</option>
+              </select>
+            </div>
+            <button id="submit-button" class="btn btn-primary" style="margin-bottom:5px;">Save</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endblock %}
+
+</html>
