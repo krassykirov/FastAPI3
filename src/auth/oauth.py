@@ -40,9 +40,9 @@ def home(request: Request):
             expires = payload.get("exp")
             converted_expires = datetime.datetime.fromtimestamp(expires)
             if datetime.datetime.now() < converted_expires:
-                # context = {'request': request, 'current_user': username, 'access_token': access_token, 'expires': converted_expires}
-                # print("context: ", context)
-                redirect_url = request.url_for('get_details')
+                context = {'request': request, 'current_user': username, 'access_token': access_token, 'expires': converted_expires}
+                print("context: ", context)
+                redirect_url = request.url_for('get_products')
                 response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
                 return response
                 # return templates.TemplateResponse("base.html",{"request":request, 'current_user': username})

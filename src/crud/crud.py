@@ -19,6 +19,7 @@ class ItemActions:
             items = db.query(Item).filter(Item.username==user).order_by(Item.name).offset(skip).limit(limit).all()
             return items
         items = db.query(Item).order_by(Item.name).offset(skip).limit(limit).all()
+        print('items:', items)
         # items = db.query(Item).order_by(desc(Item.name)).offset(skip).limit(limit).all()
         return items
 

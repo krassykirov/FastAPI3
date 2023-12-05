@@ -62,7 +62,6 @@ function updateDescription() {
       });
 }
 
-
 function addReview() {
 
       let review = $("#comment-area").val()
@@ -114,7 +113,6 @@ function addReview() {
         }
       });
 }
-
 
 $(document).ready(function() {
   $('#createItem').submit(function(e) {

@@ -27,9 +27,10 @@ from src.auth.oauth import oauth_router, get_current_user
 from src.my_logger import detailed_logger
 
 
-PROJECT_ROOT = Path(__file__).parent.parent
+PROJECT_ROOT = Path(__file__).parent.parent # /
+BASE_DIR = Path(__file__).resolve().parent # / src
 
-templates = Jinja2Templates(directory="src/static/templates")
+templates = Jinja2Templates(directory=Path(BASE_DIR, 'static/templates'))
 
 app = FastAPI() # docs_url=None
 app.include_router(category_router)
@@ -46,20 +47,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/static", StaticFiles(directory="src/static", html=True))
 
 logger = detailed_logger()
 
 @app.on_event("startup")
 def on_startup():
     SQLModel.metadata.create_all(engine)
+    app.mount("/static", StaticFiles(directory=Path(BASE_DIR, 'static'),html=True),name="static")
     create_categories(engine)
 
 @app.get("/", include_in_schema=False)
-async def home(request: Request, user: User = Depends(get_current_user)):
-    return templates.TemplateResponse("base_new.html", {"request": request, 'current_user': user.username})
-
-@app.get("/new", include_in_schema=False)
 async def home(request: Request, user: User = Depends(get_current_user)):
     return templates.TemplateResponse("base.html", {"request": request, 'current_user': user.username})
 
@@ -74,9 +71,8 @@ async def create_cat(request: Request, name: str, db: Session = Depends(get_sess
     category = CategoryActions().create_category(db=db, category=Category(name=form_data.get('name')))
     return  templates.TemplateResponse("base.html", {"request":request, 'category': category})
 
-@app.get("/details", include_in_schema=False)
-@app.get("/items/details", include_in_schema=False, response_model=src.schemas.ItemRead)
-def get_details(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+@app.get("/products", include_in_schema=False, response_model=src.schemas.ItemRead)
+def get_products(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     """ Return all Items """
     logger.info(f'{user.username}')
     items_db = ItemActions().get_items(db=db) #, user=user.username
@@ -89,7 +85,7 @@ def get_details(request: Request, db: Session = Depends(get_session), user: User
 
 @app.post("/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @app.post("/user/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
-@app.post("/items/create_item", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
+@app.post("/products/create_item", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
 @app.post("/user/profile/create_item", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
 async def create_item(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
         """ Create an Item """
@@ -119,7 +115,7 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         if 'user/create_item' in str(request.url):
             redirect_url = request.url_for('get_user_items')
         else:
-           redirect_url = request.url_for('get_details')
+           redirect_url = request.url_for('get_products')
         response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
         return response
 
@@ -135,7 +131,7 @@ async def delete_item(request: Request, background_tasks: BackgroundTasks, id: i
         try:
             dir_to_delete = abspath(f"src/static/img/{user.username}/{item.name}/")
             background_tasks.add_task(delete_item_dir, path=dir_to_delete)
-            redirect_url = request.url_for('get_details')
+            redirect_url = request.url_for('get_products')
             response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
             return response
         except Exception as e:
@@ -156,7 +152,7 @@ async def read_item(request: Request, id: int, db: Session=Depends(get_session),
                                                                 'rating' : item_rating,
                                                                 'profile': profile})
     else:
-        redirect_url = request.url_for('get_details')
+        redirect_url = request.url_for('get_products')
         response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
         return response
 
@@ -221,6 +217,7 @@ async def get_user_items( request: Request, db: Session=Depends(get_session), us
 @app.get("/user/profile", response_model=UserRead, include_in_schema=False)
 async def get_user_profile( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
+    print('request', request.url)
     return templates.TemplateResponse("profile.html", {"request": request,
                                                        'current_user': user.username,
                                                        'profile': profile })
@@ -293,9 +290,12 @@ async def update_profile(request: Request, db: Session = Depends(get_session), u
     #                                                    'current_user': user.username,
     #                                                    'profile': db_profile })
 
-@app.get("/category/{category_name}", status_code=status.HTTP_200_OK, include_in_schema=False)
+@app.get("/products/{category_name}", status_code=status.HTTP_200_OK, include_in_schema=False)
 async def get_category(request: Request, category_name: str, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+    if category_name not in list(Categories):
+        return "Fail"
     category = CategoryActions().get_category_by_name(db=db, name=category_name)
     return templates.TemplateResponse("categories.html", {"request": request,
                                                          'current_user': user.username,
                                                          'items': category.items })
+
