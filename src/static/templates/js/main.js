@@ -87,7 +87,9 @@ function addReview() {
            </div >
            `
             getItemRating()
-            document.getElementById('RatingCancel').click()
+            setRveiewsRating()
+
+            // document.getElementById('RatingCancel').click()
             $("#review1").append(newCard)
             $("#review1").append('<a href="#" id="loadMore" style="margin-left:6%">Load More</a>');
             // reviewDiv.style.display = "block";

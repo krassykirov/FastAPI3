@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block html_read %}
+{% block javascript %}
+    <script type="text/javascript">
+        {% include "js/main.js" %}
+    </script>
+{% endblock %}
+
+</br>
+<i class="fa fa-arrow-circle-left fa-4x" aria-hidden="true" onclick="history.back()"></i>
+
+{%  if items  %}
+<div class="container">
+
+
+
+<div class="row">
+    <div class="card-group col-12" id="mycard";>
+      {% for item in items %}
+      <div class="col-lg-auto">
+      <div class="card"  id="card{{ item.id }}">
+        <div class="card-body"  style="cursor: pointer"; onclick="location.href='{{ url_for('read_item', id=item.id) }}'" >
+          {% if  'no-image.png' == item.image %}
+          <img class="card-img-top" src="/static/img/{{ item.image }}">
+          {% else %}
+          <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
+          {% endif %}
+         <h5 class="card-title">{{ item.name }} </h5>
+         <h6 class="card-subtitle mb-2 text-muted">{{ item.category.name.split('.')[-1] }}</h6>
+          <p class="card-text">Price: ${{ '%0.2f'|format(item.price|float)  }}</p>
+          <!-- <p class="card-text">Product_code: {{ item.product_code }}</p> -->
+        <hr>
+        <div class="dropdown">
+        <a href="{{ url_for('read_item', id=item.id) }}"><button class="btn btn-secondary stretched-link">Purchase Details</button></a>
+      </div>
+      <p>
+      <span class="fa fa-star checked" id="star{{ item.id }}1"></span>
+      <span class="fa fa-star checked" id="star{{ item.id }}2"></span>
+      <span class="fa fa-star checked" id="star{{ item.id }}3"></span>
+      <span class="fa fa-star" id="star{{ item.id }}4"></span>
+      <span class="fa fa-star" id="star{{ item.id }}5"></span>
+      <span id="overall-rating{{ item.id }}"> No rating Yet </span>
+      </p>
+        <div class="card-footer">
+          <small class="text-muted">Created: {{ item.date.strftime('%Y-%m-%d') }} by {{ item.username }}</small>
+        </div>
+      </div>
+      </div>
+  </div>
+      {% endfor %}
+    </div>
+    </div>
+{%  else  %}
+No Items in this Category found
+{% endif  %}
+
+
+
+
+<script>
+
+function getItemRating(item_id){
+  $.ajax({
+        url: "/api/reviews/item/rating",
+        method: "get",
+        headers: { "Content-Type": "application/json",},
+        data:  { "id": `${item_id}`
+        },
+        success: data => {
+          for (var i=1; i<=5; i++ ){
+            var star = document.getElementById('star'+ item_id + i )
+            if ( i <= data.rating ){
+                star.classList.add('checked');
+            }
+            else { star.classList.remove('checked')}
+          }
+        document.getElementById('overall-rating'+ item_id).innerText = '  (' + data.review_number + ')'
+        },
+        error: (error) => {
+            console.log('error:', error);
+        }
+      });
+   }
+
+{% for item in items %}
+var item_id = '{{ item.id }}'
+getItemRating(item_id)
+{% endfor %}
+
+
+</script>
+
+{% endblock %}

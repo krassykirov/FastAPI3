@@ -282,6 +282,7 @@
 
 function getItemRating(){
   let id = $("#id").val()
+  console.log("get rating id:", id)
   $.ajax({
         url: "/api/reviews/item/rating",
         method: "get",
@@ -406,7 +407,6 @@ $(document).ready(function(){
     }
   });
 });
-
 
 
 function RatingHide(){
