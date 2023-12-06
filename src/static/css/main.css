@@ -380,9 +380,6 @@ h2 {
     color: white;
     background-color: #222;
   }
-  .menu li:hover {
-    background-color: rgba(153, 12, 12, 0.333);
-  }
   .menu > li:not(:last-child) {
     border-bottom: 1px solid #444;
   }
