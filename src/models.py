@@ -13,6 +13,15 @@ import uuid
 from enum import Enum
 from src.auth.oauth import pwd_context
 
+class BaseSQLModel(SQLModel):
+    def __init__(self, **kwargs):
+        self.__config__.table = False
+        super().__init__(**kwargs)
+        self.__config__.table = True
+
+    class Config:
+        validate_assignment = True
+
 class Token(BaseModel):
     access_token: str
     token_type: str

@@ -1,17 +1,4 @@
 
-function openTab(evt, Description) {
-  var i, tabcontent, tablinks;
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
-  document.getElementById(Description).style.display = "block";
-  evt.currentTarget.className += " active";
-}
 
 function editItem() {
 
@@ -79,10 +66,10 @@ function addReview() {
                 "created_by": `${username}`
         }),
         success: data => {
-           const reviewDiv = document.getElementById('ReviewTab')
+           const reviewDiv = document.getElementsByClassName('card group1"')
            console.log('data:', data, data.rating)
            const newCard = `
-           <div class="card group1" id="card${data.id}" style="display: flex; margin-left:7%">
+           <div class="card group1" id="card${data.id}" style="display: flex; margin-left:6%">
                 <div class="row">
                 <div class="col-12" style="margin-bottom: 5px;" style="max-width: 35%;">
                 <p>
@@ -101,9 +88,9 @@ function addReview() {
            `
             getItemRating()
             document.getElementById('RatingCancel').click()
-            $("#ReviewTab").append(newCard)
-            $("#ReviewTab").append('<a href="#" id="loadMore" style="margin-left:7%">Load More</a>');
-            reviewDiv.style.display = "block";
+            $("#review1").append(newCard)
+            $("#review1").append('<a href="#" id="loadMore" style="margin-left:6%">Load More</a>');
+            // reviewDiv.style.display = "block";
             // window.location.href = `/items/${id}`
         },
         error: (response) => {
