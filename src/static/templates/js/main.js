@@ -48,7 +48,6 @@ function addReview() {
         }),
         success: data => {
            const reviewDiv = document.getElementsByClassName('card group1"')
-           console.log('data:', data, data.rating)
            const newCard = `
            <div class="card group1" id="card${data.id}" style="display: flex; margin-left:6%">
                 <div class="row">
