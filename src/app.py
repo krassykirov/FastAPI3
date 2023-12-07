@@ -55,9 +55,10 @@ def on_startup():
     app.mount("/static", StaticFiles(directory=Path(BASE_DIR, 'static'),html=True),name="static")
     create_categories(engine)
 
-@app.get("/", include_in_schema=False)
-async def home(request: Request, user: User = Depends(get_current_user)):
-    return templates.TemplateResponse("base.html", {"request": request, 'current_user': user.username})
+# @app.get("/", include_in_schema=False)
+# async def home(request: Request, user: User = Depends(get_current_user)):
+#     print("entering app home")
+#     return templates.TemplateResponse("base.html", {"request": request, 'current_user': user.username})
 
 @app.get("/products", include_in_schema=False, response_model=src.schemas.ItemRead)
 def get_products(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
