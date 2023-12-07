@@ -1,7 +1,7 @@
 import datetime
 from datetime import date
 import decimal
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional, Union
 from sqlmodel import SQLModel, Field, Relationship, Column, VARCHAR
 from sqlalchemy_utils import ChoiceType
@@ -31,7 +31,7 @@ class TokenData(BaseModel):
 
 class User(SQLModel, table=True):
     id: int = Field(primary_key=True, default=None)
-    username: Optional[str]= Field(sa_column=Column("username", VARCHAR, unique=True, index=True))
+    username: Optional[EmailStr]= Field(sa_column=Column("username", VARCHAR, unique=True, index=True))
     password_hash: str = ""
     items: List['Item'] = Relationship(sa_relationship_kwargs={"cascade": "delete"}, back_populates="owner")
     reviews: List['Review'] = Relationship(sa_relationship_kwargs={"cascade": "delete"}, back_populates="user")
@@ -45,11 +45,11 @@ class UserRead(SQLModel):
     id: int
     username: Optional[str]
 
-class UserProfile(SQLModel, table=True):
+class UserProfile(BaseSQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
     profile_id: int = Field(default=None, foreign_key="user.id", unique=True)
     user:    Optional['User']  = Relationship(back_populates='profile')
-    email:   Optional[str]
+    email:   Optional[EmailStr]
     number:  Optional[str]
     address: Optional[str]
     avatar:  Optional[str]

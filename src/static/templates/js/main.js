@@ -7,7 +7,7 @@ function editItem() {
       let category = document.getElementById('category-select').value;
       let description = document.getElementById('id-description').value;
     $.ajax({
-        url: "/update_price_ajax",
+        url: "/update_product_ajax",
         method: "post",
         headers: { "Content-Type": "application/json",},
         data:  JSON.stringify({

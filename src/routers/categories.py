@@ -42,7 +42,7 @@ def get_category_items(request: Request, name: str, db: Session = Depends(get_se
         raise HTTPException(status_code=404, detail=f"No category events found for {name}")
     return category
 
-@category_router.post("/", status_code=status.HTTP_201_CREATED, response_model=CategoryRead)
+@category_router.post("/", status_code=status.HTTP_201_CREATED, response_model=CategoryRead, include_in_schema=False)
 def create_category(request: Request, category: CategoryCreate, db: Session = Depends(get_session)):
     """ Create category """
     c = CategoryActions().get_category_by_name(db=db, name=category.name)
@@ -59,7 +59,7 @@ def create_category(request: Request, category: CategoryCreate, db: Session = De
        logger.error(f"Error while creating Category, error message: {e}")
 
 
-@category_router.delete("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
+@category_router.delete("/{category_id}", include_in_schema=False, status_code=status.HTTP_204_NO_CONTENT)
 def delete_category(request: Request, category_id: int, db: Session = Depends(get_session)):
     """ Delete category """
     category = CategoryActions().get_category_by_id(db=db, id=category_id)

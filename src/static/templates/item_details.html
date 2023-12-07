@@ -189,7 +189,7 @@
                     <option value="Miscellaneous">Miscellaneous</option>
                 </select>
               </div>
-              <div class="form-group">
+            <div class="form-group">
               <label for="Description" class="col-form-label">Description:</label>
               <textarea  name="Description" id="id-description" rows="4" cols="50" maxlength="250"></textarea>
             </div>
@@ -262,7 +262,6 @@
                       <input type="number" name="id" value="{{ item.id }}" id="item-id" required hidden>
                       <p>Update Description:</p>
                       <textarea  name="description" id="id-description" rows="4" cols="50" maxlength="250"> </textarea>
-                      <button class="btn btn-secondary btn-sm" id="update-description-btn"> Save</button>
                     </div>
                     <div class="col-md-5">
                       {%  if item.description  %}
@@ -286,6 +285,10 @@
 </section>
 
 <script>
+$('#overall-rating').click(function() {
+     $('##review1').focus();
+});
+
 
 function getItemRating(){
   let id = $("#id").val()

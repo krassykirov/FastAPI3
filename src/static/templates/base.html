@@ -84,8 +84,8 @@
           {{ current_user }} <img src="/static/img/img_avatar.png" class="avatar" alt="{{ current_user}}">
           {% endif %}
           <div class="dropdown-content">
-            <a href="{{ url_for('get_user_profile') }}"><i class="fa fa-address-book" aria-hidden="true"> Profile</i> </a>
-            <a href="{{ url_for('logout') }}"><i class="fa fa-sign-out"> Logout</i></a>
+            <a href="{{ url_for('get_user_profile') }}"> Profile</a>
+            <a href="{{ url_for('logout') }}"> Logout</a>
           </div>
         </div>
      </form>
@@ -147,6 +147,10 @@
                   <option value="Services">Services</option>
                   <option value="Miscellaneous">Miscellaneous</option>
               </select>
+            </div>
+            <div class="form-group">
+              <label for="Description" class="col-form-label">Description:</label>
+              <textarea name="Description" id="add-description" rows="4" cols="50" maxlength="250"></textarea>
             </div>
             <button id="submit-button" class="btn btn-primary" style="margin-left:5px;">Save</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

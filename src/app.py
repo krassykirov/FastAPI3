@@ -47,7 +47,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 logger = detailed_logger()
 
 @app.on_event("startup")
@@ -59,17 +58,6 @@ def on_startup():
 @app.get("/", include_in_schema=False)
 async def home(request: Request, user: User = Depends(get_current_user)):
     return templates.TemplateResponse("base.html", {"request": request, 'current_user': user.username})
-
-@app.post("/create_category", status_code=status.HTTP_201_CREATED, response_model=Category, include_in_schema=False)
-async def create_cat(request: Request, name: str, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
-    """ Create category """
-    form_data = await request.form()
-    c = CategoryActions().get_category_by_name(db=db, name=form_data.get('name'))
-    if c is not None:
-        logger.error(f"Category with name:'{c.name}' already exist")
-        raise HTTPException(status_code=404, detail=f"Category with name:'{c.name}' already exist")
-    category = CategoryActions().create_category(db=db, category=Category(name=form_data.get('name')))
-    return  templates.TemplateResponse("base.html", {"request":request, 'category': category})
 
 @app.get("/products", include_in_schema=False, response_model=src.schemas.ItemRead)
 def get_products(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -94,6 +82,7 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         item_name =form_data['name']
         price=form_data['price']
         category_select = form_data['Category']
+        description = form_data['Description']
         category = CategoryActions().get_category_by_name(db=db, name=category_select)
         item = db.query(Item).where(Item.name == item_name).first()
         if item:
@@ -106,7 +95,7 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
                os.makedirs(path,exist_ok=True)
         with open(f"src/static/img/{user.username}/{item_name}/{filename}", 'wb') as f:
             f.write(content)
-            item = Item(name=item_name, price=price, image=filename, username=user.username, category=category)
+            item = Item(name=item_name, price=price, image=filename, username=user.username, category=category, description=description)
         try:
             db.add(item)
             db.commit()
@@ -161,7 +150,7 @@ async def read_item(request: Request, id: int, db: Session=Depends(get_session),
         response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
         return response
 
-@app.post("/update_price_ajax", status_code=status.HTTP_200_OK, include_in_schema=False, response_model=src.schemas.ItemRead)
+@app.post("/update_product_ajax", status_code=status.HTTP_200_OK, include_in_schema=False, response_model=src.schemas.ItemRead)
 async def update_item_api(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)) -> src.schemas.ItemRead:
     data = await request.json()
     category_select = data.get('category')
