@@ -43,7 +43,7 @@ def get_category_items(request: Request, name: str, db: Session = Depends(get_se
     return category
 
 @category_router.post("/", status_code=status.HTTP_201_CREATED, response_model=CategoryRead)
-def create_category(request: Request, category: Category, db: Session = Depends(get_session)):
+def create_category(request: Request, category: CategoryCreate, db: Session = Depends(get_session)):
     """ Create category """
     c = CategoryActions().get_category_by_name(db=db, name=category.name)
     if c is not None:

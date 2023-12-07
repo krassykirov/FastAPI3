@@ -74,7 +74,6 @@ async def create_cat(request: Request, name: str, db: Session = Depends(get_sess
 @app.get("/products", include_in_schema=False, response_model=src.schemas.ItemRead)
 def get_products(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     """ Return all Items """
-    logger.info(f'{user.username}')
     items_db = ItemActions().get_items(db=db) #, user=user.username
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
     items = [src.schemas.ItemRead.from_orm(item) for item in items_db]
@@ -96,7 +95,6 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         price=form_data['price']
         category_select = form_data['Category']
         category = CategoryActions().get_category_by_name(db=db, name=category_select)
-        print('category', category_select, type(category_select))
         item = db.query(Item).where(Item.name == item_name).first()
         if item:
             logger.error(f"Item with that name already exists!")
@@ -109,9 +107,12 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         with open(f"src/static/img/{user.username}/{item_name}/{filename}", 'wb') as f:
             f.write(content)
             item = Item(name=item_name, price=price, image=filename, username=user.username, category=category)
-        db.add(item)
-        db.commit()
-        db.refresh(item)
+        try:
+            db.add(item)
+            db.commit()
+            db.refresh(item)
+        except:
+            db.rollback()
         if 'user/create_item' in str(request.url):
             redirect_url = request.url_for('get_user_items')
         else:
@@ -126,8 +127,12 @@ async def delete_item(request: Request, background_tasks: BackgroundTasks, id: i
      item = ItemActions().get_item_by_id(db=db, id=id)
      json_user = jsonable_encoder(item).get('username')
      if item and user.username == json_user:
-        db.delete(item)
-        db.commit()
+        try:
+            db.delete(item)
+            db.commit()
+        except Exception as e:
+            db.rollback()
+            return HTTPException(status_code=400, detail=f"Something went wrong, error {e}")
         try:
             dir_to_delete = abspath(f"src/static/img/{user.username}/{item.name}/")
             background_tasks.add_task(delete_item_dir, path=dir_to_delete)
@@ -159,20 +164,32 @@ async def read_item(request: Request, id: int, db: Session=Depends(get_session),
 @app.post("/update_price_ajax", status_code=status.HTTP_200_OK, include_in_schema=False, response_model=src.schemas.ItemRead)
 async def update_item_api(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)) -> src.schemas.ItemRead:
     data = await request.json()
+    category_select = data.get('category')
+    price = data.get('price')
+    description = data.get('description')
+    new_category = CategoryActions().get_category_by_name(db= db, name=category_select)
     item = ItemActions().get_item_by_id(db=db, id=data.get('id'))
     if not item:
         logger.error("Item not found")
         raise HTTPException(status_code=404, detail="Item not found")
-    logger.info(f"{user.username} != {item.username}")
-    print(f" USERNAME: {user.username} {item.username}")
+    if not new_category:
+        logger.error("Category not found")
+        raise HTTPException(status_code=404, detail="Category not found")
     if user.username != item.username:
-        logger.info('Review_exist, You can write only one review for this item')
+        logger.info('You cannot update this item')
         raise HTTPException(status_code=403, detail=f"User cannot update this item")
-    new_data = Item(**data).dict(exclude_unset=True, exclude_none=True)
-    for key, value in new_data.items():
-        setattr(item, key, value)
+    try:
+        if new_category:
+            item.category=new_category
+        if price:
+            item.price=price
+        if description:
+            item.description=description
         db.commit()
         db.refresh(item)
+    except Exception as e:
+        db.rollback()
+        return HTTPException(status_code=400, detail=f"Something went wrong, error {e}")
     return item
 
 @app.post("/update_description_ajax", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead, include_in_schema=False)
@@ -199,12 +216,16 @@ async def create_review_ajax(request: Request, db: Session=Depends(get_session),
     review_exist =  [item for item in item.reviews if item.created_by == user.username]
     logger.error(f"review_exist {review_exist}")
     if not review_exist:
+        try:
             review = Review(**data, item=item)
             logger.info(f"Creating review {review}")
             db.add(review)
             db.commit()
             db.refresh(review)
             return review
+        except Exception as e:
+            db.rollback()
+            return HTTPException(status_code=400, detail=f"Something went wrong, error {e}")
     logger.info('Review_exist, You can write only one review for this item')
     raise HTTPException(status_code=403,detail=f"You can write only one review for this item.")
 
@@ -217,7 +238,6 @@ async def get_user_items( request: Request, db: Session=Depends(get_session), us
 @app.get("/user/profile", response_model=UserRead, include_in_schema=False)
 async def get_user_profile( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
-    print('request', request.url)
     return templates.TemplateResponse("profile.html", {"request": request,
                                                        'current_user': user.username,
                                                        'profile': profile })
@@ -247,9 +267,13 @@ async def create_profile(request: Request, db: Session = Depends(get_session), u
                                    number=number,
                                    address=address,
                                    avatar=filename)
-        db.add(user_profile)
-        db.commit()
-        db.refresh(user_profile)
+        try: 
+            db.add(user_profile)
+            db.commit()
+            db.refresh(user_profile)
+        except Exception as e:
+            db.rollback()
+            return HTTPException(status_code=400, detail=f"Something went wrong, error {e}")
     # json_compatible_item_data = jsonable_encoder(user_profile)
     # return JSONResponse(content=json_compatible_item_data)
     return templates.TemplateResponse("profile.html", {"request": request,

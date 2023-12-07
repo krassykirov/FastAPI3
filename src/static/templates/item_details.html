@@ -10,7 +10,7 @@
   <style>
   .card-img-top {
     width: 100%;
-    height: 15vw;
+    height: 14vw;
     object-fit: cover;
   }
   .card{
@@ -27,7 +27,6 @@
   .card.group1 {
     margin-left: 7%
   }
-
   .comment-box {
   padding: 15px
   }
@@ -64,7 +63,7 @@
     border: 1px solid #ccc;
     background-color: #f1f1f1;
     }
-    
+
     /* Style the buttons inside the tab */
     .tab button {
     background-color: inherit;
@@ -76,17 +75,17 @@
     transition: 0.3s;
     font-size: 15px;
     }
-    
+ 
     /* Change background color of buttons on hover */
     .tab button:hover {
     background-color: #ddd;
     }
-    
+
     /* Create an active/current tablink class */
     .tab button.active {
     background-color: #ccc;
     }
-    
+
     /* Style the tab content */
     .tabcontent {
     margin-left: 13%;
@@ -112,7 +111,7 @@
             <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
             {% endif %}
           <h4 class="card-title">{{item.name}} </h5>
-          <p class="price" id="item-details">Price: ${{ '%0.2f'|format(item.price|float)  }}</p>
+          <h5 class="price" id="item-details">Price: ${{ '%0.2f'|format(item.price|float)  }}</h5>
           <p class="category" id="category"> Category: {{ item.category.name.split('.')[-1]  }}</p>
           <input type="number" name="id" value="{{ item.id }}" id="id" hidden>
           <input type="text" id="username" value="{{ current_user }}"  hidden>
@@ -127,8 +126,10 @@
         <span id="overall-rating"> No rating Yet </span></i>
       </p>
         <div>
-          <a class="btn btn-secondary" data-toggle="modal" data-target="#EditPrice" id="myModal" style="margin: 15px; text-align:center; display:block;">Update Price</a>
+            {% if current_user == item.username  %}
+          <a class="btn btn-secondary" data-toggle="modal" data-target="#EditPrice" id="myModal" style="margin: 15px; text-align:center; display:block;">Update</a>
         <a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" id="myModal" style="margin:15px; text-align:center; display:block;">Delete</a>
+        {% endif %}
       </div>
         <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
@@ -159,15 +160,15 @@
       </div>
   </div>
     </div>
-    </div>
+</div>
     {%  if message  %}
     <p> <b> {{  message  }} </b></p>
     {%  endif %}
-    <div class="modal fade" id="EditPrice" tabindex="-1" role="dialog" aria-labelledby="EditPricelLabel" aria-hidden="true">
+  <div class="modal fade" id="EditPrice" tabindex="-1" role="dialog" aria-labelledby="EditPricelLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="EditPriceLabel">Update Price</h5>
+            <h5 class="modal-title" id="EditPriceLabel">Edit</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -178,17 +179,27 @@
                 <label for="price" class="col-form-label">Price:</label>
                 <input type="number" name="price" id="id-price">
               </div>
-              <button type="submit" class="btn btn-primary" id="edit-button">Update Price</button>
+              <div class="form-group">
+                <label for="Category" class="col-form-label">Category:</label>
+                <select name="Category" id="category-select">
+                    <option value="Finance">Finance</option>
+                    <option value="IT">IT</option>
+                    <option value="TV">TV</option>
+                    <option value="Services">Services</option>
+                    <option value="Miscellaneous">Miscellaneous</option>
+                </select>
+              </div>
+              <div class="form-group">
+              <label for="Description" class="col-form-label">Description:</label>
+              <textarea  name="Description" id="id-description" rows="4" cols="50" maxlength="250"></textarea>
+            </div>
+              <hr>
+              <button type="submit" class="btn btn-primary" id="edit-button">Save</button>
               <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close">Close</button>
           </div>
         </div>
       </div>
-</div>
-
-  <!-- <div class="tab" id="tabs" style="text-align: center; margin-left: 13%;">
-      <button class="tablinks" onclick="openTab(event, 'ReviewTab')" id="ReviewOpen">Reviews</button>
-      <button class="tablinks" onclick="openTab(event, 'Description')" id="defaultOpen"> Description</button>
-  </div> -->
+  </div>
 
 
 <section class="container py-5">
@@ -196,13 +207,12 @@
       <div class="col-md-12">
           <ul id="tabs" class="nav nav-tabs nav-fill">
               <li class="nav-item"><a href="#review1" data-target="#review1" data-toggle="tab" class="nav-link active">Review</a></li>
-              <li class="nav-item"><a href="#profile1" data-target="#profile1" data-toggle="tab" class="nav-link">Description</a></li>
+              <li class="nav-item"><a href="#description" data-target="#description-tab" data-toggle="tab" class="nav-link">Description</a></li>
               <li class="nav-item"><a href="#messages1" data-target="#messages1" data-toggle="tab" class="nav-link">Messages</a></li>
           </ul>
           <div id="tabsContent" class="tab-content p-5 border border-top-0 rounded">
               <div id="review1" class="tab-pane fade active show">
                 <div class="row pb-2">
-                  <!-- <button class="btn btn-secondary btn-sm" id="AddReview" onclick="ShowReview()">Add Review </button> -->
                   <div class="card" id="RatingCard" style="margin-left: 7%;">
                     <div class="row">
                     <div class="col-12" style="margin-bottom: 5px;">
@@ -239,7 +249,6 @@
                         <span class="fa fa-star" id="star{{ review.id }}5"></span>
                         <div>  <i>{{ review.text }} </i></div>
                         </p>
-
                       </div>
                       </div>
                     </div> 
@@ -247,23 +256,21 @@
                   {%  endif %}
               </div>
             </div>
-              <div id="profile1" class="tab-pane fade">
+              <div id="description-tab" class="tab-pane fade">
                   <div class="row pb-2">
-                    <div>
+                    <div class="form-group" id="description-div" style="display: none;">
+                      <input type="number" name="id" value="{{ item.id }}" id="item-id" required hidden>
+                      <p>Update Description:</p>
+                      <textarea  name="description" id="id-description" rows="4" cols="50" maxlength="250"> </textarea>
+                      <button class="btn btn-secondary btn-sm" id="update-description-btn"> Save</button>
+                    </div>
+                    <div class="col-md-5">
                       {%  if item.description  %}
                       <p id="description-text"> <i> {{ item.description}} </i> </p>
                       {% else %}
                       <p id="description-text"> <i> Product has no Description yet </i> </p>
                       {%  endif %}
                     </div>
-                    <div class="form-group" id="description-div" style="display: none;">
-                      <input type="number" name="id" value="{{ item.id }}" id="item-id" required hidden>
-                      <label for="description" class="col-form-label">New Description:</label>
-                      <input type="text" name="description" id="id-description">
-                      <button class="btn btn-secondary btn-sm" id="update-description-btn"> Submit</button>
-                    </div>
-                    <hr>
-                    <button class="btn btn-secondary btn-sm" id="show-description-btn" onclick="ShowDescription()"> Update</button>
                       <!-- <div class="col-md-5"><img src="//dummyimage.com/1005x559.png/5fa2dd/ffffff" class="float-right img-fluid img-rounded"></div> -->
                   </div>
               </div>
@@ -282,7 +289,6 @@
 
 function getItemRating(){
   let id = $("#id").val()
-  console.log("get rating id:", id)
   $.ajax({
         url: "/api/reviews/item/rating",
         method: "get",
@@ -382,13 +388,12 @@ function ShowReview(){
 
 $(document).ready(function(){
   var hiddenCardsOnLoad = $(".card:hidden").length;
-  console.log('hidden cards', hiddenCardsOnLoad )
   if (hiddenCardsOnLoad === 0) {
     $("#loadMore").hide();
   }
   // Initially show the first 4 cards
   $("#review1 > .card.group1").slice(0, 2).show();
-  console.log('Initially show 2 cards')
+
   // Use event delegation to handle click on dynamically added elements
   $("#review1").on("click", "#loadMore", function(e){
     e.preventDefault();
@@ -396,12 +401,10 @@ $(document).ready(function(){
     // Check if the button is in "Show Less" state
     if ($("#loadMore").text() === "Show Less") {
       // Hide 2 cards
-      console.log('hididng 2 cards')
       $(".card.group1:visible").slice(0, 2).hide()
       $("#loadMore").text("Load More"); // Change button text to "Load More"
     } else {
       // Show the next set of cards
-      console.log('Show the next set of cards')
       $(".card.group1:hidden").slice(0, 4).slideDown();
       $("#loadMore").text("Show Less"); // Change button text to "Show Less"
     }

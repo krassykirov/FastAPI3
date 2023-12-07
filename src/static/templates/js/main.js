@@ -4,47 +4,28 @@ function editItem() {
 
       let id = $("#edit-id").val()
       let price = $("#id-price").val()
+      let category = document.getElementById('category-select').value;
+      let description = document.getElementById('id-description').value;
     $.ajax({
         url: "/update_price_ajax",
         method: "post",
         headers: { "Content-Type": "application/json",},
         data:  JSON.stringify({
                 "id": `${id}`,
-                "price": `${price}`
+                "price": `${price}`,
+                "category": `${category}`,
+                "description": `${description}`
         }),
         success: data => {
-            console.log('data:', data);
             document.getElementById('item-details').innerText = `Price: $${parseFloat(data.price).toFixed(2)}`;
+            document.getElementById('category').innerText = `Category: ${data.category.name}`;
+            document.getElementById('description-text').innerText = `${data.description}`;
             document.getElementById('close').click()
         },
         error: (response) => {
           if (response.status === 403) {
             $("#EditPriceLabel").text(response.responseJSON.detail)
          }
-        }
-      });
-}
-
-function updateDescription() {
-
-      let id = $("#item-id").val()
-      let description = $("#id-description").val()
-    $.ajax({
-        url: "/update_description_ajax",
-        method: "post",
-        headers: { "Content-Type": "application/json",},
-        data:  JSON.stringify({
-                "id": `${id}`,
-                "description": `${description}`
-        }),
-        success: data => {
-            console.log('data:', data);
-            document.getElementById('description-text').innerText = `${data.description}`;
-            document.getElementById('close').click()
-            document.getElementById("description-div").style.display = 'none'
-        },
-        error: (error) => {
-            console.log('error:', error)
         }
       });
 }
@@ -71,7 +52,7 @@ function addReview() {
            const newCard = `
            <div class="card group1" id="card${data.id}" style="display: flex; margin-left:6%">
                 <div class="row">
-                <div class="col-12" style="margin-bottom: 5px;" style="max-width: 35%;">
+                <div class="col-12" style="margin-bottom: 3px;" style="max-width: 35%;">
                 <p>
                   <img src="/static/img/img_avatar.png" class="avatar">
                   ${data.created_by}
@@ -124,6 +105,7 @@ $(document).ready(function() {
       });
    }
 )});
+
 
 // $(".navbar-item").on("click", function() {
 //   $(".navbar-item").removeClass("active");

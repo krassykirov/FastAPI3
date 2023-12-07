@@ -1,4 +1,5 @@
 @import url("//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
+@import url(https://fonts.googleapis.com/css?family=Raleway);
 
 .card-img-top {
   width: 100%;
@@ -257,7 +258,6 @@ body.modal-open {
 padding-right: 0px !important;
 }
 
-  @import url(https://fonts.googleapis.com/css?family=Raleway);
 h2 {
   vertical-align: center;
   text-align: center;

@@ -24,8 +24,6 @@ def get_item_by_id( id: int, db: Session = Depends(get_session)) -> src.schemas.
 def get_items(skip: int = 0, limit: int = 100,
               db: Session = Depends(get_session), user: User = Depends(get_current_user)) -> List[src.schemas.ItemRead]:
     items = ItemActions().get_items(db=db, skip=skip, limit=limit, user=user.username)
-    for item in items:
-        print(item)
     if items is None:
         raise HTTPException(status_code=404, detail=f"No items found")
     return items
@@ -66,11 +64,6 @@ def create_item(item: src.schemas.ItemCreate, db: Session = Depends(get_session)
 def delete_item_by_id(item_id: int, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     ItemActions().delete_item_by_id(db=db, id=item_id)
 
-# @items_router.get("/item/{id}/rating", status_code=status.HTTP_200_OK, include_in_schema=True)
-# def get_item_rating(id: int, db: Session=Depends(get_session)):
-#     rating = ItemActions().get_item_rating(db=db,id=id)
-#     print('rating:', rating)
-#     return rating
 
 
 

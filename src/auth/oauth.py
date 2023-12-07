@@ -15,6 +15,9 @@ from datetime import datetime, timedelta
 from src.auth.oauth_schemas import OAuth2PasswordBearerCookie
 from passlib.context import CryptContext
 import datetime
+from src.my_logger import detailed_logger
+
+logger = detailed_logger()
 
 pwd_context = CryptContext(schemes="bcrypt")
 
@@ -126,11 +129,6 @@ def login(request: Request):
     response = templates.TemplateResponse("login.html",{"request":request})
     return response
 
-@oauth_router.get("/signup", include_in_schema=False)
-def login(request: Request):
-    response = templates.TemplateResponse("signup.html",{"request":request})
-    return response
-
 @oauth_router.post("/signup", include_in_schema=False)
 async def signup(request: Request, db: Session = Depends(get_session)):
     form_data = await request.form()
@@ -140,12 +138,20 @@ async def signup(request: Request, db: Session = Depends(get_session)):
     assert passwd == passwd2
     query = select(src.models.User).where(src.models.User.username == username)
     user = db.exec(query).first()
-    if not user:
-        user = src.models.User(username=username)
-        user.set_password(passwd)
-        db.add(user)
-        db.commit()
+    if user:
+        logger.error(f"Item with that name already exists!")
+        raise HTTPException(status_code=403,detail=f"User with that name already exists!")
+    user = src.models.User(username=username)
+    user.set_password(passwd)
+    db.add(user)
+    db.commit()
     response = templates.TemplateResponse("login.html",{"request":request})
+    return response
+
+@oauth_router.get("/signup", include_in_schema=False)
+def login(request: Request):
+    print("entering signup get")
+    response = templates.TemplateResponse("signup.html",{"request":request})
     return response
 
 @oauth_router.get("/logout", include_in_schema=False)
