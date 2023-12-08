@@ -203,6 +203,87 @@
       </div>
   </div>
 
+  <section class="container py-5">
+    <div class="row">
+        <div class="col-md-12">
+            <ul id="tabs" class="nav nav-tabs nav-fill">
+                <li class="nav-item"><a href="#review1" data-target="#review1" data-toggle="tab" class="nav-link active">Review</a></li>
+                <li class="nav-item"><a href="#description" data-target="#description-tab" data-toggle="tab" class="nav-link">Description</a></li>
+                <li class="nav-item"><a href="#messages1" data-target="#messages1" data-toggle="tab" class="nav-link">Messages</a></li>
+            </ul>
+            <div id="tabsContent" class="tab-content p-5 border border-top-0 rounded">
+                <div id="review1" class="tab-pane fade active show">
+                  <div class="row pb-2">
+                    <div class="card" id="RatingCard" style="margin-left: 7%;">
+                      <div class="row">
+                      <div class="col-12" style="margin-bottom: 5px;">
+                      <div class="comment-box ml-2">
+                      <input type="number" id="comment-item-id" value="{{ item.id }}" required hidden>
+                      <div class="rating"> <input type="radio" name="rating" value="5" id="5"><label for="5">☆</label> <input type="radio" name="rating" value="4" id="4"><label for="4">☆</label> <input type="radio" name="rating" value="3" id="3"><label for="3">☆</label> <input type="radio" name="rating" value="2" id="2"><label for="2">☆</label> <input type="radio" name="rating" value="1" id="1"><label for="1">☆</label> </div>
+                      <div class="comment-area"> <textarea class="form-control" placeholder="what is your view?" rows="4" id="comment-area"></textarea> </div>
+                      <div class="comment-btns mt-2">
+                      <div class="row">
+                      <div class="col-6">
+                      <div class="pull-left"> <button class="btn btn-secondary btn-sm" id="RatingCancel" onclick="RatingHide()">Cancel</button> </div>
+                      </div>
+                      <div class="col-6">
+                      <div class="pull-right"> <button class="btn btn-success send btn-sm" id="SendRaiting"> Submit </button> </div>
+                      </div>
+                      </div>
+                      </div>
+                      </div>
+                      </div>
+                 </div>
+                </div>
+                      {%  if item.reviews  %}
+                      {% for review in item.reviews %}
+                    <div class="card group1" id="card{{review.id}}" style="display: block;">
+                        <div class="row">
+                        <div class="col-12" style="margin-bottom: 5px;">
+                        <p>
+                          <img src="/static/img/img_avatar.png" class="avatar">
+                          {{ review.created_by }}
+                          <span class="fa fa-star checked" id="star{{ review.id }}1"></span>
+                          <span class="fa fa-star checked" id="star{{ review.id }}2"></span>
+                          <span class="fa fa-star checked" id="star{{ review.id }}3"></span>
+                          <span class="fa fa-star" id="star{{ review.id}}4"></span>
+                          <span class="fa fa-star" id="star{{ review.id }}5"></span>
+                          <div>  <i>{{ review.text }} </i></div>
+                          </p>
+                        </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                    {%  endif %}
+                </div>
+              </div>
+                <div id="description-tab" class="tab-pane fade">
+                    <div class="row pb-2">
+                      <div class="form-group" id="description-div" style="display: none;">
+                        <input type="number" name="id" value="{{ item.id }}" id="item-id" required hidden>
+                        <p>Update Description:</p>
+                        <textarea  name="description" id="id-description" rows="4" cols="50" maxlength="250"> </textarea>
+                      </div>
+                      <div class="col-md-5">
+                        {%  if item.description  %}
+                        <p id="description-text"> <i> {{ item.description}} </i> </p>
+                        {% else %}
+                        <p id="description-text"> <i> Product has no Description yet </i> </p>
+                        {%  endif %}
+                      </div>
+                        <!-- <div class="col-md-5"><img src="//dummyimage.com/1005x559.png/5fa2dd/ffffff" class="float-right img-fluid img-rounded"></div> -->
+                    </div>
+                </div>
+                <div id="messages1" class="tab-pane fade">
+                    <div class="list-group"><a href="" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">44</span> 
+                      Message 1</a> <a href="" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">8</span> 
+                      Message 2</a> <a href="" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">23</span> 
+                      Message 3</a> <a href="" class="list-group-item d-inline-block text-muted">Message n..</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </section>
 
 <!-- Modal -->
 <div class="modal fade" id="addToCartMessage" tabindex="-1" role="dialog" aria-labelledby="addToCartMessageTitle" aria-hidden="true">
@@ -254,88 +335,6 @@
       </div>
     </div>
   </div>
-
-<section class="container py-5">
-  <div class="row">
-      <div class="col-md-12">
-          <ul id="tabs" class="nav nav-tabs nav-fill">
-              <li class="nav-item"><a href="#review1" data-target="#review1" data-toggle="tab" class="nav-link active">Review</a></li>
-              <li class="nav-item"><a href="#description" data-target="#description-tab" data-toggle="tab" class="nav-link">Description</a></li>
-              <li class="nav-item"><a href="#messages1" data-target="#messages1" data-toggle="tab" class="nav-link">Messages</a></li>
-          </ul>
-          <div id="tabsContent" class="tab-content p-5 border border-top-0 rounded">
-              <div id="review1" class="tab-pane fade active show">
-                <div class="row pb-2">
-                  <div class="card" id="RatingCard" style="margin-left: 7%;">
-                    <div class="row">
-                    <div class="col-12" style="margin-bottom: 5px;">
-                    <div class="comment-box ml-2">
-                    <input type="number" id="comment-item-id" value="{{ item.id }}" required hidden>
-                    <div class="rating"> <input type="radio" name="rating" value="5" id="5"><label for="5">☆</label> <input type="radio" name="rating" value="4" id="4"><label for="4">☆</label> <input type="radio" name="rating" value="3" id="3"><label for="3">☆</label> <input type="radio" name="rating" value="2" id="2"><label for="2">☆</label> <input type="radio" name="rating" value="1" id="1"><label for="1">☆</label> </div>
-                    <div class="comment-area"> <textarea class="form-control" placeholder="what is your view?" rows="4" id="comment-area"></textarea> </div>
-                    <div class="comment-btns mt-2">
-                    <div class="row">
-                    <div class="col-6">
-                    <div class="pull-left"> <button class="btn btn-secondary btn-sm" id="RatingCancel" onclick="RatingHide()">Cancel</button> </div>
-                    </div>
-                    <div class="col-6">
-                    <div class="pull-right"> <button class="btn btn-success send btn-sm" id="SendRaiting"> Submit </button> </div>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-                    </div>
-               </div>
-              </div>
-                    {%  if item.reviews  %}
-                    {% for review in item.reviews %}
-                  <div class="card group1" id="card{{review.id}}" style="display: block;">
-                      <div class="row">
-                      <div class="col-12" style="margin-bottom: 5px;">
-                      <p>
-                        <img src="/static/img/img_avatar.png" class="avatar">
-                        {{ review.created_by }}
-                        <span class="fa fa-star checked" id="star{{ review.id }}1"></span>
-                        <span class="fa fa-star checked" id="star{{ review.id }}2"></span>
-                        <span class="fa fa-star checked" id="star{{ review.id }}3"></span>
-                        <span class="fa fa-star" id="star{{ review.id}}4"></span>
-                        <span class="fa fa-star" id="star{{ review.id }}5"></span>
-                        <div>  <i>{{ review.text }} </i></div>
-                        </p>
-                      </div>
-                      </div>
-                    </div>
-                  {% endfor %}
-                  {%  endif %}
-              </div>
-            </div>
-              <div id="description-tab" class="tab-pane fade">
-                  <div class="row pb-2">
-                    <div class="form-group" id="description-div" style="display: none;">
-                      <input type="number" name="id" value="{{ item.id }}" id="item-id" required hidden>
-                      <p>Update Description:</p>
-                      <textarea  name="description" id="id-description" rows="4" cols="50" maxlength="250"> </textarea>
-                    </div>
-                    <div class="col-md-5">
-                      {%  if item.description  %}
-                      <p id="description-text"> <i> {{ item.description}} </i> </p>
-                      {% else %}
-                      <p id="description-text"> <i> Product has no Description yet </i> </p>
-                      {%  endif %}
-                    </div>
-                      <!-- <div class="col-md-5"><img src="//dummyimage.com/1005x559.png/5fa2dd/ffffff" class="float-right img-fluid img-rounded"></div> -->
-                  </div>
-              </div>
-              <div id="messages1" class="tab-pane fade">
-                  <div class="list-group"><a href="" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">44</span> 
-                    Message 1</a> <a href="" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">8</span> 
-                    Message 2</a> <a href="" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">23</span> 
-                    Message 3</a> <a href="" class="list-group-item d-inline-block text-muted">Message n..</a></div>
-              </div>
-          </div>
-      </div>
-  </div>
-</section>
 
 <script>
 
