@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from src.models import Item, Category
 import decimal
 
@@ -44,7 +44,7 @@ class ItemRead(BaseModel):
     reviews: Optional[List]
     description:  Optional[str]
     category:  Optional[Category]
-    in_cart: Optional[bool]
+    in_cart: Optional[Dict[Any,Any]]
     class Config:
         orm_mode = True
         schema_extra = {

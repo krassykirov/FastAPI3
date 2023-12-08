@@ -2,8 +2,9 @@ import datetime
 from datetime import date
 import decimal
 from pydantic import BaseModel, EmailStr
-from typing import Optional, Union
+from typing import Optional, Union, Dict, Any
 from sqlmodel import SQLModel, Field, Relationship, Column, VARCHAR
+from sqlalchemy import JSON
 from sqlalchemy_utils import ChoiceType
 import enum
 # from enum import Enum as enum
@@ -68,7 +69,10 @@ class Item(SQLModel, table=True):
     owner:        Optional[User] = Relationship(back_populates="items")
     username:     Optional[str] = Field(default=None, foreign_key="user.username")
     description:  Optional[str]
-    in_cart:      Optional[bool] = Field(default=False)
+    in_cart:      Optional[Dict[Any,Any]] = Field(default={}, sa_column=Column(JSON))
+
+    class Config:
+        arbitrary_types_allowed = True
 
 class Categories(str, enum.Enum):
     Finance = "Finance"

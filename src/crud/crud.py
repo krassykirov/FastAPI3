@@ -14,12 +14,10 @@ class ItemActions:
         item = db.query(Item).filter(Item.name == name).first()
         return item
 
-    def get_items(self, db: Session, skip: int = 0, limit: int = 100, user=None, in_cart=False):
-        if user and in_cart==True:
-            items = db.query(Item).where(Item.username==user).where(Item.in_cart==True).order_by(Item.name).offset(skip).limit(limit).all()
-            return items
-        if user and in_cart==False:
-            items = db.query(Item).where(Item.username==user).where(Item.in_cart==False).order_by(Item.name).offset(skip).limit(limit).all()
+    def get_items(self, db: Session, skip: int = 0, limit: int = 100, user=None):
+        if user:
+            items = db.query(Item).where(Item.username==user).order_by(Item.name).offset(skip).limit(limit).all()
+            print('items', items)
             return items
         items = db.query(Item).order_by(Item.name).offset(skip).limit(limit).all()
         return items

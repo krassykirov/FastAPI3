@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 {% block html_read %}
+
 {% if not items %}
 <h1> You don't have items in your Cart :( </h1>
 {% endif %}
     {% for item in items %}
-    <div class="card w-75" id="card{{ item.id }}" style="max-height: 50%; margin-top: 10px;" onclick="removeCard(this.id)">
+    <div class="card w-75" id="card{{ item.id }}" style="max-height: 50%; margin-top: 10px;">
         <div class="row no-gutters">
             <div class="col-md-4" style="background: #868e96;">
                 {% if  'no-image.png' == item.image %}
@@ -28,7 +29,7 @@
                         <span class="fa fa-star" id="star{{ item.id }}5"></span>
                         <span id="overall-rating{{ item.id }}"> No rating Yet </span>
                     </p>
-                    <a href="#" class="btn btn-primary stretched-link">Remove from Cart</a>
+                    <a href="#" id="card{{ item.id }}" class="btn btn-primary stretched-link" onclick="removeCard(this.id)">Remove from Cart</a>
                 </div>
             </div>
         </div>
@@ -82,7 +83,7 @@ function removeCard(cardID){
           "item_id": `${item_id}`,
         }),
         success: data => {
-            console.log('success', data)
+            console.log('success')
         },
         error: (error) => {
             console.log('error:', error);

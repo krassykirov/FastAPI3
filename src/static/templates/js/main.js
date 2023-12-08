@@ -118,10 +118,6 @@ $.ajax({
         }),
     success: data => {
       console.log('success', data)
-        // document.getElementById('item-details').innerText = `Price: $${parseFloat(data.price).toFixed(2)}`;
-        // document.getElementById('category').innerText = `Category: ${data.category.name}`;
-        // document.getElementById('description-text').innerText = `${data.description}`;
-        // document.getElementById('close').click()
     },
     error: (error) => {
       console.log('error', error)
