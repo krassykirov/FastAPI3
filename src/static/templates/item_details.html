@@ -128,9 +128,11 @@
         <div>
             {% if current_user == item.username  %}
           <a class="btn btn-secondary" data-toggle="modal" data-target="#EditPrice" id="myModal" style="margin: 15px; text-align:center; display:block;">Update</a>
-        <a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" id="myModal" style="margin:15px; text-align:center; display:block;">Delete</a>
+          <a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" id="myModal" style="margin:15px; text-align:center; display:block;">Delete</a>
+          <a class="btn btn-info" id="add-to-cart" data-toggle="modal" data-target="#addToCartMessage"> Add to Cart</a>
         {% endif %}
       </div>
+
         <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -202,6 +204,57 @@
   </div>
 
 
+<!-- Modal -->
+<div class="modal fade" id="addToCartMessage" tabindex="-1" role="dialog" aria-labelledby="addToCartMessageTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">This product has been added to your cart.</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="card-body">
+          {% if  'no-image.png' == item.image %}
+          <img class="card-img-top" src="/static/img/{{ item.image }}">
+          {% else %}
+          <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
+          {% endif %}
+        <h5 class="card-title">{{item.name}} </h5>
+        <h5 class="price" id="item-details">Price: ${{ '%0.2f'|format(item.price|float)  }}</h5>
+        <p class="category" id="category"> Category: {{ item.category.name.split('.')[-1]  }}</p>
+        <p><a href="{{ url_for('get_user_items_in_cart')}}" class="tooltip-test" title="Tooltip">See your Cart</a> </p>
+    </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<a class="btn btn-info" data-toggle="modal" data-target="#ShowItemsInCart"> ShowItemsInCart</a>
+<!-- Test Modal -->
+<div class="modal fade" id="ShowItemsInCart" tabindex="-1" role="dialog" aria-labelledby="ShowItemsInCartTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">This product has been added to your cart</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p><a href="{{ url_for('get_user_items_in_cart')}}" class="tooltip-test" title="Tooltip">See your Cart</a> </p>
+      </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <section class="container py-5">
   <div class="row">
       <div class="col-md-12">
@@ -251,7 +304,7 @@
                         </p>
                       </div>
                       </div>
-                    </div> 
+                    </div>
                   {% endfor %}
                   {%  endif %}
               </div>
@@ -285,10 +338,6 @@
 </section>
 
 <script>
-$('#overall-rating').click(function() {
-     $('##review1').focus();
-});
-
 
 function getItemRating(){
   let id = $("#id").val()
@@ -421,6 +470,7 @@ function RatingHide(){
 
 document.getElementById('edit-button').onclick = editItem;
 document.getElementById('SendRaiting').onclick = addReview;
+document.getElementById('add-to-cart').onclick = addItemToCart;
 
 </script>
 

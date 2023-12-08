@@ -25,6 +25,7 @@ class BaseSQLModel(SQLModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
 class TokenData(BaseModel):
     username: Union[str, None] = None
     expires: Optional[datetime.datetime]
@@ -54,7 +55,6 @@ class UserProfile(BaseSQLModel, table=True):
     address: Optional[str]
     avatar:  Optional[str]
 
-
 class Item(SQLModel, table=True):
     id:           Optional[int] = Field(default=None, primary_key=True)
     name:         Optional[str] = Field(default=None, unique=True)
@@ -68,6 +68,7 @@ class Item(SQLModel, table=True):
     owner:        Optional[User] = Relationship(back_populates="items")
     username:     Optional[str] = Field(default=None, foreign_key="user.username")
     description:  Optional[str]
+    in_cart:      Optional[bool] = Field(default=False)
 
 class Categories(str, enum.Enum):
     Finance = "Finance"
@@ -95,3 +96,9 @@ class Review(SQLModel, table=True):
     rating:       Optional[int]    = Field(default=None)
     created_by:   Optional[str]    = Field(default=None, foreign_key="user.username")
     user:         Optional['User'] = Relationship(back_populates='reviews')
+
+# class Cart(BaseSQLModel, table=True):
+#       id: Optional[int] = Field(default=None, primary_key=True)
+#       items: Optional[List[Item]] = Relationship(back_populates='cart')
+#       username: str = Field(default=None, foreign_key="user.username", unique=True)
+#       user: Optional[User] = Relationship(back_populates='cart')

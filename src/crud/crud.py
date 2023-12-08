@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
-from src.models import Item, Category, Review, UserProfile
+from src.models import Item, Category, Review, UserProfile, User
 import src.schemas
 
 # Events
@@ -14,13 +14,14 @@ class ItemActions:
         item = db.query(Item).filter(Item.name == name).first()
         return item
 
-    def get_items(self, db: Session, skip: int = 0, limit: int = 100, user= None):
-        if user:
-            items = db.query(Item).filter(Item.username==user).order_by(Item.name).offset(skip).limit(limit).all()
+    def get_items(self, db: Session, skip: int = 0, limit: int = 100, user=None, in_cart=False):
+        if user and in_cart==True:
+            items = db.query(Item).where(Item.username==user).where(Item.in_cart==True).order_by(Item.name).offset(skip).limit(limit).all()
+            return items
+        if user and in_cart==False:
+            items = db.query(Item).where(Item.username==user).where(Item.in_cart==False).order_by(Item.name).offset(skip).limit(limit).all()
             return items
         items = db.query(Item).order_by(Item.name).offset(skip).limit(limit).all()
-        print('items:', items)
-        # items = db.query(Item).order_by(desc(Item.name)).offset(skip).limit(limit).all()
         return items
 
     def delete_item_by_id(self, db: Session, id: int):
@@ -132,3 +133,19 @@ class ProfileActions:
             db.commit()
 
 
+class CartActions:
+
+    def get_cart_by_id(self, db: Session, id: int):
+        basket = db.query(Cart).filter(Cart.id == id).first()
+        return basket
+
+    def get_carts(self,db: Session ,skip: int = 0, limit: int = 100):
+        cart = db.query(Cart).offset(skip).limit(limit).all()
+        return cart
+
+    def create_basket(self, db: Session, user: User, item: Item):
+        cart = Cart(user=user, content=item, user_id=user.id)
+        db.add(cart)
+        db.commit()
+        db.refresh(cart)
+        return cart

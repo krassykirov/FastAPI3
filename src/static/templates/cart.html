@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block html_read %}
+{% if not items %}
+<h1> You don't have items in your Cart :( </h1>
+{% endif %}
+    {% for item in items %}
+    <div class="card w-75" id="card{{ item.id }}" style="max-height: 50%; margin-top: 10px;" onclick="removeCard(this.id)">
+        <div class="row no-gutters">
+            <div class="col-md-4" style="background: #868e96;">
+                {% if  'no-image.png' == item.image %}
+                <img class="card-img" src="/static/img/{{ item.image }}">
+                {% else %}
+                <img class="card-img" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
+                 {% endif %}
+            </div>
+            <div class="col-sm-7">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.name }} </h5>
+                    <p class="card-text"> Price: ${{ '%0.2f'|format(item.price|float)  }}.</p>
+                    <p class="card-text"> Category: {{ item.category.name.split('.')[-1] }}</p>
+                    <input type="number" name="id" value="{{ item.id }}" id="id" hidden>
+                    <input type="text" id="username" value="{{ current_user }}"  hidden>
+                    <p>
+                        <span class="fa fa-star checked" id="star{{ item.id }}1"></span>
+                        <span class="fa fa-star checked" id="star{{ item.id }}2"></span>
+                        <span class="fa fa-star checked" id="star{{ item.id }}3"></span>
+                        <span class="fa fa-star" id="star{{ item.id }}4"></span>
+                        <span class="fa fa-star" id="star{{ item.id }}5"></span>
+                        <span id="overall-rating{{ item.id }}"> No rating Yet </span>
+                    </p>
+                    <a href="#" class="btn btn-primary stretched-link">Remove from Cart</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+
+<script>
+
+function getItemRating(item_id){
+  $.ajax({
+        url: "/api/reviews/item/rating",
+        method: "get",
+        headers: { "Content-Type": "application/json",},
+        data:  { "id": `${item_id}`
+        },
+        success: data => {
+          for (var i=1; i<=5; i++ ){
+            var star = document.getElementById('star'+ item_id + i )
+            if ( i <= data.rating ){
+                star.classList.add('checked');
+            }
+            else { star.classList.remove('checked')}
+          }
+        document.getElementById('overall-rating'+ item_id).innerText = '  (' + data.review_number + ')'
+        },
+        error: (error) => {
+            console.log('error:', error);
+        }
+      });
+   }
+
+{% for item in items %}
+var item_id = '{{ item.id }}'
+getItemRating(item_id)
+{% endfor %}
+
+$(document).ready(function() {
+    setItemsLen()
+});
+
+function removeCard(cardID){
+    var card = document.getElementById(cardID)
+    var item_id = cardID.slice(-1)
+    card.remove()
+    $.ajax({
+        url: "/user/remove_from_basket",
+        method: "post",
+        headers: { "Content-Type": "application/json",},
+        data: JSON.stringify({
+          "item_id": `${item_id}`,
+        }),
+        success: data => {
+            console.log('success', data)
+        },
+        error: (error) => {
+            console.log('error:', error);
+        }
+      });
+}
+
+</script>
+
+
+{% endblock %}

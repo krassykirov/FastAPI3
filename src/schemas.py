@@ -44,6 +44,7 @@ class ItemRead(BaseModel):
     reviews: Optional[List]
     description:  Optional[str]
     category:  Optional[Category]
+    in_cart: Optional[bool]
     class Config:
         orm_mode = True
         schema_extra = {
@@ -54,7 +55,8 @@ class ItemRead(BaseModel):
             "date": "2023-11-22 13:50:51",
             "image": "image.pgn",
             "username": "Krassy",
-            "description": "description"
+            "description": "description",
+            'in_cart': "false"
            }
         }
 

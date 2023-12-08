@@ -81,7 +81,7 @@ function addReview() {
          }
         }
       });
-}
+};
 
 $(document).ready(function() {
   $('#createItem').submit(function(e) {
@@ -106,10 +106,50 @@ $(document).ready(function() {
 )});
 
 
+function addItemToCart() {
+  let id = $("#edit-id").val()
+  let username = $("#username").val()
+$.ajax({
+    url: "/update_basket",
+    method: "post",
+    headers: { "Content-Type": "application/json",},
+    data:  JSON.stringify({
+          "item_id": `${id}`,
+        }),
+    success: data => {
+      console.log('success', data)
+        // document.getElementById('item-details').innerText = `Price: $${parseFloat(data.price).toFixed(2)}`;
+        // document.getElementById('category').innerText = `Category: ${data.category.name}`;
+        // document.getElementById('description-text').innerText = `${data.description}`;
+        // document.getElementById('close').click()
+    },
+    error: (error) => {
+      console.log('error', error)
+    }
+  });
+}
+
+function setItemsLen(){
+  $.ajax({
+        url: "/user_items_in_cart",
+        method: "get",
+        headers: { "Content-Type": "application/json",},
+        success: data => {
+            document.getElementById('cart-len').innerText = data.items_in_cart
+        },
+        error: (error) => {
+            console.log('error:', error);
+        }
+      });
+   }
+
+$(document).ready(function() {
+    setItemsLen()
+});
 // $(".navbar-item").on("click", function() {
 //   $(".navbar-item").removeClass("active");
 //   $(this).addClass("active");
-// }); 
+// });
 //fetchCategories
 // function fetchCategories() {
 //      fetch('/categories')

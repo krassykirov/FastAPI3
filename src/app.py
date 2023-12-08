@@ -17,13 +17,14 @@ from src.routers.categories import category_router
 from src.routers.items import items_router
 from src.routers.reviews import reviews_router
 from src.routers.profile import profile_router
+# from src.routers.cart import cart_router
+from src.auth.oauth import oauth_router, get_current_user
 from src.models import Item, Category, Review, User, UserRead, UserProfile, Categories
-from src.crud.crud import CategoryActions, ItemActions, ReviewActions, ProfileActions
+from src.crud.crud import CategoryActions, ItemActions, ReviewActions, ProfileActions, CartActions
 from src.helper import delete_item_dir, create_categories
 import src.schemas
 import os
 from os.path import abspath
-from src.auth.oauth import oauth_router, get_current_user
 from src.my_logger import detailed_logger
 
 
@@ -38,6 +39,7 @@ app.include_router(items_router)
 app.include_router(reviews_router)
 app.include_router(oauth_router)
 app.include_router(profile_router)
+# app.include_router(cart_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -55,10 +57,10 @@ def on_startup():
     app.mount("/static", StaticFiles(directory=Path(BASE_DIR, 'static'),html=True),name="static")
     create_categories(engine)
 
-# @app.get("/", include_in_schema=False)
-# async def home(request: Request, user: User = Depends(get_current_user)):
-#     print("entering app home")
-#     return templates.TemplateResponse("base.html", {"request": request, 'current_user': user.username})
+@app.get("/", include_in_schema=False)
+async def home(request: Request, user: User = Depends(get_current_user)):
+    print("entering app home")
+    return templates.TemplateResponse("base.html", {"request": request, 'current_user': user.username})
 
 @app.get("/products", include_in_schema=False, response_model=src.schemas.ItemRead)
 def get_products(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -231,6 +233,7 @@ async def get_user_profile( request: Request, db: Session=Depends(get_session), 
     return templates.TemplateResponse("profile.html", {"request": request,
                                                        'current_user': user.username,
                                                        'profile': profile })
+
 @app.post("/create_profile", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @app.post("/user/create_profile", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
 async def create_profile(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -307,9 +310,49 @@ async def update_profile(request: Request, db: Session = Depends(get_session), u
 @app.get("/products/{category_name}", status_code=status.HTTP_200_OK, include_in_schema=False)
 async def get_category(request: Request, category_name: str, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     if category_name not in list(Categories):
-        return "Fail"
+        logger.error("Invalid Category")
+        raise
     category = CategoryActions().get_category_by_name(db=db, name=category_name)
     return templates.TemplateResponse("categories.html", {"request": request,
                                                          'current_user': user.username,
                                                          'items': category.items })
 
+@app.post("/update_basket", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead,  include_in_schema=False)
+async def update_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+      data = await request.json()
+      print('data', data)
+      item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
+      if item.in_cart == False:
+         item.in_cart = True
+         db.commit()
+         db.refresh(item)
+         print('item:', item)
+         return item
+      print("Item already in the basket")
+      return item
+
+
+@app.post("/user/remove_from_basket", status_code=status.HTTP_200_OK,  include_in_schema=False)
+async def remove_from_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+      data = await request.json()
+      item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
+      item.in_cart = False
+      db.commit()
+      db.refresh(item)
+      return item
+
+
+@app.get("/user/items_in_cart", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead, include_in_schema=False)
+async def get_user_items_in_cart(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
+    items = ItemActions().get_items(db=db, user=user.username, in_cart=True)
+    profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
+    return templates.TemplateResponse("cart.html", {"request":request,
+                                                     'items':items,
+                                                     'current_user': user.username,
+                                                     'profile': profile})
+
+
+@app.get("/user_items_in_cart", status_code=status.HTTP_200_OK, include_in_schema=False)
+def get_user_in_cart_len(db: Session=Depends(get_session), user: User = Depends(get_current_user)):
+  items = ItemActions().get_items(db=db, user=user.username, in_cart=True)
+  return {'items_in_cart': len(items)}
