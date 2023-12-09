@@ -59,7 +59,6 @@ def on_startup():
 
 @app.get("/", include_in_schema=False)
 async def home(request: Request, user: User = Depends(get_current_user)):
-    print("entering app home")
     return templates.TemplateResponse("base.html", {"request": request, 'current_user': user.username})
 
 @app.get("/products", include_in_schema=False, response_model=src.schemas.ItemRead)
@@ -321,7 +320,6 @@ async def get_category(request: Request, category_name: str, db: Session = Depen
 @app.post("/update_basket", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead,  include_in_schema=False)
 async def update_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     data = await request.json()
-    print('data', data)
     item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
     new_dict = {user.username: {"in_cart": True}}
     basket = dict(item.in_cart, **new_dict )

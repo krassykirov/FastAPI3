@@ -95,8 +95,7 @@ $(document).ready(function() {
         contentType: false,
         data: formData,
         success: function(data){
-          console.log('success', data)
-          // window.location.href = "/user/items"
+          window.location.href = "/user/items"
         },
         error: function (xhr) {
             if (xhr.status === 403) {
@@ -144,15 +143,6 @@ function setItemsLen(){
 $(document).ready(function() {
     setItemsLen()
 });
-
-function classToggle() {
-  const navs = document.querySelectorAll('.Navbar__Items')
-
-  navs.forEach(nav => nav.classList.toggle('Navbar__ToggleShow'));
-}
-
-document.querySelector('.Navbar__Link-toggle')
-  .addEventListener('click', classToggle);
 
 
 // $(".navbar-item").on("click", function() {

@@ -17,7 +17,6 @@ class ItemActions:
     def get_items(self, db: Session, skip: int = 0, limit: int = 100, user=None):
         if user:
             items = db.query(Item).where(Item.username==user).order_by(Item.name).offset(skip).limit(limit).all()
-            print('items', items)
             return items
         items = db.query(Item).order_by(Item.name).offset(skip).limit(limit).all()
         return items
@@ -39,22 +38,11 @@ class ItemActions:
         if not item_exist:
             return "Item not found"
         new_data = Item(**dict(item), id=item_exist).dict(exclude_unset=True, exclude_none=True)
-        print("new_data:", new_data)
         for key, value in new_data.items():
             setattr(item, key, value)
             db.commit()
             db.refresh(item)
         return item
-
-    # def get_item_rating(self, id: int, db: Session):
-    #     item = self.get_item_by_id(db=db,id=id)
-    #     result = [item.rating for item in item.reviews]
-    #     print('result:', result)
-    #     if result:
-    #         rating = sum(result) / len(result)
-    #         print('result round:', rating, round(rating))
-    #         return round(rating)
-    #     return 0
 
 class CategoryActions:
 
