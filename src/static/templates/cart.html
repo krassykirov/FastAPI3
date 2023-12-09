@@ -1,13 +1,31 @@
 {% extends "base.html" %}
 {% block html_read %}
 
+<style>
+  .card-img {
+    width: 100%;
+    height: 14vw;
+    object-fit: cover;
+  }
+  .card{
+    width: 30rem;
+    margin-bottom: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    /* margin-left: 50%; */
+    /* border: 15px solid #969696; */
+    text-align: center;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  }
+</style>
+
 {% if not items %}
 <h1> You don't have items in your Cart :( </h1>
 {% endif %}
     {% for item in items %}
-    <div class="card w-75" id="card{{ item.id }}" style="max-height: 50%; margin-top: 10px;">
+    <div class="card w-75" id="card{{ item.id }}">
         <div class="row no-gutters">
-            <div class="col-md-4" style="background: #868e96;">
+            <div class="col-md-3" style="background: #868e96;">
                 {% if  'no-image.png' == item.image %}
                 <img class="card-img" src="/static/img/{{ item.image }}">
                 {% else %}
@@ -29,7 +47,7 @@
                         <span class="fa fa-star" id="star{{ item.id }}5"></span>
                         <span id="overall-rating{{ item.id }}"> No rating Yet </span>
                     </p>
-                    <a href="#" id="card{{ item.id }}" class="btn btn-primary stretched-link" onclick="removeCard(this.id)">Remove from Cart</a>
+                    <a href="#" id="card{{ item.id }}" class="btn btn-primary" onclick="removeCard(this.id)">Remove from Cart</a>
                 </div>
             </div>
         </div>

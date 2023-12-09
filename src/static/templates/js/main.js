@@ -87,6 +87,7 @@ $(document).ready(function() {
   $('#createItem').submit(function(e) {
     e.preventDefault();
     var formData = new FormData(this)
+    console.log('formData', formData)
     $.ajax({
         url: "/user/create_item",
         type: "POST",
@@ -94,7 +95,8 @@ $(document).ready(function() {
         contentType: false,
         data: formData,
         success: function(data){
-          window.location.href = "/user/items"
+          console.log('success', data)
+          // window.location.href = "/user/items"
         },
         error: function (xhr) {
             if (xhr.status === 403) {
@@ -142,6 +144,17 @@ function setItemsLen(){
 $(document).ready(function() {
     setItemsLen()
 });
+
+function classToggle() {
+  const navs = document.querySelectorAll('.Navbar__Items')
+
+  navs.forEach(nav => nav.classList.toggle('Navbar__ToggleShow'));
+}
+
+document.querySelector('.Navbar__Link-toggle')
+  .addEventListener('click', classToggle);
+
+
 // $(".navbar-item").on("click", function() {
 //   $(".navbar-item").removeClass("active");
 //   $(this).addClass("active");

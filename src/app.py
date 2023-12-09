@@ -74,6 +74,7 @@ def get_products(request: Request, db: Session = Depends(get_session), user: Use
                                                      'profile': profile})
 
 @app.post("/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
+@app.post("/user_items_in_cart/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @app.post("/user/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @app.post("/products/create_item", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
 @app.post("/user/profile/create_item", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
@@ -341,7 +342,7 @@ async def remove_from_basket(request: Request, db: Session = Depends(get_session
     return item
 
 
-@app.get("/user/items_in_cart", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead, include_in_schema=False)
+@app.get("/items_in_cart", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead, include_in_schema=False)
 async def get_user_items_in_cart(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     items = ItemActions().get_items(db=db)
     items_in_cart =  [item for item in items for k, v in item.in_cart.items()

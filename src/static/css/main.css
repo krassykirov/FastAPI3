@@ -1,5 +1,5 @@
 @import url("//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
-@import url(https://fonts.googleapis.com/css?family=Raleway);
+@import url("https://fonts.googleapis.com/css?family=Raleway");
 
 .card-img-top {
   width: 100%;
@@ -12,8 +12,9 @@
   margin-left: 1px;
   margin-right: 1px;
   width: 17vw;
-  border: 2px solid #969696;
+  /* border: 2px solid #969696; */
   text-align: center;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
 .dropbtn {
@@ -239,12 +240,7 @@ a {
   font-size:14px;
   font-weight:700
 }
-.superNav {
-  font-size:13px;
-  padding-right: 0px !important;
-  padding-left: 0px !important;
-  /* position: sticky; */
-}
+
 .form-control {
   outline:none !important;
   box-shadow: none !important;
@@ -292,6 +288,8 @@ h2 {
 .menu > li {
   margin: 0 1rem;
   overflow: hidden;
+  align-items: center;
+  text-align: center;
 }
 
 .menu-button-container {
@@ -351,7 +349,7 @@ h2 {
   .menu {
     position: absolute;
     top: 0;
-    margin-top: 50px;
+    margin-top: 30px;
     left: 0;
     flex-direction: column;
     width: 100%;
@@ -374,6 +372,7 @@ h2 {
   .menu > li {
     display: flex;
     justify-content: center;
+    text-align: center;
     margin: 0;
     padding: 0.5em 0;
     width: 100%;
@@ -383,4 +382,55 @@ h2 {
   .menu > li:not(:last-child) {
     border-bottom: 1px solid #444;
   }
+}
+
+.Navbar {
+  background-color: #46ACC2;
+  display: flex;
+  padding: 14px;
+  font-family: sans-serif;
+  color: white;
+}
+
+.Navbar__Link {
+  padding-right: 8px;
+}
+
+.Navbar__Items {
+  display: flex;
+}
+
+.Navbar__Items--right {
+  margin-left:auto;
+}
+
+.Navbar__Link-toggle {
+  display: none;
+}
+
+@media only screen and (max-width: 768px) {
+  .Navbar__Items,
+  .Navbar {
+    flex-direction: column;
+  }
+
+.Navbar__Items {
+    display:none;
+  }
+
+.Navbar__Items--right {
+    margin-left:0;
+  }
+
+.Navbar__ToggleShow {
+    display: flex;
+  }
+
+.Navbar__Link-toggle {
+    align-self: flex-end;
+    display: initial;
+    position: absolute;
+    cursor: pointer;
+   }
+
 }
