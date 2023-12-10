@@ -24,7 +24,7 @@
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   }
 
-  .card.group1 {
+  .list-group {
     margin-left: 7%
   }
   .comment-box {
@@ -213,7 +213,7 @@
             </ul>
             <div id="tabsContent" class="tab-content p-5 border border-top-0 rounded">
                 <div id="review1" class="tab-pane fade active show">
-                  <div class="row pb-2">
+                  <div class="row pb-1">
                     <div class="card" id="RatingCard" style="margin-left: 7%;">
                       <div class="row">
                       <div class="col-12" style="margin-bottom: 5px;">
@@ -237,7 +237,7 @@
                 </div>
                       {%  if item.reviews  %}
                       {% for review in item.reviews %}
-                    <div class="card group1" id="card{{review.id}}" style="display: block;">
+                    <div class="list-group" id="card{{review.id}}" style="display: block;">
                         <div class="row">
                         <div class="col-12" style="margin-bottom: 5px;">
                         <p>

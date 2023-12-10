@@ -126,7 +126,6 @@ $.ajax({
 }
 
 function setItemsLen(){
-  let category = $("#username").val()
   $.ajax({
         url: "/user_items_in_cart",
         method: "get",
@@ -140,30 +139,23 @@ function setItemsLen(){
       });
    }
 
-function getCategories(){
-  $.ajax({
-        url: "/products/{category_name}",
-        method: "get",
-        headers: { "Content-Type": "application/json",},
-        success: data => {
-            document.getElementById('cart-len').innerText = data.items_in_cart
-        },
-        error: (error) => {
-            console.log('error:', error);
-        }
-      });
-   }
-
 $(document).ready(function() {
     setItemsLen()
-    // document.getElementById('test-catalog').onclick = myFunction;
 });
 
-function myFunction() {
-  var x = document.getElementById("container-div");
-  if (x.style.display === "none") {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
-}
+// function getCategories(){
+//   $.ajax({
+//         url: "/products/{category_name}",
+//         method: "get",
+//         headers: { "Content-Type": "application/json",},
+//         success: data => {
+//             document.getElementById('cart-len').innerText = data.items_in_cart
+//         },
+//         error: (error) => {
+//             console.log('error:', error);
+//         }
+//       });
+//    }
+
+
+

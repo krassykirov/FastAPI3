@@ -91,7 +91,7 @@ $(document).ready(function() {
 
 function removeCard(cardID){
     var card = document.getElementById(cardID)
-    var item_id = cardID.slice(-1)
+    var item_id = cardID.replace('card', "")
     card.remove()
     $.ajax({
         url: "/user/remove_from_basket",

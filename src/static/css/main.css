@@ -38,6 +38,7 @@ background-color: #f1f1f1;
 min-width: 160px;
 box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
 z-index: 1;
+font-size: 13px;
 }
 
 .dropdown-content a {
@@ -121,6 +122,12 @@ display: block;
 .dropdown:hover .dropdown-content {display: block;}
 
 .dropdown:hover .dropbtn {background-color: #606c97;}
+
+.navbar-brand
+{
+  font-size: small;
+}
+
 
 .navbar-icon-top .navbar-nav .nav-link > .fa {
   position: relative;
@@ -236,10 +243,10 @@ display: block;
   }
 }
 
-a {
+/* a {
   font-size:14px;
   font-weight:700
-}
+} */
 
 .form-control {
   outline:none !important;
