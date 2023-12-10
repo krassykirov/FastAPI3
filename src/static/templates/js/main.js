@@ -106,7 +106,6 @@ $(document).ready(function() {
    }
 )});
 
-
 function addItemToCart() {
   let id = $("#edit-id").val()
   let username = $("#username").val()
@@ -127,6 +126,7 @@ $.ajax({
 }
 
 function setItemsLen(){
+  let category = $("#username").val()
   $.ajax({
         url: "/user_items_in_cart",
         method: "get",
@@ -140,166 +140,30 @@ function setItemsLen(){
       });
    }
 
+function getCategories(){
+  $.ajax({
+        url: "/products/{category_name}",
+        method: "get",
+        headers: { "Content-Type": "application/json",},
+        success: data => {
+            document.getElementById('cart-len').innerText = data.items_in_cart
+        },
+        error: (error) => {
+            console.log('error:', error);
+        }
+      });
+   }
+
 $(document).ready(function() {
     setItemsLen()
+    // document.getElementById('test-catalog').onclick = myFunction;
 });
 
-
-// $(".navbar-item").on("click", function() {
-//   $(".navbar-item").removeClass("active");
-//   $(this).addClass("active");
-// });
-//fetchCategories
-// function fetchCategories() {
-//      fetch('/categories')
-//     .then(response => response.json())
-//     .then(data => {
-//       const updatedDiv = document.getElementById('categories')
-//       console.log('data', data)
-//       const FormattedData = data.map(item=> `Name: ${item.name}, ID: ${item.id}`).join('<br>')
-//       // $("#categories").show();
-//       // updatedDiv.innerHTML = `<p> Name: ${data.name}, ID ${data.id} <\p>`
-//       updatedDiv.innerHTML = FormattedData
-//       if (updatedDiv.style.display === "none") {
-//           updatedDiv.style.display = "block";
-//           document.getElementById('fetch-button').innerHTML = "Hide Categories"
-//         } else {
-//           updatedDiv.style.display = "none";
-//           document.getElementById('fetch-button').innerHTML = "Show Categories"
-//         }
-//     })
-//     .catch(error => console.log("error:", error))
-// }
-// document.getElementById('fetch-button').onclick = fetchCategories;
-
-//fetchEvents
-// function fetchItems() {
-//      fetch('/items')
-//     .then(response => response.json())
-//     .then(data => {
-//       const updatedDiv = document.getElementById('events')
-//       console.log('data', data)
-//       const FormattedData = data.map(item => `Product_code: ${item.product_code},
-//                                               Date: ${item.date},
-//                                               Price: ${item.price},
-//                                               Category: ${item.price}`).join('<br>')
-//       updatedDiv.innerHTML = FormattedData
-//       if (updatedDiv.style.display === "none") {
-//           updatedDiv.style.display = "block";
-//           document.getElementById('fetch-button2').innerHTML = "Hide Events"
-//         } else {
-//           updatedDiv.style.display = "none";
-//           document.getElementById('fetch-button2').innerHTML = "Show Events"
-//         }
-//     })
-//     .catch(error => console.log("error:", error))
-// }
-// document.getElementById('fetch-button2').onclick = fetchItems;
-
-// createCategory
-// async function createCategory() {
-//   const categoryName = document.getElementById('cat-name').value
-
-//   await fetch('/categories', {
-//        method: "POST",
-//        headers: {"Content-Type": "application/json",},
-//        body: JSON.stringify({"name": categoryName}), // body data type must match "Content-Type" header
-//   })
-//   .then(response => response.json())
-//   .then(result => {
-//        const responseDiv = document.getElementById('responseDiv');
-//        console.log('result', result)
-//        if (result.detail){
-//         responseDiv.innerHTML = `${result.detail}`
-//        }
-//        else {
-//        responseDiv.innerHTML = `Created Category: ${result.name}, ID: ${result.id} `;
-//        }
-//        if (responseDiv.style.display === "none") {
-//         responseDiv.style.display = "block";
-//         }
-// })
-//   .catch(error => console.log("error:", error));
-// }
-
-// document.getElementById('create-cat').onclick = createCategory;
-
-// function addItem(item) {
-//         $("#catalog-table").append(
-//             `<tr>
-//             <td class="event-product_code">${item.name}</td>
-//             <td class="event-product_code">${item.product_code}</td>
-//             <td class="event-date">${item.date}</td>
-//             <td class="event-price">$${parseFloat(item.price).toFixed(2)}</td>
-//             <td class="event-purchase-button"><a href="/items/1"><button>Purchase Details</button></a></td>
-//             </tr>`);
-//     }
-
-
-// $(document).ready(function () {
-//     $.ajax({
-//         url: "/items/",
-//         success: data => {
-//             data.map(item => addItem(item));
-//             $("#catalog-table").show();
-//         },
-//         error: (_, textStatus, errorThrown) => {
-//             $("#loading p")[0].innerText = `${textStatus}: ${errorThrown}`;
-//         }
-//       });
-// });
-
-// function createItem(item){
-
-//     let name = $("#id-name").val()
-//     let price = $("#id-price").val()
-//     console.log("DATA:", name, price)
-//   $.ajax({
-//         url: "/items",
-//         method: "post",
-//         headers: { "Content-Type": "application/json",},
-//         data:  JSON.stringify({
-//                 "name": `${name}`,
-//                 "price": `${price}`,
-//         }),
-//         success: data => {
-//             console.log('data:', data)
-//             addItem(data);
-//             $("#catalog-table").show();
-//         },
-//         error: (error) => {
-//           console.log("error:", error)
-//         }
-//       });
-// }
-// document.getElementById('create-item').onclick = createItem;
-
-
-// function loadItems(){
-
-//   $.ajax({
-//       url: "/items/",
-//       success: data => {
-//         const updatedDiv = document.getElementById('items')
-//         console.log('data', data)
-//         const FormattedData = data.map(item => `Name: ${item.name}
-//                                                 Product_code: ${item.product_code},
-//                                                 Date: ${item.date},
-//                                                 Price: ${item.price},
-//                                                 Category: ${item.price}`).join('<br>')
-//       updatedDiv.innerHTML = FormattedData
-//       if (updatedDiv.style.display === "none") {
-//           updatedDiv.style.display = "block";
-//           document.getElementById('fetch-button3').innerHTML = "Hide Events"
-//         } else {
-//           updatedDiv.style.display = "none";
-//           document.getElementById('fetch-button3').innerHTML = "Show Events"
-//         }
-//       },
-//       error: (_, textStatus, errorThrown) => {
-//           $("#loading p")[0].innerText = `${textStatus}: ${errorThrown}`;
-//       }
-//     });
-// };
-
-// document.getElementById('fetch-button3').onclick = loadItems;
+function myFunction() {
+  var x = document.getElementById("container-div");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}

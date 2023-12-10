@@ -8,7 +8,7 @@
 {% endblock %}
 
 </br>
-<i class="fa fa-arrow-circle-left fa-4x" aria-hidden="true" style="cursor: pointer;" onclick="history.back()"></i>
+<!-- <i class="fa fa-arrow-circle-left fa-4x" aria-hidden="true" style="cursor: pointer;" onclick="history.back()"></i> -->
 
 {%  if items  %}
 <div class="container">
@@ -50,11 +50,23 @@
     </div>
     </div>
 {%  else  %}
-No Items in this Category found
+No Items in Category found
 {% endif  %}
-
-
-
+<div class="container mt-3">
+  <h3>Toast Example</h3>
+  <p>A toast is like an alert box that is only shown for a couple of seconds when something happens (i.e. when a user clicks on a button, submits a form, etc.).</p>
+  <p>In this example, we use the .show class to always show the toast by default. You can close it by clicking on the close (x) icon inside the toast header.</p>
+  
+  <div class="toast show">
+    <div class="toast-header">
+      <strong class="me-auto">Toast Header</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+    </div>
+    <div class="toast-body">
+      <p>Some text inside the toast body</p>
+    </div>
+  </div>
+</div>
 
 <script>
 

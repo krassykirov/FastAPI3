@@ -260,7 +260,7 @@ async def create_profile(request: Request, db: Session = Depends(get_session), u
                                    number=number,
                                    address=address,
                                    avatar=filename)
-        try: 
+        try:
             db.add(user_profile)
             db.commit()
             db.refresh(user_profile)
