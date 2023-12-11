@@ -332,7 +332,11 @@ async def get_category_ajax( request: Request, db: Session=Depends(get_session),
     print('data', data)
     category = CategoryActions().get_category_by_name(db=db, name=data.get('category'))
     json_compatible_item_data = jsonable_encoder(category.items)
-    return JSONResponse(content = json_compatible_item_data)
+    print('json_compatible_item_data', json_compatible_item_data)
+    if json_compatible_item_data:
+        return JSONResponse(content = json_compatible_item_data)
+    print('no data')
+    return JSONResponse(content = "No Items in Category Found")
 
 @app.post("/update-basket", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead,  include_in_schema=False)
 async def update_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
