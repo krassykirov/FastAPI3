@@ -227,6 +227,7 @@ async def get_user_items( request: Request, db: Session=Depends(get_session), us
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
     return templates.TemplateResponse("items.html", {"request":request, 'items':items, 'current_user': user.username, 'profile': profile})
 
+
 @app.get("/user/profile", response_model=UserRead, include_in_schema=False)
 async def get_user_profile( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
@@ -317,7 +318,23 @@ async def get_category(request: Request, category_name: str, db: Session = Depen
                                                          'current_user': user.username,
                                                          'items': category.items })
 
-@app.post("/update_basket", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead,  include_in_schema=False)
+
+@app.get("/category", status_code=status.HTTP_200_OK, include_in_schema=False)
+async def get_category(request: Request,  db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+    category = CategoryActions().get_category_by_name(db=db, name='Finance')
+    return templates.TemplateResponse("categories.html", {"request": request,
+                                                         'current_user': user.username,
+                                                         'items': category.items })
+
+@app.post("/category", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead, include_in_schema=False)
+async def get_category_ajax( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
+    data = await request.json()
+    print('data', data)
+    category = CategoryActions().get_category_by_name(db=db, name=data.get('category'))
+    json_compatible_item_data = jsonable_encoder(category.items)
+    return JSONResponse(content = json_compatible_item_data)
+
+@app.post("/update-basket", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead,  include_in_schema=False)
 async def update_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     data = await request.json()
     item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
@@ -328,7 +345,7 @@ async def update_basket(request: Request, db: Session = Depends(get_session), us
     db.refresh(item)
     return item
 
-@app.post("/user/remove_from_basket", status_code=status.HTTP_200_OK,  include_in_schema=False)
+@app.post("/user/remove-from-basket", status_code=status.HTTP_200_OK,  include_in_schema=False)
 async def remove_from_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     data = await request.json()
     item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
@@ -340,7 +357,7 @@ async def remove_from_basket(request: Request, db: Session = Depends(get_session
     return item
 
 
-@app.get("/items_in_cart", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead, include_in_schema=False)
+@app.get("/items-in-cart", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead, include_in_schema=False)
 async def get_user_items_in_cart(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     items = ItemActions().get_items(db=db)
     items_in_cart =  [item for item in items for k, v in item.in_cart.items()

@@ -1,4 +1,6 @@
 from fastapi import APIRouter
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from fastapi import Request, Depends, HTTPException, status
 from src.db import get_session
 from sqlalchemy.orm import Session
@@ -13,11 +15,11 @@ PROTECTED = [Depends(get_current_user)]
 items_router = APIRouter(prefix='/api/items', tags=["items"], dependencies=PROTECTED,
                           responses={404: {"description": "Not found"}})
 
-@items_router.get("/item/{id}", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead)
-def get_item_by_id( id: int, db: Session = Depends(get_session)) -> src.schemas.ItemRead:
-    item = ItemActions().get_item_by_id(db=db, id=id)
+@items_router.get("/item/{item_id}", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead)
+def get_item_by_id( item_id: int, db: Session = Depends(get_session)) -> src.schemas.ItemRead:
+    item = ItemActions().get_item_by_id(db=db, id=item_id)
     if item is None:
-        raise HTTPException(status_code=404, detail=f"No item with id: {id} found")
+        raise HTTPException(status_code=404, detail=f"No item with id: {item_id} found")
     return item
 
 @items_router.get("/", status_code=status.HTTP_200_OK, response_model=list[src.schemas.ItemRead])
@@ -28,30 +30,10 @@ def get_items(skip: int = 0, limit: int = 100,
         raise HTTPException(status_code=404, detail=f"No items found")
     return items
 
-
-@items_router.put("/update_item/{id}", include_in_schema=True, response_model=src.schemas.ItemRead)
-async def update_item(id: int, price: str, db: Session=Depends(get_session)) -> src.schemas.ItemRead:
-    item = ItemActions().get_item_by_id(db=db, id=id)
-    if not item:
-        raise HTTPException(status_code=404, detail="Item not found")
-    new_data = Item(id=id, price=price).dict(exclude_unset=True)
-    for key, value in new_data.items():
-        setattr(item, key, value)
-        db.commit()
-        db.refresh(item)
-    return item
-
-@items_router.put("/update_item_new/{id}", include_in_schema=True, response_model=src.schemas.ItemRead)
-async def update_item(id: int, item_update: src.schemas.ItemUpdate, db: Session=Depends(get_session)) -> src.schemas.ItemRead:
-    item = ItemActions().get_item_by_id(db=db, id=id)
-    if not item:
-        raise HTTPException(status_code=404, detail="Item not found")
-    new_data = Item(**dict(item_update), id=item).dict(exclude_unset=True, exclude_none=True)
-    for key, value in new_data.items():
-        setattr(item, key, value)
-        db.commit()
-        db.refresh(item)
-    return item
+# async def get_user_items( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
+#     items = ItemActions().get_items(db=db, user=user.username)
+#     json_compatible_item_data = jsonable_encoder(items)
+#     return JSONResponse(content = json_compatible_item_data)
 
 @items_router.post("/", status_code=status.HTTP_201_CREATED, response_model=src.schemas.ItemRead)
 def create_item(item: src.schemas.ItemCreate, db: Session = Depends(get_session), user: User = Depends(get_current_user)) -> src.schemas.ItemRead:
@@ -59,6 +41,18 @@ def create_item(item: src.schemas.ItemCreate, db: Session = Depends(get_session)
     db.add(item)
     db.commit()
     db.refresh(item)
+    return item
+
+@items_router.put("/update_item/{item_id}", include_in_schema=True, response_model=src.schemas.ItemRead)
+async def update_item(item_id: int, item_update: src.schemas.ItemUpdate, db: Session=Depends(get_session)) -> src.schemas.ItemRead:
+    item = ItemActions().get_item_by_id(db=db, id=item_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    new_data = Item(**dict(item_update), id=item).dict(exclude_unset=True, exclude_none=True)
+    for key, value in new_data.items():
+        setattr(item, key, value)
+        db.commit()
+        db.refresh(item)
     return item
 
 @items_router.delete("/delete/{item_id}", status_code=status.HTTP_204_NO_CONTENT)

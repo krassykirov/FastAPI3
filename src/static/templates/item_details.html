@@ -126,11 +126,11 @@
         <span id="overall-rating"> No rating Yet </span></i>
       </p>
         <div>
+             <a class="btn btn-info" id="add-to-cart" data-toggle="modal" data-target="#addToCartMessage"> Add to Cart</a>
             {% if current_user == item.username  %}
           <a class="btn btn-secondary" data-toggle="modal" data-target="#EditPrice" id="myModal" style="margin: 15px; text-align:center; display:block;">Update</a>
           <a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" id="myModal" style="margin:15px; text-align:center; display:block;">Delete</a>
         {% endif %}
-        <a class="btn btn-info" id="add-to-cart" data-toggle="modal" data-target="#addToCartMessage"> Add to Cart</a>
       </div>
 
         <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

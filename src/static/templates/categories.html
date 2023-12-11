@@ -8,44 +8,26 @@
 {% endblock %}
 
 </br>
-<!-- <i class="fa fa-arrow-circle-left fa-4x" aria-hidden="true" style="cursor: pointer;" onclick="history.back()"></i> -->
+
+  <div class="container-breadcrumb" style="margin-top: 13px;">
+    <nav style="--bs-breadcrumb-divider: '';" aria-label="breadcrumb">
+     <ol class="breadcrumb">
+       <li class="breadcrumb-item"><a href="#">Categories</a></li>
+       <li class="breadcrumb-item" data-category="Finance"><a href="#Finance">Finance</a></li>
+       <li class="breadcrumb-item" data-category="Services"><a href="#Services">Services</a></li>
+       <li class="breadcrumb-item" data-category="TV"><a href="#TV">TV</a></li>
+       <li class="breadcrumb-item" data-category="IT"><a href="#IT">IT</a></li>
+       <li class="breadcrumb-item" data-category="Miscellaneous"><a href="#Miscellaneous">Miscellaneous</a></li>
+     </ol>
+   </nav>
+   </div>
 
 {%  if items  %}
 <div class="container">
 
-<div class="row">
-    <div class="card-group col-12" id="mycard";>
-      {% for item in items %}
-      <div class="col-lg-auto">
-      <div class="card"  id="card{{ item.id }}">
-        <div class="card-body"  style="cursor: pointer"; onclick="location.href='{{ url_for('read_item', id=item.id) }}'" >
-          {% if  'no-image.png' == item.image %}
-          <img class="card-img-top" src="/static/img/{{ item.image }}">
-          {% else %}
-          <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
-          {% endif %}
-         <h5 class="card-title">{{ item.name }} </h5>
-         <h6 class="card-subtitle mb-2 text-muted">{{ item.category.name.split('.')[-1] }}</h6>
-          <p class="card-text">Price: ${{ '%0.2f'|format(item.price|float)  }}</p>
-          <!-- <p class="card-text">Product_code: {{ item.product_code }}</p> -->
-        <hr>
-        <div class="dropdown">
-        <a href="{{ url_for('read_item', id=item.id) }}"><button class="btn btn-secondary stretched-link">Purchase Details</button></a>
-      </div>
-      <p>
-      <span class="fa fa-star checked" id="star{{ item.id }}1"></span>
-      <span class="fa fa-star checked" id="star{{ item.id }}2"></span>
-      <span class="fa fa-star checked" id="star{{ item.id }}3"></span>
-      <span class="fa fa-star" id="star{{ item.id }}4"></span>
-      <span class="fa fa-star" id="star{{ item.id }}5"></span>
-      <span id="overall-rating{{ item.id }}"> No rating Yet </span>
-      </p>
-        <div class="card-footer">
-          <small class="text-muted">Created: {{ item.date.strftime('%Y-%m-%d') }} by {{ item.username }}</small>
-        </div>
-      </div>
-      </div>
+<div class="row" id="itemsContainer">
   </div>
+  {% for item in items %}
       {% endfor %}
     </div>
     </div>
@@ -98,10 +80,61 @@ function getItemRating(item_id){
       });
    }
 
-{% for item in items %}
-var item_id = '{{ item.id }}'
-getItemRating(item_id)
-{% endfor %}
+$(document).ready(function() {
+    $('.breadcrumb-item').on('click', function() {
+      var category= $(this).data('category');
+      console.log('category', category)
+    $.ajax({
+    url: "/category",
+    method: "post",
+    data:  JSON.stringify({
+          "category": `${category}`,
+        }),
+    success: data => {
+      console.log('data', data)
+      const itemsContainer = $('#itemsContainer');
+      itemsContainer.empty()
+      data.forEach(item => {
+        console.log("item:", item)
+        var itemHtml =  `
+          <div class="col-lg-auto">
+              <div class="card"  id="card${item.id}">
+            <div class="card-body"  style="cursor: pointer"; onclick="location.href='url_for('read_item', id=${item.id})'" >
+               <div class="card-body"  style="cursor: pointer"; onclick="location.href='url_for('read_item', id=${item.id})'" >
+              <img class="card-img-top" src="/static/img/${item.username}/${item.name}/${item.image}">
+            <h5 class="card-title">${item.name} </h5>
+            <div class="dropdown">
+            <a href="url_for('read_item', id=${item.id})"><button class="btn btn-secondary stretched-link">Purchase Details</button></a>
+          </div>
+          <p>
+          <span class="fa fa-star checked" id="star${item.id}1"></span>
+          <span class="fa fa-star checked" id="star${item.id}2"></span>
+          <span class="fa fa-star checked" id="star${item.id}3"></span>
+          <span class="fa fa-star" id="star${item.id}4"></span>
+          <span class="fa fa-star" id="star${item.id}5"></span>
+          <span id="overall-rating${item.id}"> No rating Yet </span>
+          </p>
+            <div class="card-footer">
+              <small class="text-muted">Created: ${item}.date.strftime('%Y-%m-%d') }} by ${item.username}</small>
+            </div>
+          </div>
+          </div>
+      </div>
+    `
+     getItemRating(`${item.id}`)
+     itemsContainer.append(itemHtml)
+      });
+
+    },
+    error: (response) => {
+      if (response.status === 403) {
+        $("#comment-area").val(response.responseJSON.detail)
+      }
+        }
+      });
+   }
+)});
+
 
 // const toastTrigger = document.getElementById('liveToastBtn')
 // const toastLiveExample = document.getElementById('liveToast')

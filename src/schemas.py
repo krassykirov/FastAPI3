@@ -67,10 +67,14 @@ class ItemUpdate(BaseModel):
         orm_mode = True
         schema_extra = {
         "example": {
-            "price": 99.99,
-             "description": "description"
-           }
-        }
+             "price": 999.99,
+             "description": "description",
+             "category": {
+                "id": 2,
+                "name": "IT"
+             }
+         }
+     }
 class ItemCreate(BaseModel):
     name: Optional[str]
     price: Optional[decimal.Decimal]

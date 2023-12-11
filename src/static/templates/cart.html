@@ -94,7 +94,7 @@ function removeCard(cardID){
     var item_id = cardID.replace('card', "")
     card.remove()
     $.ajax({
-        url: "/user/remove_from_basket",
+        url: "/user/remove-from-basket",
         method: "post",
         headers: { "Content-Type": "application/json",},
         data: JSON.stringify({

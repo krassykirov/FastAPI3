@@ -16,7 +16,9 @@
 
   <nav class="navbar navbar-expand-lg bg-white sticky-top navbar-light p-3 shadow-sm">
     <div class="container" style="font-size: 14px;">
-      <a class="navbar-brand" href="/" style="font-size: 14px;"><i class="fa-solid fa-shop me-2"></i> <strong>KRASSY SHOP</strong></a>
+      <a class="navbar-brand" href="#" style="font-size: 14px;"><i class="fa-solid fa-shop me-2"></i> <strong>KRASSY SHOP</strong>
+        <!-- <img style="max-width:50px;" src="/static/img/Owl.jpg" class="avatar"> -->
+      </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -41,7 +43,7 @@
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_user_items')}}">Catalog</a>
+            <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_category')}}">Categories</a>
           </li>
           <li class="nav-item">
             <a class="nav-link mx-2 text-uppercase" href="#">Services</a>
@@ -77,19 +79,6 @@
       {% endif %}
     </div>
   </nav>
-
-  <div class="container-breadcrumb" style="margin-top: 13px;">
-    <nav style="--bs-breadcrumb-divider: '';" aria-label="breadcrumb">
-     <ol class="breadcrumb">
-       <li class="breadcrumb-item"><a href="#">Categories</a></li>
-       <li class="breadcrumb-item " aria-current="page"><a href="#" onclick="location.href='{{ url_for('get_category',category_name='TV')}}'">TV</a></li>
-       <li class="breadcrumb-item " aria-current="page"><a href="#" onclick="location.href='{{ url_for('get_category',category_name='IT')}}'">IT</a></li>
-       <li class="breadcrumb-item " aria-current="page"><a href="#" onclick="location.href='{{ url_for('get_category',category_name='Finance')}}'">Finance</a></li>
-       <li class="breadcrumb-item " aria-current="page"><a href="#" onclick="location.href='{{ url_for('get_category',category_name='Miscellaneous')}}'">Miscellaneous</a></li>
-       <li class="breadcrumb-item " aria-current="page"><a href="#" onclick="location.href='{{ url_for('get_category',category_name='Services')}}'">Services</a></li>
-     </ol>
-   </nav>
-   </div>
 
   <div class="container" style="margin-left:auto">
   {% block html_read %}

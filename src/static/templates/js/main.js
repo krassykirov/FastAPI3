@@ -110,7 +110,7 @@ function addItemToCart() {
   let id = $("#edit-id").val()
   let username = $("#username").val()
 $.ajax({
-    url: "/update_basket",
+    url: "/update-basket",
     method: "post",
     headers: { "Content-Type": "application/json",},
     data:  JSON.stringify({

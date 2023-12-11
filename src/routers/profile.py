@@ -28,7 +28,6 @@ async def update_profile(request: Request, user_id: int,  db: Session = Depends(
         if db_profile is None:
             raise HTTPException(status_code=404, detail=f"No profile with user_id: {id} found")
         new_data = UserProfile(**dict(data), user=user).dict(exclude_unset=True)
-        print("new_data:", new_data)
         for key, value in new_data.items():
             setattr(db_profile, key, value)
             db.commit()
