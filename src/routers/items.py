@@ -30,10 +30,11 @@ def get_items(skip: int = 0, limit: int = 100,
         raise HTTPException(status_code=404, detail=f"No items found")
     return items
 
-# async def get_user_items( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
-#     items = ItemActions().get_items(db=db, user=user.username)
-#     json_compatible_item_data = jsonable_encoder(items)
-#     return JSONResponse(content = json_compatible_item_data)
+@items_router.get("/by-category", status_code=status.HTTP_200_OK, response_model=list[src.schemas.ItemRead])
+async def get_items_by_category( request: Request, category_id: int, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
+    items = ItemActions().get_items_by_category_id(db=db, category_id=category_id)
+    json_compatible_item_data = jsonable_encoder(items)
+    return JSONResponse(content = json_compatible_item_data)
 
 @items_router.post("/", status_code=status.HTTP_201_CREATED, response_model=src.schemas.ItemRead)
 def create_item(item: src.schemas.ItemCreate, db: Session = Depends(get_session), user: User = Depends(get_current_user)) -> src.schemas.ItemRead:

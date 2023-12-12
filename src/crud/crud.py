@@ -21,6 +21,13 @@ class ItemActions:
         items = db.query(Item).order_by(Item.name).offset(skip).limit(limit).all()
         return items
 
+    def get_items_by_category_id(self, db: Session, skip: int = 0, limit: int = 100, category_id=None):
+        if category_id:
+            items = db.query(Item).where(Item.category_id==category_id).order_by(Item.name).offset(skip).limit(limit).all()
+            return items
+        items = db.query(Item).order_by(Item.name).offset(skip).limit(limit).all()
+        return items
+
     def delete_item_by_id(self, db: Session, id: int):
         item = self.get_item_by_id(db=db, id=id)
         if item:
