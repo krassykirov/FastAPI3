@@ -10,7 +10,7 @@
   <div class="container-breadcrumb" style="margin-top: 13px;">
     <nav style="--bs-breadcrumb-divider: '';" aria-label="breadcrumb">
      <ol class="breadcrumb">
-       <li class="breadcrumb-item"><a href="#">Categories</a></li>
+       <li class="test"><a href="#">Categories</a></li>
        <li class="breadcrumb-item" data-category="Finance"><a href="#Finance">Finance</a></li>
        <li class="breadcrumb-item" data-category="Services"><a href="#Services">Services</a></li>
        <li class="breadcrumb-item" data-category="TV"><a href="#TV">TV</a></li>
@@ -19,15 +19,16 @@
      </ol>
    </nav>
    </div>
+
    <div class="row" id="itemsContainer">
 
    </div>
 {%  if items  %}
 <div class="row" id="items-to-hide">
   {% for item in items %}
-                   <div class="col-lg-auto">
-                       <div class="card"  id="card{{ item.id }}">
-                     <div class="card-body"  style="cursor: pointer"; onclick="location.href='{{ url_for('read_item', id=item.id) }}'" >
+      <div class="col-lg-auto">
+          <div class="card"  id="card{{ item.id }}">
+            <div class="card-body"  style="cursor: pointer"; onclick="location.href='{{ url_for('read_item', id=item.id) }}'" >
                        {% if  'no-image.png' == item.image %}
                        <img class="card-img-top" src="/static/img/{{ item.image }}">
                        {% else %}

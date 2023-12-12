@@ -319,7 +319,7 @@ async def get_category(request: Request, category_name: str, db: Session = Depen
                                                          'items': category.items })
 
 
-@app.get("/category", status_code=status.HTTP_200_OK, include_in_schema=False)
+@app.get("/categories", status_code=status.HTTP_200_OK, include_in_schema=False)
 async def get_category(request: Request,  db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     category = CategoryActions().get_category_by_name(db=db, name='Finance')
     return templates.TemplateResponse("categories.html", {"request": request,

@@ -133,6 +133,10 @@ display: block;
   font-size: small;
 }
 
+.nav-link.active {
+  color: rgb(119, 114, 114);
+}
+
 .navbar-icon-top .navbar-nav .nav-link > .fa {
   position: relative;
   width: 36px;
@@ -278,6 +282,7 @@ padding-right: 0px !important;
 
 .breadcrumb {
 	display: flex;
+  justify-content: center;
 	border-radius: 6px;
 	overflow: hidden;
 	margin: auto;

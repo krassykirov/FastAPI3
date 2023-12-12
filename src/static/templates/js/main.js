@@ -143,7 +143,24 @@ $(document).ready(function() {
     setItemsLen()
 });
 
-
+document.addEventListener('DOMContentLoaded', function () {
+ const navLinks = document.querySelectorAll('.nav-link');
+ navLinks.forEach(link => {
+  link.addEventListener('click', function() {
+    navLinks.forEach(otherLink => {
+      otherLink.classList.remove('active');
+    });
+    this.classList.add('active')
+    });
+ });
+  const currentUrl = window.location.href;
+  navLinks.forEach(link => {
+    const linkUrl = link.href;
+    if (currentUrl === linkUrl){
+      link.classList.add('active')
+    }
+  });
+})
 // function getCategories(){
 //   $.ajax({
 //         url: "/products/{category_name}",

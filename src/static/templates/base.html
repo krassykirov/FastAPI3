@@ -14,14 +14,11 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
 </head>
 
-  <nav class="navbar navbar-expand-lg bg-white sticky-top navbar-light p-3 shadow-sm">
+  <nav class="navbar navbar-expand-lg bg-white sticky-top navbar-light p-3 shadow-sm" style="height: 70px;">
     <div class="container" style="font-size: 14px;">
       <a class="navbar-brand" href="#" style="font-size: 14px;"><i class="fa-solid fa-shop me-2"></i> <strong>KRASSY SHOP</strong>
         <!-- <img style="max-width:50px;" src="/static/img/Owl.jpg" class="avatar"> -->
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
       <div class="mx-auto my-3 d-lg-none d-sm-block d-xs-block">
         <div class="input-group">
           <span class="border-warning input-group-text bg-warning text-white"><i class="fa-solid fa-magnifying-glass"></i></span>
@@ -32,7 +29,7 @@
       <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav ms-auto ">
           <li class="nav-item">
-            <a class="nav-link mx-2 text-uppercase active" aria-current="page" href="#">Offers</a>
+            <a class="nav-link mx-2 text-uppercase" aria-current="page" href="#">Offers</a>
           </li>
           <div class="dropdown">
           <li class="nav-item">
@@ -43,16 +40,9 @@
             </div>
           </li>
           <div class="dropdown">
-          <li class="nav-item">
+            <li class="nav-item">
             <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_category')}}">Categories</a>
-              <div class="dropdown-content">
-                <a class="nav-link" href="#" onclick="location.href='{{ url_for('get_category',category_name='Finance')}}'">Finance</a>
-                <a class="nav-link" href="#" onclick="location.href='{{ url_for('get_category',category_name='TV')}}'">TV</a>
-                <a class="nav-link" href="#" onclick="location.href='{{ url_for('get_category',category_name='IT')}}'">IT</a>
-                <a class="nav-link" href="#" onclick="location.href='{{ url_for('get_category',category_name='Miscellaneous')}}'">Miscellaneous</a>
-                <a class="nav-link" href="#" onclick="location.href='{{ url_for('get_category',category_name='Services')}}'">Services</a>
-              </div>
-            </div>
+          </div>
           </li>
           <li class="nav-item">
             <a class="nav-link mx-2 text-uppercase" href="#">Services</a>
@@ -73,23 +63,21 @@
       </div>
       {% if current_user %}
       <form class="form-inline my-2 my-lg-0" style="margin-right: 30px;">
-        <div class="dropdown">
+        <div class="dropdown" style="font-family: Raleway; font-size: 16px;">
           {% if profile %}
           {{ current_user }} <img src="/static/img/{{ current_user }}/profile/{{ profile.avatar }}" class="avatar" alt="{{ current_user}}">
           {% else %}
           {{ current_user }} <img src="/static/img/img_avatar.png" class="avatar" alt="{{ current_user}}">
           {% endif %}
           <div class="dropdown-content">
-            <a href="{{ url_for('get_user_profile') }}"> Profile</a>
-            <a href="{{ url_for('logout') }}"> Logout</a>
+            <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_user_profile') }}"> Profile</a>
+            <a class="nav-link mx-2 text-uppercase" href="{{ url_for('logout') }}"> Logout</a>
           </div>
         </div>
      </form>
       {% endif %}
     </div>
   </nav>
-
-
 
 
   <div class="container" style="margin-left:auto">
