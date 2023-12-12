@@ -20,11 +20,11 @@
    </nav>
    </div>
 
-   <div class="row" id="itemsContainer">
+   <div class="row" id="itemsContainer" style="justify-content: center;">
 
    </div>
 {%  if items  %}
-<div class="row" id="items-to-hide">
+<div class="row" id="items-to-hide" style="justify-content: center;">
   {% for item in items %}
       <div class="col-lg-auto">
           <div class="card"  id="card{{ item.id }}">
@@ -115,7 +115,8 @@ $(document).ready(function() {
       const itemsContainer = $('#itemsContainer');
       itemsContainer.empty()
       data.forEach(item => {
-        var categoryName = categoryIdToName[item.category_id]
+        var categoryName = categoryIdToName[item.category_id];
+        var formattedPrice = `$${(item.price).toFixed(2)}`;
         var itemHtml =  `
           <div class="col-lg-auto">
               <div class="card"  id="card${item.id}">
@@ -123,7 +124,7 @@ $(document).ready(function() {
                <div class="card-body"  style="cursor: pointer"; onclick="location.href='url_for('read_item', id=${item.id})'" >
               <img class="card-img-top" src="/static/img/${item.username}/${item.name}/${item.image}">
             <h5 class="card-title">${item.name} </h5>
- 
+            <h5 class="card-text">Price: ${formattedPrice}</h5>
             <h6 class="card-subtitle mb-2 text-muted">Category: ${categoryName}</h6>
             <div class="dropdown">
             <a href="{{ url_for('read_item', id='${item.id}') }}"><button class="btn btn-secondary stretched-link">Purchase Details</button></a>

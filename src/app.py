@@ -331,7 +331,6 @@ async def get_category_ajax( request: Request, db: Session=Depends(get_session),
     data = await request.json()
     category = CategoryActions().get_category_by_name(db=db, name=data.get('category'))
     json_compatible_item_data = jsonable_encoder(category.items)
-    print('json_compatible_item_data', json_compatible_item_data)
     if json_compatible_item_data:
         return JSONResponse(content = json_compatible_item_data)
     return JSONResponse(content = "No Items in Category Found")
