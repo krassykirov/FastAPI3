@@ -143,6 +143,7 @@ $(document).ready(function() {
     setItemsLen()
 });
 
+
 // function getCategories(){
 //   $.ajax({
 //         url: "/products/{category_name}",

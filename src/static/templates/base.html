@@ -42,8 +42,17 @@
                   </div>
             </div>
           </li>
+          <div class="dropdown">
           <li class="nav-item">
             <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_category')}}">Categories</a>
+              <div class="dropdown-content">
+                <a class="nav-link" href="#" onclick="location.href='{{ url_for('get_category',category_name='Finance')}}'">Finance</a>
+                <a class="nav-link" href="#" onclick="location.href='{{ url_for('get_category',category_name='TV')}}'">TV</a>
+                <a class="nav-link" href="#" onclick="location.href='{{ url_for('get_category',category_name='IT')}}'">IT</a>
+                <a class="nav-link" href="#" onclick="location.href='{{ url_for('get_category',category_name='Miscellaneous')}}'">Miscellaneous</a>
+                <a class="nav-link" href="#" onclick="location.href='{{ url_for('get_category',category_name='Services')}}'">Services</a>
+              </div>
+            </div>
           </li>
           <li class="nav-item">
             <a class="nav-link mx-2 text-uppercase" href="#">Services</a>
@@ -79,6 +88,9 @@
       {% endif %}
     </div>
   </nav>
+
+
+
 
   <div class="container" style="margin-left:auto">
   {% block html_read %}
