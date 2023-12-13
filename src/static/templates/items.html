@@ -74,8 +74,8 @@
     <br/>
   </div>
   <div class="row col-2" style="float: left;">
-    <article class="filter-group" style="float: left;">
-      <i class="fa fa-search" aria-hidden="true"> Categories</i>
+    <article class="filter-group">
+       Categories
       <hr>
       <div class="filter-content collapse show" id="collapse_2">
           <div class="card-body">
@@ -92,8 +92,9 @@
     </article>
     <hr>
     <article class="filter-group" style="float: left;">
-      <i class="fa fa-dollar" aria-hidden="true"> Price</i>
+      Price Range
       <div class="filter-content collapse show" id="collapse_3">
+            <wbr>
         <div class="card-body">
           <input type="range" class="custom-range" min="0" max="10000" value="100" onchange="updateMaxPriceInput(this.value);"">
           <div class="form-row">
@@ -112,10 +113,10 @@
     </article>
 
   </div>
-<div class="row" id="mycard" style="justify-content: left;">
+<div class="row g-0" id="mycard" style="justify-content: left;">
     {% for item in items %}
     <div class="col-lg-auto">
-    <div class="card"  id="card{{ item.id }}" data-category="{{ item.category.name.split('.')[-1]  }}" >
+    <div class="card"  id="card{{ item.id }}" data-category="{{ item.category.name.split('.')[-1] }}" >
       <div class="card-body"  style="cursor: pointer"; onclick="location.href='{{ url_for('read_item', id=item.id) }}'" >
         {% if  'no-image.png' == item.image %}
         <img class="card-img-top" src="/static/img/{{ item.image }}">
