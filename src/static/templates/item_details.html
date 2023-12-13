@@ -25,7 +25,7 @@
   }
 
   .list-group {
-    margin-left: 7%
+    margin-left: 7%;
   }
   .comment-box {
   padding: 15px
@@ -44,6 +44,7 @@
     border: 1px solid transparent;
     background-color: blue;
     transition: .3s;
+    margin-bottom: 3px;
   }
   #loadMore:hover {
     color: blue;
@@ -57,11 +58,12 @@
     pointer-events: none;
   }
 
-  .tab {
-    margin-left: 13%;
-    overflow: hidden;
+  .nav.nav-tabs {
+    margin-left: 22%;
+    margin-bottom: 5px;
+    /* overflow: hidden;
     border: 1px solid #ccc;
-    background-color: #f1f1f1;
+    background-color: #f1f1f1; */
     }
 
     /* Style the buttons inside the tab */
@@ -86,19 +88,20 @@
     background-color: #ccc;
     }
 
-    /* Style the tab content */
-    .tabcontent {
-    margin-left: 13%;
-    display: none;
+    .tab-content {
+    margin-left: 17%;
+    /* display: block;
     padding: 6px 12px;
     border: 1px solid #ccc;
     border-top: none;
     margin-bottom: 5px;
-    max-width: 35%;
+    max-width: 35%; */
     }
+  .tab-pane {
+    margin-left: 7%;
+  }
   </style>
 {% endblock %}
-</br>
 
 <div class="row">
     <div class="card-group col-12" id="mycard" style="margin-left: 3%;">
@@ -157,15 +160,12 @@
         </div>
         <br/>
         <div class="card-footer">
-          <small id="small" class="text-muted">Created at: <b>{{ item.date }} </b> by <b> {{ item.username }}</b></small>
+          <small id="small" class="text-muted">Created at: <b>{{ item.date.strftime('%Y-%m-%d') }} </b> by <b> {{ item.username }}</b></small>
         </div>
       </div>
   </div>
     </div>
 </div>
-    {%  if message  %}
-    <p> <b> {{  message  }} </b></p>
-    {%  endif %}
   <div class="modal fade" id="EditPrice" tabindex="-1" role="dialog" aria-labelledby="EditPricelLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -202,88 +202,104 @@
         </div>
       </div>
   </div>
-
-  <section class="container py-5">
-    <div class="row">
-        <div class="col-md-12">
-            <ul id="tabs" class="nav nav-tabs nav-fill">
-                <li class="nav-item"><a href="#review1" data-target="#review1" data-toggle="tab" class="nav-link active">Review</a></li>
-                <li class="nav-item"><a href="#description" data-target="#description-tab" data-toggle="tab" class="nav-link">Description</a></li>
-                <li class="nav-item"><a href="#messages1" data-target="#messages1" data-toggle="tab" class="nav-link">Messages</a></li>
-            </ul>
-            <div id="tabsContent" class="tab-content p-5 border border-top-0 rounded">
-                <div id="review1" class="tab-pane fade active show">
-                  <div class="row pb-1">
-                    <div class="card" id="RatingCard" style="margin-left: 7%;">
-                      <div class="row">
-                      <div class="col-12" style="margin-bottom: 5px;">
-                      <div class="comment-box ml-2">
-                      <input type="number" id="comment-item-id" value="{{ item.id }}" required hidden>
-                      <div class="rating"> <input type="radio" name="rating" value="5" id="5"><label for="5">☆</label> <input type="radio" name="rating" value="4" id="4"><label for="4">☆</label> <input type="radio" name="rating" value="3" id="3"><label for="3">☆</label> <input type="radio" name="rating" value="2" id="2"><label for="2">☆</label> <input type="radio" name="rating" value="1" id="1"><label for="1">☆</label> </div>
-                      <div class="comment-area"> <textarea class="form-control" placeholder="what is your view?" rows="4" id="comment-area"></textarea> </div>
-                      <div class="comment-btns mt-2">
-                      <div class="row">
-                      <div class="col-6">
-                      <div class="pull-left"> <button class="btn btn-secondary btn-sm" id="RatingCancel" onclick="RatingHide()">Cancel</button> </div>
-                      </div>
-                      <div class="col-6">
-                      <div class="pull-right"> <button class="btn btn-success send btn-sm" id="SendRaiting"> Submit </button> </div>
-                      </div>
-                      </div>
-                      </div>
-                      </div>
-                      </div>
-                 </div>
-                </div>
-                      {%  if item.reviews  %}
-                      {% for review in item.reviews %}
-                    <div class="list-group" id="card{{review.id}}" style="display: block;">
-                        <div class="row">
-                        <div class="col-12" style="margin-bottom: 5px;">
-                        <p>
-                          <img src="/static/img/img_avatar.png" class="avatar">
-                          {{ review.created_by }}
-                          <span class="fa fa-star checked" id="star{{ review.id }}1"></span>
-                          <span class="fa fa-star checked" id="star{{ review.id }}2"></span>
-                          <span class="fa fa-star checked" id="star{{ review.id }}3"></span>
-                          <span class="fa fa-star" id="star{{ review.id}}4"></span>
-                          <span class="fa fa-star" id="star{{ review.id }}5"></span>
-                          <div>  <i>{{ review.text }} </i></div>
-                          </p>
-                        </div>
-                        </div>
-                      </div>
-                    {% endfor %}
-                    {%  endif %}
-                </div>
-              </div>
-                <div id="description-tab" class="tab-pane fade">
-                    <div class="row pb-2">
-                      <div class="form-group" id="description-div" style="display: none;">
-                        <input type="number" name="id" value="{{ item.id }}" id="item-id" required hidden>
-                        <p>Update Description:</p>
-                        <textarea  name="description" id="id-description" rows="4" cols="50" maxlength="250"> </textarea>
-                      </div>
-                      <div class="col-md-5">
-                        {%  if item.description  %}
-                        <p id="description-text"> <i> {{ item.description}} </i> </p>
-                        {% else %}
-                        <p id="description-text"> <i> Product has no Description yet </i> </p>
-                        {%  endif %}
-                      </div>
-                        <!-- <div class="col-md-5"><img src="//dummyimage.com/1005x559.png/5fa2dd/ffffff" class="float-right img-fluid img-rounded"></div> -->
-                    </div>
-                </div>
-                <div id="messages1" class="tab-pane fade">
-                    <div class="list-group"><a href="" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">44</span> 
-                      Message 1</a> <a href="" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">8</span> 
-                      Message 2</a> <a href="" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">23</span> 
-                      Message 3</a> <a href="" class="list-group-item d-inline-block text-muted">Message n..</a></div>
-                </div>
+<br>
+<nav>
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" 
+      aria-controls="home-tab-pane" aria-selected="true">Reviews</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" 
+      aria-controls="profile-tab-pane" aria-selected="false">Description</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" 
+      aria-controls="contact-tab-pane" aria-selected="false">Messages</button>
+    </li>
+  </ul>
+  <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+      <div class="row pb-1">
+        <div class="card" id="RatingCard" style="margin-left: 0">
+          <div class="row">
+          <div class="col-12" style="margin-bottom: 5px; margin-left:0;" >
+          <div class="comment-box ml-2">
+          <input type="number" id="comment-item-id" value="{{ item.id }}" required hidden>
+          <div class="rating"> <input type="radio" name="rating" value="5" id="5"><label for="5">☆</label> <input type="radio" name="rating" value="4" id="4"><label for="4">☆</label> <input type="radio" name="rating" value="3" id="3"><label for="3">☆</label> <input type="radio" name="rating" value="2" id="2"><label for="2">☆</label> <input type="radio" name="rating" value="1" id="1"><label for="1">☆</label> </div>
+          <div class="comment-area"> <textarea class="form-control" placeholder="what is your view?" rows="4" id="comment-area"></textarea> </div>
+          <div class="comment-btns mt-2">
+          <div class="row">
+          <div class="col-6">
+          <div class="pull-left"> <button class="btn btn-secondary btn-sm" id="RatingCancel" onclick="RatingHide()">Cancel</button> </div>
+          </div>
+          <div class="col-6">
+          <div class="pull-right"> <button class="btn btn-success send btn-sm" id="SendRaiting"> Submit </button> </div>
+          </div>
+          </div>
+          </div>
+          </div>
+          </div>
+     </div>
+    </div>
+          {%  if item.reviews  %}
+          {% for review in item.reviews %}
+        <div class="list-group" id="card{{review.id}}" style="display: block; margin-left:0;">
+            <div class="row">
+            <div class="col-12" style="margin-bottom: 5px; margin-left:0">
+            <p style="margin-left:0">
+              <img src="/static/img/img_avatar.png" class="avatar">
+              {{ review.created_by }}
+              <span class="fa fa-star checked" id="star{{ review.id }}1"></span>
+              <span class="fa fa-star checked" id="star{{ review.id }}2"></span>
+              <span class="fa fa-star checked" id="star{{ review.id }}3"></span>
+              <span class="fa fa-star" id="star{{ review.id}}4"></span>
+              <span class="fa fa-star" id="star{{ review.id }}5"></span>
+              <div>  <i>{{ review.text }} </i></div>
+              </p>
             </div>
+            </div>
+          </div>
+        {% endfor %}
+        {%  endif %}
+    </div>
+  </div>
+    <div id="description-tab" class="tab-pane fade">
+        <div class="row pb-2">
+          <div class="form-group" id="description-div">
+            <input type="number" name="id" value="{{ item.id }}" id="item-id" required hidden>
+            <p>Update Description:</p>
+            <textarea  name="description" rows="4" cols="50" maxlength="250"> </textarea>
+          </div>
+          <div class="col-md-5">
+            {%  if item.description  %}
+            <p id="description-text"> <i> {{ item.description}} </i> </p>
+            {% else %}
+            <p id="description-text"> <i> Product has no Description yet </i> </p>
+            {%  endif %}
+          </div>
+            <!-- <div class="col-md-5"><img src="//dummyimage.com/1005x559.png/5fa2dd/ffffff" class="float-right img-fluid img-rounded"></div> -->
         </div>
     </div>
-  </section>
+    <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+      <div class="row pb-2">
+        <div class="col-md-5">
+          {%  if item.description  %}
+          <p id="description-text"> <i> {{ item.description}} </i> </p>
+          {% else %}
+          <p id="description-text"> <i> Product has no Description yet </i> </p>
+          {%  endif %}
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0" style="margin-left: 0">
+      <div class="list-group"><a href="#" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">44</span> 
+        Message 1</a> <a href="#" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">8</span> 
+        Message 2</a> <a href="#" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">23</span> 
+        Message 3</a> <a href="#" class="list-group-item d-inline-block text-muted">Message n..</a></div>
+    </div>
+  </div>
+</nav>
 
 <!-- Modal -->
 <div class="modal fade" id="addToCartMessage" tabindex="-1" role="dialog" aria-labelledby="addToCartMessageTitle" aria-hidden="true">
@@ -423,10 +439,10 @@ $(document).ready(function(){
     $("#loadMore").hide();
   }
   // Initially show the first 4 cards
-  $("#review1 > .card.group1").slice(0, 2).show();
+  $("#home-tab-pane > .card.group1").slice(0, 2).show();
 
   // Use event delegation to handle click on dynamically added elements
-  $("#review1").on("click", "#loadMore", function(e){
+  $("#home-tab-pane").on("click", "#loadMore", function(e){
     e.preventDefault();
 
     // Check if the button is in "Show Less" state

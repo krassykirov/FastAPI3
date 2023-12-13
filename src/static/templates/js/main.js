@@ -49,11 +49,11 @@ function addReview() {
         success: data => {
            const reviewDiv = document.getElementsByClassName('card group1"')
            const newCard = `
-           <div class="card group1" id="card${data.id}" style="display: flex; margin-left:6%">
-                <div class="row">
-                <div class="col-12" style="margin-bottom: 3px;" style="max-width: 35%;">
-                <p>
-                  <img src="/static/img/img_avatar.png" class="avatar">
+           <div class="card group1" id="card${data.id}" style="display: flex; margin-left:0;">
+                <div class="row" style="margin-left:0>
+                <div class="col-12" style="margin-bottom: 3px; margin-left:0"  style="max-width: 35%;">
+                <p style="margin-left:0">
+                <img src="/static/img/img_avatar.png" class="avatar">
                   ${data.created_by}
                   <span class="fa fa-star checked" id="star${data.id}1"></span>
                   <span class="fa fa-star checked" id="star${data.id}2"></span>
@@ -70,8 +70,8 @@ function addReview() {
             setRveiewsRating()
 
             // document.getElementById('RatingCancel').click()
-            $("#review1").append(newCard)
-            $("#review1").append('<a href="#" id="loadMore" style="margin-left:6%">Load More</a>');
+            $("#home-tab-pane").append(newCard)
+            $("#home-tab-pane").append('<a href="#" id="loadMore" style="margin-left:0%">Load More</a>');
             // reviewDiv.style.display = "block";
             // window.location.href = `/items/${id}`
         },
