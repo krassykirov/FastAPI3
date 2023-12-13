@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
+from sqlmodel import select
 from src.models import Item, Category, Review, UserProfile, User
 import src.schemas
 
@@ -63,7 +64,8 @@ class CategoryActions:
         return category
 
     def get_categories(self, db: Session, skip: int = 0, limit: int = 100):
-        categories = db.query(Category).offset(skip).limit(limit).all()
+        categories = db.exec(select(Category.name)).all()
+        categories = [category.split(':')[-1] for category in categories]
         return categories
 
     def create_category(self, db: Session, category: Category):

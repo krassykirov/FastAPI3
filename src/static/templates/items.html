@@ -7,19 +7,115 @@
         {% include "js/main.js" %}
     </script>
 {% endblock %}
+<style>
+  .icon-control {
+  margin-top: 5px;
+  float: right;
+  font-size: 80%;
+}
+
+.btn-light {
+  background-color: #fff;
+  border-color: #e4e4e4;
+}
+
+.list-menu {
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+}
+.list-menu a {
+  color: #343a40;
+}
+
+.card-product-grid .info-wrap {
+  overflow: hidden;
+  padding: 18px 20px;
+}
+
+[class*='card-product'] a.title {
+  color: #212529;
+  display: block;
+}
+
+.card-product-grid:hover .btn-overlay {
+  opacity: 1;
+}
+.card-product-grid .btn-overlay {
+  -webkit-transition: .5s;
+  transition: .5s;
+  opacity: 0;
+  left: 0;
+  bottom: 0;
+  color: #fff;
+  width: 100%;
+  padding: 5px 0;
+  text-align: center;
+  position: absolute;
+  background: rgba(0, 0, 0, 0.5);
+}
+.img-wrap {
+  overflow: hidden;
+  position: relative;
+}
+
+.badge-light {
+    color: #212529;
+    background-color: #f8f9fa;
+}
+</style>
 
   <div class="container">
       <div class="row pt-2">
         <div class="col-md-11">
-          <input class="form-control mr-sm-2" id="filter" onkeyup="Search()" type="text" placeholder="Search for products in all categories...">
+          <input class="form-control mr-sm-2" id="filter" onkeyup="Search()" type="text" placeholder="Search for products by name...">
         </div>
       </div>
     <br/>
+  </div>
+  <div class="row col-2" style="float: left;">
+    <article class="filter-group" style="float: left;">
+      <i class="fa fa-search" aria-hidden="true"> Categories</i>
+      <hr>
+      <div class="filter-content collapse show" id="collapse_2">
+          <div class="card-body">
+              {% for category in categories %}
+              <label class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" onchange="FilterByCategory()">
+                  <div class="custom-control-label">{{category}}
+                    <b class="badge badge-pill badge-light float-right">{{ category.items | length }}</b> 
+                  </div>
+              </label>
+              {% endfor %}
+          </div>
+      </div>
+    </article>
+    <hr>
+    <article class="filter-group" style="float: left;">
+      <i class="fa fa-dollar" aria-hidden="true"> Price</i>
+      <div class="filter-content collapse show" id="collapse_3">
+        <div class="card-body">
+          <input type="range" class="custom-range" min="0" max="100" name="">
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Min</label>
+              <input class="form-control" id="minPrice" placeholder="0" value="0" type="number">
+            </div>
+            <div class="form-group text-right col-md-6">
+              <label>Max</label>
+              <input class="form-control" id="maxPrice" placeholder="100" value="100" type="number">
+            </div>
+          </div>
+          <button class="btn btn-block btn-primary" onclick="FilterByPrice()">Apply</button>
+        </div>
+      </div>
+    </article>
 
+  </div>
 <div class="row" id="mycard" style="justify-content: center;">
     {% for item in items %}
     <div class="col-lg-auto">
-    <div class="card"  id="card{{ item.id }}">
+    <div class="card"  id="card{{ item.id }}" data-category="{{ item.category.name.split('.')[-1]  }}" >
       <div class="card-body"  style="cursor: pointer"; onclick="location.href='{{ url_for('read_item', id=item.id) }}'" >
         {% if  'no-image.png' == item.image %}
         <img class="card-img-top" src="/static/img/{{ item.image }}">
@@ -27,7 +123,8 @@
         <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
         {% endif %}
        <h5 class="card-title">{{ item.name }} </h5>
-        <h5 class="card-text">Price: ${{ '%0.2f'|format(item.price|float)  }}</h5>
+        <h5 class="card-text">Price: ${{ '%0.2f'|format(item.price|float) }}</h5>
+        <input type="number" data-price={{ '%0.2f'|format(item.price|float) }} hidden>
         <h6 class="card-subtitle mb-2 text-muted">Category: {{ item.category.name.split('.')[-1] }}</h6>
       <hr>
       <div class="dropdown">
@@ -42,7 +139,7 @@
     <span id="overall-rating{{ item.id }}"> No rating Yet </span>
     </p>
       <div class="card-footer">
-        <small class="text-muted">Created at: {{ item.date.strftime('%Y-%m-%d') }} by {{ item.username }}</small>
+        <small class="text-muted">Created at:: {{ item.date.strftime('%Y-%m-%d') }} by {{ item.username }}</small>
       </div>
     </div>
     </div>
@@ -96,6 +193,57 @@ getItemRating(item_id)
     }
 }
 
+function FilterByCategory() {
+        var selectedCategories = [];
+        var checkboxes = document.getElementsByClassName("custom-control-input");
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                var categoryName = checkboxes[i].nextElementSibling.innerText.trim().toUpperCase();
+                categoryName = categoryName.replace(/\n\d+$/, '');
+                selectedCategories.push(categoryName);
+            }
+        }
+
+        var cards = document.getElementsByClassName("card");
+        for (var i = 0; i < cards.length; i++) {
+            var category = cards[i].getAttribute("data-category").toUpperCase();
+            var displayCard = selectedCategories.length === 0 || selectedCategories.includes(category.toUpperCase());
+            cards[i].style.display = displayCard ? "" : "none";
+        }
+    }
+
+function getSelectedCategories() {
+  var selectedCategories = [];
+  var checkboxes = document.getElementsByClassName("custom-control-input");
+
+  for (var i = 0; i < checkboxes.length; i++) {
+    if (checkboxes[i].checked) {
+      var categoryName = checkboxes[i].nextElementSibling.innerText.trim().split('\n')[0].toUpperCase();
+      selectedCategories.push(categoryName);
+    }
+  }
+  return selectedCategories;
+}
+
+function FilterByPrice() {
+  var selectedCategories = getSelectedCategories();
+  var minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
+  var maxPrice = parseFloat(document.getElementById("maxPrice").value) || Infinity;
+  var cards = document.getElementsByClassName("card");
+
+  for (var i = 0; i < cards.length; i++) {
+    var category = cards[i].getAttribute("data-category").toUpperCase();
+    var price = parseFloat(cards[i].querySelector("[data-price]").getAttribute("data-price"));
+    var isCategoryMatch = selectedCategories.length === 0 || selectedCategories.includes(category);
+    var isPriceMatch = price >= minPrice && price <= maxPrice;
+    var displayCard = isCategoryMatch && isPriceMatch;
+    if (displayCard) {
+      cards[i].style.display = "";
+    } else {
+      cards[i].style.display = "none";
+    }
+  }
+}
  </script>
 
 
