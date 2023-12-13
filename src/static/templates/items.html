@@ -7,63 +7,7 @@
         {% include "js/main.js" %}
     </script>
 {% endblock %}
-<style>
-  .icon-control {
-  margin-top: 5px;
-  float: right;
-  font-size: 80%;
-}
 
-.btn-light {
-  background-color: #fff;
-  border-color: #e4e4e4;
-}
-
-.list-menu {
-  list-style: none;
-  margin: 0;
-  padding-left: 0;
-}
-.list-menu a {
-  color: #343a40;
-}
-
-.card-product-grid .info-wrap {
-  overflow: hidden;
-  padding: 18px 20px;
-}
-
-[class*='card-product'] a.title {
-  color: #212529;
-  display: block;
-}
-
-.card-product-grid:hover .btn-overlay {
-  opacity: 1;
-}
-.card-product-grid .btn-overlay {
-  -webkit-transition: .5s;
-  transition: .5s;
-  opacity: 0;
-  left: 0;
-  bottom: 0;
-  color: #fff;
-  width: 100%;
-  padding: 5px 0;
-  text-align: center;
-  position: absolute;
-  background: rgba(0, 0, 0, 0.5);
-}
-.img-wrap {
-  overflow: hidden;
-  position: relative;
-}
-
-.badge-light {
-    color: #212529;
-    background-color: #f8f9fa;
-}
-</style>
 
   <div class="container">
       <div class="row pt-2">
@@ -75,7 +19,7 @@
   </div>
   <div class="row col-2" style="float: left;">
     <article class="filter-group">
-       Categories
+      <strong> Categories </strong>
       <hr>
       <div class="filter-content collapse show" id="collapse_2">
           <div class="card-body">
@@ -83,18 +27,17 @@
               <label class="custom-control custom-checkbox">
                   <input type="checkbox" class="custom-control-input" onchange="FilterByCategory()">
                   <div class="custom-control-label">{{category}}
-                    <b class="badge badge-pill badge-light float-right">{{ category.items | length }}</b> 
+                    <b class="badge badge-pill badge-light float-right">{{ category.items | length }}</b>
                   </div>
               </label>
               {% endfor %}
           </div>
       </div>
+      <hr>
     </article>
-    <hr>
     <article class="filter-group" style="float: left;">
-      Price Range
+      <strong>Price Range</strong> 
       <div class="filter-content collapse show" id="collapse_3">
-            <wbr>
         <div class="card-body">
           <input type="range" class="custom-range" min="0" max="10000" value="100" onchange="updateMaxPriceInput(this.value);"">
           <div class="form-row">
@@ -113,7 +56,7 @@
     </article>
 
   </div>
-<div class="row g-0" id="mycard" style="justify-content: left;">
+<div class="row g-0 padding-0" id="mycard" style="justify-content: left;">
     {% for item in items %}
     <div class="col-lg-auto">
     <div class="card"  id="card{{ item.id }}" data-category="{{ item.category.name.split('.')[-1] }}" >
@@ -124,7 +67,7 @@
         <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
         {% endif %}
        <h5 class="card-title">{{ item.name }} </h5>
-        <h5 class="card-text">Price: ${{ '%0.2f'|format(item.price|float) }}</h5>
+        <h6 class="card-text">Price: ${{ '%0.2f'|format(item.price|float) }}</h6>
         <input type="number" data-price={{ '%0.2f'|format(item.price|float) }} hidden>
         <h6 class="card-subtitle mb-2 text-muted">Category: {{ item.category.name.split('.')[-1] }}</h6>
       <hr>

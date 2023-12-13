@@ -1,9 +1,28 @@
 @import url("//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
 @import url("https://fonts.googleapis.com/css?family=Raleway");
 
+/* html, body {
+	margin: 0;
+	padding: 0;
+  margin-left: 0;
+  margin-right: 0;
+  /* overflow-y: scroll; */
+  /* width: calc(100vw - 34px); */
+  /* scrollbar-gutter: stable both-edges; */
+/* } */
+
+
+html {
+  width: 100vw;
+}
+body {
+  overflow-x: hidden;
+  scrollbar-gutter: stable both-edges;
+  width: calc(100vw - 17px);
+}
+
 * {
   font-family: "Raleway";
-  box-sizing: border-box;
 }
 
 .card-img-top {
@@ -43,7 +62,6 @@ position: absolute;
 background-color: #f1f1f1;
 min-width: 160px;
 box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-z-index: 1;
 font-size: 13px;
 }
 
@@ -129,148 +147,10 @@ display: block;
 
 .dropdown:hover .dropbtn {background-color: #606c97;}
 
-.navbar-brand
-{
-  font-size: small;
-}
 
-.nav-link.active {
-  color: rgb(119, 114, 114);
-}
-
-.navbar-icon-top .navbar-nav .nav-link > .fa {
-  position: relative;
-  width: 36px;
-  font-size: 24px;
-}
-
-.navbar-icon-top .navbar-nav .nav-link > .fa > .badge {
-  font-size: 0.75rem;
-  position: absolute;
-  right: 0;
-  font-family: sans-serif;
-}
-
-.navbar-icon-top .navbar-nav .nav-link > .fa {
-  top: 3px;
-  line-height: 12px;
-}
-
-.navbar-icon-top .navbar-nav .nav-link > .fa > .badge {
-  top: -10px;
-}
-
-@media (min-width: 576px) {
-  .navbar-icon-top.navbar-expand-sm .navbar-nav .nav-link {
-    text-align: center;
-    display: table-cell;
-    height: 70px;
-    vertical-align: middle;
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-
-  .navbar-icon-top.navbar-expand-sm .navbar-nav .nav-link > .fa {
-    display: block;
-    width: 48px;
-    margin: 2px auto 4px auto;
-    top: 0;
-    line-height: 24px;
-  }
-
-  .navbar-icon-top.navbar-expand-sm .navbar-nav .nav-link > .fa > .badge {
-    top: -7px;
-  }
-}
-
-@media (min-width: 768px) {
-  .navbar-icon-top.navbar-expand-md .navbar-nav .nav-link {
-    text-align: center;
-    display: table-cell;
-    height: 70px;
-    vertical-align: middle;
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-
-  .navbar-icon-top.navbar-expand-md .navbar-nav .nav-link > .fa {
-    display: block;
-    width: 48px;
-    margin: 2px auto 4px auto;
-    top: 0;
-    line-height: 24px;
-  }
-
-  .navbar-icon-top.navbar-expand-md .navbar-nav .nav-link > .fa > .badge {
-    top: -7px;
-  }
-}
-
-@media (min-width: 992px) {
-  .navbar-icon-top.navbar-expand-lg .navbar-nav .nav-link {
-    text-align: center;
-    display: table-cell;
-    height: 55px;
-    vertical-align: middle;
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-
-  .navbar-icon-top.navbar-expand-lg .navbar-nav .nav-link > .fa {
-    display: block;
-    width: 48px;
-    margin: 2px auto 4px auto;
-    top: 0;
-    line-height: 24px;
-  }
-
-  .navbar-icon-top.navbar-expand-lg .navbar-nav .nav-link > .fa > .badge {
-    top: -7px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .navbar-icon-top.navbar-expand-xl .navbar-nav .nav-link {
-    text-align: center;
-    display: table-cell;
-    height: 70px;
-    vertical-align: middle;
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-
-  .navbar-icon-top.navbar-expand-xl .navbar-nav .nav-link > .fa {
-    display: block;
-    width: 48px;
-    margin: 2px auto 4px auto;
-    top: 0;
-    line-height: 24px;
-  }
-
-  .navbar-icon-top.navbar-expand-xl .navbar-nav .nav-link > .fa > .badge {
-    top: -7px;
-  }
-}
-
-/* a {
-  font-size:14px;
-  font-weight:700
-} */
-
-.form-control {
-  outline:none !important;
-  box-shadow: none !important;
-}
-@media screen and (max-width:540px){
-  .centerOnMobile {
-    text-align:center
-  }
-}
 body.modal-open {
-padding-right: 0px !important;
+padding-right: -17px;
 }
-
-/* * {margin: 0; padding: 0; box-sizing: border-box} */
 
 .container-breadcrumb {
 	display: flex;
@@ -294,7 +174,6 @@ padding-right: 0px !important;
 	transform: translateY(-50%);
 	box-shadow: 0 1px 1px rgba(0,0,0,1),
 							0 4px 14px rgba(0,0,0,0.7);
-	z-index: 1;
 	background-color: #ddd;
 	font-size: 14px;
 }
@@ -331,7 +210,6 @@ padding-right: 0px !important;
 			border-top-right-radius: 5px;
 			transform: scale(0.707) rotate(45deg);
 			box-shadow: 1px -1px rgba(0,0,0,0.25);
-			z-index: 1;
 		}
 
 			.breadcrumb a:last-child:after {
@@ -342,7 +220,6 @@ padding-right: 0px !important;
 		display: flex;
 		flex-direction: column;
 		margin: auto;
-		z-index: 2;
 	}
 
 		.breadcrumb__title {

@@ -107,7 +107,6 @@ $(document).ready(function() {
           "category": `${category}`,
         }),
     success: data => {
-      console.log('data', data)
       if (data.includes("No Items in Category Found")) {
         itemsContainer.innerText = `No Items in Category: ${category} Found`
       }
