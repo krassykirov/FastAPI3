@@ -67,7 +67,7 @@
 
   <div class="container">
       <div class="row pt-2">
-        <div class="col-md-11">
+        <div class="col-md-12">
           <input class="form-control mr-sm-2" id="filter" onkeyup="Search()" type="text" placeholder="Search for products by name...">
         </div>
       </div>
@@ -95,7 +95,7 @@
       <i class="fa fa-dollar" aria-hidden="true"> Price</i>
       <div class="filter-content collapse show" id="collapse_3">
         <div class="card-body">
-          <input type="range" class="custom-range" min="0" max="10000" value="1000" onchange="updateTextInput(this.value);"">
+          <input type="range" class="custom-range" min="0" max="10000" value="100" onchange="updateMaxPriceInput(this.value);"">
           <div class="form-row">
             <div class="form-group col-md-6">
               <label>Min</label>
@@ -112,7 +112,7 @@
     </article>
 
   </div>
-<div class="row" id="mycard" style="justify-content: center;">
+<div class="row" id="mycard" style="justify-content: left;">
     {% for item in items %}
     <div class="col-lg-auto">
     <div class="card"  id="card{{ item.id }}" data-category="{{ item.category.name.split('.')[-1]  }}" >
@@ -193,7 +193,8 @@ getItemRating(item_id)
     }
 }
 
-function updateTextInput(val) {
+
+function updateMaxPriceInput(val) {
           document.getElementById('maxPrice').value=val; 
         }
 

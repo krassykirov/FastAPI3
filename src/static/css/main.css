@@ -13,14 +13,11 @@
 }
 
 .card{
-  border-radius: 5px;
-  &-body {
-    text-align: center;
-  }
   margin-bottom: 5px;
   margin-left: 1px;
   margin-right: 1px;
-  width: 17vw;
+  width: 14vw;
+  justify-content: left;
   /* border: 2px solid #969696; */
   text-align: center;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
