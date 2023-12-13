@@ -95,7 +95,7 @@
       <i class="fa fa-dollar" aria-hidden="true"> Price</i>
       <div class="filter-content collapse show" id="collapse_3">
         <div class="card-body">
-          <input type="range" class="custom-range" min="0" max="100" name="">
+          <input type="range" class="custom-range" min="0" max="10000" value="1000" onchange="updateTextInput(this.value);"">
           <div class="form-row">
             <div class="form-group col-md-6">
               <label>Min</label>
@@ -103,7 +103,7 @@
             </div>
             <div class="form-group text-right col-md-6">
               <label>Max</label>
-              <input class="form-control" id="maxPrice" placeholder="100" value="100" type="number">
+              <input class="form-control" id="maxPrice" placeholder="10000" value="10000" type="number">
             </div>
           </div>
           <button class="btn btn-block btn-primary" onclick="FilterByPrice()">Apply</button>
@@ -192,6 +192,10 @@ getItemRating(item_id)
         }
     }
 }
+
+function updateTextInput(val) {
+          document.getElementById('maxPrice').value=val; 
+        }
 
 function FilterByCategory() {
         var selectedCategories = [];

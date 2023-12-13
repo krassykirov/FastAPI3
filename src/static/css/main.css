@@ -13,6 +13,10 @@
 }
 
 .card{
+  border-radius: 5px;
+  &-body {
+    text-align: center;
+  }
   margin-bottom: 5px;
   margin-left: 1px;
   margin-right: 1px;
