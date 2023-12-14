@@ -11,23 +11,25 @@
   /* scrollbar-gutter: stable both-edges; */
 /* } */
 
-
 html {
   width: 100vw;
 }
 body {
   overflow-x: hidden;
   scrollbar-gutter: stable both-edges;
-  width: calc(100vw - 17px);
 }
 
 * {
   font-family: "Raleway";
 }
 
+body.modal-open {
+padding-right: -17px;
+}
+
 .card-img-top {
   width: 100%;
-  height: 12vw;
+  height: 10vw;
   object-fit: cover;
 }
 
@@ -146,11 +148,6 @@ display: block;
 .dropdown:hover .dropdown-content {display: block;}
 
 .dropdown:hover .dropbtn {background-color: #606c97;}
-
-
-body.modal-open {
-padding-right: -17px;
-}
 
 .container-breadcrumb {
 	display: flex;

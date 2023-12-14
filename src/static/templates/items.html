@@ -7,9 +7,20 @@
         {% include "js/main.js" %}
     </script>
 {% endblock %}
+<style>
 
+.padding-0{
+    /* padding-right:10px; */
+    padding-left:30px;
+}
 
-  <div class="container">
+.badge-light {
+    color: #212529;
+    background-color: #f8f9fa;
+}
+</style>
+
+  <div class="container" style="margin-top: 12px;">
       <div class="row pt-2">
         <div class="col-md-12">
           <input class="form-control mr-sm-2" id="filter" onkeyup="Search()" type="text" placeholder="Search for products by name...">
@@ -19,7 +30,7 @@
   </div>
   <div class="row col-2" style="float: left;">
     <article class="filter-group">
-      <strong> Categories </strong>
+       Categories
       <hr>
       <div class="filter-content collapse show" id="collapse_2">
           <div class="card-body">
@@ -36,7 +47,7 @@
       <hr>
     </article>
     <article class="filter-group" style="float: left;">
-      <strong>Price Range</strong> 
+      Price Range
       <div class="filter-content collapse show" id="collapse_3">
         <div class="card-body">
           <input type="range" class="custom-range" min="0" max="10000" value="100" onchange="updateMaxPriceInput(this.value);"">
@@ -59,7 +70,7 @@
 <div class="row g-0 padding-0" id="mycard" style="justify-content: left;">
     {% for item in items %}
     <div class="col-lg-auto">
-    <div class="card"  id="card{{ item.id }}" data-category="{{ item.category.name.split('.')[-1] }}" >
+    <div class="card"  id="card{{ item.id }}" data-category="{{ item.category.name.split('.')[-1] }}" style="margin: 8px; margin-bottom: 3px;">
       <div class="card-body"  style="cursor: pointer"; onclick="location.href='{{ url_for('read_item', id=item.id) }}'" >
         {% if  'no-image.png' == item.image %}
         <img class="card-img-top" src="/static/img/{{ item.image }}">
@@ -83,7 +94,7 @@
     <span id="overall-rating{{ item.id }}"> No rating Yet </span>
     </p>
       <div class="card-footer">
-        <small class="text-muted">Created at:: {{ item.date.strftime('%Y-%m-%d') }} by {{ item.username }}</small>
+        <small class="text-muted">Created: {{ item.date.strftime('%Y-%m-%d') }} by {{ item.username }}</small>
       </div>
     </div>
     </div>
