@@ -164,11 +164,14 @@ function FilterByCategory() {
             }
         }
 
-        var cards = document.getElementsByClassName("card");
+        var cards = $(".card");
+        cards.slideUp(300);
         for (var i = 0; i < cards.length; i++) {
             var category = cards[i].getAttribute("data-category").toUpperCase();
             var displayCard = selectedCategories.length === 0 || selectedCategories.includes(category.toUpperCase());
-            cards[i].style.display = displayCard ? "" : "none";
+            if (displayCard){
+              $(cards[i]).slideDown(300);
+            }
         }
     }
 
@@ -198,9 +201,11 @@ function FilterByPrice() {
     var isPriceMatch = price >= minPrice && price <= maxPrice;
     var displayCard = isCategoryMatch && isPriceMatch;
     if (displayCard) {
-      cards[i].style.display = "";
+      // cards[i].style.display = "";
+      $(cards[i]).slideDown(300);
     } else {
-      cards[i].style.display = "none";
+      // cards[i].style.display = "none";
+      $(cards[i]).slideUp(300);
     }
   }
 }
