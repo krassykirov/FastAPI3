@@ -10,7 +10,7 @@
 <style>
 
 .padding-0{
-    /* padding-right:10px; */
+    padding-right:0;
     padding-left:30px;
 }
 
@@ -36,9 +36,9 @@
           <div class="card-body">
               {% for category in categories %}
               <label class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" onchange="FilterByCategory()">
-                  <div class="custom-control-label">{{category}}
-                    <b class="badge badge-pill badge-light float-right">{{ category.items | length }}</b>
+                  <input type="checkbox" class="custom-control-input" onchange="filterByCategory()">
+                  <div class="custom-control-label">{{category[0]}}
+                    <b class="badge badge-pill badge-light float-right">{{category[1]}}</b>
                   </div>
               </label>
               {% endfor %}
@@ -61,15 +61,23 @@
               <input class="form-control" id="maxPrice" placeholder="10000" value="10000" type="number">
             </div>
           </div>
-          <button class="btn btn-block btn-primary" onclick="FilterByPrice()">Apply</button>
+          <button class="btn btn-block btn-primary" onclick="filterByPrice()">Apply</button>
         </div>
       </div>
     </article>
+    <article>
+      <select id="sortingSelect" onchange="toggleSortingOrder()">
+        <option value="asc" selected >Ascending</option>
+        <option value="desc">Descending</option>
+      </select>
+    </article>
 
   </div>
-<div class="row g-0 padding-0" id="mycard" style="justify-content: left;">
+
+
+<div class="row g-0 col-auto padding-0" id="mycard" style="justify-content: left;">
     {% for item in items %}
-    <div class="col-lg-auto">
+    <div class="col-lg-auto" id="cardsContainer">
     <div class="card"  id="card{{ item.id }}" data-category="{{ item.category.name.split('.')[-1] }}" style="margin: 8px; margin-bottom: 3px;">
       <div class="card-body"  style="cursor: pointer"; onclick="location.href='{{ url_for('read_item', id=item.id) }}'" >
         {% if  'no-image.png' == item.image %}
@@ -153,27 +161,12 @@ function updateMaxPriceInput(val) {
           document.getElementById('maxPrice').value=val; 
         }
 
-function FilterByCategory() {
-        var selectedCategories = [];
-        var checkboxes = document.getElementsByClassName("custom-control-input");
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i].checked) {
-                var categoryName = checkboxes[i].nextElementSibling.innerText.trim().toUpperCase();
-                categoryName = categoryName.replace(/\n\d+$/, '');
-                selectedCategories.push(categoryName);
-            }
-        }
+        var allCards = [];
 
-        var cards = $(".card");
-        cards.slideUp(300);
-        for (var i = 0; i < cards.length; i++) {
-            var category = cards[i].getAttribute("data-category").toUpperCase();
-            var displayCard = selectedCategories.length === 0 || selectedCategories.includes(category.toUpperCase());
-            if (displayCard){
-              $(cards[i]).slideDown(300);
-            }
-        }
-    }
+// Populate allCards array on page load
+$(document).ready(function() {
+    allCards = $(".card").toArray();
+});
 
 function getSelectedCategories() {
   var selectedCategories = [];
@@ -187,27 +180,84 @@ function getSelectedCategories() {
   }
   return selectedCategories;
 }
+// Function to filter cards based on category
+function filterByCategory() {
+    var selectedCategories = getSelectedCategories();
 
-function FilterByPrice() {
-  var selectedCategories = getSelectedCategories();
-  var minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
-  var maxPrice = parseFloat(document.getElementById("maxPrice").value) || Infinity;
-  var cards = document.getElementsByClassName("card");
+    allCards.forEach(function(card) {
+        var category = card.getAttribute("data-category").toUpperCase();
+        var displayCard = selectedCategories.length === 0 || selectedCategories.includes(category);
 
-  for (var i = 0; i < cards.length; i++) {
-    var category = cards[i].getAttribute("data-category").toUpperCase();
-    var price = parseFloat(cards[i].querySelector("[data-price]").getAttribute("data-price"));
-    var isCategoryMatch = selectedCategories.length === 0 || selectedCategories.includes(category);
-    var isPriceMatch = price >= minPrice && price <= maxPrice;
-    var displayCard = isCategoryMatch && isPriceMatch;
-    if (displayCard) {
-      // cards[i].style.display = "";
-      $(cards[i]).slideDown(300);
-    } else {
-      // cards[i].style.display = "none";
-      $(cards[i]).slideUp(300);
+        if (displayCard) {
+            $(card).slideDown(300);
+        } else {
+            $(card).slideUp(300);
+        }
+    });
+
+    // Trigger sorting after filtering
+    toggleSortingOrder();
+}
+
+// Function to filter cards based on price
+function filterByPrice() {
+    var selectedCategories = getSelectedCategories();
+    var minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
+    var maxPrice = parseFloat(document.getElementById("maxPrice").value) || Infinity;
+
+    allCards.forEach(function(card) {
+        var category = card.getAttribute("data-category").toUpperCase();
+        var price = parseFloat(card.querySelector("[data-price]").getAttribute("data-price"));
+        var isCategoryMatch = selectedCategories.length === 0 || selectedCategories.includes(category);
+        var isPriceMatch = price >= minPrice && price <= maxPrice;
+        var displayCard = isCategoryMatch && isPriceMatch;
+
+        if (displayCard) {
+            $(card).slideDown(300);
+        } else {
+            $(card).slideUp(300);
+        }
+    });
+
+    // Trigger sorting after filtering
+    toggleSortingOrder();
+}
+
+// Function to toggle sorting order
+function toggleSortingOrder() {
+    var sortingSelect = document.getElementById("sortingSelect");
+    var currentSortingOrder = sortingSelect ? sortingSelect.value : 'asc';
+    var newSortingOrder = currentSortingOrder === 'asc' ? 'desc' : 'asc';
+
+    // Sort allCards based on prices and the new sorting order
+    allCards.sort(function(a, b) {
+        var categoryA = a.getAttribute("data-category").toUpperCase();
+        var categoryB = b.getAttribute("data-category").toUpperCase();
+
+        if (categoryA !== categoryB) {
+            // If categories are different, maintain the order based on category
+            return categoryA.localeCompare(categoryB);
+        }
+
+        var priceA = parseFloat(a.querySelector("[data-price]").getAttribute("data-price"));
+        var priceB = parseFloat(b.querySelector("[data-price]").getAttribute("data-price"));
+
+        return newSortingOrder === 'asc' ? priceB - priceA : priceA - priceB;
+    });
+    console.log('allCards', allCards)
+    // Remove all cards from the current container
+    var cardsContainer = document.getElementById("cardsContainer");
+    while (cardsContainer.firstChild) {
+        cardsContainer.removeChild(cardsContainer.firstChild);
     }
-  }
+
+    // Append the cards in the new order
+    allCards.forEach(function(card) {
+        cardsContainer.style.display = 'grid';
+        cardsContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
+        cardsContainer.style.gap = '10px';
+        cardsContainer.appendChild(card);
+    });
 }
  </script>
 

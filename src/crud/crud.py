@@ -68,6 +68,11 @@ class CategoryActions:
         categories = [category.split(':')[-1] for category in categories]
         return categories
 
+    def get_categories_len(self, db: Session):
+        categories = db.exec(select(Category)).all()
+        categories = [(dict(c).get('name').split('.')[0], len(c.items)) for c in categories]
+        return categories
+
     def create_category(self, db: Session, category: Category):
         db.add(category)
         db.commit()

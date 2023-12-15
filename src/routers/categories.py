@@ -1,6 +1,7 @@
 from fastapi import APIRouter, status, Form
 from fastapi import Request, Depends, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from src.db import get_session
 from sqlalchemy.orm import Session
 from src.crud.crud import CategoryActions
@@ -39,8 +40,17 @@ def get_category_items(request: Request, name: str, db: Session = Depends(get_se
     category = CategoryActions().get_category_by_name(db=db, name=name)
     logger.info(f'category: {category}')
     if category is None:
-        raise HTTPException(status_code=404, detail=f"No category events found for {name}")
+        raise HTTPException(status_code=404, detail=f"No category  found for {name}")
+    print('category', len(category.items))
     return category
+
+@category_router.get("/category_items_len/", status_code=status.HTTP_200_OK)
+def get_categories_items_len(request: Request, db: Session = Depends(get_session)):
+    """ Return all items in a category """
+    categories = CategoryActions().get_categories_len(db=db)
+    if categories is None:
+        raise HTTPException(status_code=404, detail=f"No categories found")
+    return categories
 
 @category_router.post("/", status_code=status.HTTP_201_CREATED, response_model=CategoryRead, include_in_schema=False)
 def create_category(request: Request, category: CategoryCreate, db: Session = Depends(get_session)):

@@ -71,8 +71,7 @@ def get_products(request: Request, db: Session = Depends(get_session), user: Use
     items_db = ItemActions().get_items(db=db) #, user=user.username
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
     items = [src.schemas.ItemRead.from_orm(item) for item in items_db]
-    categories = CategoryActions().get_categories(db=db)
-    print('categories', categories)
+    categories = CategoryActions().get_categories_len(db=db)
     return templates.TemplateResponse("items.html", {"request": request, 
                                                      'items': items, 
                                                      'current_user': user.username,
@@ -232,8 +231,12 @@ async def create_review_ajax(request: Request, db: Session=Depends(get_session),
 async def get_user_items( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     items = ItemActions().get_items(db=db, user=user.username)
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
-    return templates.TemplateResponse("items.html", {"request":request, 'items':items, 'current_user': user.username, 'profile': profile})
-
+    categories = CategoryActions().get_categories_len(db=db)
+    return templates.TemplateResponse("items.html", {"request": request, 
+                                                     'items': items, 
+                                                     'current_user': user.username,
+                                                     'categories': categories,
+                                                     'profile': profile})
 
 @app.get("/user/profile", response_model=UserRead, include_in_schema=False)
 async def get_user_profile( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
