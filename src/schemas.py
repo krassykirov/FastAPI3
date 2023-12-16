@@ -44,6 +44,7 @@ class ItemRead(BaseModel):
     reviews: Optional[List]
     description:  Optional[str]
     category:  Optional[Category]
+    category_id:  Optional[int]
     in_cart: Optional[Dict[Any,Any]]
     class Config:
         orm_mode = True

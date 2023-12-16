@@ -34,9 +34,9 @@
           <div class="dropdown">
           <li class="nav-item">
             <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_products')}}">Products</a>
-                  <div class="dropdown-content">
+                  <!-- <div class="dropdown-content">
                     <a class="nav-link" data-toggle="modal" data-target="#addItem" href="#">Add Product</a>
-                  </div>
+                  </div> -->
             </div>
           </li>
           <div class="dropdown">
@@ -87,48 +87,6 @@
 </div>
 {% if current_user %}
 {%block modals%}
-  <div class="modal fade" id="addItem" role="dialog" aria-labelledby="addItemlLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="addItemLabel">Add Product</h5>
-        </div>
-        <div class="modal-body">
-          <form enctype="multipart/form-data" data-toggle="validator" id="createItem">
-            <b> <p id="error" style="text-align: left;"></p>
-            <div class="form-group">
-              <label for="name" class="col-form-label">Name:</label>
-              <input type="text" name="name" id="item-name" placeholder="Item Name"  maxlength="15" required>
-             </div>
-            <div class="form-group">
-              <label for="price" class="col-form-label">Price: </label>
-              <input type="number" step="any" name="price" id="item-price" placeholder="99.99" required>
-            </div>
-            <div class="form-group" form-group-file>
-              <label for="file" class="col-form-label">Upload Photo:</label>
-              <input type="file" id="file" name="file" class="form-control" data-filesize="1000000" data-filesize-error="File must be smaller then 1MB" accept="image/*" required/>
-            </div>
-            <div class="form-group">
-              <label for="Category" class="col-form-label">Category:</label>
-              <select name="Category">
-                  <option value="Finance">Finance</option>
-                  <option value="IT">IT</option>
-                  <option value="TV">TV</option>
-                  <option value="Services">Services</option>
-                  <option value="Miscellaneous">Miscellaneous</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="Description" class="col-form-label">Description:</label>
-              <textarea name="Description" id="add-description" rows="4" cols="50" maxlength="250"></textarea>
-            </div>
-            <button id="submit-button" class="btn btn-primary">Save</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
   {% endblock %}
   {% endif %}
 </body>

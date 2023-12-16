@@ -26,7 +26,7 @@ import src.schemas
 import os
 from os.path import abspath
 from src.my_logger import detailed_logger
-
+from fastapi.responses import FileResponse
 
 PROJECT_ROOT = Path(__file__).parent.parent # /
 BASE_DIR = Path(__file__).resolve().parent # / src
@@ -54,16 +54,12 @@ logger = detailed_logger()
 @app.on_event("startup")
 def on_startup():
     SQLModel.metadata.create_all(engine)
-    app.mount("/static", StaticFiles(directory=Path(BASE_DIR, 'static'),html=True),name="static")
     create_categories(engine)
+    app.mount("/static", StaticFiles(directory=Path(BASE_DIR, 'static'),html=True),name="static")
 
 @app.get("/", include_in_schema=False)
 async def home(request: Request, user: User = Depends(get_current_user)):
     return templates.TemplateResponse("base.html", {"request": request, 'current_user': user.username})
-
-@app.get("/tests", include_in_schema=False)
-async def tests(request: Request, user: User = Depends(get_current_user)):
-    return templates.TemplateResponse("tests.html", {"request": request, 'current_user': user.username})
 
 @app.get("/products", include_in_schema=False, response_model=src.schemas.ItemRead)
 def get_products(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -72,15 +68,15 @@ def get_products(request: Request, db: Session = Depends(get_session), user: Use
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
     items = [src.schemas.ItemRead.from_orm(item) for item in items_db]
     categories = CategoryActions().get_categories_len(db=db)
-    return templates.TemplateResponse("items.html", {"request": request, 
-                                                     'items': items, 
+    print('categories', categories)
+    return templates.TemplateResponse("items.html", {"request": request,
+                                                     'items': items,
                                                      'current_user': user.username,
                                                      'categories': categories,
                                                      'profile': profile})
 
 @app.post("/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @app.post("/user_items_in_cart/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
-@app.post("/user/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @app.post("/products/create_item", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
 @app.post("/user/profile/create_item", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
 async def create_item(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -111,10 +107,7 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
             db.refresh(item)
         except:
             db.rollback()
-        if 'user/create_item' in str(request.url):
-            redirect_url = request.url_for('get_user_items')
-        else:
-           redirect_url = request.url_for('get_products')
+        redirect_url = request.url_for('get_products')
         response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
         return response
 
@@ -227,17 +220,6 @@ async def create_review_ajax(request: Request, db: Session=Depends(get_session),
     logger.info('Review_exist, You can write only one review for this item')
     raise HTTPException(status_code=403,detail=f"You can write only one review for this item.")
 
-@app.get("/user/items", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead, include_in_schema=False)
-async def get_user_items( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
-    items = ItemActions().get_items(db=db, user=user.username)
-    profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
-    categories = CategoryActions().get_categories_len(db=db)
-    return templates.TemplateResponse("items.html", {"request": request, 
-                                                     'items': items, 
-                                                     'current_user': user.username,
-                                                     'categories': categories,
-                                                     'profile': profile})
-
 @app.get("/user/profile", response_model=UserRead, include_in_schema=False)
 async def get_user_profile( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
@@ -328,7 +310,6 @@ async def get_category(request: Request, category_name: str, db: Session = Depen
                                                          'current_user': user.username,
                                                          'items': category.items })
 
-
 @app.get("/categories", status_code=status.HTTP_200_OK, include_in_schema=False)
 async def get_category(request: Request,  db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     category = CategoryActions().get_category_by_name(db=db, name='Finance')
@@ -378,7 +359,6 @@ async def get_user_items_in_cart(request: Request, db: Session=Depends(get_sessi
                                                      'items': items_in_cart,
                                                      'current_user': user.username,
                                                      'profile': profile})
-
 
 @app.get("/user_items_in_cart", status_code=status.HTTP_200_OK, include_in_schema=False)
 def get_user_in_cart_len(db: Session=Depends(get_session), user: User = Depends(get_current_user)):

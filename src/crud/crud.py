@@ -18,6 +18,7 @@ class ItemActions:
     def get_items(self, db: Session, skip: int = 0, limit: int = 100, user=None):
         if user:
             items = db.query(Item).where(Item.username==user).order_by(Item.name).offset(skip).limit(limit).all()
+            print('user_items')
             return items
         items = db.query(Item).order_by(Item.name).offset(skip).limit(limit).all()
         return items
@@ -70,7 +71,12 @@ class CategoryActions:
 
     def get_categories_len(self, db: Session):
         categories = db.exec(select(Category)).all()
-        categories = [(dict(c).get('name').split('.')[0], len(c.items)) for c in categories]
+        categories = [(dict(c).get('name').split('.')[0], len(c.items), c.id) for c in categories]
+        return categories
+
+    def get_categories_name_id(self, db: Session):
+        categories = db.exec(select(Category)).all()
+        categories_others = [c for c in categories]
         return categories
 
     def create_category(self, db: Session, category: Category):

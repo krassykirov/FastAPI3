@@ -37,3 +37,4 @@ def create_categories(engine):
                 category = Category(name=c)
                 session.add(category)
             session.commit()
+            session.refresh(category)

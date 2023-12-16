@@ -6,7 +6,7 @@ from src.db import get_session
 from sqlalchemy.orm import Session
 from src.crud.crud import CategoryActions
 from src.schemas import CategoryCreate, CategoryItems, CategoryRead
-from src.models import Category
+from src.models import Category, Categories
 from src.auth.oauth import get_current_user
 from src.my_logger import detailed_logger
 
@@ -25,10 +25,10 @@ def get_category_by_id(request: Request, id: int, db: Session = Depends(get_sess
         raise HTTPException(status_code=404, detail=f"No category with id {id} found")
     return category
 
-@category_router.get("/", status_code=status.HTTP_200_OK, response_model=list[CategoryRead])
+@category_router.get("/", status_code=status.HTTP_200_OK)
 def get_categories(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):
     """ Return all categories """
-    categories = CategoryActions().get_categories(db=db, skip=skip, limit=limit)
+    categories = CategoryActions().get_categories_name_id(db=db)
     if categories is None:
         logger.info("No categories found")
         raise HTTPException(status_code=404, detail=f"No categories found")

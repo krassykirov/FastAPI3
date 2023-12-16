@@ -49,7 +49,7 @@ function addReview() {
         success: data => {
            const reviewDiv = document.getElementsByClassName('card group1"')
            const newCard = `
-           <div class="card group1" id="card${data.id}" style="display: flex; margin-left:0;">
+           <div class="card group1" id="card${data.id}" style="display: flex; margin-left:0; margin-bottom:3">
                 <div class="row" style="margin-left:0>
                 <div class="col-12" style="margin-bottom: 3px; margin-left:0"  style="max-width: 35%;">
                 <p style="margin-left:0">
@@ -89,13 +89,13 @@ $(document).ready(function() {
     var formData = new FormData(this)
     console.log('formData', formData)
     $.ajax({
-        url: "/user/create_item",
+        url: "/products/create_item",
         type: "POST",
         processData: false,
         contentType: false,
         data: formData,
         success: function(data){
-          window.location.href = "/user/items"
+          window.location.href = "/products"
         },
         error: function (xhr) {
             if (xhr.status === 403) {
@@ -161,6 +161,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 })
+
+
+
+
 // function getCategories(){
 //   $.ajax({
 //         url: "/products/{category_name}",

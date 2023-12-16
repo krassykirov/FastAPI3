@@ -415,6 +415,23 @@ $(document).ready(function() {
     setRveiewsRating()
 });
 
+function ShowDescription() {
+  var x = document.getElementById("description-div");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+
+function ShowReview(){
+  var x  = document.getElementById('RatingCard')
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
 
 $(document).ready(function(){
   var hiddenCardsOnLoad = $(".card:hidden").length;

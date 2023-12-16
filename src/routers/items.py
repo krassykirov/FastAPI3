@@ -24,11 +24,11 @@ def get_item_by_id( item_id: int, db: Session = Depends(get_session)) -> src.sch
 
 @items_router.get("/", status_code=status.HTTP_200_OK, response_model=list[src.schemas.ItemRead])
 def get_items(skip: int = 0, limit: int = 100,
-              db: Session = Depends(get_session), in_cart: bool = False, user: User = Depends(get_current_user)) -> List[src.schemas.ItemRead]:
-    items = ItemActions().get_items(db=db, skip=skip, limit=limit, user=user.username, in_cart=in_cart)
+              db: Session = Depends(get_session), user=None) -> List[src.schemas.ItemRead]:
+    items = ItemActions().get_items(db=db, skip=skip, limit=limit, user=user)
     if items is None:
         raise HTTPException(status_code=404, detail=f"No items found")
-    return items
+    return jsonable_encoder(items)
 
 @items_router.get("/by-category", status_code=status.HTTP_200_OK, response_model=list[src.schemas.ItemRead])
 async def get_items_by_category( request: Request, category_id: int, db: Session=Depends(get_session), user: User = Depends(get_current_user)):

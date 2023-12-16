@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block html_read %}
 
-
 {% block javascript %}
     <script type="text/javascript">
         {% include "js/main.js" %}
@@ -11,14 +10,99 @@
 
 .padding-0{
     padding-right:0;
-    padding-left:30px;
+    padding-left:50px;
 }
 
 .badge-light {
     color: #212529;
     background-color: #f8f9fa;
 }
+
+.card-img-top {
+  width: 100%;
+  height: 12vw;
+  object-fit: cover;
+}
+
+.card{
+  margin-bottom: 5px;
+  margin-left: 1px;
+  margin-right: 1px;
+  width: 14vw;
+  /* border: 2px solid #969696; */
+  text-align: center;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  margin: 20px 0;
+  width: 100%;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  cursor: pointer;
+  animate: 0.2s;
+  background: #03a9f4;
+  border-radius: 25px;
+}
+input[type=range]::-webkit-slider-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 4px 0 rgba(0,0,0, 1);
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -8px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: #03a9f4;
+}
+.range-wrap{
+  width: 170px;
+  position: relative;
+}
+.range-value{
+  position: absolute;
+  top: -50%;
+}
+.range-value span{
+  width: 10px;
+  height: 24px;
+  line-height: 10px;
+  text-align: center;
+  background: #03a9f4;
+  color: #fff;
+  font-size: 12px;
+  display: block;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0);
+  border-radius: 6px;
+}
+.range-value span:before{
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-top: 10px solid #03a9f4;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  margin-top: -1px;
+}
 </style>
+
+<div class="row col-1" style="float: right;">
+ <button class="btn btn-secondary btn-sm"> <a class="nav-link" data-toggle="modal" data-target="#addItem" href="#">Add Product</a> </button> 
+</div>
 
   <div class="container" style="margin-top: 12px;">
       <div class="row pt-2">
@@ -28,119 +112,206 @@
       </div>
     <br/>
   </div>
+
+<section class="container" id="app">
   <div class="row col-2" style="float: left;">
     <article class="filter-group">
        Categories
       <hr>
       <div class="filter-content collapse show" id="collapse_2">
-          <div class="card-body">
-              {% for category in categories %}
-              <label class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" onchange="filterByCategory()">
-                  <div class="custom-control-label">{{category[0]}}
-                    <b class="badge badge-pill badge-light float-right">{{category[1]}}</b>
-                  </div>
-              </label>
-              {% endfor %}
-          </div>
-      </div>
-      <hr>
-    </article>
-    <article class="filter-group" style="float: left;">
-      Price Range
-      <div class="filter-content collapse show" id="collapse_3">
         <div class="card-body">
-          <input type="range" class="custom-range" min="0" max="10000" value="100" onchange="updateMaxPriceInput(this.value);"">
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              <label>Min</label>
-              <input class="form-control" id="minPrice" placeholder="0" value="0" type="number">
+            {% for category in categories %}
+            <label class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" data-category="{{ category[2] }}" {% if category[1] == 0 %} 
+                disabled {% endif %} onchange="filterByCategory()">
+                <div class="custom-control-label">{{category[0]}}
+                    <b class="badge badge-pill badge-light float-right">{{category[1]}}</b>
+                </div>
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+      </article>
+      <hr>
+      <article class="filter-group" style="float: left;">
+        Price Range
+        <div class="filter-content collapse show" id="collapse_3">
+          <div class="card-body">
+            <div class="range-wrap">
+              <div class="range-value" id="rangeV"></div>
+              <input v-model.number="max" v-model.number="min" type="range" min="100" max="10000" value="200" step="100">
+              <p> <span style="color:blue"></span> $[[ min ]] - $[[ max ]] </p> <input v-model.number="max" class="form-control" type="number" id="max-price" hidden>
             </div>
-            <div class="form-group text-right col-md-6">
-              <label>Max</label>
-              <input class="form-control" id="maxPrice" placeholder="10000" value="10000" type="number">
+            <!-- <div class="form-row">
+              <div class="form-group col-md-6">
+                <label>Min</label>
+                <input class="form-control" id="minPrice" placeholder="0" value="0" type="number">
+              </div>
+              <div class="form-group text-right col-md-6">
+                <label>Max</label>
+                <input class="form-control" id="maxPrice" placeholder="10000" type="number">
+              </div>
             </div>
-          </div>
-          <button class="btn btn-block btn-primary" onclick="filterByPrice()">Apply</button>
+            <button class="btn btn-block btn-primary" onclick="filterByPrice()">Apply</button>
+          </div> -->
+        </div>
+      </article>
+   </div>
+
+  <div class="row g-0 col-auto padding-0" id="mycard" style="justify-content: left;">
+      <div v-for="product in products" :key="product.id" class="row g-0 col-auto" style="justify-content: left;">
+        <template v-if="product.price<=Number(max)">
+           <div class="col-lg-auto">
+              <div class="card" :id="product.id" :data-category="product.category_id"
+              style="margin: 1px; margin-bottom: 3px; cursor: pointer" @click="redirectToItem(product.id)">
+                <img :src="`static/img/${product.username}/${product.name}/${product.image}`" class="card-img-top">
+                  <div class="card-body">
+                    <h5 class="card-title"> [[ product.name ]] </h5>
+                    <h6 class="card-text" :data-price="product.price">Price: $ [[ product.price ]] </h6>
+                    <span class="badge bg-danger" v-if="product.price<99">Sale</span>
+                    <span class="badge bg-primary" v-else-if="product.price<499 && product.price>=100">Middle range</span>
+                    <span class="badge bg-success" v-else> Premier</span>
+                    Price: $[[ product.price ]]
+                  </div>
+                  <p>
+                    <span class="fa fa-star" :id="`star${product.id}1`"></span>
+                    <span class="fa fa-star" :id="`star${product.id}2`"></span>
+                    <span class="fa fa-star" :id="`star${product.id}3`"></span>
+                    <span class="fa fa-star" :id="`star${product.id}4`"></span>
+                    <span class="fa fa-star" :id="`star${product.id}5`"></span>
+                    <span :id="`overall-rating${product.id}`"></span>
+                    </p>
+                      <div class="card-footer">
+                        <small class="text-muted">Created: [[ product.date ]] by [[ product.username ]]</small>
+                      </div>
+               </div>
+           </div>
+         </template>
+      </div>
+  </div>
+</section>
+
+  <div class="modal fade" id="addItem" role="dialog" aria-labelledby="addItemlLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addItemLabel">Add Product</h5>
+        </div>
+        <div class="modal-body">
+          <form enctype="multipart/form-data" data-toggle="validator" id="createItem">
+            <b> <p id="error" style="text-align: left;"></p>
+            <div class="form-group">
+              <label for="name" class="col-form-label">Name:</label>
+              <input type="text" name="name" id="item-name" placeholder="Item Name"  maxlength="15" required>
+             </div>
+            <div class="form-group">
+              <label for="price" class="col-form-label">Price: </label>
+              <input type="number" step="any" name="price" id="item-price" placeholder="99.99" required>
+            </div>
+            <div class="form-group" form-group-file>
+              <label for="file" class="col-form-label">Upload Photo:</label>
+              <input type="file" id="file" name="file" class="form-control" data-filesize="1000000" data-filesize-error="File must be smaller then 1MB" accept="image/*" required/>
+            </div>
+            <div class="form-group">
+              <label for="Category" class="col-form-label">Category:</label>
+              <select name="Category">
+                  <option value="Finance">Finance</option>
+                  <option value="IT">IT</option>
+                  <option value="TV">TV</option>
+                  <option value="Services">Services</option>
+                  <option value="Miscellaneous">Miscellaneous</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="Description" class="col-form-label">Description:</label>
+              <textarea name="Description" id="add-description" rows="4" cols="50" maxlength="250"></textarea>
+            </div>
+            <button id="submit-button" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </form>
         </div>
       </div>
-    </article>
-    <article>
-      <select id="sortingSelect" onchange="toggleSortingOrder()">
-        <option value="asc" selected >Ascending</option>
-        <option value="desc">Descending</option>
-      </select>
-    </article>
-
+    </div>
   </div>
 
 
-<div class="row g-0 col-auto padding-0" id="mycard" style="justify-content: left;">
-    {% for item in items %}
-    <div class="col-lg-auto" id="cardsContainer">
-    <div class="card"  id="card{{ item.id }}" data-category="{{ item.category.name.split('.')[-1] }}" style="margin: 8px; margin-bottom: 3px;">
-      <div class="card-body"  style="cursor: pointer"; onclick="location.href='{{ url_for('read_item', id=item.id) }}'" >
-        {% if  'no-image.png' == item.image %}
-        <img class="card-img-top" src="/static/img/{{ item.image }}">
-        {% else %}
-        <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
-        {% endif %}
-       <h5 class="card-title">{{ item.name }} </h5>
-        <h6 class="card-text">Price: ${{ '%0.2f'|format(item.price|float) }}</h6>
-        <input type="number" data-price={{ '%0.2f'|format(item.price|float) }} hidden>
-        <h6 class="card-subtitle mb-2 text-muted">Category: {{ item.category.name.split('.')[-1] }}</h6>
-      <hr>
-      <div class="dropdown">
-      <a href="{{ url_for('read_item', id=item.id) }}"><button class="btn btn-secondary stretched-link">Purchase Details</button></a>
-    </div>
-    <p>
-    <span class="fa fa-star checked" id="star{{ item.id }}1"></span>
-    <span class="fa fa-star checked" id="star{{ item.id }}2"></span>
-    <span class="fa fa-star checked" id="star{{ item.id }}3"></span>
-    <span class="fa fa-star" id="star{{ item.id }}4"></span>
-    <span class="fa fa-star" id="star{{ item.id }}5"></span>
-    <span id="overall-rating{{ item.id }}"> No rating Yet </span>
-    </p>
-      <div class="card-footer">
-        <small class="text-muted">Created: {{ item.date.strftime('%Y-%m-%d') }} by {{ item.username }}</small>
-      </div>
-    </div>
-    </div>
-</div>
-    {% endfor %}
-  </div>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script>
+const App = {
+  name: "App",
+  delimiters: ['[[', ']]'],
+  data() {
+    return {
+      min: 100,
+      max: 10000,
+      products: [],
+    };
+  },
+  async beforeMount() {
+    await this.getProducts();
+    this.products.forEach(product => {
+      this.getItemRating(product.id);
+    });
+  },
+  methods: {
+    async getProducts() {
+      try {
+        console.log('getProducts')
+        const res = await fetch('/api/items');
+        const products = await res.json();
+        this.products = products;
+        const maxPrice = Math.max(...this.products.map(product => product.price));
+        const minPrice = Math.min(...this.products.map(product => product.price));
+        this.max = maxPrice;
+        this.min = minPrice;
+        } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    },
+    redirectToItem(itemId) {
+      window.location.href = 'items/' + itemId;
+    },
+    async getItemRating(itemId) {
+      try {
+        console.log('getItemRating')
+        const response = await fetch(`/api/reviews/item/rating?id=${itemId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        for (let i = 1; i <= 5; i++) {
+          const star = document.getElementById(`star${itemId}${i}`);
+          if (i <= data.rating) {
+            star.classList.add('checked');
+          } else {
+            star.classList.remove('checked');
+          }
+        }
+        const overallRating = document.getElementById(`overall-rating${itemId}`);
+        if (overallRating) {
+          overallRating.innerText = `(${data.review_number})`;
+        }
+        else{
+          star.classList.remove('checked')
+        }
+      } catch (error) {
+      }
+    },
+  },
+};
 
+Vue.createApp(App).mount('#app');
+
+</script>
 
 <script>
-function getItemRating(item_id){
-  $.ajax({
-        url: "/api/reviews/item/rating",
-        method: "get",
-        headers: { "Content-Type": "application/json",},
-        data:  { "id": `${item_id}`
-        },
-        success: data => {
-          for (var i=1; i<=5; i++ ){
-            var star = document.getElementById('star'+ item_id + i )
-            if ( i <= data.rating ){
-                star.classList.add('checked');
-            }
-            else { star.classList.remove('checked')}
-          }
-        document.getElementById('overall-rating'+ item_id).innerText = '  (' + data.review_number + ')'
-        },
-        error: (error) => {
-            console.log('error:', error);
-        }
-      });
-   }
 
-{% for item in items %}
-var item_id = '{{ item.id }}'
-getItemRating(item_id)
-{% endfor %}
-
-  function Search() {
+function Search() {
     var input, filter, cards, cardContainer, h5, title, i;
     input = document.getElementById("filter");
     filter = input.value.toUpperCase();
@@ -156,111 +327,101 @@ getItemRating(item_id)
     }
 }
 
-
-function updateMaxPriceInput(val) {
-          document.getElementById('maxPrice').value=val; 
-        }
-
-        var allCards = [];
-
-// Populate allCards array on page load
-$(document).ready(function() {
-    allCards = $(".card").toArray();
-});
-
 function getSelectedCategories() {
-  var selectedCategories = [];
-  var checkboxes = document.getElementsByClassName("custom-control-input");
-
-  for (var i = 0; i < checkboxes.length; i++) {
-    if (checkboxes[i].checked) {
-      var categoryName = checkboxes[i].nextElementSibling.innerText.trim().split('\n')[0].toUpperCase();
-      selectedCategories.push(categoryName);
+    var selectedCategories = [];
+    var checkboxes = document.getElementsByClassName("custom-control-input");
+    console.log('checkboxes', checkboxes)
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (!checkboxes[i].disabled && checkboxes[i].checked) {
+            var categoryId = checkboxes[i].getAttribute("data-category");
+            selectedCategories.push(categoryId);
+        }
     }
-  }
-  return selectedCategories;
+    return selectedCategories;
 }
-// Function to filter cards based on category
+
 function filterByCategory() {
     var selectedCategories = getSelectedCategories();
+    console.log('selectedCategories', selectedCategories);
 
-    allCards.forEach(function(card) {
-        var category = card.getAttribute("data-category").toUpperCase();
+    var cards = document.querySelectorAll('.card');
+
+    cards.forEach(function (card) {
+        var category = card.getAttribute('data-category'); // Convert to number
+        console.log('category', category);
         var displayCard = selectedCategories.length === 0 || selectedCategories.includes(category);
-
+        console.log('displayCard', displayCard);
         if (displayCard) {
             $(card).slideDown(300);
         } else {
             $(card).slideUp(300);
         }
     });
-
-    // Trigger sorting after filtering
-    toggleSortingOrder();
 }
 
-// Function to filter cards based on price
-function filterByPrice() {
-    var selectedCategories = getSelectedCategories();
-    var minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
-    var maxPrice = parseFloat(document.getElementById("maxPrice").value) || Infinity;
+// function filterByPrice() {
+//     var selectedCategories = getSelectedCategories();
+//     var minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
+//     var maxPrice = parseFloat(document.getElementById("maxPrice").value) || Infinity;
+//     allCards = $(".card").toArray();
+//     allCards.forEach(function(card) {
+//         var category = card.getAttribute("data-category").toUpperCase();
+//         var price = parseFloat(card.querySelector("[data-price]").getAttribute("data-price"));
+//         // var isCategoryMatch = selectedCategories.length === 0 || selectedCategories.includes(category);
+//         var isPriceMatch = price >= minPrice && price <= maxPrice;
+//         var displayCard = isCategoryMatch && isPriceMatch;
 
-    allCards.forEach(function(card) {
-        var category = card.getAttribute("data-category").toUpperCase();
-        var price = parseFloat(card.querySelector("[data-price]").getAttribute("data-price"));
-        var isCategoryMatch = selectedCategories.length === 0 || selectedCategories.includes(category);
-        var isPriceMatch = price >= minPrice && price <= maxPrice;
-        var displayCard = isCategoryMatch && isPriceMatch;
+//         if (displayCard) {
+//             $(card).slideDown(300);
+//         } else {
+//             $(card).slideUp(300);
+//         }
+//     });
+// }
 
-        if (displayCard) {
-            $(card).slideDown(300);
-        } else {
-            $(card).slideUp(300);
-        }
-    });
+// document.getElementById("price-range").oninput = function() {
+//   var value = (this.value-this.min)/(this.max-this.min)*100
+//   this.style.background = 'linear-gradient(to right, #82CFD0 0%, #82CFD0 ' + value + '%, #fff ' + value + '%, white 100%)'
+// };
 
-    // Trigger sorting after filtering
-    toggleSortingOrder();
-}
+// // Function to toggle sorting order
+// function toggleSortingOrder() {
+//     var sortingSelect = document.getElementById("sortingSelect");
+//     var currentSortingOrder = sortingSelect ? sortingSelect.value : 'asc';
+//     var newSortingOrder = currentSortingOrder === 'asc' ? 'desc' : 'asc';
 
-// Function to toggle sorting order
-function toggleSortingOrder() {
-    var sortingSelect = document.getElementById("sortingSelect");
-    var currentSortingOrder = sortingSelect ? sortingSelect.value : 'asc';
-    var newSortingOrder = currentSortingOrder === 'asc' ? 'desc' : 'asc';
+//     // Sort allCards based on prices and the new sorting order
+//     allCards.sort(function(a, b) {
+//         var categoryA = a.getAttribute("data-category").toUpperCase();
+//         var categoryB = b.getAttribute("data-category").toUpperCase();
 
-    // Sort allCards based on prices and the new sorting order
-    allCards.sort(function(a, b) {
-        var categoryA = a.getAttribute("data-category").toUpperCase();
-        var categoryB = b.getAttribute("data-category").toUpperCase();
+//         if (categoryA !== categoryB) {
+//             // If categories are different, maintain the order based on category
+//             return categoryA.localeCompare(categoryB);
+//         }
 
-        if (categoryA !== categoryB) {
-            // If categories are different, maintain the order based on category
-            return categoryA.localeCompare(categoryB);
-        }
+//         var priceA = parseFloat(a.querySelector("[data-price]").getAttribute("data-price"));
+//         var priceB = parseFloat(b.querySelector("[data-price]").getAttribute("data-price"));
 
-        var priceA = parseFloat(a.querySelector("[data-price]").getAttribute("data-price"));
-        var priceB = parseFloat(b.querySelector("[data-price]").getAttribute("data-price"));
+//         return newSortingOrder === 'asc' ? priceB - priceA : priceA - priceB;
+//     });
+//     console.log('allCards', allCards)
+//     // Remove all cards from the current container
+//     var cardsContainer = document.getElementById("cardsContainer");
+//     while (cardsContainer.firstChild) {
+//         cardsContainer.removeChild(cardsContainer.firstChild);
+//     }
 
-        return newSortingOrder === 'asc' ? priceB - priceA : priceA - priceB;
-    });
-    console.log('allCards', allCards)
-    // Remove all cards from the current container
-    var cardsContainer = document.getElementById("cardsContainer");
-    while (cardsContainer.firstChild) {
-        cardsContainer.removeChild(cardsContainer.firstChild);
-    }
+//     // Append the cards in the new order
+//     allCards.forEach(function(card) {
+//         cardsContainer.style.display = 'grid';
+//         cardsContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
+//         cardsContainer.style.gap = '10px';
+//         cardsContainer.appendChild(card);
+//     });
+// }
 
-    // Append the cards in the new order
-    allCards.forEach(function(card) {
-        cardsContainer.style.display = 'grid';
-        cardsContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
-        cardsContainer.style.gap = '10px';
-        cardsContainer.appendChild(card);
-    });
-}
- </script>
-
+</script>
 
 {% endblock %}
 
