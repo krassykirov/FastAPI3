@@ -115,56 +115,60 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 
 <section class="container" id="app">
 
-  <div class="row col-2" style="float: left;">
-    <article class="filter-group">
-       Categories
-      <hr>
-      <div class="filter-content collapse show" id="collapse_2">
-        <div class="card-body">
-            {% for category in categories %}
-            <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" data-category="{{ category[2] }}" {% if category[1] == 0 %} 
-                disabled {% endif %} onchange="filterByCategory()">
-                <div class="custom-control-label">{{category[0]}}
-                    <b class="badge badge-pill badge-light float-right">{{category[1]}}</b>
+      <div class="row col-2" style="float: left;">
+        <article class="filter-group">
+          Categories
+          <hr>
+          <div class="filter-content collapse show" id="collapse_2">
+            <div class="card-body">
+              <label class="custom-control custom-checkbox" v-for="category in categories" :key="category[2]">
+                <input
+                  type="checkbox"
+                  class="custom-control-input"
+                  :data-category="category[2]"
+                  :disabled="category[1] === 0"
+                  @change="handleCategoryChange"
+                />
+                <div class="custom-control-label">
+                  [[ category[0] ]]
+                  <b class="badge badge-pill badge-light float-right">[[ category[1] ]]</b>
                 </div>
-            </label>
-            {% endfor %}
-        </div>
-    </div>
-      </article>
-      <hr>
-      <article class="filter-group" style="float: left;">
-        Price Range
-        <div class="filter-content collapse show" id="collapse_3">
-          <div class="card-body">
-            <div class="range-wrap">
-              <div class="range-value" id="rangeV"></div>
-              <input v-model.number="max" v-model.number="min" type="range" min="100" max="10000" value="200" step="100">
-              <p> <span style="color:blue"></span> $[[ min ]] - $[[ max ]] </p> <input v-model.number="max" class="form-control" type="number" id="max-price" hidden>
+              </label>
             </div>
-            <!-- <div class="form-row">
-              <div class="form-group col-md-6">
-                <label>Min</label>
-                <input class="form-control" id="minPrice" placeholder="0" value="0" type="number">
-              </div>
-              <div class="form-group text-right col-md-6">
-                <label>Max</label>
-                <input class="form-control" id="maxPrice" placeholder="10000" type="number">
-              </div>
+          </div>
+        </article>
+          <hr>
+          <article class="filter-group" style="float: left;">
+            Price Range
+            <div class="filter-content collapse show" id="collapse_3">
+              <div class="card-body">
+                <div class="range-wrap">
+                  <div class="range-value" id="rangeV"></div>
+                  <input v-model.number="max" v-model.number="min" type="range" min="1" max="100000">
+                  <p> <span style="color:blue"></span> $[[ min ]] - $[[ max ]] </p> <input v-model.number="max" class="form-control" type="number" id="max-price" hidden>
+                </div>
+                <!-- <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label>Min</label>
+                    <input class="form-control" id="minPrice" placeholder="0" value="0" type="number">
+                  </div>
+                  <div class="form-group text-right col-md-6">
+                    <label>Max</label>
+                    <input class="form-control" id="maxPrice" placeholder="10000" type="number">
+                  </div>
+                </div>
+                <button class="btn btn-block btn-primary" onclick="filterByPrice()">Apply</button>
+              </div> -->
             </div>
-            <button class="btn btn-block btn-primary" onclick="filterByPrice()">Apply</button>
-          </div> -->
-        </div>
-      </article>
-   </div>
-
-  <div class="row g-0 col-auto padding-0" id="mycard" style="justify-content: left;">
-      <product-component v-for="product in products" :key="product.id" class="row g-0 col-auto" :product="product" :min="min" :max="max" style="justify-content: left;">
-      </product-component>
-
+          </article>
       </div>
-  </div>
+
+      <div class="row g-0 col-auto padding-0" id="mycard" style="justify-content: left;">
+          <product-component v-for="product in products" :key="product.id" class="row g-0 col-auto"
+          :product="product" :min="min" :max="max" style="justify-content: left;">
+          </product-component>
+      </div>
+
 </section>
 
   <div class="modal fade" id="addItem" role="dialog" aria-labelledby="addItemlLabel" aria-hidden="true">
@@ -182,7 +186,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
              </div>
             <div class="form-group">
               <label for="price" class="col-form-label">Price: </label>
-              <input type="number" step="any" name="price" id="item-price" placeholder="99.99" required>
+              <input type="number" step="any" name="price" id="item-price" placeholder="99.99" max="100000" min="1" required>
             </div>
             <div class="form-group" form-group-file>
               <label for="file" class="col-form-label">Upload Photo:</label>
@@ -221,12 +225,14 @@ const App = Vue.createApp({
   data() {
     return {
       min: 100,
-      max: 10000,
+      max: 100000,
       products: [],
+      categories: [],
     };
   },
   async beforeMount() {
     await this.getProducts();
+    await this.fetchCategories();
     this.products.forEach(product => {
       this.getItemRating(product.id);
     });
@@ -245,9 +251,17 @@ const App = Vue.createApp({
         console.error('Error fetching products:', error);
       }
     },
+    async fetchCategories() {
+      try {
+        const res = await fetch('/api/categories/category_items_len/');
+        this.categories = await res.json();
+        console.log('categories', this.categories)
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    },
     async getItemRating(itemId) {
       try {
-        console.log('getItemRating')
         const response = await fetch(`/api/reviews/item/rating?id=${itemId}`, {
           method: 'GET',
           headers: {
@@ -262,10 +276,39 @@ const App = Vue.createApp({
         if (product) {
           product.rating = data.rating;
           product.reviewNumber = data.review_number;
+          document.getElementById('overall-rating' + product.id + '-float').innerText = " " + parseFloat(data.rating_float).toFixed(2);
         }
       } catch (error) {
       }
     },
+    filterByCategory() {
+    var selectedCategories = this.getSelectedCategories();
+    var cards = document.querySelectorAll('.card');
+    cards.forEach(function (card) {
+        var category = card.getAttribute('data-category');
+        var displayCard = selectedCategories.length === 0 || selectedCategories.includes(category);
+        if (displayCard) {
+            $(card).slideDown(300);
+        } else {
+            $(card).slideUp(300);
+        }
+      });
+    },
+    handleCategoryChange() {
+      this.selectedCategories = this.getSelectedCategories();
+      this.filterByCategory();
+    },
+    getSelectedCategories() {
+    var selectedCategories = [];
+    var checkboxes = document.getElementsByClassName("custom-control-input");
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (!checkboxes[i].disabled && checkboxes[i].checked) {
+            var categoryId = checkboxes[i].getAttribute("data-category");
+            selectedCategories.push(categoryId);
+          }
+      }
+      return selectedCategories;
+      },
   },
 });
 
@@ -279,12 +322,14 @@ App.component('product-component', {
         <div class="card-body">
           <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="card-img-top">
           <h5 class="card-title"> [[ product.name ]]  </h5>
-          <h6 class="card-text" :data-price="product.price">Price: $ [[ product.price  ]] </h6>
+         <span class="badge bg-success" v-if="product.price<=90">Low Cost</span>
+         <span class="badge bg-primary" v-else-if="product.price>90 && product.price<500">Value</span>
+         <span class="badge bg-danger"  v-else-if="product.price> 1000">WOW </span>  $[[ product.price  ]]
         </div>
-        <p>
+        <p> <i>
           <span v-for="i in 5" :key="i" class="fa fa-star" :class="{ 'checked': i <= product.rating }"></span>
-          <span :id="'overall-rating' + product.id"> [[ product.reviewNumber ]]</span>
-          <span :id="'overall-rating' + product.id"></span>
+          <span :id="'overall-rating' + product.id + '-float'"></span></i>
+          <span :id="'overall-rating' + product.id"> ([[ product.reviewNumber ]])</span>
         </p>
         <div class="card-footer">
           <small class="text-muted">Created: [[ product.date ]] by [[ product.username ]] </small>
@@ -295,7 +340,8 @@ App.component('product-component', {
   methods: {
     redirectToItem(itemId) {
       window.location.href = 'items/' + itemId;
-    }},
+    },
+  },
 });
 App.mount('#app');
 
@@ -319,37 +365,37 @@ function Search() {
     }
 }
 
-function getSelectedCategories() {
-    var selectedCategories = [];
-    var checkboxes = document.getElementsByClassName("custom-control-input");
-    console.log('checkboxes', checkboxes)
-    for (var i = 0; i < checkboxes.length; i++) {
-        if (!checkboxes[i].disabled && checkboxes[i].checked) {
-            var categoryId = checkboxes[i].getAttribute("data-category");
-            selectedCategories.push(categoryId);
-        }
-    }
-    return selectedCategories;
-}
+// function getSelectedCategories() {
+//     var selectedCategories = [];
+//     var checkboxes = document.getElementsByClassName("custom-control-input");
+//     console.log('checkboxes', checkboxes)
+//     for (var i = 0; i < checkboxes.length; i++) {
+//         if (!checkboxes[i].disabled && checkboxes[i].checked) {
+//             var categoryId = checkboxes[i].getAttribute("data-category");
+//             selectedCategories.push(categoryId);
+//         }
+//     }
+//     return selectedCategories;
+// }
 
-function filterByCategory() {
-    var selectedCategories = getSelectedCategories();
-    console.log('selectedCategories', selectedCategories);
+// function filterByCategory() {
+//     var selectedCategories = getSelectedCategories();
+//     console.log('selectedCategories', selectedCategories);
 
-    var cards = document.querySelectorAll('.card');
+//     var cards = document.querySelectorAll('.card');
 
-    cards.forEach(function (card) {
-        var category = card.getAttribute('data-category'); // Convert to number
-        console.log('category', category);
-        var displayCard = selectedCategories.length === 0 || selectedCategories.includes(category);
-        console.log('displayCard', displayCard);
-        if (displayCard) {
-            $(card).slideDown(300);
-        } else {
-            $(card).slideUp(300);
-        }
-    });
-}
+//     cards.forEach(function (card) {
+//         var category = card.getAttribute('data-category'); // Convert to number
+//         console.log('category', category);
+//         var displayCard = selectedCategories.length === 0 || selectedCategories.includes(category);
+//         console.log('displayCard', displayCard);
+//         if (displayCard) {
+//             $(card).slideDown(300);
+//         } else {
+//             $(card).slideUp(300);
+//         }
+//     });
+// }
 
 // function filterByPrice() {
 //     var selectedCategories = getSelectedCategories();
