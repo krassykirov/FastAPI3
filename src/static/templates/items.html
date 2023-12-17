@@ -114,6 +114,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
   </div>
 
 <section class="container" id="app">
+
   <div class="row col-2" style="float: left;">
     <article class="filter-group">
        Categories
@@ -159,34 +160,9 @@ input[type=range]:focus::-webkit-slider-runnable-track {
    </div>
 
   <div class="row g-0 col-auto padding-0" id="mycard" style="justify-content: left;">
-      <div v-for="product in products" :key="product.id" class="row g-0 col-auto" style="justify-content: left;">
-        <template v-if="product.price<=Number(max)">
-           <div class="col-lg-auto">
-              <div class="card" :id="product.id" :data-category="product.category_id"
-              style="margin: 1px; margin-bottom: 3px; cursor: pointer" @click="redirectToItem(product.id)">
-                <img :src="`static/img/${product.username}/${product.name}/${product.image}`" class="card-img-top">
-                  <div class="card-body">
-                    <h5 class="card-title"> [[ product.name ]] </h5>
-                    <h6 class="card-text" :data-price="product.price">Price: $ [[ product.price ]] </h6>
-                    <span class="badge bg-danger" v-if="product.price<99">Sale</span>
-                    <span class="badge bg-primary" v-else-if="product.price<499 && product.price>=100">Middle range</span>
-                    <span class="badge bg-success" v-else> Premier</span>
-                    Price: $[[ product.price ]]
-                  </div>
-                  <p>
-                    <span class="fa fa-star" :id="`star${product.id}1`"></span>
-                    <span class="fa fa-star" :id="`star${product.id}2`"></span>
-                    <span class="fa fa-star" :id="`star${product.id}3`"></span>
-                    <span class="fa fa-star" :id="`star${product.id}4`"></span>
-                    <span class="fa fa-star" :id="`star${product.id}5`"></span>
-                    <span :id="`overall-rating${product.id}`"></span>
-                    </p>
-                      <div class="card-footer">
-                        <small class="text-muted">Created: [[ product.date ]] by [[ product.username ]]</small>
-                      </div>
-               </div>
-           </div>
-         </template>
+      <product-component v-for="product in products" :key="product.id" class="row g-0 col-auto" :product="product" :min="min" :max="max" style="justify-content: left;">
+      </product-component>
+
       </div>
   </div>
 </section>
@@ -235,9 +211,11 @@ input[type=range]:focus::-webkit-slider-runnable-track {
   </div>
 
 
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js">
+
+</script>
 <script>
-const App = {
+const App = Vue.createApp({
   name: "App",
   delimiters: ['[[', ']]'],
   data() {
@@ -256,7 +234,6 @@ const App = {
   methods: {
     async getProducts() {
       try {
-        console.log('getProducts')
         const res = await fetch('/api/items');
         const products = await res.json();
         this.products = products;
@@ -267,9 +244,6 @@ const App = {
         } catch (error) {
         console.error('Error fetching products:', error);
       }
-    },
-    redirectToItem(itemId) {
-      window.location.href = 'items/' + itemId;
     },
     async getItemRating(itemId) {
       try {
@@ -284,28 +258,46 @@ const App = {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
-        for (let i = 1; i <= 5; i++) {
-          const star = document.getElementById(`star${itemId}${i}`);
-          if (i <= data.rating) {
-            star.classList.add('checked');
-          } else {
-            star.classList.remove('checked');
-          }
-        }
-        const overallRating = document.getElementById(`overall-rating${itemId}`);
-        if (overallRating) {
-          overallRating.innerText = `(${data.review_number})`;
-        }
-        else{
-          star.classList.remove('checked')
+        const product = this.products.find((p) => p.id === itemId);
+        if (product) {
+          product.rating = data.rating;
+          product.reviewNumber = data.review_number;
         }
       } catch (error) {
       }
     },
   },
-};
+});
 
-Vue.createApp(App).mount('#app');
+App.component('product-component', {
+  props: ['product', 'min', 'max'],
+  delimiters: ['[[', ']]'],
+  template: `
+    <div v-if="product.price<=Number(max)" class="col-lg-auto">
+      <div class="card" :id="product.id" :data-category="product.category_id"
+        style="margin: 1px; margin-bottom: 3px; cursor: pointer" @click="redirectToItem(product.id)">
+        <div class="card-body">
+          <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="card-img-top">
+          <h5 class="card-title"> [[ product.name ]]  </h5>
+          <h6 class="card-text" :data-price="product.price">Price: $ [[ product.price  ]] </h6>
+        </div>
+        <p>
+          <span v-for="i in 5" :key="i" class="fa fa-star" :class="{ 'checked': i <= product.rating }"></span>
+          <span :id="'overall-rating' + product.id"> [[ product.reviewNumber ]]</span>
+          <span :id="'overall-rating' + product.id"></span>
+        </p>
+        <div class="card-footer">
+          <small class="text-muted">Created: [[ product.date ]] by [[ product.username ]] </small>
+        </div>
+      </div>
+    </div>
+  `,
+  methods: {
+    redirectToItem(itemId) {
+      window.location.href = 'items/' + itemId;
+    }},
+});
+App.mount('#app');
 
 </script>
 
