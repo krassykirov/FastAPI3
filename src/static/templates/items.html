@@ -98,6 +98,28 @@ input[type=range]:focus::-webkit-slider-runnable-track {
   margin-left: -5px;
   margin-top: -1px;
 }
+  /* .sortOrder {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .sortOrder:hover {
+    background-color: #e3e3e3;
+  }
+
+  .sortOrder i {
+    font-size: 16px;
+  } */
+  .blue-color {
+        color:blue;
+    }
+     
 </style>
 
 <div class="row col-1" style="float: right;">
@@ -144,9 +166,13 @@ input[type=range]:focus::-webkit-slider-runnable-track {
               <div class="card-body">
                 <div class="range-wrap">
                   <div class="range-value" id="rangeV"></div>
-                  <input v-model.number="max" v-model.number="min" type="range" min="1" max="100000">
+                  <input v-model.number="max" v-model.number="min" type="range" min="1" max="10000">
                   <p> <span style="color:blue"></span> $[[ min ]] - $[[ max ]] </p> <input v-model.number="max" class="form-control" type="number" id="max-price" hidden>
                 </div>
+                <button type="button" class="btn btn-secondary btn-sm" @click="toggleSortOrder">
+                  <span v-if="sortOrder === 'asc'" class="bi bi-sort-up-alt" style="font-size: 1rem"></span>
+                  <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
+                </button>
                 <!-- <div class="form-row">
                   <div class="form-group col-md-6">
                     <label>Min</label>
@@ -165,7 +191,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 
       <div class="row g-0 col-auto padding-0" id="mycard" style="justify-content: left;">
           <product-component v-for="product in products" :key="product.id" class="row g-0 col-auto"
-          :product="product" :min="min" :max="max" style="justify-content: left;">
+                 :product="product" :min="min" :max="max" style="justify-content: left;">
           </product-component>
       </div>
 
@@ -186,7 +212,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
              </div>
             <div class="form-group">
               <label for="price" class="col-form-label">Price: </label>
-              <input type="number" step="any" name="price" id="item-price" placeholder="99.99" max="100000" min="1" required>
+              <input type="number" step="any" name="price" id="item-price" placeholder="99.99" max="10000" min="1" required>
             </div>
             <div class="form-group" form-group-file>
               <label for="file" class="col-form-label">Upload Photo:</label>
@@ -224,10 +250,11 @@ const App = Vue.createApp({
   delimiters: ['[[', ']]'],
   data() {
     return {
-      min: 100,
-      max: 100000,
+      min: 1,
+      max: 10000,
       products: [],
       categories: [],
+      sortOrder: 'asc',
     };
   },
   async beforeMount() {
@@ -237,6 +264,11 @@ const App = Vue.createApp({
       this.getItemRating(product.id);
     });
   },
+  // computed: {
+  //   filteredProducts() {
+  //     return this.products.filter( item => (item.price < this.max))
+  //   }
+  // },
   methods: {
     async getProducts() {
       try {
@@ -255,7 +287,6 @@ const App = Vue.createApp({
       try {
         const res = await fetch('/api/categories/category_items_len/');
         this.categories = await res.json();
-        console.log('categories', this.categories)
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
@@ -309,6 +340,19 @@ const App = Vue.createApp({
       }
       return selectedCategories;
       },
+    toggleSortOrder() {
+
+      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+      console.log('Sort Order:', this.sortOrder);
+      this.sortProducts();
+    },
+    sortProducts() {
+      if (this.sortOrder === 'asc') {
+      this.products.sort((a, b) => a.price - b.price);
+      } else {
+      this.products.sort((a, b) => b.price - a.price);
+    }
+    }
   },
 });
 
@@ -322,9 +366,9 @@ App.component('product-component', {
         <div class="card-body">
           <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="card-img-top">
           <h5 class="card-title"> [[ product.name ]]  </h5>
-         <span class="badge bg-success" v-if="product.price<=90">Low Cost</span>
-         <span class="badge bg-primary" v-else-if="product.price>90 && product.price<500">Value</span>
-         <span class="badge bg-danger"  v-else-if="product.price> 1000">WOW </span>  $[[ product.price  ]]
+         <span class="badge bg-danger" v-if="product.price<=90">Low Cost</span>
+         <span class="badge bg-primary" v-else-if="product.price>90 && product.price<999">Value</span>
+         <span class="badge bg-success" v-else-if="product.price>=1000">WOW </span>  $[[ product.price  ]]
         </div>
         <p> <i>
           <span v-for="i in 5" :key="i" class="fa fa-star" :class="{ 'checked': i <= product.rating }"></span>
