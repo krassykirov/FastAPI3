@@ -98,29 +98,8 @@ input[type=range]:focus::-webkit-slider-runnable-track {
   margin-left: -5px;
   margin-top: -1px;
 }
-  /* .sortOrder {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-
-  .sortOrder:hover {
-    background-color: #e3e3e3;
-  }
-
-  .sortOrder i {
-    font-size: 16px;
-  } */
-  .blue-color {
-        color:blue;
-    }
-     
 </style>
+
 
 <div class="row col-1" style="float: right;">
  <button class="btn btn-secondary btn-sm"> <a class="nav-link" data-toggle="modal" data-target="#addItem" href="#">Add Product</a> </button> 
@@ -136,7 +115,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
   </div>
 
 <section class="container" id="app">
-
       <div class="row col-2" style="float: left;">
         <article class="filter-group">
           Categories
@@ -153,11 +131,12 @@ input[type=range]:focus::-webkit-slider-runnable-track {
                 />
                 <div class="custom-control-label">
                   [[ category[0] ]]
-                  <b class="badge badge-pill badge-light float-right">[[ category[1] ]]</b>
+                  <b class="badge bg-primary float-right">[[ category[1] ]]</b>
                 </div>
               </label>
             </div>
           </div>
+          <div class="badge bg-primary ml-3">Total: [[products.length]]</div>
         </article>
           <hr>
           <article class="filter-group" style="float: left;">
@@ -165,9 +144,9 @@ input[type=range]:focus::-webkit-slider-runnable-track {
             <div class="filter-content collapse show" id="collapse_3">
               <div class="card-body">
                 <div class="range-wrap">
-                  <div class="range-value" id="rangeV"></div>
                   <input v-model.number="max" v-model.number="min" type="range" min="1" max="10000">
-                  <p> <span style="color:blue"></span> $[[ min ]] - $[[ max ]] </p> <input v-model.number="max" class="form-control" type="number" id="max-price" hidden>
+                  <p> <span style="color:blue"></span> $[[ min ]] - $[[ max ]] </p> <input v-model.number="max" 
+                  class="form-control" type="number" id="max-price" hidden>
                 </div>
                 <button type="button" class="btn btn-secondary btn-sm" @click="toggleSortOrder">
                   <span v-if="sortOrder === 'asc'" class="bi bi-sort-up-alt" style="font-size: 1rem"></span>
@@ -190,11 +169,24 @@ input[type=range]:focus::-webkit-slider-runnable-track {
       </div>
 
       <div class="row g-0 col-auto padding-0" id="mycard" style="justify-content: left;">
-          <product-component v-for="product in products" :key="product.id" class="row g-0 col-auto"
+          <product-component v-for="product in products" :key="product.id" :cart="cart" class="row g-0 col-auto"
                  :product="product" :min="min" :max="max" style="justify-content: left;">
           </product-component>
       </div>
-
+      <!-- <div v-if="displayCart" class="list-group" aria-labelledby="cartDropdown">
+        <div v-for="(item, index) in cart" :key="index" class="list-group-item d-flex justify-content-between">
+          <div class="mb-2">
+            <div class="ml-3 font-weight-bold">[[ item.name ]] : [[ item.price ]]</div>
+               <button @click="displayCart= !displayCart"
+                    class="btn btn-sm btn-success ml-3"
+                    id="cartDropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"><i class="fas fa-shopping-cart mr-1"></i>
+                  [[ cart.length ]]
+               </button>
+        </div>
+       </div>
+      </div> -->
 </section>
 
   <div class="modal fade" id="addItem" role="dialog" aria-labelledby="addItemlLabel" aria-hidden="true">
@@ -240,10 +232,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     </div>
   </div>
 
-
-<script src="https://unpkg.com/vue@3/dist/vue.global.js">
-
-</script>
 <script>
 const App = Vue.createApp({
   name: "App",
@@ -254,7 +242,9 @@ const App = Vue.createApp({
       max: 10000,
       products: [],
       categories: [],
+      cart: Vue.ref([]),
       sortOrder: 'asc',
+      displayCart: true
     };
   },
   async beforeMount() {
@@ -341,7 +331,6 @@ const App = Vue.createApp({
       return selectedCategories;
       },
     toggleSortOrder() {
-
       this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
       console.log('Sort Order:', this.sortOrder);
       this.sortProducts();
@@ -351,13 +340,14 @@ const App = Vue.createApp({
       this.products.sort((a, b) => a.price - b.price);
       } else {
       this.products.sort((a, b) => b.price - a.price);
-    }
-    }
+      }
+    },
   },
 });
-
+// cursor: pointer" @click="redirectToItem(product.id)
+// <button @click="addToCart(product)" class="btn btn-success">+</button>
 App.component('product-component', {
-  props: ['product', 'min', 'max'],
+  props: ['product', 'min', 'max','cart'],
   delimiters: ['[[', ']]'],
   template: `
     <div v-if="product.price<=Number(max)" class="col-lg-auto">
@@ -385,6 +375,11 @@ App.component('product-component', {
     redirectToItem(itemId) {
       window.location.href = 'items/' + itemId;
     },
+    addToCart(product) {
+      console.log('product', product)
+      this.cart.push(product)
+      console.log('cart', this.cart)
+    },
   },
 });
 App.mount('#app');
@@ -408,100 +403,6 @@ function Search() {
         }
     }
 }
-
-// function getSelectedCategories() {
-//     var selectedCategories = [];
-//     var checkboxes = document.getElementsByClassName("custom-control-input");
-//     console.log('checkboxes', checkboxes)
-//     for (var i = 0; i < checkboxes.length; i++) {
-//         if (!checkboxes[i].disabled && checkboxes[i].checked) {
-//             var categoryId = checkboxes[i].getAttribute("data-category");
-//             selectedCategories.push(categoryId);
-//         }
-//     }
-//     return selectedCategories;
-// }
-
-// function filterByCategory() {
-//     var selectedCategories = getSelectedCategories();
-//     console.log('selectedCategories', selectedCategories);
-
-//     var cards = document.querySelectorAll('.card');
-
-//     cards.forEach(function (card) {
-//         var category = card.getAttribute('data-category'); // Convert to number
-//         console.log('category', category);
-//         var displayCard = selectedCategories.length === 0 || selectedCategories.includes(category);
-//         console.log('displayCard', displayCard);
-//         if (displayCard) {
-//             $(card).slideDown(300);
-//         } else {
-//             $(card).slideUp(300);
-//         }
-//     });
-// }
-
-// function filterByPrice() {
-//     var selectedCategories = getSelectedCategories();
-//     var minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
-//     var maxPrice = parseFloat(document.getElementById("maxPrice").value) || Infinity;
-//     allCards = $(".card").toArray();
-//     allCards.forEach(function(card) {
-//         var category = card.getAttribute("data-category").toUpperCase();
-//         var price = parseFloat(card.querySelector("[data-price]").getAttribute("data-price"));
-//         // var isCategoryMatch = selectedCategories.length === 0 || selectedCategories.includes(category);
-//         var isPriceMatch = price >= minPrice && price <= maxPrice;
-//         var displayCard = isCategoryMatch && isPriceMatch;
-
-//         if (displayCard) {
-//             $(card).slideDown(300);
-//         } else {
-//             $(card).slideUp(300);
-//         }
-//     });
-// }
-
-// document.getElementById("price-range").oninput = function() {
-//   var value = (this.value-this.min)/(this.max-this.min)*100
-//   this.style.background = 'linear-gradient(to right, #82CFD0 0%, #82CFD0 ' + value + '%, #fff ' + value + '%, white 100%)'
-// };
-
-// // Function to toggle sorting order
-// function toggleSortingOrder() {
-//     var sortingSelect = document.getElementById("sortingSelect");
-//     var currentSortingOrder = sortingSelect ? sortingSelect.value : 'asc';
-//     var newSortingOrder = currentSortingOrder === 'asc' ? 'desc' : 'asc';
-
-//     // Sort allCards based on prices and the new sorting order
-//     allCards.sort(function(a, b) {
-//         var categoryA = a.getAttribute("data-category").toUpperCase();
-//         var categoryB = b.getAttribute("data-category").toUpperCase();
-
-//         if (categoryA !== categoryB) {
-//             // If categories are different, maintain the order based on category
-//             return categoryA.localeCompare(categoryB);
-//         }
-
-//         var priceA = parseFloat(a.querySelector("[data-price]").getAttribute("data-price"));
-//         var priceB = parseFloat(b.querySelector("[data-price]").getAttribute("data-price"));
-
-//         return newSortingOrder === 'asc' ? priceB - priceA : priceA - priceB;
-//     });
-//     console.log('allCards', allCards)
-//     // Remove all cards from the current container
-//     var cardsContainer = document.getElementById("cardsContainer");
-//     while (cardsContainer.firstChild) {
-//         cardsContainer.removeChild(cardsContainer.firstChild);
-//     }
-
-//     // Append the cards in the new order
-//     allCards.forEach(function(card) {
-//         cardsContainer.style.display = 'grid';
-//         cardsContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
-//         cardsContainer.style.gap = '10px';
-//         cardsContainer.appendChild(card);
-//     });
-// }
 
 </script>
 
