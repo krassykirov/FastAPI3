@@ -363,9 +363,10 @@ const App = Vue.createApp({
         }
       },
       validateMin() {
+        const productMinPrice = Math.min(...this.products.map(product => product.price));
         this.min = this.min.replace(/^0+/, '');
         if (this.min === '' || isNaN(this.min)) {
-              this.min = 0;
+              this.min = productMinPrice;
           }
           if (this.min > this.max) {
             this.min = this.max;
@@ -373,17 +374,17 @@ const App = Vue.createApp({
        },
 
      validateMax() {
+      const productMaxPrice = Math.max(...this.products.map(product => product.price));
       this.max = this.max.replace(/^0+/, '');
       if (this.max === '' || isNaN(this.max)) {
-        this.max = 100;
+        this.max = productMaxPrice;
         }
 
-      const productMaxPrice = Math.max(...this.products.map(product => product.price));
       if (this.max > productMaxPrice) {
         this.max = productMaxPrice;
       }
       if (this.max < this.min) {
-        this.max = this.min;
+          this.max = this.min;
       }
     },
   },
