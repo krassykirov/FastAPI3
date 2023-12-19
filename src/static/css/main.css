@@ -23,6 +23,9 @@ body {
   font-family: "Raleway";
 }
 
+label {
+  font-size: 14px;
+}
 body.modal-open {
 padding-right: -17px;
 }

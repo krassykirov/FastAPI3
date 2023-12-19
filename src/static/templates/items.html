@@ -21,6 +21,7 @@
 .card-img-top {
   width: 100%;
   height: 12vw;
+  max-height: 12vw;
   object-fit: cover;
 }
 
@@ -136,34 +137,36 @@ input[type=range]:focus::-webkit-slider-runnable-track {
               </label>
             </div>
           </div>
-          <div class="badge bg-primary ml-3">Total: [[products.length]]</div>
         </article>
           <hr>
-          <article class="filter-group" style="float: left;">
-            Price Range
+          <article class="filter-group" style="float: left; margin-left: 0;">
+            Sort:  <button type="button" class="btn btn-secondary btn-sm" @click="toggleSortOrder">
+              <span v-if="sortOrder === 'asc'" class="bi bi-sort-up-alt" style="font-size: 1rem"></span>
+              <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
+            </button>
             <div class="filter-content collapse show" id="collapse_3">
               <div class="card-body">
-                <div class="range-wrap">
-                  <input v-model.number="max" v-model.number="min" type="range" min="1" max="10000">
-                  <p> <span style="color:blue"></span> $[[ min ]] - $[[ max ]] </p> <input v-model.number="max" 
-                  class="form-control" type="number" id="max-price" hidden>
-                </div>
-                <button type="button" class="btn btn-secondary btn-sm" @click="toggleSortOrder">
-                  <span v-if="sortOrder === 'asc'" class="bi bi-sort-up-alt" style="font-size: 1rem"></span>
-                  <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
-                </button>
-                <!-- <div class="form-row">
+                <!-- <div class="range-wrap"> -->
+                  <!-- <input v-model.number="max" v-model.number="min" type="range">
+                  <p> Range <span style="color:blue"></span> $[[ min ]] - $[[ max ]] </p> 
+                  <div class="badge bg-primary ml-3">$[[ min ]] - $[[ max ]] </div>
+                  <input v-model.number="max" class="form-control" type="number" id="max-price" hidden>
+                  <div class="badge bg-primary ml-3">Total Products: [[products.length]]</div>
+                </div> -->
+                <div class="form-row">
                   <div class="form-group col-md-6">
-                    <label>Min</label>
-                    <input class="form-control" id="minPrice" placeholder="0" value="0" type="number">
+                    <label>Min price</label>
+                    <input v-model="min" class="form-control" id="minPrice" @input="validateMin" placeholder="0"
+                    min="0" :max="max" value="0" pattern="[1-9][0-9]*" type="text" required>
                   </div>
                   <div class="form-group text-right col-md-6">
-                    <label>Max</label>
-                    <input class="form-control" id="maxPrice" placeholder="10000" type="number">
+                    <label>Max price</label>
+                    <input v-model="max" class="form-control" id="maxPrice" value="0" placeholder="10000"
+                    @input="validateMax" pattern="[1-9][0-9]*" type="text" :min="min" max="10000" style="width: 100px;" required>
                   </div>
                 </div>
-                <button class="btn btn-block btn-primary" onclick="filterByPrice()">Apply</button>
-              </div> -->
+                <!-- <button class="btn btn-block btn-primary" @click="filterByPrice">Apply</button> -->
+              </div>
             </div>
           </article>
       </div>
@@ -244,7 +247,8 @@ const App = Vue.createApp({
       categories: [],
       cart: Vue.ref([]),
       sortOrder: 'asc',
-      displayCart: true
+      displayCart: true,
+      selectedCategories: []
     };
   },
   async beforeMount() {
@@ -254,11 +258,6 @@ const App = Vue.createApp({
       this.getItemRating(product.id);
     });
   },
-  // computed: {
-  //   filteredProducts() {
-  //     return this.products.filter( item => (item.price < this.max))
-  //   }
-  // },
   methods: {
     async getProducts() {
       try {
@@ -342,6 +341,51 @@ const App = Vue.createApp({
       this.products.sort((a, b) => b.price - a.price);
       }
     },
+    filterByPrice() {
+        var selectedCategories = this.getSelectedCategories();
+        var minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
+        var maxPrice = parseFloat(document.getElementById("maxPrice").value) || 10000;
+        var cards = document.getElementsByClassName("card");
+        for (var i = 0; i < cards.length; i++) {
+          var categoryElement = cards[i].getAttribute("data-category");
+          var category = categoryElement ? categoryElement.toUpperCase() : null;
+
+          var priceElement = cards[i].querySelector("[data-price]");
+          var price = priceElement ? parseFloat(priceElement.getAttribute("data-price")) : 0;
+          var isCategoryMatch = !this.selectedCategories || this.selectedCategories.length === 0 || this.selectedCategories.includes(category);
+          var isPriceMatch = price >= minPrice && price <= maxPrice;
+          var displayCard = isCategoryMatch && isPriceMatch;
+          if (displayCard) {
+            cards[i].style.display = "";
+          } else {
+            cards[i].style.display = "none";
+          }
+        }
+      },
+      validateMin() {
+        this.min = this.min.replace(/^0+/, '');
+        if (this.min === '' || isNaN(this.min)) {
+              this.min = 0;
+          }
+          if (this.min > this.max) {
+            this.min = this.max;
+          }
+       },
+
+     validateMax() {
+      this.max = this.max.replace(/^0+/, '');
+      if (this.max === '' || isNaN(this.max)) {
+        this.max = 100;
+        }
+
+      const productMaxPrice = Math.max(...this.products.map(product => product.price));
+      if (this.max > productMaxPrice) {
+        this.max = productMaxPrice;
+      }
+      if (this.max < this.min) {
+        this.max = this.min;
+      }
+    },
   },
 });
 // cursor: pointer" @click="redirectToItem(product.id)
@@ -350,15 +394,16 @@ App.component('product-component', {
   props: ['product', 'min', 'max','cart'],
   delimiters: ['[[', ']]'],
   template: `
-    <div v-if="product.price<=Number(max)" class="col-lg-auto">
+    <div v-if="product.price<=Number(max) && product.price>=Number(min)" class="col-lg-auto">
       <div class="card" :id="product.id" :data-category="product.category_id"
         style="margin: 1px; margin-bottom: 3px; cursor: pointer" @click="redirectToItem(product.id)">
         <div class="card-body">
           <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="card-img-top">
           <h5 class="card-title"> [[ product.name ]]  </h5>
-         <span class="badge bg-danger" v-if="product.price<=90">Low Cost</span>
-         <span class="badge bg-primary" v-else-if="product.price>90 && product.price<999">Value</span>
-         <span class="badge bg-success" v-else-if="product.price>=1000">WOW </span>  $[[ product.price  ]]
+         <span class="badge bg-danger" v-if="product.price<=90">WOW</span>
+         <span class="badge bg-primary" v-else-if="product.price>90 && product.price<=1000">Value</span>
+         <span class="badge bg-success" v-else-if="product.price>1000">TOP</span>  $[[ product.price  ]]
+         <input type="number" :data-price="product.price" hidden>
         </div>
         <p> <i>
           <span v-for="i in 5" :key="i" class="fa fa-star" :class="{ 'checked': i <= product.rating }"></span>

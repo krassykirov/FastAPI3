@@ -64,16 +64,16 @@ async def home(request: Request, user: User = Depends(get_current_user)):
 @app.get("/products", include_in_schema=False, response_model=src.schemas.ItemRead)
 def get_products(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     """ Return all Items """
-    items_db = ItemActions().get_items(db=db) #, user=user.username
-    profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
-    items = [src.schemas.ItemRead.from_orm(item) for item in items_db]
-    categories = CategoryActions().get_categories_len(db=db)
-    print('categories', categories)
-    return templates.TemplateResponse("items.html", {"request": request,
-                                                     'items': items,
-                                                     'current_user': user.username,
-                                                     'categories': categories,
-                                                     'profile': profile})
+    print("Getting Products")
+    # items_db = ItemActions().get_items(db=db) #, user=user.username
+    # profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
+    # items = [src.schemas.ItemRead.from_orm(item) for item in items_db]
+    # categories = CategoryActions().get_categories_len(db=db)
+    return templates.TemplateResponse("items.html", {"request": request, 'current_user': user.username})
+                                                    #  'items': items,
+                                                    #  'current_user': user.username,
+                                                    #  'categories': categories,
+                                                    #  'profile': profile})
 
 @app.post("/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @app.post("/user_items_in_cart/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)

@@ -165,19 +165,3 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-// function getCategories(){
-//   $.ajax({
-//         url: "/products/{category_name}",
-//         method: "get",
-//         headers: { "Content-Type": "application/json",},
-//         success: data => {
-//             document.getElementById('cart-len').innerText = data.items_in_cart
-//         },
-//         error: (error) => {
-//             console.log('error:', error);
-//         }
-//       });
-//    }
-
-
-
