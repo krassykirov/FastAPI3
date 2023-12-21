@@ -7,9 +7,9 @@ from src.crud.crud import ReviewActions, ItemActions
 from src.models import Review, User
 from src.auth.oauth import get_current_user
 
-PROTECTED = [Depends(get_current_user)]
+# PROTECTED = [Depends(get_current_user)]
 
-reviews_router = APIRouter(prefix='/api/reviews', tags=["reviews"], dependencies=PROTECTED,
+reviews_router = APIRouter(prefix='/api/reviews', tags=["reviews"],
                             responses={404: {"description": "Not found"}},)
 
 

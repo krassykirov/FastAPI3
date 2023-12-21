@@ -139,9 +139,9 @@ function setItemsLen(){
       });
    }
 
-$(document).ready(function() {
-    setItemsLen()
-});
+// $(document).ready(function() {
+//     setItemsLen()
+// });
 
 document.addEventListener('DOMContentLoaded', function () {
  const navLinks = document.querySelectorAll('.nav-link');

@@ -139,19 +139,19 @@ class ProfileActions:
             db.commit()
 
 
-class CartActions:
+# class CartActions:
 
-    def get_cart_by_id(self, db: Session, id: int):
-        basket = db.query(Cart).filter(Cart.id == id).first()
-        return basket
+#     def get_cart_by_id(self, db: Session, id: int):
+#         basket = db.query(Cart).filter(Cart.id == id).first()
+#         return basket
 
-    def get_carts(self,db: Session ,skip: int = 0, limit: int = 100):
-        cart = db.query(Cart).offset(skip).limit(limit).all()
-        return cart
+#     def get_carts(self,db: Session ,skip: int = 0, limit: int = 100):
+#         cart = db.query(Cart).offset(skip).limit(limit).all()
+#         return cart
 
-    def create_basket(self, db: Session, user: User, item: Item):
-        cart = Cart(user=user, content=item, user_id=user.id)
-        db.add(cart)
-        db.commit()
-        db.refresh(cart)
-        return cart
+#     def create_basket(self, db: Session, user: User, item: Item):
+#         cart = Cart(user=user, content=item, user_id=user.id)
+#         db.add(cart)
+#         db.commit()
+#         db.refresh(cart)
+#         return cart

@@ -362,7 +362,7 @@ const App = Vue.createApp({
           }
         }
       },
-      validateMin() {
+    validateMin() {
         const productMinPrice = Math.min(...this.products.map(product => product.price));
         this.min = this.min.replace(/^0+/, '');
         if (this.min === '' || isNaN(this.min)) {
@@ -372,8 +372,7 @@ const App = Vue.createApp({
             this.min = this.max;
           }
        },
-
-     validateMax() {
+    validateMax() {
       const productMaxPrice = Math.max(...this.products.map(product => product.price));
       this.max = this.max.replace(/^0+/, '');
       if (this.max === '' || isNaN(this.max)) {
@@ -397,7 +396,7 @@ App.component('product-component', {
   template: `
     <div v-if="product.price<=Number(max) && product.price>=Number(min)" class="col-lg-auto">
       <div class="card" :id="product.id" :data-category="product.category_id"
-        style="margin: 1px; margin-bottom: 3px; cursor: pointer" @click="redirectToItem(product.id)">
+        style="margin: 1px; margin-bottom: 3px; cursor: pointer" >
         <div class="card-body">
           <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="card-img-top">
           <h5 class="card-title"> [[ product.name ]]  </h5>
@@ -411,6 +410,9 @@ App.component('product-component', {
           <span :id="'overall-rating' + product.id + '-float'"></span></i>
           <span :id="'overall-rating' + product.id"> ([[ product.reviewNumber ]])</span>
         </p>
+        <div>
+          <a class="btn btn-info" id="add-to-cart" data-toggle="modal" data-target="#addToCartMessage"> Add to Cart</a>
+      </div>
         <div class="card-footer">
           <small class="text-muted">Created: [[ product.date ]] by [[ product.username ]] </small>
         </div>

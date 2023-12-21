@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_old.html" %}
 
 {% block html_read %}
 {% block javascript %}
@@ -154,30 +154,6 @@ $(document).ready(function() {
 
 
 
-// $(document).ready(function() {
-//   $('#create-profile').submit(function(e) {
-//     console.log("creating profile")
-//     e.preventDefault();
-//     var formData = new FormData(this)
-//     $.ajax({
-//         url: "/user/create_profile",
-//         type: "POST",
-//         processData: false,
-//         contentType: false,
-//         data: formData,
-//         success: function(data){
-//               console.log("data", data)
-//               $('#addProfile').modal('hide')
-//               window.location.href = "/user/profile"
-//         },
-//         error: function (xhr) {
-//             if (xhr.status === 404) {
-//                $('#UpdateProfileLabel').text('Unable to process Profile update, please try again later!')
-//             }
-//         }
-//       });
-//    }
-// )});
 
 function updateCard(data){
 

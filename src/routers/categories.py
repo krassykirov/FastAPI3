@@ -10,9 +10,9 @@ from src.models import Category, Categories
 from src.auth.oauth import get_current_user
 from src.my_logger import detailed_logger
 
-PROTECTED = [Depends(get_current_user)]
+# PROTECTED = [Depends(get_current_user)]
 
-category_router = APIRouter(prefix='/api/categories', tags=["categories"], dependencies=PROTECTED,
+category_router = APIRouter(prefix='/api/categories', tags=["categories"],
                             responses={404: {"description": "Not found"}},)
 
 logger = detailed_logger()

@@ -20,7 +20,7 @@ from src.routers.profile import profile_router
 # from src.routers.cart import cart_router
 from src.auth.oauth import oauth_router, get_current_user
 from src.models import Item, Category, Review, User, UserRead, UserProfile, Categories
-from src.crud.crud import CategoryActions, ItemActions, ReviewActions, ProfileActions, CartActions
+from src.crud.crud import CategoryActions, ItemActions, ReviewActions, ProfileActions
 from src.helper import delete_item_dir, create_categories
 import src.schemas
 import os
@@ -66,12 +66,13 @@ def get_products(request: Request, db: Session = Depends(get_session), user: Use
     """ Return all Items """
     print("Getting Products")
     # items_db = ItemActions().get_items(db=db) #, user=user.username
-    # profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
-    # items = [src.schemas.ItemRead.from_orm(item) for item in items_db]
+    profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
+    # in_cart = ItemActions().get_user_items_in_cart(db=db)
     # categories = CategoryActions().get_categories_len(db=db)
-    return templates.TemplateResponse("items.html", {"request": request, 'current_user': user.username})
+    return templates.TemplateResponse("base.html", {"request": request,
+                                                    'current_user': user.username,
+                                                    'profile': profile})
                                                     #  'items': items,
-                                                    #  'current_user': user.username,
                                                     #  'categories': categories,
                                                     #  'profile': profile})
 
@@ -348,12 +349,12 @@ async def remove_from_basket(request: Request, db: Session = Depends(get_session
     db.refresh(item)
     return item
 
-
-@app.get("/items-in-cart", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead, include_in_schema=False)
-async def get_user_items_in_cart(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
+@app.get("/items-in-cart", status_code=status.HTTP_200_OK, include_in_schema=True)
+async def get_items_in_cart(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     items = ItemActions().get_items(db=db)
     items_in_cart =  [item for item in items for k, v in item.in_cart.items()
                       if k == user.username and v['in_cart'] == True]
+    print('items_in_cart', jsonable_encoder(items_in_cart))
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
     return templates.TemplateResponse("cart.html", {"request":request,
                                                      'items': items_in_cart,

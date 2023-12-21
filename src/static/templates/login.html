@@ -26,9 +26,6 @@
                       </div>
                     </div>
                     <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                      {% if message %}
-                      {{ message }}
-                      {% endif %}
                       <button type="submit" class="btn btn-primary" style="margin: 2px;">Login</button>
                       <button type="submit" class="btn btn-info" style="margin: 2px;" onclick="location.href='{{ url_for('signup') }}'">Signup</button>
                     </div>
