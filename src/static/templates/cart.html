@@ -1,6 +1,19 @@
-{% extends "base.html" %}
-{% block html_read %}
-
+<!DOCTYPE html>
+<head>
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="../static/templates/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<link rel="stylesheet" href="../static/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+</head>
 <style>
   .card-img {
     width: 100%;
@@ -18,12 +31,73 @@
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   }
 </style>
+<body>
+  <nav class="navbar navbar-expand-lg bg-white sticky-top navbar-light p-3 shadow-lg" style="height: 70px; margin-left: 0; margin-right: 0;">
+    <div class="container-fluid" style="font-size: 14px;">
+      <a class="navbar-brand" href="#" style="font-size: 14px;"><i class="fa fa-home"></i> <strong>KRASSY SHOP</strong>
+      </a>
+      <div class="mx-auto my-3 d-lg-none d-sm-block d-xs-block">
+        <div class="input-group">
+          <span class="border-warning input-group-text bg-warning text-white"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input type="text" class="form-control border-warning" style="color:#7a7a7a">
+          <button class="btn btn-warning text-white">Search</button>
+        </div>
+      </div>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav ms-auto ">
+          <li class="nav-item">
+            <a class="nav-link mx-2 text-uppercase" aria-current="page" href="#">Offers</a>
+          </li>
+          <div class="dropdown">
+          <li class="nav-item">
+            <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_products')}}">Products</a>
+                  <!-- <div class="dropdown-content">
+                    <a class="nav-link" data-toggle="modal" data-target="#addItem" href="#">Add Product</a>
+                  </div> -->
+            </div>
+          </li>
+          <div class="dropdown">
+            <li class="nav-item">
+            <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_category')}}">Categories</a>
+          </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link mx-2 text-uppercase" href="#">Services</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link mx-2 text-uppercase" href="#">About</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ms-auto ">
+          <li class="nav-item">
+            <a class="nav-link mx-2 text-uppercase" href="#">
+              <i class="bi bi-cart"></i> Cart <span id="cart-len" class="badge badge-primary">{{items|length}}</span></a>
+          </li>
+        </ul>
+      </div>
+      {% if current_user %}
+      <form class="form-inline my-2 my-lg-0" style="margin-right: 30px;">
+        <div class="dropdown" style="font-family: Raleway; font-size: 16px;">
+          {% if profile %}
+          {{ current_user }} <img src="/static/img/{{ current_user }}/profile/{{ profile.avatar }}" class="avatar" alt="{{ current_user}}">
+          {% else %}
+          {{ current_user }} <img src="/static/img/img_avatar.png" class="avatar" alt="{{ current_user}}">
+          {% endif %}
+          <div class="dropdown-content">
+            <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_user_profile') }}"> Profile</a>
+            <a class="nav-link mx-2 text-uppercase" href="{{ url_for('logout') }}"> Logout</a>
+          </div>
+        </div>
+     </form>
+      {% endif %}
+    </div>
+  </nav>
 
 {% if not items %}
 <h1> You don't have items in your Cart :( </h1>
 {% endif %}
     {% for item in items %}
-    <div class="card w-75" id="card{{ item.id }}">
+    <div class="card w-75" id="card{{ item.id }}" style="margin-left: 200px;">
         <div class="row no-gutters">
             <div class="col-md-3" style="background: #868e96;">
                 {% if  'no-image.png' == item.image %}
@@ -85,9 +159,6 @@ var item_id = '{{ item.id }}'
 getItemRating(item_id)
 {% endfor %}
 
-$(document).ready(function() {
-    setItemsLen()
-});
 
 function removeCard(cardID){
     var card = document.getElementById(cardID)
@@ -112,4 +183,4 @@ function removeCard(cardID){
 </script>
 
 
-{% endblock %}
+<html>

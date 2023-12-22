@@ -60,6 +60,15 @@ async def update_item(item_id: int, item_update: src.schemas.ItemUpdate, db: Ses
 def delete_item_by_id(item_id: int, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     ItemActions().delete_item_by_id(db=db, id=item_id)
 
+# @items_router.get("/items-in-cart", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead)
+# async def get_items_in_cart(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
+#     items = ItemActions().get_items(db=db)
+#     items_in_cart =  [item for item in items for k, v in item.in_cart.items()
+#                       if k == user.username and v['in_cart'] == True]
+#     print('items_in_cart', jsonable_encoder(items_in_cart))
+#     return jsonable_encoder(items_in_cart)
+
+
 
 
 

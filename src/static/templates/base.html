@@ -1,94 +1,589 @@
 <!DOCTYPE html>
 <head>
-  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-  <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+  <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
+<script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="../static/templates/js/main.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<link rel="stylesheet" href="../static/css/main.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+<link rel="stylesheet" href="../static/css/main.css">
 </head>
+<style>
+  .cat {
+  margin: 4px;
+  background-color: #6c757d;
+  border-radius: 40px;
+  /* border: 1px solid #fff; */
+  overflow: hidden;
+  float: left;
+}
 
-<body>
-  <nav class="navbar navbar-expand-lg bg-white sticky-top navbar-light p-3 shadow-lg" style="height: 70px; margin-left: 0; margin-right: 0;">
-    <div class="container-fluid" style="font-size: 14px;">
-      <a class="navbar-brand" href="#" style="font-size: 14px;"><i class="fa fa-home"></i> <strong>KRASSY SHOP</strong>
-      </a>
-      <div class="mx-auto my-3 d-lg-none d-sm-block d-xs-block">
-        <div class="input-group">
-          <span class="border-warning input-group-text bg-warning text-white"><i class="fa-solid fa-magnifying-glass"></i></span>
-          <input type="text" class="form-control border-warning" style="color:#7a7a7a">
-          <button class="btn btn-warning text-white">Search</button>
-        </div>
-      </div>
-      <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav ms-auto ">
-          <li class="nav-item">
-            <a class="nav-link mx-2 text-uppercase" aria-current="page" href="#">Offers</a>
-          </li>
-          <div class="dropdown">
-          <li class="nav-item">
-            <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_products')}}">Products</a>
-                  <!-- <div class="dropdown-content">
-                    <a class="nav-link" data-toggle="modal" data-target="#addItem" href="#">Add Product</a>
-                  </div> -->
+.cat label {
+  float: left;
+  line-height: 3.0em;
+  width: 10.0em;
+  height: 3.0em;
+  cursor: pointer;
+  user-select: none;
+}
+
+.cat label span {
+  text-align: center;
+  padding: 3px 0;
+  display: block;
+  color: #fff;
+}
+
+.cat label input:disabled + span {
+  background-color: #6c757d; /* Adjust the color as needed */
+  cursor: not-allowed;
+}
+
+.cat label input {
+  position: absolute;
+  display: none;
+  color: #fff !important;
+}
+
+.cat label input:checked + span {
+  background-color: #007bff; /* Change the background color as needed */
+}
+.cat label b {
+  margin-left: 5px; /* Adjust the margin as needed */
+}
+.custom-button {
+  width: 160px;
+  margin: 5px 10px 0 0;
+  font-size: 14px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  padding: 6px 30px;
+  cursor: pointer; /* Add cursor style for pointer */
+  color: #000; /* Set text color */
+}
+
+.custom-button:hover {
+  background-color: #e0e0e0; /* Change background color on hover if needed */
+}
+</style>
+  <section class="container" id="app" style="margin-left: 150px;">
+    <navbar-component :cart="cart">
+    </navbar-component>
+
+  {% if current_user %}
+  <div class="row col-1" style="float: right; margin-top: 60px; margin-right: 120px;">
+    <div class="quick-filter ph-card"> <button class="custom-button" data-toggle="modal" data-target="#addItem" href="#"
+      style="font-family: inherit;">Add Product </button> </div>
+   </div>
+     <div class="container" style="margin-top: 12px;">
+         <div class="row pt-2">
+           <div class="col-md-12">
+             <input class="form-control mr-sm-2" id="filter" onkeyup="Search()" type="text" placeholder="Search for products by name...">
+           </div>
+         </div>
+       <br/>
+     </div>
+
+     <div class="row col-2" style="float: left;">
+        <article class="filter-group">
+          <p style="font-family: inherit; text-align: center;"> Categories </p>
+          <hr>
+          <div class="filter-content collapse show" id="collapse_2">
+            <div class="card-body">
+              <div class="cat" v-for="category in categories" :key="category[2]" :class="{ active: category[1] !== 0 }">
+                <label>
+                  <input
+                    type="checkbox"
+                    class="cat-checkbox"
+                    :data-category="category[2]"
+                    :disabled="category[1] === 0"
+                    @change="handleCategoryChange"
+                  />
+                  <span>[[ category[0] ]] </span>
+                  <!-- <b class="badge badge-light float-ri" v-if="category[1] !== 0">[[ category[1] ]]</b> -->
+                </label>
+              </div>
             </div>
-          </li>
-          <div class="dropdown">
-            <li class="nav-item">
-            <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_category')}}">Categories</a>
           </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link mx-2 text-uppercase" href="#">Services</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link mx-2 text-uppercase" href="#">About</a>
-          </li>
-        </ul>
-        <ul class="navbar-nav ms-auto ">
-          <li class="nav-item">
-            <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_user_items_in_cart')}}">
-              <i class="bi bi-cart"></i> Cart <span id="cart-len" class="badge badge-primary"></span></a>
-          </li>
-        </ul>
+        </article>
+        <article class="filter-group" style="float: left; margin-left: 0;">
+          <hr>
+               Sort:  <button type="button" class="btn btn-secondary btn-sm" @click="toggleSortOrder">
+                 <span v-if="sortOrder === 'asc'" class="bi bi-sort-up-alt" style="font-size: 1rem"></span>
+                 <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
+               </button>
+               <div class="filter-content collapse show" id="collapse_3">
+                 <div class="card-body">
+                   <div class="form-row">
+                     <div class="form-group col-md-6">
+                       <label>Min price</label>
+                       <input v-model="min" class="form-control" id="minPrice" @input="validateMin" placeholder="0"
+                       min="0" :max="max" value="0" pattern="[1-9][0-9]*" type="text" required>
+                     </div>
+                     <div class="form-group text-right col-md-6">
+                       <label>Max price</label>
+                       <input v-model="max" class="form-control" id="maxPrice" value="0" placeholder="10000"
+                       @input="validateMax" pattern="[1-9][0-9]*" type="text" :min="min" max="10000" style="width: 100px;" required>
+                     </div>
+                   </div>
+                   <!-- <button class="btn btn-block btn-primary" @click="filterByPrice">Apply</button> -->
+                 </div>
+               </div>
+        </article>
+        <article>
+           <div>
+              <div class="quick-filter ph-card">
+                  <label>
+                    <input
+                      type="checkbox"
+                      class="custom-control-input"
+                    />
+                    <button class="custom-button" @click="toggleSortOrder">
+                      Sort
+                    </button>
+                  </label>
+                </div>
+          </article>
+     </div>
+
+      <div class="row g-0 col-auto" id="mycard" style="justify-content: left; margin: 20px;">
+          <product-component v-for="product in products" :key="product.id" :cart="cart" class="row g-0 col-auto"
+                :product="product" :min="min" :max="max" style="justify-content: left;">
+          </product-component>
       </div>
-      {% if current_user %}
-      <form class="form-inline my-2 my-lg-0" style="margin-right: 30px;">
-        <div class="dropdown" style="font-family: Raleway; font-size: 16px;">
-          {% if profile %}
-          {{ current_user }} <img src="/static/img/{{ current_user }}/profile/{{ profile.avatar }}" class="avatar" alt="{{ current_user}}">
-          {% else %}
-          {{ current_user }} <img src="/static/img/img_avatar.png" class="avatar" alt="{{ current_user}}">
-          {% endif %}
-          <div class="dropdown-content">
-            <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_user_profile') }}"> Profile</a>
-            <a class="nav-link mx-2 text-uppercase" href="{{ url_for('logout') }}"> Logout</a>
+   </section>
+
+     <div class="modal fade" id="addItem" role="dialog" aria-labelledby="addItemlLabel" aria-hidden="true">
+       <div class="modal-dialog" role="document">
+         <div class="modal-content">
+           <div class="modal-header">
+             <h5 class="modal-title" id="addItemLabel">Add Product</h5>
+           </div>
+           <div class="modal-body">
+             <form enctype="multipart/form-data" data-toggle="validator" id="createItem">
+               <b> <p id="error" style="text-align: left;"></p>
+               <div class="form-group">
+                 <label for="name" class="col-form-label">Name:</label>
+                 <input type="text" name="name" id="item-name" placeholder="Item Name"  maxlength="15" required>
+                </div>
+               <div class="form-group">
+                 <label for="price" class="col-form-label">Price: </label>
+                 <input type="number" step="any" name="price" id="item-price" placeholder="99.99" max="10000" min="1" required>
+               </div>
+               <div class="form-group" form-group-file>
+                 <label for="file" class="col-form-label">Upload Photo:</label>
+                 <input type="file" id="file" name="file" class="form-control" data-filesize="1000000" data-filesize-error="File must be smaller then 1MB" accept="image/*" required/>
+               </div>
+               <div class="form-group">
+                 <label for="Category" class="col-form-label">Category:</label>
+                 <select name="Category">
+                     <option value="Finance">Finance</option>
+                     <option value="IT">IT</option>
+                     <option value="TV">TV</option>
+                     <option value="Services">Services</option>
+                     <option value="Miscellaneous">Miscellaneous</option>
+                 </select>
+               </div>
+               <div class="form-group">
+                 <label for="Description" class="col-form-label">Description:</label>
+                 <textarea name="Description" id="add-description" rows="4" cols="50" maxlength="250"></textarea>
+               </div>
+               <button id="submit-button" class="btn btn-primary">Save</button>
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+             </form>
+           </div>
+         </div>
+       </div>
+     </div>
+     {% endif %}
+     {% block html_read %}
+
+     {% endblock %}
+
+
+<script>
+
+  const App = Vue.createApp({
+    name: "App",
+    delimiters: ['[[', ']]'],
+    data() {
+      return {
+        min: 1,
+        max: 10000,
+        products: [],
+        categories: [],
+        cart: Vue.ref([]),
+        sortOrder: 'asc',
+        selectedCategories: [],
+        showPopoverContent: false,
+      };
+    },
+    async beforeMount() {
+      await this.getProducts();
+      await this.fetchCategories();
+      await this.readFromCartVue();
+      this.products.forEach(product => {
+      this.getItemRating(product.id);
+    });
+    },
+    methods: {
+      async getProducts() {
+        try {
+          const res = await fetch('/api/items');
+          const products = await res.json();
+          this.products = products;
+          const maxPrice = Math.max(...this.products.map(product => product.price));
+          const minPrice = Math.min(...this.products.map(product => product.price));
+          this.max = maxPrice;
+          this.min = minPrice;
+          } catch (error) {
+          console.error('Error fetching products:', error);
+        }
+      },
+      async fetchCategories() {
+        try {
+          const res = await fetch('/api/categories/category_items_len/');
+          this.categories = await res.json();
+        } catch (error) {
+          console.error('Error fetching categories:', error);
+        }
+      },
+      async getItemRating(itemId) {
+        try {
+          const response = await fetch(`/api/reviews/item/rating?id=${itemId}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          const data = await response.json();
+          const product = this.products.find((p) => p.id === itemId);
+          if (product) {
+            product.rating = data.rating;
+            product.reviewNumber = data.review_number;
+            document.getElementById('overall-rating' + product.id + '-float').innerText = " " + parseFloat(data.rating_float).toFixed(2);
+          }
+        } catch (error) {
+        }
+      },
+      filterByCategory() {
+      var selectedCategories = this.getSelectedCategories();
+      var cards = document.querySelectorAll('.card');
+      cards.forEach(function (card) {
+          var category = card.getAttribute('data-category');
+          var displayCard = selectedCategories.length === 0 || selectedCategories.includes(category);
+          if (displayCard) {
+              $(card).slideDown(300);
+          } else {
+              $(card).slideUp(300);
+          }
+        });
+      },
+      handleCategoryChange() {
+        this.selectedCategories = this.getSelectedCategories();
+        console.log('selectedCategories', this.selectedCategories)
+        this.filterByCategory();
+      },
+      getSelectedCategories() {
+          var selectedCategories = [];
+          var checkboxes = document.querySelectorAll('.cat-checkbox:checked');
+          checkboxes.forEach((checkbox) => {
+            var categoryId = checkbox.getAttribute("data-category");
+            selectedCategories.push(categoryId);
+          });
+          return selectedCategories;
+        },
+      toggleSortOrder() {
+        this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+        console.log('Sort Order:', this.sortOrder);
+        this.sortProducts();
+      },
+      sortProducts() {
+        if (this.sortOrder === 'asc') {
+        this.products.sort((a, b) => a.price - b.price);
+        } else {
+        this.products.sort((a, b) => b.price - a.price);
+        }
+      },
+      filterByPrice() {
+          var selectedCategories = this.getSelectedCategories();
+          var minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
+          var maxPrice = parseFloat(document.getElementById("maxPrice").value) || 10000;
+          var cards = document.getElementsByClassName("card");
+          for (var i = 0; i < cards.length; i++) {
+            var categoryElement = cards[i].getAttribute("data-category");
+            var category = categoryElement ? categoryElement.toUpperCase() : null;
+  
+            var priceElement = cards[i].querySelector("[data-price]");
+            var price = priceElement ? parseFloat(priceElement.getAttribute("data-price")) : 0;
+            var isCategoryMatch = !this.selectedCategories || this.selectedCategories.length === 0 || this.selectedCategories.includes(category);
+            var isPriceMatch = price >= minPrice && price <= maxPrice;
+            var displayCard = isCategoryMatch && isPriceMatch;
+            if (displayCard) {
+              cards[i].style.display = "";
+            } else {
+              cards[i].style.display = "none";
+            }
+          }
+        },
+      validateMin() {
+          const productMinPrice = Math.min(...this.products.map(product => product.price));
+          this.min = this.min.replace(/^0+/, '');
+          if (this.min === '' || isNaN(this.min)) {
+                this.min = productMinPrice;
+            }
+            if (this.min > this.max) {
+              this.min = this.max;
+            }
+         },
+      validateMax() {
+        const productMaxPrice = Math.max(...this.products.map(product => product.price));
+        this.max = this.max.replace(/^0+/, '');
+        if (this.max === '' || isNaN(this.max)) {
+          this.max = productMaxPrice;
+          }
+  
+        if (this.max > productMaxPrice) {
+          this.max = productMaxPrice;
+        }
+        if (this.max < this.min) {
+            this.max = this.min;
+        }
+      },
+      async readFromCartVue(){
+        fetch('/user_items_in_cart', {
+        method: 'get',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          this.cart = data.items
+        })
+        .catch(error => {
+          console.error('error', error);
+        });
+      },
+    redirectToItem(itemId) {
+        window.location.href = 'items/' + itemId;
+      },
+    redirectToCart(itemId) {
+        window.location.href = 'items-in-cart/';
+      },
+      cartTotal() {
+      return this.cart.reduce( (inc, item) => Number(item.price) + inc, 0 )
+    }
+    },
+  });
+  // cursor: pointer" @click="redirectToItem(product.id)"
+  // <button @click="addToCart(product)" class="btn btn-success">+</button>
+App.component('product-component', {
+    props: ['product', 'min', 'max','cart'],
+    delimiters: ['[[', ']]'],
+    emits: ['addToCart'],
+    template: `
+    <div v-if="product.price<=Number(max) && product.price>=Number(min)" class="col-lg-auto">
+      <div class="card" :id="product.id" :data-category="product.category_id" 
+      style="margin: 1px; margin-bottom: 3px;">
+        <div class="card-body" style="cursor: pointer" @click="redirectToItemFromProduct(product.id)">
+          <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="card-img-top">
+          <h5 class="card-title"> [[ product.name ]]  </h5>
+         <span class="badge bg-danger" v-if="product.price<=90">WOW</span>
+         <span class="badge bg-primary" v-else-if="product.price>90 && product.price<=1000">Value</span>
+         <span class="badge bg-success" v-else-if="product.price>1000">TOP</span>  $[[ product.price  ]]
+         <input type="number" :data-price="product.price" hidden>
+        </div>
+        <p> <i>
+          <span v-for="i in 5" :key="i" class="fa fa-star" :class="{ 'checked': i <= product.rating }"></span>
+          <span :id="'overall-rating' + product.id + '-float'"></span></i>
+          <span :id="'overall-rating' + product.id"> ([[ product.reviewNumber ]])</span>
+        </p>
+        <div>
+          <button ref="addToCartButton" @click="addToCart(product)" class="btn btn-secondary btn-sm">Add to Cart</button>
+      </div>
+        <div class="card-footer">
+          <small class="text-muted">Created: [[ product.date ]] by [[ product.username ]] </small>
+        </div>
+      </div>
+    </div>
+    `,
+  methods: {
+      redirectToItemFromProduct(itemId) {
+      this.$root.redirectToItem(itemId);
+     },
+      itemAlreadyInCart(product) {
+         return this.cart.some(item => item.id === product.id);
+      },
+      addToCart(product) {
+        const itemInCart = this.cart.find(item => item.id === product.id);
+        const popoverContent = itemInCart
+          ? `'${product.name} is already in the cart'`
+          : `'${product.name} was added to the cart'`;
+
+        const buttonElement = this.$refs.addToCartButton;
+        $(buttonElement).popover({
+          content: popoverContent,
+          placement: 'right',
+          trigger: 'manual',
+        });
+        $(buttonElement).popover('show');
+        setTimeout(() => {
+          $(buttonElement).popover('hide');
+        }, 1000);
+        if (!itemInCart) {
+          fetch('/update-basket', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              item_id: product.id,
+            }),
+          })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              }
+              return response.json();
+            })
+            .then(data => {
+              this.cart.push(product);
+              console.log('success', data);
+            })
+            .catch(error => {
+              console.error('error', error);
+            });
+        }
+      },
+    },
+});  
+
+App.component('navbar-component', {
+    props: ['product','cart'],
+    data() {
+    return {
+      displayCart: true,
+    };
+  },
+    delimiters: ['[[', ']]'],
+    template: `
+  <nav class="navbar navbar-expand-lg bg-white sticky-top navbar-light p-3 shadow-lg" style="height: 70px; margin-left: 0; margin-right: 0; width: 100%;">
+      <div class="container-fluid" style="padding: 0; width: 100%; font-size: 14px;">
+        <a class="navbar-brand" href="#" style="font-size: 14px;">
+          <i class="fa fa-home"></i> <strong>KRASSY SHOP</strong>
+        </a>
+        <div class="mx-auto my-3 d-lg-none d-sm-block d-xs-block">
+          <div class="input-group">
+            <span class="border-warning input-group-text bg-warning text-white">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+            <input type="text" class="form-control border-warning" style="color: #7a7a7a">
+            <button class="btn btn-warning text-white">Search</button>
           </div>
         </div>
-     </form>
-      {% endif %}
-    </div>
-  </nav>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav ms-auto ">
+            <li class="nav-item">
+              <a class="nav-link mx-2 text-uppercase" aria-current="page" href="#">Offers</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_products')}}">Products</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link mx-2 text-uppercase" href="#">Categories</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_items_in_cart')}}">Cart</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link mx-2 text-uppercase" href="#">About</a>
+            </li>
+          </ul>
+        <div v-if="cart" class="ml-auto">
+          <button @click="displayCart = !displayCart" class="btn btn-sm btn-success" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="bi bi-cart"></i> [[ cart.length ]]
+          </button>
+          <div v-if="!displayCart" class="list-group position-absolute">
+              <div v-for="(item, index) in cart" :key="index" class="list-group-item d-flex justify-content-between">
+                <div class="d-flex align-items-center">
+                  <img :src="'static/img/' + item.username + '/' + item.name + '/' + item.image" class="mr-2"
+                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                  <div style="cursor: pointer" @click="redirectToItemFromNavbar(item.id)">
+                    <div> [[ item.name ]] - $[[ item.price ]]</div>
+                  </div>
+                </div>
+                <div class="ml-3 font-weight-bold"></div>
+              </div>
+              <button @click="redirectToCart" class="btn btn-sm btn-secondary"> See Cart </button> 
+            </div>
+        </div>
+          <div v-if="cart" class="ml-auto"></div>
+          {% if current_user %}
+          <form class="form-inline my-2 my-lg-0" style="margin-right: 30px;">
+            <div class="dropdown" style="font-family: Raleway; font-size: 16px;">
+              {% if profile %}
+              {{ current_user }} <img src="/static/img/{{ current_user }}/profile/{{ profile.avatar }}" class="avatar" alt="{{ current_user}}">
+              {% else %}
+              {{ current_user }} <img src="/static/img/img_avatar.png" class="avatar" alt="{{ current_user}}">
+              {% endif %}
+              <div class="dropdown-content">
+                <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_user_profile') }}"> Profile</a>
+                <a class="nav-link mx-2 text-uppercase" href="{{ url_for('logout') }}"> Logout</a>
+              </div>
+            </div>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+    `, 
+    methods:{
+      redirectToItemFromNavbar(itemId) {
+      this.$root.redirectToItem(itemId);
+      // this.$root.redirectToCart();
+    },
+      redirectToCart() {
+       window.location.href = `/items-in-cart`
+      // this.$root.redirectToCart();
+    },
+    }
+  });
+
+App.mount('#app');
+
+  </script>
 
 
-  <div class="container" style="margin-left:150px">
-  {% block html_read %}
-
-  {% endblock %}
- </div>
-<div class="footer">
-
-</div>
-{% if current_user %}
-{%block modals%}
-  {% endblock %}
-  {% endif %}
-</body>
+  <script>
+  function Search() {
+      var input, filter, cards, cardContainer, h5, title, i;
+      input = document.getElementById("filter");
+      filter = input.value.toUpperCase();
+      cardContainer = document.getElementById("mycard");
+      cards = cardContainer.getElementsByClassName("card");
+      for (i = 0; i < cards.length; i++) {
+          title = cards[i].querySelector(".card-body h5.card-title");
+          if (title.innerText.toUpperCase().indexOf(filter) > -1) {
+              cards[i].style.display = "";
+          } else {
+              cards[i].style.display = "none";
+          }
+      }
+  }
+  </script>
 </html>

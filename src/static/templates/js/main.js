@@ -107,41 +107,22 @@ $(document).ready(function() {
 )});
 
 function addItemToCart() {
-  let id = $("#edit-id").val()
-  let username = $("#username").val()
-$.ajax({
-    url: "/update-basket",
-    method: "post",
-    headers: { "Content-Type": "application/json",},
-    data:  JSON.stringify({
-          "item_id": `${id}`,
-        }),
-    success: data => {
-      console.log('success', data)
-    },
-    error: (error) => {
-      console.log('error', error)
-    }
-  });
-}
-
-function setItemsLen(){
+  let id = $("#edit-id").val();
   $.ajax({
-        url: "/user_items_in_cart",
-        method: "get",
-        headers: { "Content-Type": "application/json",},
-        success: data => {
-            document.getElementById('cart-len').innerText = data.items_in_cart
-        },
-        error: (error) => {
-            console.log('error:', error);
-        }
-      });
-   }
-
-$(document).ready(function() {
-    setItemsLen()
-});
+      url: "/update-basket",
+      method: "post",
+      headers: { "Content-Type": "application/json",},
+      data:  JSON.stringify({
+            "item_id": `${id}`,
+          }),
+      success: data => {
+        console.log('success', data)
+      },
+      error: (error) => {
+        console.log('error', error)
+      }
+    });
+  }
 
 document.addEventListener('DOMContentLoaded', function () {
  const navLinks = document.querySelectorAll('.nav-link');
