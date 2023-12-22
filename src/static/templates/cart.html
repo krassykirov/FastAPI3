@@ -70,7 +70,7 @@
         </ul>
         <ul class="navbar-nav ms-auto ">
           <li class="nav-item">
-            <a class="nav-link mx-2 text-uppercase" href="#">
+            <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_user_items_in_cart')}}">
               <i class="bi bi-cart"></i> Cart <span id="cart-len" class="badge badge-primary">{{items|length}}</span></a>
           </li>
         </ul>

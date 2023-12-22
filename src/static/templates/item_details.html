@@ -136,30 +136,15 @@
               <a class="nav-link mx-2 text-uppercase" href="#">Categories</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_items_in_cart')}}">Cart</a>
-            </li>
-            <li class="nav-item">
               <a class="nav-link mx-2 text-uppercase" href="#">About</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_items_in_cart')}}">
+                <i class="bi bi-cart"></i> Cart <span id="cart-len" class="badge badge-primary">{{items|length}}</span></a>
+            </li>
           </ul>
-        <div v-if="cart" class="ml-auto">
-          <button @click="displayCart = !displayCart" class="btn btn-sm btn-success" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="bi bi-cart"></i> [[ cart.length ]]
-          </button>
-          <div v-if="!displayCart" class="list-group position-absolute">
-              <div v-for="(item, index) in cart" :key="index" class="list-group-item d-flex justify-content-between">
-                <div class="d-flex align-items-center">
-                  <img :src="'static/img/' + item.username + '/' + item.name + '/' + item.image" class="mr-2"
-                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
-                  <div style="cursor: pointer" @click="redirectToItemFromNavbar(item.id)">
-                    <!-- <div> [[ item.name ]] - $[[ item.price ]]</div> -->
-                  </div>
-                </div>
-                <div class="ml-3 font-weight-bold"></div>
-              </div>
-            </div>
-        </div>
-          <div v-if="cart" class="ml-auto"></div>
+
+          <div class="ml-auto"></div>
           {% if current_user %}
           <form class="form-inline my-2 my-lg-0" style="margin-right: 30px;">
             <div class="dropdown" style="font-family: Raleway; font-size: 16px;">

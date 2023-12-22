@@ -142,10 +142,14 @@ async def read_item(request: Request, id: int, db: Session=Depends(get_session),
     item_db = ItemActions().get_item_by_id(db=db, id=id)
     if item_db:
         item = src.schemas.ItemRead.from_orm(item_db)
+        print('item', item, item.category.name)
         item_rating = ReviewActions().get_item_reviews_rating(db=db,id=id)
         profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
+        items = get_user_items_in_cart(db=db, user=user)
         return templates.TemplateResponse("item_details.html", {"request":request, 'item': item,
                                                                 'current_user': user.username,
+                                                                'items': items,
+                                                                'item': item,
                                                                 'rating' : item_rating,
                                                                 'profile': profile})
     else:
@@ -365,5 +369,5 @@ def get_user_items_in_cart(db: Session=Depends(get_session), user: User = Depend
   items = ItemActions().get_items(db=db)
   items_in_cart =  [item for item in items for k, v in item.in_cart.items()
                     if k == user.username and v['in_cart'] == True]
-  print('items', items_in_cart)
-  return {'items':items_in_cart, 'items_in_cart': len(items_in_cart)}
+  total =sum([item.price for item in items_in_cart])
+  return {'items':items_in_cart, 'items_in_cart': len(items_in_cart), 'total': total}
