@@ -312,7 +312,7 @@ export default {
         })
     },
     redirectToItem(itemId) {
-      window.location.href = 'items/' + itemId
+      window.location.href = 'http://127.0.0.1:8000/items/' + itemId
     }
     // redirectToCart(itemId) {
     //   window.location.href = 'items-in-cart/'

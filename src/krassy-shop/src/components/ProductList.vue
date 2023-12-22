@@ -43,11 +43,13 @@
           <span
             v-for="i in 5"
             :key="i"
-            class="fa fa-star"
             :class="{ checked: i <= product.rating }"
-          ></span>
-          <span :id="'overall-rating' + product.id + '-float'"></span
+          >
+            <font-awesome-icon
+              :icon="['fas', 'star']"
+            ></font-awesome-icon> </span
         ></i>
+        <span :id="'overall-rating' + product.id + '-float'"></span>
         <span :id="'overall-rating' + product.id">
           ({{ product.reviewNumber }})</span
         >
@@ -76,13 +78,13 @@ import $ from '../../node_modules/jquery'
 export default {
   props: ['product', 'min', 'max', 'cart'],
   emits: ['addToCart'],
-  compatConfig: { MODE: 3 },
+  // compatConfig: { MODE: 3 },
   // components: {
   //   MyNavbar
   // },
   methods: {
     redirectToItemFromProduct(itemId) {
-      this.$root.redirectToItem(itemId)
+      this.$parent.redirectToItem(itemId)
     },
     itemAlreadyInCart(product) {
       return this.cart.some(item => item.id === product.id)

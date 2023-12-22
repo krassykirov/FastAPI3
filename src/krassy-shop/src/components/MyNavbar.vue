@@ -31,35 +31,19 @@
             >
           </li>
           <li class="nav-item">
-            <a
-              class="nav-link mx-2 text-uppercase"
-              href="{{ url_for('get_products')}}"
-              >Products</a
-            >
+            <a class="nav-link mx-2 text-uppercase" href="#">Products</a>
           </li>
           <li class="nav-item">
-            <a
-              class="nav-link mx-2 text-uppercase"
-              href="{{ url_for('get_category')}}"
-              >Categories</a
-            >
+            <a class="nav-link mx-2 text-uppercase" href="#">Categories</a>
           </li>
           <li class="nav-item">
-            <a
-              class="nav-link mx-2 text-uppercase"
-              href="{{ url_for('get_items_in_cart')}}"
-              >Cart</a
-            >
+            <a class="nav-link mx-2 text-uppercase" href="#">Cart</a>
           </li>
           <li class="nav-item">
             <a class="nav-link mx-2 text-uppercase" href="#">About</a>
           </li>
           <li class="nav-item">
-            <a
-              class="nav-link mx-2 text-uppercase"
-              href="{{ url_for('get_items_in_cart')}}"
-              >Cart</a
-            >
+            <a class="nav-link mx-2 text-uppercase" href="#">Cart</a>
           </li>
         </ul>
         <div v-if="cart" class="ml-auto">
@@ -108,29 +92,19 @@
           </div>
         </div>
         <div v-if="cart" class="ml-auto"></div>
-        {% raw %} {% if current_user %}
+        <!-- {% raw %} {% if current_user %} -->
         <form class="form-inline my-2 my-lg-0" style="margin-right: 30px">
           <div class="dropdown" style="font-family: Raleway; font-size: 16px">
-            {% if profile %}
-            {{ current_user }}
-            {% endif %}
+            <!-- {% if profile %} -->
+            <!-- {{ current_user }} -->
+            <!-- {% endif %} -->
             <div class="dropdown-content">
-              <a
-                class="nav-link mx-2 text-uppercase"
-                href="{{ url_for('get_user_profile') }}"
-              >
-                Profile</a
-              >
-              <a
-                class="nav-link mx-2 text-uppercase"
-                href="{{ url_for('logout') }}"
-              >
-                Logout</a
-              >
+              <a class="nav-link mx-2 text-uppercase" href="#"> Profile</a>
+              <a class="nav-link mx-2 text-uppercase" href="#"> Logout</a>
             </div>
           </div>
         </form>
-        {% endif %} {% endraw %}
+        <!-- {% endif %} {% endraw %} -->
       </div>
     </div>
   </nav>
@@ -147,7 +121,7 @@ export default {
   },
   methods: {
     redirectToItemFromNavbar(itemId) {
-      this.$root.redirectToItem(itemId)
+      this.$parent.redirectToItem(itemId)
     }
   }
 }
