@@ -146,6 +146,7 @@ async def read_item(request: Request, id: int, db: Session=Depends(get_session),
         item_rating = ReviewActions().get_item_reviews_rating(db=db,id=id)
         profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
         items = get_user_items_in_cart(db=db, user=user)
+        print(len(items))
         return templates.TemplateResponse("item_details.html", {"request":request, 'item': item,
                                                                 'current_user': user.username,
                                                                 'items': items,
