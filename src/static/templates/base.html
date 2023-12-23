@@ -379,7 +379,6 @@
           return response.json();
         })
         .then(data => {
-          this.total = data.total
           this.cart  = data.items
         })
         .catch(error => {
@@ -519,10 +518,10 @@ App.component('navbar-component', {
             </li>
           </ul>
         <div v-if="cart" class="ml-auto">
-          <button @click="displayCart = !displayCart" class="btn btn-sm btn-success" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="bi bi-cart"></i> [[ cart.length ]] <small id="total"> $[[ total ]] </small>
+          <button @click="displayCart = !displayCart"  class="btn btn-sm btn-success" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="bi bi-cart"></i> [[ cart.length ]] <small id="total"> - $[[ total ]] </small>
           </button>
-          <div v-if="!displayCart" class="list-group position-absolute">
+          <div v-if="!displayCart" @mouseleave="hideCart()" class="list-group position-absolute">
               <div v-for="(item, index) in cart" :key="index" class="list-group-item d-flex justify-content-between">
                 <div class="d-flex align-items-center">
                   <img :src="'static/img/' + item.username + '/' + item.name + '/' + item.image" class="mr-2"
@@ -530,10 +529,11 @@ App.component('navbar-component', {
                   <div style="cursor: pointer" @click="redirectToItemFromNavbar(item.id)">
                     <div> [[ item.name ]] - $[[ item.price ]] </div>
                   </div>
+                  <button @click="removeFromCart(item.id)">x</button>
                 </div>
                 <div class="ml-3 font-weight-bold"></div>
               </div>
-              <button @click="redirectToCart" class="btn btn-sm btn-secondary"> See All </button>
+              <button v-if="cart.length > 0" @click="redirectToCart" class="btn btn-sm btn-secondary"> See All </button>
             </div>
         </div>
           <div class="ml-auto"></div>
@@ -565,6 +565,40 @@ App.component('navbar-component', {
        window.location.href = `/items-in-cart`
       // this.$root.redirectToCart();
     },
+    removeFromCart(itemId) {
+        // Call the backend function to remove the item from the cart
+        fetch('/user/remove-from-basket', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                item_id: itemId,
+            }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+          const index = this.cart.findIndex(item => item.id === itemId);
+
+            // If the item is found, remove it from the array
+            if (index !== -1) {
+                this.cart.splice(index, 1);
+                console.log('Item removed from cart:', itemId);
+            }
+        })
+        .catch(error => {
+            console.error('Error removing item from cart:', error);
+        });
+    },
+    hideCart() {
+            console.log("Hiding...")
+            this.displayCart = true;
+        },
     }
   });
 

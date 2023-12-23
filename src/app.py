@@ -64,7 +64,6 @@ async def home(request: Request, user: User = Depends(get_current_user)):
 @app.get("/products", include_in_schema=False, response_model=src.schemas.ItemRead)
 def get_products(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     """ Return all Items """
-    print("Getting Products")
     # items_db = ItemActions().get_items(db=db) #, user=user.username
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
     # in_cart = ItemActions().get_user_items_in_cart(db=db)
