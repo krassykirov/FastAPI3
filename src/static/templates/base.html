@@ -73,7 +73,7 @@
 }
 </style>
   <section class="container" id="app" style="margin-left: 150px;">
-    <navbar-component :cart="cart">
+    <navbar-component :cart="cart" :total="total">
     </navbar-component>
 
   {% if current_user %}
@@ -216,7 +216,6 @@
       return {
         min: 1,
         max: 10000,
-        total: 0,
         products: [],
         categories: [],
         cart: Vue.ref([]),
@@ -233,6 +232,12 @@
       this.getItemRating(product.id);
     });
     },
+    computed: {
+    // Computed property to calculate the total of all items in the cart
+    total() {
+      return this.cart.reduce((total, item) => total + Number(item.price), 0);
+    },
+  },
     methods: {
       async getProducts() {
         try {
@@ -376,8 +381,6 @@
         .then(data => {
           this.total = data.total
           this.cart  = data.items
-          console.log('total', this.total)
-          // document.getElementById('total').innerText = '$'+this.total
         })
         .catch(error => {
           console.error('error', error);
@@ -464,7 +467,7 @@ App.component('product-component', {
             })
             .then(data => {
               this.cart.push(product);
-              console.log('success', data);
+              console.log('success this.cart',  this.cart);
             })
             .catch(error => {
               console.error('error', error);
@@ -472,7 +475,7 @@ App.component('product-component', {
         }
       },
     },
-});  
+});
 
 App.component('navbar-component', {
     props: ['product','cart', 'total'],
@@ -517,7 +520,7 @@ App.component('navbar-component', {
           </ul>
         <div v-if="cart" class="ml-auto">
           <button @click="displayCart = !displayCart" class="btn btn-sm btn-success" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="bi bi-cart"></i> [[ cart.length ]] <small id="total"> [[ total ]] </small>
+            <i class="bi bi-cart"></i> [[ cart.length ]] <small id="total"> $[[ total ]] </small>
           </button>
           <div v-if="!displayCart" class="list-group position-absolute">
               <div v-for="(item, index) in cart" :key="index" class="list-group-item d-flex justify-content-between">

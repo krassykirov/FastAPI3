@@ -332,7 +332,7 @@ async def get_category_ajax( request: Request, db: Session=Depends(get_session),
         return JSONResponse(content = json_compatible_item_data)
     return JSONResponse(content = "No Items in Category Found")
 
-@app.post("/update-basket", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead,  include_in_schema=False)
+@app.post("/update-basket", status_code=status.HTTP_200_OK,  include_in_schema=False)
 async def update_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     data = await request.json()
     item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
@@ -341,7 +341,9 @@ async def update_basket(request: Request, db: Session = Depends(get_session), us
     item.in_cart = basket
     db.commit()
     db.refresh(item)
-    return item
+    result = get_user_items_in_cart(db=db, user=user)
+    total = result.get('total')
+    return {'total', total}
 
 @app.post("/user/remove-from-basket", status_code=status.HTTP_200_OK,  include_in_schema=False)
 async def remove_from_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
