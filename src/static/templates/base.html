@@ -233,7 +233,6 @@
     });
     },
     computed: {
-    // Computed property to calculate the total of all items in the cart
     total() {
       return this.cart.reduce((total, item) => total + Number(item.price), 0);
     },
@@ -502,13 +501,13 @@ App.component('navbar-component', {
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
           <ul class="navbar-nav ms-auto ">
             <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" aria-current="page" href="#">Offers</a>
+              <a class="nav-link mx-2 text-uppercase" aria-current="page" href="#"></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_products')}}">Products</a>
+              <a class="nav-link mx-2 text-uppercase" href="#"></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" href="#">Categories</a>
+              <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_products')}}">Offers</a>
             </li>
             <li class="nav-item">
               <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_items_in_cart')}}">Cart</a>
@@ -518,8 +517,8 @@ App.component('navbar-component', {
             </li>
           </ul>
         <div v-if="cart" class="ml-auto">
-          <button @click="displayCart = !displayCart"  class="btn btn-sm btn-success" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="bi bi-cart"></i> [[ cart.length ]] <small id="total"> - $[[ total ]] </small>
+          <button @click="displayCart = !displayCart"  class="btn btn-sm btn-primary" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="bi bi-cart"></i> [[ cart.length ]]
           </button>
           <div v-if="!displayCart" @mouseleave="hideCart()" class="list-group position-absolute">
               <div v-for="(item, index) in cart" :key="index" class="list-group-item d-flex justify-content-between">
@@ -534,7 +533,10 @@ App.component('navbar-component', {
                 </div>
                 <div class="ml-3 font-weight-bold"></div>
               </div>
-              <button v-if="cart.length > 0" @click="redirectToCart" class="btn btn-sm btn-secondary"> See All </button>
+              <button id="total" class="btn btn-sm btn-light" style="pointer-events: none; opacity: 1; margin-bottom: 1px;"> 
+                Total: [[ cart.length ]] items - $[[ total ]] 
+                </button>
+              <button v-if="cart.length > 0" @click="redirectToCart" class="btn btn-sm btn-primary"> See All </button>
             </div>
         </div>
           <div class="ml-auto"></div>
@@ -589,7 +591,6 @@ App.component('navbar-component', {
             // If the item is found, remove it from the array
             if (index !== -1) {
                 this.cart.splice(index, 1);
-                console.log('Item removed from cart:', itemId);
             }
         })
         .catch(error => {

@@ -141,11 +141,9 @@ async def read_item(request: Request, id: int, db: Session=Depends(get_session),
     item_db = ItemActions().get_item_by_id(db=db, id=id)
     if item_db:
         item = src.schemas.ItemRead.from_orm(item_db)
-        print('item', item, item.category.name)
         item_rating = ReviewActions().get_item_reviews_rating(db=db,id=id)
         profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
         items = get_user_items_in_cart(db=db, user=user)
-        print(len(items))
         return templates.TemplateResponse("item_details.html", {"request":request, 'item': item,
                                                                 'current_user': user.username,
                                                                 'items': items,
@@ -288,9 +286,10 @@ async def update_profile(request: Request, db: Session = Depends(get_session), u
     user_db = db.exec(query).first()
     if user_db:
         try:
-            content = await form_data['file'].read()
-            with open(f"src/static/img/{user.username}/profile/{form_data['file'].filename}", 'wb') as f:
-                f.write(content)
+            if form_data['file'].filename:
+                content = await form_data['file'].read()
+                with open(f"src/static/img/{user.username}/profile/{form_data['file'].filename}", 'wb') as f:
+                    f.write(content)
         except Exception as e:
             logger.error(f"Something went wrong, error: {e}")
         new_data = UserProfile(**dict(json_data), user=user, avatar=filename if filename else None).dict(exclude_unset=True,

@@ -134,7 +134,7 @@
               <h5 class="modal-title" id="addProfileLabel">Create Profile</h5>
             </div>
             <div class="modal-body">
-              <form action="create_profile" id=create-profile method="post" enctype="multipart/form-data" data-toggle="validator" id="addProfileForm">
+              <form action="create_profile" id="create-profile" method="post" enctype="multipart/form-data" data-toggle="validator">
                 <div class="form-group">
                   <label for="email" class="col-form-label">Secondary Email:</label>
                   <input type="email" name="email" id="email" placeholder="Email" required>
@@ -162,14 +162,14 @@
       </div>
 
 
-    <div class="modal fade" id="UpdateProfile" role="dialog" aria-labelledby="UpdateProfileLabel" aria-hidden="true">
+    <div class="modal fade" id="UpdateProfile" tabindex="-1" role="dialog" aria-labelledby="UpdateProfileLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="UpdateProfileLabel"> Update Profile</h5>
             </div>
             <div class="modal-body">
-              <form id="update-profile" enctype="multipart/form-data" data-toggle="validator" id="UpdateModalForm">
+              <form id="update-profile" enctype="multipart/form-data" data-toggle="validator">
                 <div class="form-group">
                   <label for="email" class="col-form-label">Secondary Email:</label>
                   <input type="email" name="email" id="email" placeholder="Email">
@@ -207,6 +207,7 @@ $(document).ready(function() {
         contentType: false,
         data: formData,
         success: function(data){
+            console.log('success', data)
             updateCard(data)
             $('#UpdateProfile').modal('hide')
         },
