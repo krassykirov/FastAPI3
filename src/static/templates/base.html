@@ -441,7 +441,7 @@ App.component('product-component', {
         const buttonElement = this.$refs.addToCartButton;
         $(buttonElement).popover({
           content: popoverContent,
-          placement: 'right',
+          placement: 'top',
           trigger: 'manual',
         });
         $(buttonElement).popover('show');
@@ -529,7 +529,8 @@ App.component('navbar-component', {
                   <div style="cursor: pointer" @click="redirectToItemFromNavbar(item.id)">
                     <div> [[ item.name ]] - $[[ item.price ]] </div>
                   </div>
-                  <button @click="removeFromCart(item.id)">x</button>
+                  <button @click="removeFromCart(item.id)" class="btn-close btn-sm ml-2"
+                  data-bs-toggle="tooltip" data-bs-placement="top" title="Remove Item"></button>
                 </div>
                 <div class="ml-3 font-weight-bold"></div>
               </div>
@@ -596,7 +597,6 @@ App.component('navbar-component', {
         });
     },
     hideCart() {
-            console.log("Hiding...")
             this.displayCart = true;
         },
     }
