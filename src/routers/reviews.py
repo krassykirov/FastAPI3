@@ -13,6 +13,16 @@ reviews_router = APIRouter(prefix='/api/reviews', tags=["reviews"], dependencies
                             responses={404: {"description": "Not found"}},)
 
 
+
+@reviews_router.get("/all", status_code=status.HTTP_200_OK, response_model=list[Review])
+def get_reviews(db: Session = Depends(get_session)):
+    """ Return all reviews"""
+    reviews = db.query(Review).all()
+    print('reviews', reviews)
+    if reviews is None:
+        raise HTTPException(status_code=404, detail=f"No comments found")
+    return reviews
+
 @reviews_router.get("/{id}", status_code=status.HTTP_200_OK, response_model=Review)
 def get_review_by_id( id: int, db: Session = Depends(get_session)):
     """ Return review by given id"""
@@ -20,6 +30,7 @@ def get_review_by_id( id: int, db: Session = Depends(get_session)):
     if comment is None:
         raise HTTPException(status_code=404, detail=f"No comment with id {id} found")
     return comment
+
 
 @reviews_router.get("/item/by_user", status_code=status.HTTP_200_OK, response_model=list[Review])
 def get_item_reviews_by_user( item_id: int, db: Session = Depends(get_session), user: User = Depends(get_current_user)):

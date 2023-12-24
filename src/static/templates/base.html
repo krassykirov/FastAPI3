@@ -67,6 +67,10 @@
   cursor: pointer; 
   color: #000; 
 }
+.form-check {
+    display: block;
+    margin-bottom: 5px; /* Adjust the margin as needed */
+}
 
 .custom-button:hover {
   background-color: #e0e0e0; 
@@ -104,7 +108,7 @@
        <br/>
      </div>
 
-     <div class="filter-products-container row col-2" style="float: left; margin-left: 40px;">
+     <div class="filter-products-container row col-2" style="float: left; margin-left: 3%;">
       <!-- <div class="quick-filter ph-card"> <button class="custom-button" @click="toggleSortOrder">Sort</button></div> -->
       <div class="quick-filter ph-card"> <button class="custom-button" data-toggle="modal" data-target="#addItem" href="#"
         style="font-family: inherit;">Add Product </button> </div>
@@ -113,22 +117,23 @@
           <hr>
           <div class="filter-content collapse show" id="collapse_2">
             <div class="card-body">
-              <div class="cat" v-for="category in categories" :key="category[2]" :class="{ active: category[1] !== 0 }">
-                <label>
-                  <input
-                    type="checkbox"
-                    class="cat-checkbox"
-                    :data-category="category[2]"
-                    :disabled="category[1] === 0"
-                    @change="handleCategoryChange"
-                  />
-                  <span>[[ category[0] ]]  </span>
-                  <span class="text-muted">[[ category[1] ]] </span>
-                  <!-- <b class="badge badge-light float-ri" v-if="category[1] !== 0">[[ category[1] ]]</b> -->
-                </label>
-              </div>
+                <div class="cat" v-for="category in categories" :key="category[2]" :class="{ active: category[1] !== 0 }">
+                    <label>
+                        <input
+                            type="checkbox"
+                            class="cat-checkbox"
+                            :data-category="category[2]"
+                            :disabled="category[1] === 0"
+                            @change="handleCategoryChange"
+                        />
+                        <span>[[ category[0] ]]</span>
+                    </label>
+                      <!-- <span class="badge badge-dark ml-2">
+                          [[ category[1] ]]
+                      </span> -->
+                </div>
             </div>
-          </div>
+        </div>
         </article>
         <article class="filter-group" style="float: left; margin-left: 0;">
           <hr>
@@ -155,22 +160,25 @@
             </div>
         </article>
         <article>
-           <div>
-              <div class="quick-filter ph-card">
-                  <label>
-                    <input
-                      type="checkbox"
-                      class="custom-control-input"
-                    />
-                    <button class="custom-button" @click="toggleSortOrder">
-                      Sort
-                    </button>
-                  </label>
-                </div>
-          </article>
+          <div class="form-group">
+            <label>Overall Rating</label>
+            <div class="form-check form-check-inline" v-for="rating in ratings">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                :id="'rating' + rating"
+                :value="rating"
+                v-model="selectedRating"
+              />
+              <label class="form-check-label" :for="'rating' + rating">
+                <span v-for="i in 5" :key="i" class="fa fa-star" :class="{ 'checked': i <= rating }"></span>
+              </label>
+            </div>
+          </div>
+        </article>
      </div>
 
-      <div class="row g-0 col-auto" id="mycard" style="justify-content: left; margin: 20px;">
+      <div class="row g-0 col-auto" id="mycard" style="justify-content: left; margin-left: 50px; margin-right: 3%;">
         <!-- <transition-group name="fade" tag="div" class="row g-0 col-auto" id="mycard" style="justify-content: left; margin: 20px;"> -->
           <product-component v-for="product in filteredProducts" :key="product.id" :cart="cart" class="row g-0 col-auto"
                 :product="product" :min="min" :max="max" style="justify-content: left;">
@@ -241,6 +249,8 @@
         sortOrder: 'asc',
         selectedCategories: [],
         showPopoverContent: false,
+        selectedRating: [],
+        ratings: [1, 2, 3, 4, 5],
       };
     },
     async beforeMount() {
@@ -259,10 +269,11 @@
     return this.products.filter(item => {
       const priceCondition = item.price >= this.min && item.price <= this.max;
       const categoryCondition = this.selectedCategories.length === 0 || this.selectedCategories.includes(String(item.category_id));
-      return priceCondition && categoryCondition;
-    });
-  }
-  },
+      const ratingCondition = this.selectedRating.length === 0 || this.selectedRating.includes(Math.ceil(item.rating_float));
+      return priceCondition && categoryCondition && ratingCondition;
+      });
+     },
+    },
     methods: {
       async getProducts() {
         try {
@@ -301,6 +312,7 @@
           if (product) {
             product.rating = data.rating;
             product.reviewNumber = data.review_number;
+            product.rating_float = parseFloat(data.rating_float).toFixed(2)
             document.getElementById('overall-rating' + product.id + '-float').innerText = " " + parseFloat(data.rating_float).toFixed(2);
           }
         } catch (error) {
@@ -381,12 +393,20 @@
       redirectToCart(itemId) {
         window.location.href = 'items-in-cart/';
       },
+      handleRatingChange(rating) {
+      const index = this.selectedRating.indexOf(rating);
+      if (index === -1) {
+        this.selectedRating.push(rating);
+      } else {
+        this.selectedRating.splice(index, 1);
+      }
+   }
     },
   });
   // cursor: pointer" @click="redirectToItem(product.id)"
   // <button @click="addToCart(product)" class="btn btn-success">+</button>
 App.component('product-component', {
-    props: ['product', 'min', 'max','cart'],
+    props: ['product', 'min', 'max','cart','selectedRatings'],
     delimiters: ['[[', ']]'],
     emits: ['addToCart'],
     template: `
@@ -401,9 +421,9 @@ App.component('product-component', {
          <span class="badge bg-success" v-else-if="product.price>1000">TOP</span>  $[[ product.price  ]]
          <input type="number" :data-price="product.price" hidden>
         </div>
-        <p> <i>
-          <span v-for="i in 5" :key="i" class="fa fa-star" :class="{ 'checked': i <= product.rating }"></span>
-          <span :id="'overall-rating' + product.id + '-float'"></span></i>
+        <p style="cursor: pointer" @click="redirectToItemFromProduct(product.id)"> <i>
+          <span v-for="i in 5" :key="i" class="fa fa-star" :class="{ 'checked': i <= product.rating_float }"></span>
+          <span :id="'overall-rating' + product.id + '-float'">[[ product.rating_float ]] </span></i>
           <span :id="'overall-rating' + product.id"> ([[ product.reviewNumber ]])</span>
         </p>
         <div>
@@ -513,11 +533,11 @@ App.component('navbar-component', {
               <a class="nav-link mx-2 text-uppercase" href="#">About</a>
             </li>
           </ul>
-        <div v-if="cart" class="ml-auto">
-          <button @click="displayCart = !displayCart" class="btn btn-secondary" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="bi bi-cart" style="font-size: 1rem;"></i> <small class="mutted">[[ cart.length ]] </small> Cart
+        <div v-if="cart" class="ml-auto" @mouseleave="hideCart()">
+          <button @click="displayCart = !displayCart" class="btn btn-secondary btn-sm" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="bi bi-cart" style="font-size: 1rem;"></i> Cart <span class="badge badge-pill badge-dark">[[ cart.length ]]</span>
       </button>
-          <div v-if="!displayCart" @mouseleave="hideCart()" class="list-group position-absolute">
+          <div v-if="!displayCart"  class="list-group position-absolute">
               <div v-for="(item, index) in cart" :key="index" class="list-group-item d-flex justify-content-between">
                 <div class="d-flex align-items-center">
                   <img :src="'static/img/' + item.username + '/' + item.name + '/' + item.image" class="mr-2"
@@ -531,17 +551,17 @@ App.component('navbar-component', {
                 <div class="ml-3 font-weight-bold"></div>
               </div>
               <button id="total" class="btn btn-sm btn-light" style="pointer-events: none; opacity: 1; margin-bottom: 1px;"> 
-                Total: [[ cart.length ]] items - $[[ total ]] 
+                Total: [[ cart.length ]] products - <b> $[[ total ]] </b>
                 </button>
               <button v-if="cart.length > 0" @click="redirectToCart" class="btn btn-sm btn-primary"> See All </button>
             </div>
         </div>
           <div class="ml-auto"></div>
           {% if current_user %}
-          <form class="form-inline my-2 my-lg-0" style="margin-right: 30px;">
+          <form class="form-inline my-2 my-lg-0" style="margin-right: 50px;">
             <div class="dropdown" style="font-family: Raleway; font-size: 16px;">
               {% if profile %}
-              {{ current_user }} <img src="/static/img/{{ current_user }}/profile/{{ profile.avatar }}" class="avatar" alt="{{ current_user}}">
+              <img src="/static/img/{{ current_user }}/profile/{{ profile.avatar }}" class="avatar" alt="{{ current_user}}">
               {% else %}
               {{ current_user }} <img src="/static/img/img_avatar.png" class="avatar" alt="{{ current_user}}">
               {% endif %}
