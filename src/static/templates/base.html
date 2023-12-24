@@ -16,7 +16,7 @@
 <style>
   .cat {
   margin: 4px;
-  background-color: #6c757d;
+  background-color: #7b7f83;
   border-radius: 40px;
   /* border: 1px solid #fff; */
   overflow: hidden;
@@ -64,23 +64,37 @@
   border: 1px solid #ccc;
   background-color: #fff;
   padding: 6px 30px;
-  cursor: pointer; /* Add cursor style for pointer */
-  color: #000; /* Set text color */
+  cursor: pointer; 
+  color: #000; 
 }
 
 .custom-button:hover {
-  background-color: #e0e0e0; /* Change background color on hover if needed */
+  background-color: #e0e0e0; 
+}
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.5s;
+  }
+  .fade-enter, .fade-leave-to {
+    opacity: 0;
+    z-index: 1;
+  }
+  .fade-enter-to {
+    opacity: 1;
+  }
+.fade-enter-from {
+  opacity: 0;
 }
 </style>
-  <section class="container" id="app" style="margin-left: 150px;">
+  <div class="container-fluid" id="app" style="padding: 5px;">
     <navbar-component :cart="cart" :total="total">
     </navbar-component>
 
   {% if current_user %}
-  <div class="row col-1" style="float: right; margin-top: 60px; margin-right: 120px;">
+  <!-- <div class="row col-1" style="float: right; margin-top: 60px; margin-right: 120px">
+    <div class="quick-filter ph-card"> <button class="custom-button" @click="toggleSortOrder">Sort</button></div>
     <div class="quick-filter ph-card"> <button class="custom-button" data-toggle="modal" data-target="#addItem" href="#"
       style="font-family: inherit;">Add Product </button> </div>
-   </div>
+   </div> -->
      <div class="container" style="margin-top: 12px;">
          <div class="row pt-2">
            <div class="col-md-12">
@@ -90,9 +104,12 @@
        <br/>
      </div>
 
-     <div class="row col-2" style="float: left;">
+     <div class="filter-products-container row col-2" style="float: left; margin-left: 40px;">
+      <!-- <div class="quick-filter ph-card"> <button class="custom-button" @click="toggleSortOrder">Sort</button></div> -->
+      <div class="quick-filter ph-card"> <button class="custom-button" data-toggle="modal" data-target="#addItem" href="#"
+        style="font-family: inherit;">Add Product </button> </div>
         <article class="filter-group">
-          <p style="font-family: inherit; text-align: center;"> Categories </p>
+          <!-- <p style="font-family: inherit; text-align: center"> Categories </p> -->
           <hr>
           <div class="filter-content collapse show" id="collapse_2">
             <div class="card-body">
@@ -105,7 +122,8 @@
                     :disabled="category[1] === 0"
                     @change="handleCategoryChange"
                   />
-                  <span>[[ category[0] ]] </span>
+                  <span>[[ category[0] ]]  </span>
+                  <span class="text-muted">[[ category[1] ]] </span>
                   <!-- <b class="badge badge-light float-ri" v-if="category[1] !== 0">[[ category[1] ]]</b> -->
                 </label>
               </div>
@@ -119,22 +137,22 @@
                  <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
                </button>
                <div class="filter-content collapse show" id="collapse_3">
-                 <div class="card-body">
-                   <div class="form-row">
-                     <div class="form-group col-md-6">
-                       <label>Min price</label>
-                       <input v-model="min" class="form-control" id="minPrice" @input="validateMin" placeholder="0"
-                       min="0" :max="max" value="0" pattern="[1-9][0-9]*" type="text" required>
-                     </div>
-                     <div class="form-group text-right col-md-6">
-                       <label>Max price</label>
-                       <input v-model="max" class="form-control" id="maxPrice" value="0" placeholder="10000"
-                       @input="validateMax" pattern="[1-9][0-9]*" type="text" :min="min" max="10000" style="width: 100px;" required>
-                     </div>
-                   </div>
-                   <!-- <button class="btn btn-block btn-primary" @click="filterByPrice">Apply</button> -->
-                 </div>
-               </div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Min price</label>
+                            <input v-model="min" class="form-control" id="minPrice" @input="validateMin" placeholder="0"
+                                   min="0" :max="max" value="0" pattern="[1-9][0-9]*" type="text" required>
+                        </div>
+                        <div class="form-group col-md-6"> <!-- Use col-md-6 to ensure equal width on medium devices and larger -->
+                            <label>Max price</label>
+                            <input v-model="max" class="form-control" id="maxPrice" value="0" placeholder="10000"
+                                   @input="validateMax" pattern="[1-9][0-9]*" type="text" :min="min" :max="max" style="width: 100%;" required>
+                        </div>
+                    </div>
+                    <!-- <button class="btn btn-block btn-primary" @click="filterByPrice">Apply</button> -->
+                </div>
+            </div>
         </article>
         <article>
            <div>
@@ -153,12 +171,13 @@
      </div>
 
       <div class="row g-0 col-auto" id="mycard" style="justify-content: left; margin: 20px;">
-          <product-component v-for="product in products" :key="product.id" :cart="cart" class="row g-0 col-auto"
+        <!-- <transition-group name="fade" tag="div" class="row g-0 col-auto" id="mycard" style="justify-content: left; margin: 20px;"> -->
+          <product-component v-for="product in filteredProducts" :key="product.id" :cart="cart" class="row g-0 col-auto"
                 :product="product" :min="min" :max="max" style="justify-content: left;">
           </product-component>
+        <!-- </transition-group> -->
       </div>
-   </section>
-
+    </div>
      <div class="modal fade" id="addItem" role="dialog" aria-labelledby="addItemlLabel" aria-hidden="true">
        <div class="modal-dialog" role="document">
          <div class="modal-content">
@@ -236,6 +255,13 @@
     total() {
       return this.cart.reduce((total, item) => total + Number(item.price), 0);
     },
+    filteredProducts() {
+    return this.products.filter(item => {
+      const priceCondition = item.price >= this.min && item.price <= this.max;
+      const categoryCondition = this.selectedCategories.length === 0 || this.selectedCategories.includes(String(item.category_id));
+      return priceCondition && categoryCondition;
+    });
+  }
   },
     methods: {
       async getProducts() {
@@ -280,23 +306,9 @@
         } catch (error) {
         }
       },
-      filterByCategory() {
-      var selectedCategories = this.getSelectedCategories();
-      var cards = document.querySelectorAll('.card');
-      cards.forEach(function (card) {
-          var category = card.getAttribute('data-category');
-          var displayCard = selectedCategories.length === 0 || selectedCategories.includes(category);
-          if (displayCard) {
-              $(card).slideDown(300);
-          } else {
-              $(card).slideUp(300);
-          }
-        });
-      },
       handleCategoryChange() {
         this.selectedCategories = this.getSelectedCategories();
         console.log('selectedCategories', this.selectedCategories)
-        this.filterByCategory();
       },
       getSelectedCategories() {
           var selectedCategories = [];
@@ -319,27 +331,6 @@
         this.products.sort((a, b) => b.price - a.price);
         }
       },
-      filterByPrice() {
-          var selectedCategories = this.getSelectedCategories();
-          var minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
-          var maxPrice = parseFloat(document.getElementById("maxPrice").value) || 10000;
-          var cards = document.getElementsByClassName("card");
-          for (var i = 0; i < cards.length; i++) {
-            var categoryElement = cards[i].getAttribute("data-category");
-            var category = categoryElement ? categoryElement.toUpperCase() : null;
-  
-            var priceElement = cards[i].querySelector("[data-price]");
-            var price = priceElement ? parseFloat(priceElement.getAttribute("data-price")) : 0;
-            var isCategoryMatch = !this.selectedCategories || this.selectedCategories.length === 0 || this.selectedCategories.includes(category);
-            var isPriceMatch = price >= minPrice && price <= maxPrice;
-            var displayCard = isCategoryMatch && isPriceMatch;
-            if (displayCard) {
-              cards[i].style.display = "";
-            } else {
-              cards[i].style.display = "none";
-            }
-          }
-        },
       validateMin() {
           const productMinPrice = Math.min(...this.products.map(product => product.price));
           this.min = this.min.replace(/^0+/, '');
@@ -399,7 +390,7 @@ App.component('product-component', {
     delimiters: ['[[', ']]'],
     emits: ['addToCart'],
     template: `
-    <div v-if="product.price<=Number(max) && product.price>=Number(min)" class="col-lg-auto">
+    <div class="col-lg-auto">
       <div class="card" :id="product.id" :data-category="product.category_id"
       style="margin: 1px; margin-bottom: 3px;">
         <div class="card-body" style="cursor: pointer" @click="redirectToItemFromProduct(product.id)">
@@ -513,13 +504,19 @@ App.component('navbar-component', {
               <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_items_in_cart')}}">Cart</a>
             </li>
             <li class="nav-item">
+              <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_items_in_cart')}}">Cart</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_items_in_cart')}}">Cart</a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link mx-2 text-uppercase" href="#">About</a>
             </li>
           </ul>
         <div v-if="cart" class="ml-auto">
-          <button @click="displayCart = !displayCart"  class="btn btn-sm btn-primary" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="bi bi-cart"></i> [[ cart.length ]]
-          </button>
+          <button @click="displayCart = !displayCart" class="btn btn-secondary" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="bi bi-cart" style="font-size: 1rem;"></i> <small class="mutted">[[ cart.length ]] </small> Cart
+      </button>
           <div v-if="!displayCart" @mouseleave="hideCart()" class="list-group position-absolute">
               <div v-for="(item, index) in cart" :key="index" class="list-group-item d-flex justify-content-between">
                 <div class="d-flex align-items-center">
@@ -605,10 +602,10 @@ App.component('navbar-component', {
 
 App.mount('#app');
 
-  </script>
+</script>
 
 
-  <script>
+<script>
   function Search() {
       var input, filter, cards, cardContainer, h5, title, i;
       input = document.getElementById("filter");

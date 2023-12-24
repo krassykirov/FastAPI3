@@ -209,7 +209,8 @@ $(document).ready(function() {
         success: function(data){
             console.log('success', data)
             updateCard(data)
-            $('#UpdateProfile').modal('hide')
+            // $('#UpdateProfile').modal('hide')
+            $("[data-dismiss=modal]").trigger({ type: "click" });
         },
         error: function (xhr) {
             if (xhr.status === 404) {
@@ -232,7 +233,7 @@ $(document).ready(function() {
         contentType: false,
         data: formData,
         success: function(data){
-              $('#addProfile').modal('hide')
+              $('#addProfile').modal('hide');
               window.location.href = "/user/profile"
         },
         error: function (xhr) {
