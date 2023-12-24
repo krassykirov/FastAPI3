@@ -111,7 +111,13 @@
      <div class="filter-products-container row col-2" style="float: left; margin-left: 3%;">
       <!-- <div class="quick-filter ph-card"> <button class="custom-button" @click="toggleSortOrder">Sort</button></div> -->
       <div class="quick-filter ph-card"> <button class="custom-button" data-toggle="modal" data-target="#addItem" href="#"
-        style="font-family: inherit;">Add Product </button> </div>
+        style="font-family: inherit;">Add Product </button>
+        <button type="button" class="custom-button" @click="toggleSortOrder" style="align-items: center;">Sort Price
+          <span v-if="sortOrder === 'asc'" class="bi bi-sort-up-alt" style="font-size: 1rem;"></span>
+          <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
+        </button>
+      </div>
+ 
         <article class="filter-group">
           <!-- <p style="font-family: inherit; text-align: center"> Categories </p> -->
           <hr>
@@ -137,24 +143,29 @@
         </article>
         <article class="filter-group" style="float: left; margin-left: 0;">
           <hr>
-               Sort:  <button type="button" class="btn btn-secondary btn-sm" @click="toggleSortOrder">
+               <!-- Sort:  <button type="button" class="btn btn-secondary btn-sm" @click="toggleSortOrder">
                  <span v-if="sortOrder === 'asc'" class="bi bi-sort-up-alt" style="font-size: 1rem"></span>
                  <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
-               </button>
+               </button> -->
                <div class="filter-content collapse show" id="collapse_3">
                 <div class="card-body">
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <label>Min price</label>
+                            <label  style="font-size: 1rem">Min price</label>
                             <input v-model="min" class="form-control" id="minPrice" @input="validateMin" placeholder="0"
                                    min="0" :max="max" value="0" pattern="[1-9][0-9]*" type="text" required>
                         </div>
-                        <div class="form-group col-md-6"> <!-- Use col-md-6 to ensure equal width on medium devices and larger -->
-                            <label>Max price</label>
+                        <div class="form-group col-md-6">
+                            <label  style="font-size: 1rem">Max price</label>
                             <input v-model="max" class="form-control" id="maxPrice" value="0" placeholder="10000"
                                    @input="validateMax" pattern="[1-9][0-9]*" type="text" :min="min" :max="max" style="width: 100%;" required>
                         </div>
+                    <div class="form-group col-md-6">
+                      <input v-model.number="max" v-model.number="min" type="range" min="1" max="10000" style="width: 200px;">
+                      <p> <span style="color:blue"></span> $[[ min ]] - $[[ max ]] </p>
+                      <input v-model.number="max" class="form-control" type="number" id="max-price" hidden>
                     </div>
+                  </div>
                     <!-- <button class="btn btn-block btn-primary" @click="filterByPrice">Apply</button> -->
                 </div>
             </div>
@@ -313,7 +324,6 @@
             product.rating = data.rating;
             product.reviewNumber = data.review_number;
             product.rating_float = parseFloat(data.rating_float).toFixed(2)
-            document.getElementById('overall-rating' + product.id + '-float').innerText = " " + parseFloat(data.rating_float).toFixed(2);
           }
         } catch (error) {
         }
@@ -400,7 +410,7 @@
       } else {
         this.selectedRating.splice(index, 1);
       }
-   }
+      },
     },
   });
   // cursor: pointer" @click="redirectToItem(product.id)"
@@ -421,9 +431,11 @@ App.component('product-component', {
          <span class="badge bg-success" v-else-if="product.price>1000">TOP</span>  $[[ product.price  ]]
          <input type="number" :data-price="product.price" hidden>
         </div>
-        <p style="cursor: pointer" @click="redirectToItemFromProduct(product.id)"> <i>
-          <span v-for="i in 5" :key="i" class="fa fa-star" :class="{ 'checked': i <= product.rating_float }"></span>
-          <span :id="'overall-rating' + product.id + '-float'">[[ product.rating_float ]] </span></i>
+        <p style="cursor: pointer" @click="redirectToItemFromProduct(product.id)">
+          <i>
+            <span v-for="i in 5" :key="i" :class="getStarClasses(i, product.rating_float)"></span>
+            <span :id="'overall-rating' + product.id + '-float'">[[ product.rating_float ]] </span>
+          </i>
           <span :id="'overall-rating' + product.id"> ([[ product.reviewNumber ]])</span>
         </p>
         <div>
@@ -483,6 +495,16 @@ App.component('product-component', {
             });
         }
       },
+      getStarClasses(index, rating) {
+          const filledStars = Math.floor(rating);
+          if (index <= filledStars) {
+            return 'fa fa-star checked';
+          } else if (index === filledStars + 1 && rating % 1 !== 0) {
+            return 'fa fa-star-half-full checked';
+          } else {
+            return 'fa fa-star-o';
+          }
+        },
     },
 });
 
