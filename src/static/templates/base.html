@@ -413,7 +413,7 @@
       },
     },
     filters: {
-         formatPrice(price) {
+      formatPrice(price) {
       return Number.isInteger(price) ? price : price.toFixed(2);
     }},
   });
@@ -527,8 +527,8 @@ App.component('navbar-component', {
   <nav class="navbar navbar-expand-lg bg-white sticky-top navbar-light p-3 shadow-lg" style="height: 70px; margin-left: 0; margin-right: 0; width: 100%;">
       <div class="container-fluid" style="padding: 0; width: 100%; font-size: 14px;">
         <a class="navbar-brand" href="#" style="font-size: 14px;">
-          <i class="fa fa-home"></i> <strong>KRASSY SHOP</strong>
-        </a>
+           <i class="fa fa-home"></i> <strong>KRASSY SHOP</strong>
+         </a>
         <div class="mx-auto my-3 d-lg-none d-sm-block d-xs-block">
           <div class="input-group">
             <span class="border-warning input-group-text bg-warning text-white">
@@ -550,18 +550,18 @@ App.component('navbar-component', {
               <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_products')}}">Offers</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" href="#">About</a>
+              <a class="nav-link mx-2 text-uppercase" href="#">Products</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" href="#">About</a>
+              <a class="nav-link mx-2 text-uppercase" href="#">Others</a>
             </li>
             <li class="nav-item">
               <a class="nav-link mx-2 text-uppercase" href="#">About</a>
             </li>
           </ul>
         <div v-if="cart" @mouseleave="hideCart()" d-flex bd-highlight mb-3>
-          <button @click="displayCart = !displayCart" class="btn btn-secondary dropdown-toggle btn-sm" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="bi bi-cart" style="font-size: 1rem;"></i> Cart <span class="badge badge-pill badge-dark">[[ cart.length ]]</span>
+          <button @click="displayCart = !displayCart" class="btn btn-light dropdown-toggle btn-sm" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="bi bi-cart" style="font-size: 1rem;"></i> Cart <span class="badge badge-pill badge-primary"> [[ cart.length ]]</span>
       </button>
           <div v-if="!displayCart"  class="list-group position-absolute">
               <div v-for="(item, index) in cart" :key="index" class="list-group-item d-flex justify-content-between">
