@@ -96,6 +96,11 @@
     </navbar-component>
   </nav>
   {% if current_user %}
+  <!-- <div class="row col-1" style="float: right; margin-top: 60px; margin-right: 120px">
+    <div class="quick-filter ph-card"> <button class="custom-button" @click="toggleSortOrder">Sort</button></div>
+    <div class="quick-filter ph-card"> <button class="custom-button" data-toggle="modal" data-target="#addItem" href="#"
+      style="font-family: inherit;">Add Product </button> </div>
+   </div> -->
      <div class="container" style="margin-top: 12px;">
          <div class="row pt-2">
            <div class="col-md-12">
@@ -186,14 +191,17 @@
         </article>
      </div>
 
-    <div class="row g-0 col-auto" id="mycard" style="justify-content: left; margin-left: 50px; margin-right: 3%;">
+      <div class="row g-0 col-auto" id="mycard" style="justify-content: left; margin-left: 50px; margin-right: 3%;">
         <!-- <transition-group name="fade" tag="div" class="row g-0 col-auto" id="mycard" style="justify-content: left; margin: 20px;"> -->
           <product-component v-for="product in filteredProducts" :key="product.id" :cart="cart" class="row g-0 col-auto"
                 :product="product" :min="min" :max="max" style="justify-content: left;">
           </product-component>
         <!-- </transition-group> -->
-    </div>
+      </div>
      {% endif %}
+     {% block html_read %}
+
+     {% endblock %}
   </div>
   <div class="modal fade" id="addItem" role="dialog" aria-labelledby="addItemlLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
