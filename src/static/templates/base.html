@@ -274,7 +274,8 @@
     },
     computed: {
     total() {
-      return this.cart.reduce((total, item) => total + Number(item.price), 0);
+      const sum = this.cart.reduce((total, item) => total + Number(item.price), 0);
+      return sum.toFixed(2);
     },
     filteredProducts() {
     return this.products.filter(item => {
