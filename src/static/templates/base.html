@@ -96,11 +96,6 @@
     </navbar-component>
   </nav>
   {% if current_user %}
-  <!-- <div class="row col-1" style="float: right; margin-top: 60px; margin-right: 120px">
-    <div class="quick-filter ph-card"> <button class="custom-button" @click="toggleSortOrder">Sort</button></div>
-    <div class="quick-filter ph-card"> <button class="custom-button" data-toggle="modal" data-target="#addItem" href="#"
-      style="font-family: inherit;">Add Product </button> </div>
-   </div> -->
      <div class="container" style="margin-top: 12px;">
          <div class="row pt-2">
            <div class="col-md-12">
@@ -119,8 +114,8 @@
           <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
         </button>
       </div>
- 
-        <article class="filter-group">
+
+      <article class="filter-group">
           <!-- <p style="font-family: inherit; text-align: center"> Categories </p> -->
           <hr>
           <div class="filter-content collapse show" id="collapse_2">
@@ -172,8 +167,8 @@
                 </div>
             </div>
         </article>
-        <article>
-          <div class="form-group">
+        <article class="filter-group">
+          <div class="filter-content collapse show" id="collapse_3">
             <label>Overall Rating</label>
             <div class="form-check form-check-inline" v-for="rating in ratings.slice().reverse()">
               <input
@@ -247,7 +242,7 @@
   </div>
 <script>
 
-  const App = Vue.createApp({
+const App = Vue.createApp({
     name: "App",
     delimiters: ['[[', ']]'],
     data() {
@@ -418,8 +413,7 @@
       return Number.isInteger(price) ? price : price.toFixed(2);
     }},
   });
-  // cursor: pointer" @click="redirectToItem(product.id)"
-  // <button @click="addToCart(product)" class="btn btn-success">+</button>
+
 App.component('product-component', {
     props: ['product', 'min', 'max','cart','selectedRatings','formatPrice'],
     delimiters: ['[[', ']]'],
@@ -567,7 +561,7 @@ App.component('navbar-component', {
                 </div>
                 <div class="ml-3 font-weight-bold"></div>
               </div>
-              <button id="total" class="btn btn-sm btn-light" style="pointer-events: none; opacity: 1; margin-bottom: 1px;"> 
+              <button id="total" class="btn btn-sm btn-light" style="pointer-events: none; opacity: 1; margin-bottom: 1px;">
                 Total: [[ cart.length ]] products - <b> $[[ total ]] </b>
                 </button>
               <button v-if="cart.length > 0" @click="redirectToCart" class="btn btn-sm btn-primary"> See All </button>
@@ -639,7 +633,6 @@ App.component('navbar-component', {
 App.mount('#app');
 
 </script>
-
 
 <script>
   function Search() {
