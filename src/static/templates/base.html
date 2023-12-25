@@ -152,17 +152,17 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label  style="font-size: 1rem">Min price</label>
-                            <input v-model="min" class="form-control" id="minPrice" @input="validateMin" placeholder="0"
+                            <input v-model.number="min" class="form-control" id="minPrice" @input="validateMin" placeholder="0"
                                    min="0" :max="max" value="0" pattern="[1-9][0-9]*" type="text" required>
                         </div>
                         <div class="form-group col-md-6">
                             <label  style="font-size: 1rem">Max price</label>
-                            <input v-model="max" class="form-control" id="maxPrice" value="0" placeholder="10000"
+                            <input v-model.number="max" class="form-control" id="maxPrice" value="0" placeholder="10000"
                                    @input="validateMax" pattern="[1-9][0-9]*" type="text" :min="min" :max="max" style="width: 100%;" required>
                         </div>
                     <div class="form-group col-md-6">
-                      <input v-model.number="max" v-model.number="min" type="range" min="1" max="10000" style="width: 200px;">
-                      <p> <span style="color:blue"></span> $[[ min ]] - $[[ max ]] </p>
+                      <input v-model.number="max" v-model.number="min" type="range" :min="0" :max="10000" step="50" style="width: 200px;">
+                      <!-- <p> <span style="color:blue"></span> $[[ min ]] - $[[ max ]] </p> -->
                       <input v-model.number="max" class="form-control" type="number" id="max-price" hidden>
                     </div>
                   </div>
@@ -412,40 +412,47 @@
       }
       },
     },
+    filters: {
+         formatPrice(price) {
+      return Number.isInteger(price) ? price : price.toFixed(2);
+    }},
   });
   // cursor: pointer" @click="redirectToItem(product.id)"
   // <button @click="addToCart(product)" class="btn btn-success">+</button>
 App.component('product-component', {
-    props: ['product', 'min', 'max','cart','selectedRatings'],
+    props: ['product', 'min', 'max','cart','selectedRatings','formatPrice'],
     delimiters: ['[[', ']]'],
     emits: ['addToCart'],
     template: `
     <div class="col-lg-auto">
-      <div class="card" :id="product.id" :data-category="product.category_id"
-      style="margin: 1px; margin-bottom: 3px;">
-        <div class="card-body" style="cursor: pointer" @click="redirectToItemFromProduct(product.id)">
-          <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="card-img-top">
-          <h5 class="card-title"> [[ product.name ]]  </h5>
-         <span class="badge bg-danger" v-if="product.price<=90">WOW</span>
-          <span class="badge bg-primary" v-else-if="product.price>90 && product.price<=1000">Value</span>
-         <span class="badge bg-success" v-else-if="product.price>1000">TOP</span>  $[[ product.price  ]]
-         <input type="number" :data-price="product.price" hidden>
-        </div>
-        <p style="cursor: pointer" @click="redirectToItemFromProduct(product.id)">
-          <i>
-            <span v-for="i in 5" :key="i" :class="getStarClasses(i, product.rating_float)"></span>
-            <span :id="'overall-rating' + product.id + '-float'"><small>[[ product.rating_float ]] </small></span>
-          </i>
-          <span :id="'overall-rating' + product.id"> <small> ([[ product.reviewNumber ]]) </small>  </span>
-        </p>
-        <div>
-          <button ref="addToCartButton" @click="addToCart(product)" class="btn btn-secondary btn-sm">Add to Cart</button>
-      </div>
-        <div class="card-footer">
-          <small class="text-muted">Created: [[ product.date ]] by [[ product.username ]] </small>
-        </div>
-      </div>
+      <div class="card" :id="product.id" :data-category="product.category_id" style="margin: 1px; margin-bottom: 3px;">
+    <div class="card-body" style="cursor: pointer" @click="redirectToItemFromProduct(product.id)">
+      <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="card-img-top">
+      <h5 class="card-title">[[ product.name ]]</h5>
+      <span class="badge bg-danger" v-if="product.price <= 90">WOW</span>
+      <span class="badge bg-primary" v-else-if="product.price > 90 && product.price <= 1000">Value</span>
+      <span class="badge bg-success" v-else-if="product.price > 1000">TOP</span>
+      <span> <small> $ </small>[[ product.price | formatPrice  ]] </span>
+     <span v-if="Number.isInteger(product.price) === false" style="font-size: 0.7em; vertical-align: top;">
+        [[ product.price.toString().split('.')[1] ]]
+      </span>
+      <input type="number" :data-price="product.price" hidden>
     </div>
+    <p style="cursor: pointer" @click="redirectToItemFromProduct(product.id)">
+      <i>
+        <span v-for="i in 5" :key="i" :class="getStarClasses(i, product.rating_float)"></span>
+        <span :id="'overall-rating' + product.id + '-float'"><small>[[ product.rating_float ]] </small></span>
+      </i>
+      <span :id="'overall-rating' + product.id"> <small> ([[ product.reviewNumber ]]) </small> </span>
+    </p>
+    <div>
+      <button ref="addToCartButton" @click="addToCart(product)" class="btn btn-secondary btn-sm">Add to Cart</button>
+    </div>
+    <div class="card-footer">
+      <small class="text-muted">Created: [[ product.date ]] by [[ product.username ]] </small>
+    </div>
+  </div>
+</div>
     `,
   methods: {
       redirectToItemFromProduct(itemId) {
@@ -532,7 +539,7 @@ App.component('navbar-component', {
           </div>
         </div>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
-          <ul class="navbar-nav ms-auto ">
+          <ul class="navbar-nav ms-auto">
             <li class="nav-item">
               <a class="nav-link mx-2 text-uppercase" aria-current="page" href="#"></a>
             </li>
@@ -543,20 +550,17 @@ App.component('navbar-component', {
               <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_products')}}">Offers</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_items_in_cart')}}">Cart</a>
+              <a class="nav-link mx-2 text-uppercase" href="#">About</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_items_in_cart')}}">Cart</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_items_in_cart')}}">Cart</a>
+              <a class="nav-link mx-2 text-uppercase" href="#">About</a>
             </li>
             <li class="nav-item">
               <a class="nav-link mx-2 text-uppercase" href="#">About</a>
             </li>
           </ul>
-        <div v-if="cart" class="ml-auto" @mouseleave="hideCart()">
-          <button @click="displayCart = !displayCart" class="btn btn-secondary btn-sm" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
+        <div v-if="cart" @mouseleave="hideCart()" d-flex bd-highlight mb-3>
+          <button @click="displayCart = !displayCart" class="btn btn-secondary dropdown-toggle btn-sm" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
           <i class="bi bi-cart" style="font-size: 1rem;"></i> Cart <span class="badge badge-pill badge-dark">[[ cart.length ]]</span>
       </button>
           <div v-if="!displayCart"  class="list-group position-absolute">
