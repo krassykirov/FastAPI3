@@ -173,7 +173,7 @@
         <article>
           <div class="form-group">
             <label>Overall Rating</label>
-            <div class="form-check form-check-inline" v-for="rating in ratings">
+            <div class="form-check form-check-inline" v-for="rating in ratings.slice().reverse()">
               <input
                 class="form-check-input"
                 type="checkbox"
@@ -502,7 +502,7 @@ App.component('product-component', {
           } else if (index === filledStars + 1 && rating % 1 !== 0) {
             return 'fa fa-star-half-full checked';
           } else {
-            return 'fa fa-star-o';
+            return 'fa fa-star-o checked';
           }
         },
     },
