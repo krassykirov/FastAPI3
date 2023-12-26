@@ -556,8 +556,8 @@ App.component('navbar-component', {
                   <div style="cursor: pointer" @click="redirectToItemFromNavbar(item.id)">
                     <div> [[ item.name ]] - $[[ item.price ]] </div>
                   </div>
-                  <button @click="removeFromCart(item.id)" class="btn-close btn-sm ml-2"
-                  data-bs-toggle="tooltip" data-bs-placement="top" title="Remove Item"></button>
+                  <button @click="removeFromCart(item.id)" class="btn btn-light btn-sm ml-2"
+                  data-bs-toggle="tooltip" data-bs-placement="top" title="Remove Item">x</button>
                 </div>
                 <div class="ml-3 font-weight-bold"></div>
               </div>
