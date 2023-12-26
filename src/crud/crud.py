@@ -111,7 +111,7 @@ class ReviewActions:
         result = [item.rating for item in reviews if item.rating]
         if result:
             rating = sum(result) / len(result)
-            return {'rating':round(rating), 'review_number': len(result), 'rating_float': sum(result) / len(result) }
+            return {'rating':round(rating), 'review_number': len(result), 'rating_float': float(sum(result) / len(result)) }
         return {'rating':0, 'review_number': 0, 'rating_float': 0 }
 
 class ProfileActions:
