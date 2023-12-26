@@ -366,4 +366,4 @@ def get_user_in_cart_len(db: Session=Depends(get_session), user: User = Depends(
   items = ItemActions().get_items(db=db)
   items_in_cart =  [item for item in items for k, v in item.in_cart.items()
                     if k == user.username and v['in_cart'] == True]
-  return {'items_in_cart': len(items_in_cart)}
+  return {'items_in_cart': len(items_in_cart), 'items': items_in_cart,}

@@ -1,9 +1,61 @@
 <template>
-  <section class="container">
-    <my-navbar :cart="cart" />
-    <div class="row col-2" style="float: left">
+  <div
+    class="container-fluid"
+    id="app"
+    style="width: 100vw; position: sticky; margin: 0; padding: 0"
+  >
+    <nav
+      class="navbar navbar-expand-lg bg-white sticky-top navbar-light ms-auto shadow-lg"
+      style="height: 70px; margin-left: 0; margin-right: 0"
+    >
+      <MyNavbar :cart="cart" :total="total"> </MyNavbar>
+    </nav>
+    <div class="container" style="margin-top: 12px">
+      <div class="row pt-2">
+        <div class="col-md-12">
+          <input
+            class="form-control mr-sm-2"
+            id="filter"
+            onkeyup="Search()"
+            type="text"
+            placeholder="Search for products by name..."
+          />
+        </div>
+      </div>
+      <br />
+    </div>
+    <div
+      class="filter-products-container row col-2"
+      style="float: left; margin-left: 3%"
+    >
+      <!-- <div class="quick-filter ph-card"> <button class="custom-button" @click="toggleSortOrder">Sort</button></div> -->
+      <div class="quick-filter ph-card">
+        <button
+          class="custom-button"
+          data-toggle="modal"
+          data-target="#addItem"
+          href="#"
+          style="font-family: inherit"
+        >
+          Add Product
+        </button>
+        <button
+          type="button"
+          class="custom-button"
+          @click="toggleSortOrder"
+          style="align-items: center"
+        >
+          Sort Price
+          <span
+            v-if="sortOrder === 'asc'"
+            class="bi bi-sort-up-alt"
+            style="font-size: 1rem"
+          ></span>
+          <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
+        </button>
+      </div>
       <article class="filter-group">
-        <p style="font-family: inherit; text-align: center">Categories</p>
+        <!-- <p style="font-family: inherit; text-align: center"> Categories </p> -->
         <hr />
         <div class="filter-content collapse show" id="collapse_2">
           <div class="card-body">
@@ -21,8 +73,7 @@
                   :disabled="category[1] === 0"
                   @change="handleCategoryChange"
                 />
-                <span>{{ category[0] }} </span>
-                <!-- <b class="badge badge-light float-ri" v-if="category[1] !== 0">{{ category[1] }}</b> -->
+                <span>{{ category[0] }}</span>
               </label>
             </div>
           </div>
@@ -30,26 +81,17 @@
       </article>
       <article class="filter-group" style="float: left; margin-left: 0">
         <hr />
-        Sort:
-        <button
-          type="button"
-          class="btn btn-secondary btn-sm"
-          @click="toggleSortOrder"
-        >
-          <span
-            v-if="sortOrder === 'asc'"
-            class="bi bi-sort-up-alt"
-            style="font-size: 1rem"
-          ></span>
-          <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
-        </button>
+        <!-- Sort:  <button type="button" class="btn btn-secondary btn-sm" @click="toggleSortOrder">
+                 <span v-if="sortOrder === 'asc'" class="bi bi-sort-up-alt" style="font-size: 1rem"></span>
+                 <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
+               </button> -->
         <div class="filter-content collapse show" id="collapse_3">
           <div class="card-body">
             <div class="form-row">
               <div class="form-group col-md-6">
-                <label>Min price</label>
+                <label style="font-size: 1rem">Min price</label>
                 <input
-                  v-model="min"
+                  v-model.number="min"
                   class="form-control"
                   id="minPrice"
                   @input="validateMin"
@@ -62,10 +104,10 @@
                   required
                 />
               </div>
-              <div class="form-group text-right col-md-6">
-                <label>Max price</label>
+              <div class="form-group col-md-6">
+                <label style="font-size: 1rem">Max price</label>
                 <input
-                  v-model="max"
+                  v-model.number="max"
                   class="form-control"
                   id="maxPrice"
                   value="0"
@@ -74,9 +116,27 @@
                   pattern="[1-9][0-9]*"
                   type="text"
                   :min="min"
-                  max="10000"
-                  style="width: 100px"
+                  :max="max"
+                  style="width: 100%"
                   required
+                />
+              </div>
+              <div class="form-group col-md-6">
+                <input
+                  v-model.number="min"
+                  type="range"
+                  :min="0"
+                  :max="10000"
+                  step="50"
+                  style="width: 200px"
+                />
+                <!-- <p> <span style="color:blue"></span> ${{ min }} - ${{ max }} </p> -->
+                <input
+                  v-model.number="max"
+                  class="form-control"
+                  type="number"
+                  id="max-price"
+                  hidden
                 />
               </div>
             </div>
@@ -84,34 +144,149 @@
           </div>
         </div>
       </article>
-      <article>
-        <div>
-          <div class="quick-filter ph-card">
-            <label>
-              <input type="checkbox" class="custom-control-input" />
-              <button class="custom-button" @click="toggleSortOrder">
-                Sort
-              </button>
+      <article class="filter-group">
+        <div class="filter-content collapse show" id="collapse_3">
+          <label>Overall Rating</label>
+          <div
+            v-for="rating in ratings"
+            :key="rating"
+            class="form-check form-check-inline"
+          >
+            <input
+              class="form-check-input"
+              type="checkbox"
+              :id="'rating' + rating"
+              :value="rating"
+              v-model="selectedRating"
+            />
+            <label class="form-check-label" :for="'rating' + rating">
+              <span
+                v-for="i in 5"
+                :key="i"
+                class="fa fa-star"
+                :class="{ checked: i <= rating }"
+              ></span>
             </label>
           </div>
         </div>
       </article>
     </div>
-    <div class="row g-0 col-auto" id="mycard" style="justify-content: left">
-      <product-list
-        v-for="product in products"
+
+    <div
+      class="row g-0 col-auto"
+      id="mycard"
+      style="justify-content: left; margin-left: 50px; margin-right: 3%"
+    >
+      <!-- <transition-group name="fade" tag="div" class="row g-0 col-auto" id="mycard" style="justify-content: left; margin: 20px;"> -->
+      <ProductList
+        v-for="product in filteredProducts"
         :key="product.id"
+        :cart="cart"
+        class="row g-0 col-auto"
         :product="product"
         :min="min"
         :max="max"
-        :cart="cart"
-      />
+        style="justify-content: left"
+      >
+      </ProductList>
+      <!-- </transition-group> -->
     </div>
-  </section>
+    <div
+      class="modal fade"
+      id="addItem"
+      role="dialog"
+      aria-labelledby="addItemlLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addItemLabel">Add Product</h5>
+          </div>
+          <div class="modal-body">
+            <form
+              enctype="multipart/form-data"
+              data-toggle="validator"
+              id="createItem"
+            >
+              <p id="error" style="text-align: left"></p>
+              <div class="form-group">
+                <label for="name" class="col-form-label">Name:</label>
+                <input
+                  type="text"
+                  name="name"
+                  id="item-name"
+                  placeholder="Item Name"
+                  maxlength="15"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="price" class="col-form-label">Price: </label>
+                <input
+                  type="number"
+                  step="any"
+                  name="price"
+                  id="item-price"
+                  placeholder="99.99"
+                  max="10000"
+                  min="1"
+                  required
+                />
+              </div>
+              <div class="form-group" form-group-file>
+                <label for="file" class="col-form-label">Upload Photo:</label>
+                <input
+                  type="file"
+                  id="file"
+                  name="file"
+                  class="form-control"
+                  data-filesize="1000000"
+                  data-filesize-error="File must be smaller then 1MB"
+                  accept="image/*"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="Category" class="col-form-label">Category:</label>
+                <select name="Category">
+                  <option value="Finance">Finance</option>
+                  <option value="IT">IT</option>
+                  <option value="TV">TV</option>
+                  <option value="Services">Services</option>
+                  <option value="Miscellaneous">Miscellaneous</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="Description" class="col-form-label"
+                  >Description:</label
+                >
+                <textarea
+                  name="Description"
+                  id="add-description"
+                  rows="4"
+                  cols="50"
+                  maxlength="250"
+                ></textarea>
+              </div>
+              <button id="submit-button" class="btn btn-primary">Save</button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import $ from 'jquery'
+// import $ from 'jquery'
 import ProductList from '@/components/ProductList.vue'
 import MyNavbar from '@/components/MyNavbar.vue'
 export default {
@@ -125,7 +300,8 @@ export default {
       cart: [],
       sortOrder: 'asc',
       selectedCategories: [],
-      showPopoverContent: false
+      selectedRating: [],
+      ratings: [1, 2, 3, 4, 5]
     }
   },
   components: {
@@ -133,13 +309,33 @@ export default {
     ProductList
   },
   async beforeMount() {
+    await this.readFromCartVue()
     await this.getProducts()
-    console.log('Products', this.products)
     await this.fetchCategories()
-    await this.readFromCart()
     this.products.forEach(product => {
       this.getItemRating(product.id)
     })
+  },
+  computed: {
+    total() {
+      const sum = this.cart.reduce(
+        (total, item) => total + Number(item.price),
+        0
+      )
+      return sum.toFixed(2)
+    },
+    filteredProducts() {
+      return this.products.filter(item => {
+        const priceCondition = item.price >= this.min && item.price <= this.max
+        const categoryCondition =
+          this.selectedCategories.length === 0 ||
+          this.selectedCategories.includes(String(item.category_id))
+        const ratingCondition =
+          this.selectedRating.length === 0 ||
+          this.selectedRating.includes(Math.ceil(item.rating_float))
+        return priceCondition && categoryCondition && ratingCondition
+      })
+    }
   },
   methods: {
     async getProducts() {
@@ -188,33 +384,15 @@ export default {
         if (product) {
           product.rating = data.rating
           product.reviewNumber = data.review_number
-          document.getElementById(
-            'overall-rating' + product.id + '-float'
-          ).innerText = ' ' + parseFloat(data.rating_float).toFixed(2)
+          product.rating_float = parseFloat(data.rating_float).toFixed(2)
         }
       } catch (error) {
         console.log('error', error)
       }
     },
-    filterByCategory() {
-      var selectedCategories = this.getSelectedCategories()
-      var cards = document.querySelectorAll('.card')
-      cards.forEach(function (card) {
-        var category = card.getAttribute('data-category')
-        var displayCard =
-          selectedCategories.length === 0 ||
-          selectedCategories.includes(category)
-        if (displayCard) {
-          $(card).slideDown(300)
-        } else {
-          $(card).slideUp(300)
-        }
-      })
-    },
     handleCategoryChange() {
       this.selectedCategories = this.getSelectedCategories()
       console.log('selectedCategories', this.selectedCategories)
-      this.filterByCategory()
     },
     getSelectedCategories() {
       var selectedCategories = []
@@ -237,37 +415,10 @@ export default {
         this.products.sort((a, b) => b.price - a.price)
       }
     },
-    filterByPrice() {
-      // var selectedCategories = this.getSelectedCategories()
-      var minPrice = parseFloat(document.getElementById('minPrice').value) || 0
-      var maxPrice =
-        parseFloat(document.getElementById('maxPrice').value) || 10000
-      var cards = document.getElementsByClassName('card')
-      for (var i = 0; i < cards.length; i++) {
-        var categoryElement = cards[i].getAttribute('data-category')
-        var category = categoryElement ? categoryElement.toUpperCase() : null
-        var priceElement = cards[i].querySelector('[data-price]')
-        var price = priceElement
-          ? parseFloat(priceElement.getAttribute('data-price'))
-          : 0
-        var isCategoryMatch =
-          !this.selectedCategories ||
-          this.selectedCategories.length === 0 ||
-          this.selectedCategories.includes(category)
-        var isPriceMatch = price >= minPrice && price <= maxPrice
-        var displayCard = isCategoryMatch && isPriceMatch
-        if (displayCard) {
-          cards[i].style.display = ''
-        } else {
-          cards[i].style.display = 'none'
-        }
-      }
-    },
     validateMin() {
       const productMinPrice = Math.min(
         ...this.products.map(product => product.price)
       )
-      this.min = this.min.replace(/^0+/, '')
       if (this.min === '' || isNaN(this.min)) {
         this.min = productMinPrice
       }
@@ -279,7 +430,6 @@ export default {
       const productMaxPrice = Math.max(
         ...this.products.map(product => product.price)
       )
-      this.max = this.max.replace(/^0+/, '')
       if (this.max === '' || isNaN(this.max)) {
         this.max = productMaxPrice
       }
@@ -291,8 +441,8 @@ export default {
         this.max = this.min
       }
     },
-    async readFromCart() {
-      fetch('http://127.0.0.1:8000/api/items/items-in-cart', {
+    async readFromCartVue() {
+      fetch('http://127.0.0.1:8000/user_items_in_cart', {
         method: 'get',
         headers: {
           'Content-Type': 'application/json'
@@ -305,18 +455,32 @@ export default {
           return response.json()
         })
         .then(data => {
-          this.cart = data
+          console.log('data.items', data.items)
+          this.cart = data.items
         })
         .catch(error => {
           console.error('error', error)
         })
     },
-    redirectToItem(itemId) {
-      window.location.href = 'http://127.0.0.1:8000/items/' + itemId
-    }
+    // redirectToItem(itemId) {
+    //   window.location.href = 'items/' + itemId
+    // },
     // redirectToCart(itemId) {
     //   window.location.href = 'items-in-cart/'
-    // }
+    // },
+    handleRatingChange(rating) {
+      const index = this.selectedRating.indexOf(rating)
+      if (index === -1) {
+        this.selectedRating.push(rating)
+      } else {
+        this.selectedRating.splice(index, 1)
+      }
+    }
+  },
+  filters: {
+    formatPrice(price) {
+      return Number.isInteger(price) ? price : price.toFixed(2)
+    }
   }
 }
 </script>
