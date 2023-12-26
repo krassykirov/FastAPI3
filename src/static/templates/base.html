@@ -360,7 +360,7 @@ const App = Vue.createApp({
       validateMax() {
         const productMaxPrice = Math.max(...this.products.map(product => product.price));
         this.max = String(this.max).replace(/^0+/, '');
-        if (this.max <= this.min) {
+        if (this.max < this.min) {
             this.max = this.min;
         }
         if (this.max === '' || isNaN(this.max)) {
@@ -549,22 +549,21 @@ App.component('navbar-component', {
           <i class="bi bi-cart" style="font-size: 1rem;"></i> Cart <span class="badge badge-pill badge-primary"> [[ cart.length ]]</span>
       </button>
           <div v-if="!displayCart"  class="list-group position-absolute">
-              <div v-for="(item, index) in cart" :key="index" class="list-group-item d-flex justify-content-between">
-                <div class="d-flex align-items-center">
-                  <img :src="'static/img/' + item.username + '/' + item.name + '/' + item.image" class="mr-2"
-                     style="width: 50px; height: 60px; object-fit: cover; border-radius: 5px;">
-                  <div style="cursor: pointer" @click="redirectToItemFromNavbar(item.id)">
-                    <div> [[ item.name ]] - $[[ item.price ]] </div>
-                  </div>
-                  <button @click="removeFromCart(item.id)" class="btn btn-light btn-sm ml-2"
-                  data-bs-toggle="tooltip" data-bs-placement="top" title="Remove Item">x</button>
-                </div>
-                <div class="ml-3 font-weight-bold"></div>
+            <div v-for="(item, index) in cart" :key="index" class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <img :src="'static/img/' + item.username + '/' + item.name + '/' + item.image" class="mr-2"
+                  style="width: 50px; height: 60px; object-fit: cover; border-radius: 5px;">
+              <div style="cursor: pointer" @click="redirectToItemFromNavbar(item.id)">
+                <div> [[ item.name ]] - $[[ item.price ]] </div>
               </div>
-              <button id="total" class="btn btn-sm btn-light" style="pointer-events: none; opacity: 1; margin-bottom: 1px;">
-                Total: [[ cart.length ]] products - <b> $[[ total ]] </b>
-                </button>
-              <button v-if="cart.length > 0" @click="redirectToCart" class="btn btn-sm btn-primary"> See All </button>
+            </div>
+            <button @click="removeFromCart(item.id)" class="btn btn-light btn-sm ml-2"
+                    data-bs-toggle="tooltip" data-bs-placement="top" title="Remove Item">x</button>
+          </div>
+          <button id="total" class="btn btn-sm btn-light" style="pointer-events: none; opacity: 1; margin-bottom: 1px;">
+            Total: [[ cart.length ]] products - <b> $[[ total ]] </b>
+          </button>
+          <button v-if="cart.length > 0" @click="redirectToCart" class="btn btn-sm btn-primary"> Go to Cart </button>
             </div>
         </div>
           <div class="ml-auto"></div>
