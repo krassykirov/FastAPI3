@@ -96,16 +96,16 @@
     </navbar-component>
   </nav>
   {% if current_user %}
-     <div class="container" style="margin-top: 12px;">
+     <!-- <div class="container" style="margin-top: 12px;">
          <div class="row pt-2">
            <div class="col-md-12">
              <input class="form-control mr-sm-2" id="filter" onkeyup="Search()" type="text" placeholder="Search for products by name...">
            </div>
          </div>
        <br/>
-     </div>
+     </div> -->
 
-     <div class="filter-products-container row col-2" style="float: left; margin-left: 3%;">
+     <div class="filter-products-container row col-2" style="float: left; margin-left: 3%; margin-top: 30px;">
       <!-- <div class="quick-filter ph-card"> <button class="custom-button" @click="toggleSortOrder">Sort</button></div> -->
       <div class="quick-filter ph-card"> <button class="custom-button" data-toggle="modal" data-target="#addItem" href="#"
         style="font-family: inherit;">Add Product </button>
@@ -116,7 +116,6 @@
       </div>
 
       <article class="filter-group">
-          <!-- <p style="font-family: inherit; text-align: center"> Categories </p> -->
           <hr>
           <div class="filter-content collapse show" id="collapse_2">
             <div class="card-body">
@@ -158,16 +157,17 @@
                                    @input="validateMax" pattern="[1-9][0-9]*" type="text" :min="min" :max="max" style="width: 100%;" required>
                         </div>
                     <div class="form-group col-md-6">
-                      <input v-model.number="max" v-model.number="min" type="range" :min="0" :max="10000" step="50" style="width: 200px;">
+                      <input v-model.number="max" v-model.number="min" type="range" :min="0" :max="10000" step="10" style="width: 200px;" @input="validateMax">
+                      <!-- <input v-model.number="min" v-model.number="max" type="range" :min="0" :max="10000" style="width: 200px;" @input="validateMin">   -->
                       <!-- <p> <span style="color:blue"></span> $[[ min ]] - $[[ max ]] </p> -->
-                      <input v-model.number="max" class="form-control" type="number" id="max-price" hidden>
+                      <!-- <input v-model.number="max" class="form-control" type="number" id="max-price" hidden> -->
                     </div>
                   </div>
                     <!-- <button class="btn btn-block btn-primary" @click="filterByPrice">Apply</button> -->
                 </div>
             </div>
         </article>
-        <article class="filter-group">
+        <article class="filter-group" >
           <div class="filter-content collapse show" id="collapse_3">
             <label>Overall Rating</label>
             <div class="form-check form-check-inline" v-for="rating in ratings.slice().reverse()">
@@ -186,7 +186,7 @@
         </article>
      </div>
 
-      <div class="row g-0 col-auto" id="mycard" style="justify-content: left; margin-left: 50px; margin-right: 3%;">
+      <div class="row g-0 col-auto" id="mycard" style="justify-content: left; margin-left: 50px; margin-right: 3%; margin-top: 30px;">
         <!-- <transition-group name="fade" tag="div" class="row g-0 col-auto" id="mycard" style="justify-content: left; margin: 20px;"> -->
           <product-component v-for="product in filteredProducts" :key="product.id" :cart="cart" class="row g-0 col-auto"
                 :product="product" :min="min" :max="max" style="justify-content: left;">
@@ -326,7 +326,6 @@ const App = Vue.createApp({
       },
       handleCategoryChange() {
         this.selectedCategories = this.getSelectedCategories();
-        console.log('selectedCategories', this.selectedCategories)
       },
       getSelectedCategories() {
           var selectedCategories = [];
@@ -339,7 +338,6 @@ const App = Vue.createApp({
         },
       toggleSortOrder() {
         this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
-        console.log('Sort Order:', this.sortOrder);
         this.sortProducts();
       },
       sortProducts() {
@@ -350,8 +348,8 @@ const App = Vue.createApp({
         }
       },
       validateMin() {
-          const productMinPrice = Math.min(...this.products.map(product => product.price));
-          this.min = this.min.replace(/^0+/, '');
+        const productMinPrice = Math.min(...this.products.map(product => product.price));
+        this.min = String(this.min).replace(/^0+/, '');
           if (this.min === '' || isNaN(this.min)) {
                 this.min = productMinPrice;
             }
@@ -361,16 +359,15 @@ const App = Vue.createApp({
          },
       validateMax() {
         const productMaxPrice = Math.max(...this.products.map(product => product.price));
-        this.max = this.max.replace(/^0+/, '');
+        this.max = String(this.max).replace(/^0+/, '');
+        if (this.max <= this.min) {
+            this.max = this.min;
+        }
         if (this.max === '' || isNaN(this.max)) {
           this.max = productMaxPrice;
           }
-  
         if (this.max > productMaxPrice) {
           this.max = productMaxPrice;
-        }
-        if (this.max < this.min) {
-            this.max = this.min;
         }
       },
       async readFromCartVue(){
@@ -544,6 +541,9 @@ App.component('navbar-component', {
               <a class="nav-link mx-2 text-uppercase" href="#">About</a>
             </li>
           </ul>
+          <form class="d-flex">
+            <input class="form-control mr-sm-2" id="filter" v-on:keyup="Search()" type="text" placeholder="Search products">
+          </form>
         <div v-if="cart" @mouseleave="hideCart()" d-flex bd-highlight mb-3>
           <button @click="displayCart = !displayCart" class="btn btn-light dropdown-toggle btn-sm" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
           <i class="bi bi-cart" style="font-size: 1rem;"></i> Cart <span class="badge badge-pill badge-primary"> [[ cart.length ]]</span>
@@ -615,7 +615,6 @@ App.component('navbar-component', {
         .then(data => {
           const index = this.cart.findIndex(item => item.id === itemId);
 
-            // If the item is found, remove it from the array
             if (index !== -1) {
                 this.cart.splice(index, 1);
             }
@@ -627,15 +626,7 @@ App.component('navbar-component', {
     hideCart() {
             this.displayCart = true;
         },
-    }
-  });
-
-App.mount('#app');
-
-</script>
-
-<script>
-  function Search() {
+     Search() {
       var input, filter, cards, cardContainer, h5, title, i;
       input = document.getElementById("filter");
       filter = input.value.toUpperCase();
@@ -650,5 +641,14 @@ App.mount('#app');
           }
       }
   }
+    }
+  });
+
+App.mount('#app');
+
+</script>
+
+<script>
+
   </script>
 </html>
