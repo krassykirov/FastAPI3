@@ -360,7 +360,7 @@ async def get_items_in_cart(request: Request, db: Session=Depends(get_session), 
     items_in_cart =  [item for item in items for k, v in item.in_cart.items()
                       if k == user.username and v['in_cart'] == True]
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
-    return templates.TemplateResponse("cart.html", {"request":request,
+    return templates.TemplateResponse("cart.html",  {"request":request,
                                                      'items': items_in_cart,
                                                      'current_user': user.username,
                                                      'profile': profile})

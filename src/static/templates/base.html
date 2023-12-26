@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-  <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -104,9 +104,7 @@
          </div>
        <br/>
      </div> -->
-
      <div class="filter-products-container row col-2" style="float: left; margin-left: 3%; margin-top: 30px;">
-      <!-- <div class="quick-filter ph-card"> <button class="custom-button" @click="toggleSortOrder">Sort</button></div> -->
       <div class="quick-filter ph-card"> <button class="custom-button" data-toggle="modal" data-target="#addItem" href="#"
         style="font-family: inherit;">Add Product </button>
         <button type="button" class="custom-button" @click="toggleSortOrder" style="align-items: center;">Sort Price
@@ -115,7 +113,7 @@
         </button>
       </div>
 
-      <article class="filter-group">
+        <article class="filter-group">
           <hr>
           <div class="filter-content collapse show" id="collapse_2">
             <div class="card-body">
@@ -139,32 +137,28 @@
         </article>
         <article class="filter-group" style="float: left; margin-left: 0;">
           <hr>
-               <!-- Sort:  <button type="button" class="btn btn-secondary btn-sm" @click="toggleSortOrder">
-                 <span v-if="sortOrder === 'asc'" class="bi bi-sort-up-alt" style="font-size: 1rem"></span>
-                 <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
-               </button> -->
-               <div class="filter-content collapse show" id="collapse_3">
-                <div class="card-body">
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label  style="font-size: 1rem">Min price</label>
-                            <input v-model.number="min" class="form-control" id="minPrice" @input="validateMin" placeholder="0"
-                                   min="0" :max="max" value="0" pattern="[1-9][0-9]*" type="text" required>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label  style="font-size: 1rem">Max price</label>
-                            <input v-model.number="max" class="form-control" id="maxPrice" value="0" placeholder="10000"
-                                   @input="validateMax" pattern="[1-9][0-9]*" type="text" :min="min" :max="max" style="width: 100%;" required>
-                        </div>
+            <div class="filter-content collapse show" id="collapse_3">
+            <div class="card-body">
+                <div class="form-row">
                     <div class="form-group col-md-6">
-                      <input v-model.number="max" v-model.number="min" type="range" :min="0" :max="10000" step="10" style="width: 200px;" @input="validateMax">
-                      <!-- <input v-model.number="min" v-model.number="max" type="range" :min="0" :max="10000" style="width: 200px;" @input="validateMin">   -->
-                      <!-- <p> <span style="color:blue"></span> $[[ min ]] - $[[ max ]] </p> -->
-                      <!-- <input v-model.number="max" class="form-control" type="number" id="max-price" hidden> -->
+                        <label  style="font-size: 1rem">Min price</label>
+                        <input v-model.number="min" class="form-control" id="minPrice" @input="validateMin" placeholder="0"
+                                min="0" :max="max" value="0" pattern="[1-9][0-9]*" type="text" required>
                     </div>
-                  </div>
-                    <!-- <button class="btn btn-block btn-primary" @click="filterByPrice">Apply</button> -->
+                    <div class="form-group col-md-6">
+                        <label  style="font-size: 1rem">Max price</label>
+                        <input v-model.number="max" class="form-control" id="maxPrice" value="0" placeholder="10000"
+                                @input="validateMax" pattern="[1-9][0-9]*" type="text" :min="min" :max="max" style="width: 100%;" required>
+                    </div>
+                <div class="form-group col-md-6">
+                  <input v-model.number="max" v-model.number="min" type="range" :min="0" :max="10000" step="10" style="width: 200px;" @input="validateMax">
+                  <!-- <input v-model.number="min" v-model.number="max" type="range" :min="0" :max="10000" style="width: 200px;" @input="validateMin">   -->
+                  <!-- <p> <span style="color:blue"></span> $[[ min ]] - $[[ max ]] </p> -->
+                  <!-- <input v-model.number="max" class="form-control" type="number" id="max-price" hidden> -->
                 </div>
+              </div>
+                <!-- <button class="btn btn-block btn-primary" @click="filterByPrice">Apply</button> -->
+            </div>
             </div>
         </article>
         <article class="filter-group" >
@@ -532,7 +526,7 @@ App.component('navbar-component', {
               <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_products')}}">Offers</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" href="#">Products</a>
+              <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_category')}}">Categories</a>
             </li>
             <li class="nav-item">
               <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_items_in_cart')}}">Cart</a> 
@@ -557,8 +551,7 @@ App.component('navbar-component', {
                 <div> [[ item.name ]] - $[[ item.price ]] </div>
               </div>
             </div>
-            <button @click="removeFromCart(item.id)" class="btn btn-light btn-sm ml-2"
-                    data-bs-toggle="tooltip" data-bs-placement="top" title="Remove Item">x</button>
+            <button @click="removeFromCart(item.id)" class="btn btn-light btn-sm ml-2" data-bs-placement="top">x</button>
           </div>
           <button id="total" class="btn btn-sm btn-light" style="pointer-events: none; opacity: 1; margin-bottom: 1px;">
             Total: [[ cart.length ]] products - <b> $[[ total ]] </b>
