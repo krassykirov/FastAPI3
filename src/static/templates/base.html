@@ -380,8 +380,8 @@ App.component('product-component', {
     template: `
     <div class="col-lg-auto">
         <div class="card" :id="product.id" :data-category="product.category_id" style="margin: 1px; margin-bottom: 3px;">
-          <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="card-img-top">
           <div class="card-body" style="cursor: pointer; padding:0" @click="redirectToItemFromProduct(product.id)">
+            <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="card-img-top">
             <h5 class="card-title">[[ product.name ]]</h5>
             <p style="cursor: pointer">
               <i>
@@ -405,6 +405,9 @@ App.component('product-component', {
               <i class="bi bi-cart" style="font-size: 0.9rem;"> Add to Cart</i> 
             </button>
           </div>
+          <div class="card-footer">
+            <small class="text-muted">Added: [[ product.date.slice(0, 10)  ]] </small>
+         </div>
         </div>
       </div>
     `,
@@ -504,7 +507,7 @@ App.component('navbar-component', {
             </li>
           </ul>
           <form class="d-flex">
-            <input class="form-control mr-sm-2" id="filter" v-on:keyup="Search()" type="text" placeholder="Search products">
+            <input class="form-control mr-sm-2" id="filter" v-on:keyup="Search()" type="text" placeholder="Search in offers">
           </form>
         <div v-if="cart" @mouseleave="hideCart()" @mouseenter="showCart()" d-flex bd-highlight mb-3>
           <button @click="displayCart = !displayCart" class="btn btn-light dropdown-toggle btn-sm" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
@@ -586,10 +589,10 @@ App.component('navbar-component', {
     hideCart() {
       setTimeout(() => {
         this.displayCart = true;
-      }, 600);
+            }, 700);
         },
     showCart() {
-            this.displayCart = false;
+        this.displayCart = false;
         },
      Search() {
       var input, filter, cards, cardContainer, h5, title, i;
