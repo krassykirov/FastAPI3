@@ -107,29 +107,6 @@ const App = Vue.createApp({
       this.products.sort((a, b) => b.price - a.price);
       }
     },
-    validateMin() {
-      const productMinPrice = Math.min(...this.products.map(product => product.price));
-      this.min = String(this.min).replace(/^0+/, '');
-        if (this.min === '' || isNaN(this.min)) {
-              this.min = productMinPrice;
-          }
-          if (this.min > this.max) {
-            this.min = this.max;
-          }
-       },
-    validateMax() {
-      const productMaxPrice = Math.max(...this.products.map(product => product.price));
-      this.max = String(this.max).replace(/^0+/, '');
-      if (this.max === '' || isNaN(this.max)) {
-        this.max = productMaxPrice;
-        }
-      if (this.max < this.min) {
-          this.max = this.min;
-      }
-      if (this.max > productMaxPrice) {
-        this.max = productMaxPrice;
-      }
-    },
     async readFromCartVue(){
       fetch('/user_items_in_cart', {
       method: 'get',
@@ -166,55 +143,52 @@ const App = Vue.createApp({
     }
     },
     updateRange() {
+      const productMinPrice = Math.min(...this.products.map(product => product.price));
+      const productMaxPrice = Math.max(...this.products.map(product => product.price));
       // Ensure min is not greater than max
-      if (this.min > this.max) {
-        this.min = this.max;
+      if (this.min > this.max || this.min === '' || isNaN(this.min)) {
+        this.min = productMinPrice;
       }
-    
       // Ensure max is not less than min
-      if (this.max < this.min) {
-        this.max = this.min;
+      if (this.max < this.min || this.max === '' || isNaN(this.max) ) {
+        this.max = productMaxPrice;
       }
-    
       // Update range inputs based on min and max values
       const rangeInput = document.querySelector(".min-range");
       if (rangeInput) {
         rangeInput.value = this.min;
       }
-    
       const rangeInputMax = document.querySelector(".max-range");
       if (rangeInputMax) {
         rangeInputMax.value = this.max;
       }
     },
-    
     updateInputs() {
       // Parse min and max values of the range inputs
       let minVal = parseInt(document.querySelector(".min-range").value);
       let maxVal = parseInt(document.querySelector(".max-range").value);
-    
+
       // Ensure min is not greater than max
-      if (minVal > maxVal) {
+      if (minVal >= maxVal) {
         minVal = maxVal;
       }
-    
+ 
       // Ensure max is not less than min
-      if (maxVal < minVal) {
+      if (maxVal <= minVal) {
         maxVal = minVal;
       }
-    
       // Update min and max values based on the range inputs
       this.min = minVal;
       this.max = maxVal;
-    
+
       // Update range slider positions
       const rangeInput = document.querySelector(".min-range");
       const rangeInputMax = document.querySelector(".max-range");
-      
+
       if (rangeInput) {
         rangeInput.value = this.min;
       }
-    
+
       if (rangeInputMax) {
         rangeInputMax.value = this.max;
       }
