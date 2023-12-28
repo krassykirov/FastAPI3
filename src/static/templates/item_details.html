@@ -1,19 +1,11 @@
-<!DOCTYPE html>
-<head>
-  <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
-<script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="../static/templates/js/main.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-<link rel="stylesheet" href="../static/css/main.css">
-</head>
+{% extends "base_old.html" %}
+{% set include_block_app_js  = true %}
+
+{% block style %}
 <style>
+  /* .modal-backdrop {
+  z-index: -1;
+} */
   .card-img-top {
     width: 100%;
     height: 16vw;
@@ -109,60 +101,11 @@
   .tab-pane {
     margin-left: 7%;
   }
-  </style>
-    <nav class="navbar navbar-expand-lg bg-white sticky-top navbar-light p-3 shadow-lg" style="height: 70px; margin-left: 0; margin-right: 0; width: 100%;">
-      <div class="container-fluid" style="padding: 0; width: 100%; font-size: 14px;">
-        <a class="navbar-brand" href="#" style="font-size: 14px;">
-          <i class="fa fa-home"></i> <strong>KRASSY SHOP</strong>
-        </a>
-        <div class="mx-auto my-3 d-lg-none d-sm-block d-xs-block">
-          <div class="input-group">
-            <span class="border-warning input-group-text bg-warning text-white">
-              <i class="fa-solid fa-magnifying-glass"></i>
-            </span>
-            <input type="text" class="form-control border-warning" style="color: #7a7a7a">
-            <button class="btn btn-warning text-white">Search</button>
-          </div>
-        </div>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-          <ul class="navbar-nav ms-auto ">
-            <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" aria-current="page" href="#">Offers</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_products')}}">Products</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" href="#">Categories</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" href="#">About</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" href="#">
-                <i class="bi bi-cart"></i> Cart <span id="cart-len" class="badge badge-primary">{{items|length}}</span></a>
-            </li>
-          </ul>
+</style>
+{% endblock %}
 
-          <div class="ml-auto"></div>
-          {% if current_user %}
-          <form class="form-inline my-2 my-lg-0" style="margin-right: 30px;">
-            <div class="dropdown" style="font-family: Raleway; font-size: 16px;">
-              {% if profile %}
-              {{ current_user }} <img src="/static/img/{{ current_user }}/profile/{{ profile.avatar }}" class="avatar" alt="{{ current_user}}">
-              {% else %}
-              {{ current_user }} <img src="/static/img/img_avatar.png" class="avatar" alt="{{ current_user}}">
-              {% endif %}
-              <div class="dropdown-content">
-                <a class="nav-link mx-2 text-uppercase" href="{{ url_for('get_user_profile') }}"> Profile</a>
-                <a class="nav-link mx-2 text-uppercase" href="{{ url_for('logout') }}"> Logout</a>
-              </div>
-            </div>
-          </form>
-          {% endif %}
-        </div>
-      </div>
-    </nav>
+
+{% block html_read %}
 <div class="row" style="margin-top: 20px;">
     <div class="card-group col-12" id="mycard" style="margin-left: 3%;">
       <div class="col-lg-auto" style="margin-left: 10%;">
@@ -189,7 +132,6 @@
         <span id="overall-rating"> No rating Yet </span></i>
       </p>
         <div>
-             <a class="btn btn-info" id="add-to-cart" data-toggle="modal" data-target="#addToCartMessage"> Add to Cart</a>
             {% if current_user == item.username  %}
           <a class="btn btn-secondary" data-toggle="modal" data-target="#EditItem" id="myModal" style="margin: 15px; text-align:center; display:block;">Update</a>
           <a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" id="myModal" style="margin:15px; text-align:center; display:block;">Delete</a>
@@ -226,7 +168,9 @@
   </div>
     </div>
 </div>
-  <div class="modal fade" id="EditItem" tabindex="-1" role="dialog" aria-labelledby="EditItemlLabel" aria-hidden="true">
+
+<!-- Modal -->
+<div class="modal fade" id="EditItem" tabindex="-1" role="dialog" aria-labelledby="EditItemlLabel" aria-hidden="true" data-backdrop="false">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -256,12 +200,12 @@
               <textarea  name="Description" id="id-description" rows="4" cols="50" maxlength="250"></textarea>
             </div>
               <hr>
-              <button type="submit" class="btn btn-primary" id="edit-button">Save</button>
+              <button type="submit" class="btn btn-primary" id="edit-button" onclick="editItem()">Save</button>
               <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close">Close</button>
           </div>
         </div>
       </div>
-  </div>
+</div>
 <br>
 <nav>
   <ul class="nav nav-tabs" id="myTab" role="tablist" style="margin-left: 27%;">
@@ -294,7 +238,7 @@
           <div class="pull-left"> <button class="btn btn-secondary btn-sm" id="RatingCancel" onclick="RatingHide()">Cancel</button> </div>
           </div>
           <div class="col-6">
-          <div class="pull-right"> <button class="btn btn-success send btn-sm" id="SendRaiting"> Submit </button> </div>
+          <div class="pull-right"> <button class="btn btn-success send btn-sm" id="SendRaiting" onclick="addReview()"> Submit </button> </div>
           </div>
           </div>
           </div>
@@ -361,171 +305,143 @@
   </div>
 </nav>
 
-<!-- Modal -->
-<div class="modal fade" id="addToCartMessage" tabindex="-1" role="dialog" aria-labelledby="addToCartMessageTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">This product has been added to your cart.</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="card-body">
-          {% if  'no-image.png' == item.image %}
-          <img class="card-img-top" src="/static/img/{{ item.image }}">
-          {% else %}
-          <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
-          {% endif %}
-        <h5 class="card-title">{{item.name}} </h5>
-        <h5 class="price" id="item-details">Price: ${{ '%0.2f'|format(item.price|float)  }}</h5>
-        <p class="category" id="category"> Category: {{ item.category.name.split('.')[-1]  }}</p>
-    </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
 
+{% endblock %}
 
-
+{% block javascript %}
 <script>
 
-function getItemRating(){
-  let id = $("#id").val()
-  $.ajax({
-        url: "/api/reviews/item/rating",
-        method: "get",
-        headers: { "Content-Type": "application/json",},
-        data:  { "id": `${id}`
-        },
-        success: data => {
-          for (var i=1; i<=5; i++ ){
-            var star = document.getElementById('star' + i )
-            if ( i <= data.rating ){
-                star.classList.add('checked');
-            }
-            else { star.classList.remove('checked')}
-          }
-        document.getElementById('overall-rating').innerText = parseFloat(data.rating_float).toFixed(2) + ' based on (' + data.review_number +' reviews)'
-        },
-        error: (error) => {
-            console.log('error:', error);
-        }
-      });
-   }
-
-function UpdateStarRatings(review_id, rating){
-          for (var i=1; i<=5; i++ ){
-            var star = document.getElementById('star'+ review_id + i)
-            if ( i <= rating ){
-                star.classList.add('checked');
-            }
-            else {
-              star.classList.remove('checked');
-            }
-          }
-   }
-
-function setRveiewsRating(){
-  let id = $("#id").val()
-  $.ajax({
-        url: "/api/reviews",
-        method: "get",
-        headers: { "Content-Type": "application/json",},
-        data:  { "item_id": `${id}`
-        },
-        success: data => {
-          data.forEach(review => {
-            UpdateStarRatings(review.id, review.rating)
-          });
-        },
-        error: (error) => {
-            console.log('error:', error);
-        }
-      });
-   }
-
-$(document).ready(function() {
-  $('#deleteForm').submit(function(e) {
-    e.preventDefault();
-    let id = $("#delete-id").val()
+  function getItemRating(){
+    let id = $("#id").val()
     $.ajax({
-        url: "/items/" + id,
-        type: "POST",
-        headers: {"Content-Type": "application/json",},
-        data:  { "id": `${id}`},
-        success: function(data){
-          window.location.href = "/products"
-        },
-        error: function (xhr) {
-            if (xhr.status === 403) {
-               $('#errorMeassge').text('User is not allowed to delete this item!')
+          url: "/api/reviews/item/rating",
+          method: "get",
+          headers: { "Content-Type": "application/json",},
+          data:  { "id": `${id}`
+          },
+          success: data => {
+            for (var i=1; i<=5; i++ ){
+              var star = document.getElementById('star' + i )
+              if ( i <= data.rating ){
+                  star.classList.add('checked');
+              }
+              else { star.classList.remove('checked')}
             }
-        }
-      });
-   }
-)});
-
-$(document).ready(function() {
-    getItemRating()
-    setRveiewsRating()
-});
-
-function ShowDescription() {
-  var x = document.getElementById("description-div");
-  if (x.style.display === "none") {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
-}
-
-function ShowReview(){
-  var x  = document.getElementById('RatingCard')
-  if (x.style.display === "none") {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
-}
-
-$(document).ready(function(){
-  var hiddenCardsOnLoad = $(".card:hidden").length;
-  if (hiddenCardsOnLoad === 0) {
-    $("#loadMore").hide();
-  }
-  // Initially show the first 4 cards
-  $("#home-tab-pane > .card.group1").slice(0, 2).show();
-
-  // Use event delegation to handle click on dynamically added elements
-  $("#home-tab-pane").on("click", "#loadMore", function(e){
-    e.preventDefault();
-
-    // Check if the button is in "Show Less" state
-    if ($("#loadMore").text() === "Show Less") {
-      // Hide 2 cards
-      $(".card.group1:visible").slice(0, 2).hide()
-      $("#loadMore").text("Load More"); // Change button text to "Load More"
-    } else {
-      // Show the next set of cards
-      $(".card.group1:hidden").slice(0, 4).slideDown();
-      $("#loadMore").text("Show Less"); // Change button text to "Show Less"
-    }
+          document.getElementById('overall-rating').innerText = parseFloat(data.rating_float).toFixed(2) + ' based on (' + data.review_number +' reviews)'
+          },
+          error: (error) => {
+              console.log('error:', error);
+          }
+        });
+     }
+  
+  function UpdateStarRatings(review_id, rating){
+            for (var i=1; i<=5; i++ ){
+              var star = document.getElementById('star'+ review_id + i)
+              if ( i <= rating ){
+                  star.classList.add('checked');
+              }
+              else {
+                star.classList.remove('checked');
+              }
+            }
+     }
+  
+  function setRveiewsRating(){
+    let id = $("#id").val()
+    $.ajax({
+          url: "/api/reviews",
+          method: "get",
+          headers: { "Content-Type": "application/json",},
+          data:  { "item_id": `${id}`
+          },
+          success: data => {
+            data.forEach(review => {
+              UpdateStarRatings(review.id, review.rating)
+            });
+          },
+          error: (error) => {
+              console.log('error:', error);
+          }
+        });
+     }
+  
+  $(document).ready(function() {
+    $('#deleteForm').submit(function(e) {
+      e.preventDefault();
+      let id = $("#delete-id").val()
+      $.ajax({
+          url: "/items/" + id,
+          type: "POST",
+          headers: {"Content-Type": "application/json",},
+          data:  { "id": `${id}`},
+          success: function(data){
+            window.location.href = "/products"
+          },
+          error: function (xhr) {
+              if (xhr.status === 403) {
+                 $('#errorMeassge').text('User is not allowed to delete this item!')
+              }
+          }
+        });
+     }
+  )});
+  
+  $(document).ready(function() {
+      getItemRating()
+      setRveiewsRating()
+      document.getElementById('edit-button').onclick = editItem;
+      document.getElementById('SendRaiting').onclick = addReview;
+      // document.getElementById('add-to-cart').onclick = addItemToCart;
   });
-});
+  
+  function ShowDescription() {
+    var x = document.getElementById("description-div");
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
+  }
+  
+  function ShowReview(){
+    var x  = document.getElementById('RatingCard')
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
+  }
+  
+  $(document).ready(function(){
+    var hiddenCardsOnLoad = $(".card:hidden").length;
+    if (hiddenCardsOnLoad === 0) {
+      $("#loadMore").hide();
+    }
+    // Initially show the first 4 cards
+    $("#home-tab-pane > .card.group1").slice(0, 2).show();
+  
+    // Use event delegation to handle click on dynamically added elements
+    $("#home-tab-pane").on("click", "#loadMore", function(e){
+      e.preventDefault();
+  
+      // Check if the button is in "Show Less" state
+      if ($("#loadMore").text() === "Show Less") {
+        // Hide 2 cards
+        $(".card.group1:visible").slice(0, 2).hide()
+        $("#loadMore").text("Load More"); // Change button text to "Load More"
+      } else {
+        // Show the next set of cards
+        $(".card.group1:hidden").slice(0, 4).slideDown();
+        $("#loadMore").text("Show Less"); // Change button text to "Show Less"
+      }
+    });
+  });
+  
+
+  
+  </script>
+{% endblock %}
 
 
-function RatingHide(){
-  document.getElementById('RatingCard').style.display = "none"
-}
 
-document.getElementById('edit-button').onclick = editItem;
-document.getElementById('SendRaiting').onclick = addReview;
-document.getElementById('add-to-cart').onclick = addItemToCart;
-
-</script>
-
-</html>

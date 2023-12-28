@@ -106,23 +106,23 @@ $(document).ready(function() {
    }
 )});
 
-function addItemToCart() {
-  let id = $("#edit-id").val();
-  $.ajax({
-      url: "/update-basket",
-      method: "post",
-      headers: { "Content-Type": "application/json",},
-      data:  JSON.stringify({
-            "item_id": `${id}`,
-          }),
-      success: data => {
-        console.log('success', data)
-      },
-      error: (error) => {
-        console.log('error', error)
-      }
-    });
-  }
+// function addItemToCart() {
+//   let id = $("#edit-id").val();
+//   $.ajax({
+//       url: "/update-basket",
+//       method: "post",
+//       headers: { "Content-Type": "application/json",},
+//       data:  JSON.stringify({
+//             "item_id": `${id}`,
+//           }),
+//       success: data => {
+//         console.log('success', data)
+//       },
+//       error: (error) => {
+//         console.log('error', error)
+//       }
+//     });
+//   }
 
 document.addEventListener('DOMContentLoaded', function () {
  const navLinks = document.querySelectorAll('.nav-link');
@@ -142,6 +142,72 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 })
+
+$(document).ready(function() {
+  $('#deleteForm').submit(function(e) {
+    e.preventDefault();
+    let id = $("#delete-id").val()
+    $.ajax({
+        url: "/items/" + id,
+        type: "POST",
+        headers: {"Content-Type": "application/json",},
+        data:  { "id": `${id}`},
+        success: function(data){
+          window.location.href = "/products"
+        },
+        error: function (xhr) {
+            if (xhr.status === 403) {
+               $('#errorMeassge').text('User is not allowed to delete this item!')
+            }
+        }
+      });
+   }
+)});
+
+// $(document).ready(function() {
+//     getItemRating()
+//     setRveiewsRating()
+// });
+
+
+function ShowReview(){
+  var x  = document.getElementById('RatingCard')
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+
+// $(document).ready(function(){
+//   var hiddenCardsOnLoad = $(".card:hidden").length;
+//   if (hiddenCardsOnLoad === 0) {
+//     $("#loadMore").hide();
+//   }
+//   // Initially show the first 4 cards
+//   $("#home-tab-pane > .card.group1").slice(0, 2).show();
+
+//   // Use event delegation to handle click on dynamically added elements
+//   $("#home-tab-pane").on("click", "#loadMore", function(e){
+//     e.preventDefault();
+
+//     // Check if the button is in "Show Less" state
+//     if ($("#loadMore").text() === "Show Less") {
+//       // Hide 2 cards
+//       $(".card.group1:visible").slice(0, 2).hide()
+//       $("#loadMore").text("Load More"); // Change button text to "Load More"
+//     } else {
+//       // Show the next set of cards
+//       $(".card.group1:hidden").slice(0, 4).slideDown();
+//       $("#loadMore").text("Show Less"); // Change button text to "Show Less"
+//     }
+//   });
+// });
+
+
+// document.getElementById('edit-button').onclick = editItem;
+// document.getElementById('SendRaiting').onclick = addReview; 
+// document.getElementById('add-to-cart').onclick = addItemToCart;
 
 
 

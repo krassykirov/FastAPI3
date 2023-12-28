@@ -68,9 +68,9 @@ def get_products(request: Request, db: Session = Depends(get_session), user: Use
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
     # in_cart = ItemActions().get_user_items_in_cart(db=db)
     # categories = CategoryActions().get_categories_len(db=db)
-    return templates.TemplateResponse("base.html", {"request": request,
-                                                    'current_user': user.username,
-                                                    'profile': profile})
+    return templates.TemplateResponse("items.html", {"request": request,
+                                                       'current_user': user.username,
+                                                       'profile': profile})
                                                     #  'items': items,
                                                     #  'categories': categories,
                                                     #  'profile': profile})
@@ -269,7 +269,6 @@ async def create_profile(request: Request, db: Session = Depends(get_session), u
                                                        'current_user': user.username,
                                                        'profile': user_profile })
 
-
 @app.post("/update_profile", status_code=status.HTTP_200_OK, include_in_schema=False)
 @app.post("/user/update_profile", status_code=status.HTTP_200_OK, include_in_schema=False)
 async def update_profile(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -304,22 +303,22 @@ async def update_profile(request: Request, db: Session = Depends(get_session), u
     #                                                    'current_user': user.username,
     #                                                    'profile': db_profile })
 
-@app.get("/products/{category_name}", status_code=status.HTTP_200_OK, include_in_schema=False)
-async def get_category(request: Request, category_name: str, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
-    if category_name not in list(Categories):
-        logger.error("Invalid Category")
-        raise
-    category = CategoryActions().get_category_by_name(db=db, name=category_name)
-    return templates.TemplateResponse("categories.html", {"request": request,
-                                                         'current_user': user.username,
-                                                         'items': category.items })
+# @app.get("/products/{category_name}", status_code=status.HTTP_200_OK, include_in_schema=False)
+# async def get_category(request: Request, category_name: str, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+#     if category_name not in list(Categories):
+#         logger.error("Invalid Category")
+#         raise
+#     category = CategoryActions().get_category_by_name(db=db, name=category_name)
+#     return templates.TemplateResponse("categories.html", {"request": request,
+#                                                          'current_user': user.username,
+#                                                          'items': category.items })
 
 @app.get("/categories", status_code=status.HTTP_200_OK, include_in_schema=False)
 async def get_category(request: Request,  db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     category = CategoryActions().get_category_by_name(db=db, name='Finance')
     return templates.TemplateResponse("categories.html", {"request": request,
-                                                         'current_user': user.username,
-                                                         'items': category.items })
+                                                          'current_user': user.username,
+                                                          'items': category.items})
 
 @app.post("/category", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead, include_in_schema=False)
 async def get_category_ajax( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
@@ -371,4 +370,4 @@ def get_user_items_in_cart(db: Session=Depends(get_session), user: User = Depend
   items_in_cart =  [item for item in items for k, v in item.in_cart.items()
                     if k == user.username and v['in_cart'] == True]
   total =sum([item.price for item in items_in_cart])
-  return {'items':items_in_cart, 'items_in_cart': len(items_in_cart), 'total': total}
+  return {'items':items_in_cart, 'items_in_cart': len(items_in_cart), 'total': total, 'user': user.username } # user.username.split('@')[0]
