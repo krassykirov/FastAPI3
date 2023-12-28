@@ -1,6 +1,7 @@
 {% extends "base_old.html" %}
 
 {% set include_block_app_js  = true %}
+{% set include_product_component = true %}
 {% set include_modal_add_item  = true %}
 
 {% block javascript %}
@@ -9,13 +10,8 @@
     </script>
 {% endblock %}
 
-{% if current_user  %}
-  {% block nav %}
-  {{  super() }}
-  {% endblock %}
-{% endif %}
 
-{% set include_product_component = true %}
+
 
 {% block html_read %}
 

@@ -4,11 +4,9 @@
 
 {% set include_block_app_js  = true %}
 
-  {% block nav %}
-  {{  super() }}
-  {% endblock %}
 
-  {% block html_read %}
+{% block html_read %}
+
 {% if not items %}
 <h1> You don't have items in your Cart :( </h1>
 {% endif %}
