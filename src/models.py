@@ -100,7 +100,7 @@ class Review(SQLModel, table=True):
     rating:       Optional[int]    = Field(default=None)
     created_by:   Optional[str]    = Field(default=None, foreign_key="user.username")
     user:         Optional['User'] = Relationship(back_populates='reviews')
-    # date:         Optional[datetime.datetime] = Field(default=datetime.datetime.now().replace(microsecond=0), nullable=False)
+    date:         Optional[datetime.datetime] = Field(default=datetime.datetime.now().replace(microsecond=0), nullable=False)
 
 # class Cart(BaseSQLModel, table=True):
 #       id: Optional[int] = Field(default=None, primary_key=True)

@@ -97,19 +97,19 @@
           <hr>
             <div class="filter-content collapse show" id="collapse_3">
             <div class="card-body">
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label  style="font-size: 1rem">Min price</label>
-                        <input v-model.number="min" class="form-control" id="minPrice" @input="validateMin" placeholder="0"
-                                min="0" :max="max" value="0" pattern="[1-9][0-9]*" type="text" required>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label  style="font-size: 1rem">Max price</label>
-                        <input v-model.number="max" class="form-control" id="maxPrice" value="0" placeholder="10000"
-                                @input="validateMax" pattern="[1-9][0-9]*" type="text" :min="min" :max="max" style="width: 100%;" required>
-                    </div>
+              <div class="form-row">
                 <div class="form-group col-md-6">
-                  <input v-model.number="max" v-model.number="min" type="range" :min="0" :max="10000" step="10" style="width: 200px;" @input="validateMax">
+                    <label  style="font-size: 1rem">Min price</label>
+                    <input v-model.number="min" class="form-control" id="minPrice" @input="validateMin" placeholder="0"
+                           min="0" :max="max" value="0" pattern="[1-9][0-9]*" type="text" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label  style="font-size: 1rem">Max price</label>
+                    <input v-model.number="max" class="form-control" id="maxPrice" value="0" placeholder="10000"
+                           @input="validateMax" pattern="[1-9][0-9]*" type="text" :min="min" :max="max" style="width: 100%;" required>
+                </div>
+            <div class="form-group col-md-6">
+              <input v-model.number="max" v-model.number="min" type="range" :min="0" :max="10000" step="50" style="width: 200px;">
                   <!-- <input v-model.number="min" v-model.number="max" type="range" :min="0" :max="10000" style="width: 200px;" @input="validateMin">   -->
                   <!-- <p> <span style="color:blue"></span> $[[ min ]] - $[[ max ]] </p> -->
                   <!-- <input v-model.number="max" class="form-control" type="number" id="max-price" hidden> -->
