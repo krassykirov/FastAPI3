@@ -26,7 +26,9 @@ body {
 
 label {
   font-size: 14px;
+  font-weight: 900;
 }
+
 body.modal-open {
 padding-right: -17px;
 }
@@ -256,3 +258,4 @@ input[type="range"]::-webkit-slider-thumb {
         align-items: center;
     }
 }
+

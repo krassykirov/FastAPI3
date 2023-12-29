@@ -432,5 +432,105 @@ App.component('navbar-component', {
   }
 });
 
+App.component('whishlist-component', {
+  props: ['product', 'min', 'max','cart','selectedRatings','formatPrice'],
+  emits: ['addToCart'],
+  data() {
+  return {
+  };
+},
+  delimiters: ['[[', ']]'],
+  template: `
+      <div class="col-md-3 col-sm-6">
+          <div class="product-grid">
+              <div class="product-image">
+                  <a href="#" class="image">
+                      <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="pic-1">
+                      <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="pic-2">
+                  </a>
+                  <a href="#" class="product-like-icon" data-tip="Add to Wishlist">
+                      <i class="far fa-heart"></i>
+                  </a>
+                  <span class="product-sale-label">Sale</span>
+                  <a href="#" class="product-like-icon" data-tip="Add to Wishlist">
+                      <i class="far fa-heart"></i>
+                  </a>
+                  <ul class="product-links">
+                      <li><a href="#"><i class="fa fa-search"></i></a></li>
+                      <li><a href="#" @click="addToCart(product)"><i class="fas fa-shopping-cart"></i></a></li>
+                      <li><a href="#"><i class="fa fa-random"></i></a></li>
+                  </ul>
+              </div>
+              <div class="product-content">
+                  <h3 class="title"><a href="#">[[ product.name ]]</a></h3>
+                  <div class="price"><span>$86.33</span> $[[ product.price ]]</div>
+                  <div class="price">$ [[ product.price ]]</div>
+                  <p style="cursor: pointer">
+                      <i>
+                        <span v-for="i in 5" :key="i" :class="getStarClasses(i, product.rating_float)"></span>
+                        <span :id="'overall-rating' + product.id + '-float'"><small>&nbsp[[ product.rating_float ]]</small></span>
+                      </i>
+                      <span :id="'overall-rating' + product.id"> <small> ([[ product.reviewNumber ]]) </small> </span>
+                    </p>
+                    <span class="badge bg-danger" v-if="product.price <= 90">WOW</span>
+                    <span class="badge bg-primary" v-else-if="product.price > 90 && product.price <= 1000">Value</span>
+                    <span class="badge bg-success" v-else-if="product.price > 1000">TOP</span>
+                    <span> <small> $</small>[[ product.price | formatPrice  ]]</span>
+                    <span v-if="Number.isInteger(product.price) === false" style="font-size: 0.7em; vertical-align: top;">
+                      [[ product.price.toString().split('.')[1] ]]
+                    </span>
+                    <input type="number" :data-price="product.price" hidden>
+              </div>
+          </div>
+      </div>
+  `,
+  methods: {
+    redirectToItemFromProduct(itemId) {
+    this.$root.redirectToItem(itemId);
+   },
+    itemAlreadyInCart(product) {
+       return this.cart.some(item => item.id === product.id);
+    },
+    addToCart(product) {
+      console.log('clicked')
+      const itemInCart = this.cart.find(item => item.id === product.id);
+      if (!itemInCart) {
+        fetch('/update-basket', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            item_id: product.id,
+          }),
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            this.cart.push(product);
+          })
+          .catch(error => {
+            console.error('error', error);
+          });
+      }
+    },
+    getStarClasses(index, rating) {
+        const filledStars = Math.floor(rating);
+        if (index <= filledStars) {
+          return 'fa fa-star checked';
+        } else if (index === filledStars + 1 && rating % 1 !== 0) {
+          return 'fa fa-star-half-full checked';
+        } else {
+          return 'fa fa-star-o checked';
+        }
+      },
+  },
+});
+
+
 
 App.mount('#app');
