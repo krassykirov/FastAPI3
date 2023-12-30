@@ -1,355 +1,367 @@
 {% extends "base_old.html" %}
 {% set include_block_app_js  = true %}
+{% set include_modal_add_item = false %}
+{% set include_product_component = false %}
+{% set include_whishlist_component = false %}
 
 
 {% block more_css %}
 <style>
-  .card-img-top {
+  @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap');
+
+*{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+}
+body{
+    line-height: 1.5;
+}
+.card{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 1.5rem;
+        justify-content: center;
+        width: 150vh;
+        text-align: center;
+        margin-bottom: 2%;
+        margin-left: 2%;
+        margin-right: 2%;
+    } 
+.card-wrapper{
+    margin-top: 120px;
+    margin-bottom: 1%;
     width: 100%;
-    height: 16vw;
-    object-fit: cover;
-  }
-  .card{
-    width: 30rem;
-    margin-bottom: auto;
-    margin-right: auto;
-    margin-top: auto;
-    margin-left: 50%;
-    /* border: 15px solid #969696; */
-    text-align: center;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  }
-
-  .list-group {
-    margin-left: 7%;
-  }
-  .comment-box {
-  padding: 15px
-  }
-  .comment-area textarea {
-  resize: none;
-  border: 1px solid #9797ca
-  }
-
-  #loadMore {
-    width: 30rem;
-    color: #fff;
+    height: 75vh;
+    margin: 0 auto;
+}
+img{
+    width: 100%;
     display: block;
-    text-align: center;
-    border-radius: 10px;
-    border: 1px solid transparent;
-    background-color: blue;
-    transition: .3s;
-    margin-bottom: 3px;
-  }
-  #loadMore:hover {
-    color: blue;
-    background-color: #fff;
-    border: 1px solid blue;
+}
+.img-display{
+    overflow: hidden;
+}
+.img-showcase{
+    display: flex;
+    width: 100%;
+    transition: all 0.5s ease;
+}
+.img-showcase img{
+    min-width: 100%;
+}
+.img-select{
+    display: flex;
+}
+.img-item{
+    margin: 0.3rem;
+}
+.img-item:nth-child(1),
+.img-item:nth-child(2),
+.img-item:nth-child(3){
+    margin-right: 0;
+}
+.img-item:hover{
+    opacity: 0.8;
+}
+.product-content{
+    padding: 2rem 1rem;
+}
+.product-title{
+    font-size: 3rem;
+    text-transform: capitalize;
+    font-weight: 700;
+    position: relative;
+    color: #12263a;
+    margin: 1rem 0;
+}
+/* .product-title::after{
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 4px;
+    width: 80px;
+    background: #12263a;
+} */
+.product-link{
     text-decoration: none;
-  }
-  .noContent {
-    color: #000 !important;
-    background-color: transparent !important;
-    pointer-events: none;
-  }
-
-  .nav.nav-tabs {
-    margin-left: 27%;
-    margin-bottom: 3px;
-    /* overflow: hidden;
-    border: 1px solid #ccc;
-    background-color: #f1f1f1; */
-    }
-
-  /* .comment-area{
-    margin-left: 28%;
-  } */
-    /* Style the buttons inside the tab */
-    .tab button {
-    background-color: inherit;
-    float: left;
-    border: none;
-    outline: none;
+    text-transform: uppercase;
+    font-weight: 400;
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    background: #256eff;
+    color: #fff;
+    padding: 0 0.3rem;
+    transition: all 0.5s ease;
+}
+.product-link:hover{
+    opacity: 0.9;
+}
+.product-rating{
+    color: #ffc107;
+}
+.product-rating span{
+    font-weight: 600;
+    color: #252525;
+}
+.product-price{
+    margin: 1rem 0;
+    font-size: 1rem;
+    font-weight: 700;
+}
+.product-price span{
+    font-weight: 400;
+}
+.last-price span{
+    color: #f64749;
+    text-decoration: line-through;
+}
+.new-price span{
+    color: #256eff;
+}
+.product-detail h2{
+    text-transform: capitalize;
+    color: #12263a;
+    padding-bottom: 0.6rem;
+}
+.product-detail p{
+    font-size: 0.9rem;
+    padding: 0.3rem;
+    opacity: 0.8;
+}
+.product-detail ul{
+    margin: 1rem 0;
+    font-size: 0.9rem;
+}
+.product-detail ul li{
+    margin: 0;
+    list-style: none;
+    background: url(https://fadzrinmadu.github.io/hosted-assets/product-detail-page-design-with-image-slider-html-css-and-javascript/checked.png) left center no-repeat;
+    background-size: 18px;
+    padding-left: 1.7rem;
+    margin: 0.4rem 0;
+    font-weight: 600;
+    opacity: 0.9;
+}
+.product-detail ul li span{
+    font-weight: 400;
+}
+.purchase-info{
+    margin: 1.5rem 0;
+}
+.purchase-info input,
+.purchase-info .btn{
+    border: 1.5px solid #ddd;
+    border-radius: 25px;
+    text-align: center;
+    padding: 0.45rem 0.8rem;
+    outline: 0;
+    margin-right: 0.2rem;
+    margin-bottom: 1rem;
+}
+.purchase-info input{
+    width: 60px;
+}
+.purchase-info .btn{
     cursor: pointer;
-    padding: 14px 16px;
-    transition: 0.3s;
-    font-size: 15px;
-    }
- 
-    /* Change background color of buttons on hover */
-    .tab button:hover {
-    background-color: #ddd;
-    }
+    color: #fff;
+}
+.purchase-info .btn:first-of-type{
+    background: #256eff;
+}
+.purchase-info .btn:last-of-type{
+    background: #f64749;
+}
+.purchase-info .btn:hover{
+    opacity: 0.9;
+}
+.social-links{
+    display: flex;
+    align-items: center;
+}
+.social-links a{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: #000;
+    border: 1px solid #000;
+    margin: 0 0.2rem;
+    border-radius: 50%;
+    text-decoration: none;
+    font-size: 0.8rem;
+    transition: all 0.5s ease;
+}
+.social-links a:hover{
+    background: #000;
+    border-color: transparent;
+    color: #fff;
+}
 
-    /* Create an active/current tablink class */
-    .tab button.active {
-    background-color: #ccc;
+@media screen and (min-width: 992px){
+    .card{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 1.5rem;
     }
-
-    .tab-content {
-    margin-left: 22%;
-    /* display: block;
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    border-top: none;
-    margin-bottom: 5px;
-    max-width: 35%; */
+    .card-wrapper{
+        margin-top: 250px;
+        margin-bottom: 1%;
+        height: 50vh;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
-  .tab-pane {
-    margin-left: 7%;
-  }
+    .product-imgs{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .product-content{
+        padding-top: 0;
+    }
+}
 </style>
 {% endblock %}
 
 
 {% block html_read %}
-<div class="row" style="margin-top: 20px;">
-  <div class="card-group col-12" id="mycard" style="margin-left: 3%;">
-    <div class="col-lg-auto" style="margin-left: 10%;">
-    <div class="card">
-        <div class="card-body">
-          {% if  'no-image.png' == item.image %}
-          <img class="card-img-top" src="/static/img/{{ item.image }}">
-          {% else %}
-          <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
-          {% endif %}
-        <h4 class="card-title">{{item.name}} </h5>
-        <h5 class="price" id="item-details">Price: ${{ '%0.2f'|format(item.price|float)  }}</h5>
-        <p class="category" id="category"> Category: {{ item.category.name.split('.')[-1]  }}</p>
-        <input type="number" name="id" value="{{ item.id }}" id="id" hidden>
-        <input type="text" id="username" value="{{ current_user }}"  hidden>
+<div class = "card-wrapper">
+  <div class = "card">
+    <div class = "product-imgs">
+      <div class = "img-display">
+        <div class = "img-showcase">
+          <img src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
+          <img src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
+          <img src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
+          <img src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
+          </div>
       </div>
-      <p>
-        <i> Overall Rating
-      <span class="fa fa-star checked" id="star1"></span>
-      <span class="fa fa-star checked" id="star2"></span>
-      <span class="fa fa-star checked" id="star3"></span>
-      <span class="fa fa-star" id="star4"></span>
-      <span class="fa fa-star" id="star5"></span>
-      <span id="overall-rating"> No rating Yet </span></i>
-    </p>
-      <div>
-           <a class="btn btn-info" id="add-to-cart" data-toggle="modal" data-target="#addToCartMessage"> Add to Cart</a>
-          {% if current_user == item.username  %}
-        <a class="btn btn-secondary" data-toggle="modal" data-target="#EditItem" id="myModal" style="margin: 15px; text-align:center; display:block;">Update</a>
-        <a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" id="myModal" style="margin:15px; text-align:center; display:block;">Delete</a>
-      {% endif %}
+      <div class = "img-select">
+        <div class = "img-item">
+          <a href = "#" data-id = "1">
+            <img src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}" alt = "shoe image">
+          </a>
+        </div>
+        <div class = "img-item">
+          <a href = "#" data-id = "2">
+            <img src = "https://fadzrinmadu.github.io/hosted-assets/product-detail-page-design-with-image-slider-html-css-and-javascript/shoe_2.jpg" alt = "shoe image">
+          </a>
+        </div>
+        <div class = "img-item">
+          <a href = "#" data-id = "3">
+            <img src = "https://fadzrinmadu.github.io/hosted-assets/product-detail-page-design-with-image-slider-html-css-and-javascript/shoe_3.jpg" alt = "shoe image">
+          </a>
+        </div>
+        <div class="img-item">
+          <a href="#" data-id="4">
+            <img src="https://fadzrinmadu.github.io/hosted-assets/product-detail-page-design-with-image-slider-html-css-and-javascript/shoe_4.jpg" alt = "shoe image">
+          </a>
+        </div>
+      </div>
     </div>
+    <!-- card right -->
+    <div class = "product-content">
+      <h2 class = "product-title">{{ item.name }}</h2>
+      <div class = "product-rating">
+        <span class="fa fa-star checked" id="star1"></span>
+        <span class="fa fa-star checked" id="star2"></span>
+        <span class="fa fa-star checked" id="star3"></span>
+        <span class="fa fa-star" id="star4"></span>
+        <span class="fa fa-star" id="star5"></span>
+        <span id="overall-rating"> No rating Yet </span></i>
+      </div>
 
-      <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="false">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Please confirm.</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-            <p id="errorMeassge" style="text-align: left;">You're about to delete <b>{{item.name}}! </b>Are you sure?</p>
-            </div>
-            <div class="modal-footer justify-content-center">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-              <form action="delete_item" id="deleteForm">
-                <input type="number" id="delete-id" name="id" value="{{ item.id }}" required hidden>
-                <button type="submit" class="btn btn-danger" style="text-align: left;">Delete</button>
-            </form>
-            </div>
-          </div>
-        </div>
+      <div class = "product-price">
+        <p class = "last-price">Old Price: <span>{{ '%0.2f' % item.price|float}}</span></p>
+        <p class = "new-price">New Price: <span>{{ '%0.2f' % item.price|float }}</span></p>
       </div>
-      <br/>
-      <div class="card-footer">
-        <small id="small" class="text-muted">Created at: <b>{{ item.date.strftime('%Y-%m-%d') }} </b> by <b> {{ item.username }}</b></small>
-      </div>
-    </div>
-</div>
-  </div>
-</div>
-<div class="modal fade" id="EditItem" tabindex="-1" role="dialog" aria-labelledby="EditItemlLabel" aria-hidden="true" data-backdrop="false">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="EditItemLabel">Edit</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-             <input type="number" name="id" value="{{ item.id }}" id="edit-id" required hidden>
-            <div class="form-group">
-              <label for="price" class="col-form-label">Price:</label>
-              <input type="number" name="price" id="id-price">
-            </div>
-            <div class="form-group">
-              <label for="Category" class="col-form-label">Category:</label>
-              <select name="Category" id="category-select">
-                  <option value="Finance">Finance</option>
-                  <option value="IT">IT</option>
-                  <option value="TV">TV</option>
-                  <option value="Services">Services</option>
-                  <option value="Miscellaneous">Miscellaneous</option>
-              </select>
-            </div>
-          <div class="form-group">
-            <label for="Description" class="col-form-label">Description:</label>
-            <textarea  name="Description" id="id-description" rows="4" cols="50" maxlength="250"></textarea>
-          </div>
-            <hr>
-            <button type="submit" class="btn btn-primary" id="edit-button" onclick="editItem()">Save</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close">Close</button>
-        </div>
-      </div>
-    </div>
-</div>
-<br>
-<nav>
-<ul class="nav nav-tabs" id="myTab" role="tablist" style="margin-left: 27%;">
-  <li class="nav-item" role="presentation">
-    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" 
-    aria-controls="home-tab-pane" aria-selected="true">Reviews</button>
-  </li>
-  <li class="nav-item" role="presentation">
-    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" 
-    aria-controls="profile-tab-pane" aria-selected="false">Description</button>
-  </li>
-  <li class="nav-item" role="presentation">
-    <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" 
-    aria-controls="contact-tab-pane" aria-selected="false">Messages</button>
-  </li>
-</ul>
-<div class="tab-content" id="myTabContent">
-  <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
-    <div class="row pb-1">
-      <div class="card" id="RatingCard" style="margin-left: 0">
-        <div class="row">
-        <div class="col-12" style="margin-bottom: 5px; margin-left:0;" >
-        <div class="comment-box ml-2">
-        <input type="number" id="comment-item-id" value="{{ item.id }}" required hidden>
-        <div class="rating"> <input type="radio" name="rating" value="5" id="5"><label for="5">☆</label> <input type="radio" name="rating" value="4" id="4"><label for="4">☆</label> <input type="radio" name="rating" value="3" id="3"><label for="3">☆</label> <input type="radio" name="rating" value="2" id="2"><label for="2">☆</label> <input type="radio" name="rating" value="1" id="1"><label for="1">☆</label> </div>
-        <div class="comment-area"> <textarea class="form-control" placeholder="what is your view?" rows="4" id="comment-area"></textarea> </div>
-        <div class="comment-btns mt-2">
-        <div class="row">
-        <div class="col-6">
-        <div class="pull-left"> <button class="btn btn-secondary btn-sm" id="RatingCancel" onclick="RatingHide()">Cancel</button> </div>
-        </div>
-        <div class="col-6">
-        <div class="pull-right"> <button class="btn btn-success send btn-sm" id="SendRaiting" onclick="addReview()"> Submit </button> </div>
-        </div>
-        </div>
-        </div>
-        </div>
-        </div>
-   </div>
-  </div>
-        {%  if item.reviews  %}
-        {% for review in item.reviews %}
-      <div class="list-group" id="card{{review.id}}" style="display: block; margin-left:0;">
-          <div class="row">
-          <div class="col-12" style="margin-bottom: 5px; margin-left:0">
-          <p style="margin-left:0">
-            <img src="/static/img/img_avatar.png" class="avatar">
-            {{ review.created_by }}
-            <span class="fa fa-star checked" id="star{{ review.id }}1"></span>
-            <span class="fa fa-star checked" id="star{{ review.id }}2"></span>
-            <span class="fa fa-star checked" id="star{{ review.id }}3"></span>
-            <span class="fa fa-star" id="star{{ review.id}}4"></span>
-            <span class="fa fa-star" id="star{{ review.id }}5"></span>
-            <div>  <i>{{ review.text }} </i></div>
-            </p>
-          </div>
-          </div>
-        </div>
-      {% endfor %}
-      {%  endif %}
-  </div>
-</div>
-  <div id="description-tab" class="tab-pane fade">
-      <div class="row pb-2">
-        <div class="form-group" id="description-div">
-          <input type="number" name="id" value="{{ item.id }}" id="item-id" required hidden>
-          <p>Update Description:</p>
-          <textarea  name="description" rows="4" cols="50" maxlength="250"> </textarea>
-        </div>
-        <div class="col-md-5">
-          {%  if item.description  %}
-          <p id="description-text"> <i> {{ item.description}} </i> </p>
-          {% else %}
-          <p id="description-text"> <i> Product has no Description yet </i> </p>
-          {%  endif %}
-        </div>
-          <!-- <div class="col-md-5"><img src="//dummyimage.com/1005x559.png/5fa2dd/ffffff" class="float-right img-fluid img-rounded"></div> -->
-      </div>
-  </div>
-  <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
-    <div class="row pb-2">
-      <div class="col-md-5">
-        {%  if item.description  %}
-        <p id="description-text"> <i> {{ item.description}} </i> </p>
-        {% else %}
-        <p id="description-text"> <i> Product has no Description yet </i> </p>
-        {%  endif %}
-      </div>
-    </div>
-  </div>
-  <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0" style="margin-left: 0">
-    <div class="list-group"><a href="#" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">44</span> 
-      Message 1</a> <a href="#" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">8</span> 
-      Message 2</a> <a href="#" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">23</span> 
-      Message 3</a> <a href="#" class="list-group-item d-inline-block text-muted">Message n..</a></div>
-  </div>
-</div>
-</nav>
 
-<!-- Modal -->
-<div class="modal fade" id="addToCartMessage" tabindex="-1" role="dialog" aria-labelledby="addToCartMessageTitle" aria-hidden="true" data-backdrop="false">
-<div class="modal-dialog modal-dialog-centered" role="document">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title" id="exampleModalLongTitle">This product has been added to your cart.</h5>
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
+      <div class = "product-detail">
+        <h2>about this item: </h2>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo eveniet veniam tempora fuga tenetur placeat sapiente architecto illum soluta consequuntur, aspernatur quidem at sequi ipsa!</p>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur, perferendis eius. Dignissimos, labore suscipit. Unde.</p>
+        <ul>
+          <li>Color: <span>Black</span></li>
+          <li>Available: <span>in stock</span></li>
+          <li>Category: <span>Shoes</span></li>
+          <li>Shipping Area: <span>All over the world</span></li>
+          <li>Shipping Fee: <span>Free</span></li>
+        </ul>
+      </div>
+
+      <div class = "purchase-info">
+        <input type = "number" min = "0" value = "1">
+        <button type = "button" class = "btn">
+          Add to Cart <i class = "fas fa-shopping-cart"></i>
+        </button>
+        <button type = "button" class = "btn">Compare</button>
+      </div>
+
+      <div class = "social-links">
+        <p>Share At: </p>
+        <a href = "#">
+          <i class = "fab fa-facebook-f"></i>
+        </a>
+        <a href = "#">
+          <i class = "fab fa-twitter"></i>
+        </a>
+        <a href = "#">
+          <i class = "fab fa-instagram"></i>
+        </a>
+        <a href = "#">
+          <i class = "fab fa-whatsapp"></i>
+        </a>
+        <a href = "#">
+          <i class = "fab fa-pinterest"></i>
+        </a>
+      </div>
     </div>
-    <div class="modal-body">
-      <div class="card-body">
-        {% if  'no-image.png' == item.image %}
-        <img class="card-img-top" src="/static/img/{{ item.image }}">
-        {% else %}
-        <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
-        {% endif %}
-      <h5 class="card-title">{{item.name}} </h5>
-      <h5 class="price" id="item-details">Price: ${{ '%0.2f'|format(item.price|float)  }}</h5>
-      <p class="category" id="category"> Category: {{ item.category.name.split('.')[-1]  }}</p>
   </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-    </div>
-  </div>
-</div>
 </div>
 {% endblock %}
+
 
 
 {% block javascript %}
-    <script type="text/javascript">
-        {% include "js/main.js" %}
-    </script>
-{% endblock %}
-
-
 <script>
+const imgs = document.querySelectorAll('.img-select a');
+const imgBtns = [...imgs];
+let imgId = 1;
 
-function getItemRating(){
-  let id = $("#id").val()
+imgBtns.forEach((imgItem) => {
+    imgItem.addEventListener('click', (event) => {
+        event.preventDefault();
+        imgId = imgItem.dataset.id;
+        slideImage();
+    });
+});
+
+function slideImage(){
+    const displayWidth = document.querySelector('.img-showcase img:first-child').clientWidth;
+
+    document.querySelector('.img-showcase').style.transform = `translateX(${- (imgId - 1) * displayWidth}px)`;
+}
+
+window.addEventListener('resize', slideImage);
+
+
+function getItemRating(item_id){
+  let id = item_id
+  console.log('id', id)
+  console.log('item_id', item_id)
   $.ajax({
         url: "/api/reviews/item/rating",
         method: "get",
         headers: { "Content-Type": "application/json",},
-        data:  { "id": `${id}`
-        },
+        data:  { "id": item_id},
         success: data => {
+          console.log('data', data)
           for (var i=1; i<=5; i++ ){
             var star = document.getElementById('star' + i )
             if ( i <= data.rating ){
@@ -377,8 +389,7 @@ function UpdateStarRatings(review_id, rating){
           }
    }
 
-function setRveiewsRating(){
-  let id = $("#id").val()
+function setRveiewsRating(id){
   $.ajax({
         url: "/api/reviews",
         method: "get",
@@ -397,80 +408,11 @@ function setRveiewsRating(){
    }
 
 $(document).ready(function() {
-  $('#deleteForm').submit(function(e) {
-    e.preventDefault();
-    let id = $("#delete-id").val()
-    $.ajax({
-        url: "/items/" + id,
-        type: "POST",
-        headers: {"Content-Type": "application/json",},
-        data:  { "id": `${id}`},
-        success: function(data){
-          window.location.href = "/products"
-        },
-        error: function (xhr) {
-            if (xhr.status === 403) {
-               $('#errorMeassge').text('User is not allowed to delete this item!')
-            }
-        }
-      });
-   }
-)});
-
-$(document).ready(function() {
-    getItemRating()
-    setRveiewsRating()
+    var item_id = '{{ item.id }}'
+    console.log('item_id', item_id)
+    getItemRating(item_id)
+    // setRveiewsRating()
 });
-
-function ShowDescription() {
-  var x = document.getElementById("description-div");
-  if (x.style.display === "none") {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
-}
-
-function ShowReview(){
-  var x  = document.getElementById('RatingCard')
-  if (x.style.display === "none") {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
-}
-
-$(document).ready(function(){
-  var hiddenCardsOnLoad = $(".card:hidden").length;
-  if (hiddenCardsOnLoad === 0) {
-    $("#loadMore").hide();
-  }
-  // Initially show the first 4 cards
-  $("#home-tab-pane > .card.group1").slice(0, 2).show();
-
-  // Use event delegation to handle click on dynamically added elements
-  $("#home-tab-pane").on("click", "#loadMore", function(e){
-    e.preventDefault();
-
-    // Check if the button is in "Show Less" state
-    if ($("#loadMore").text() === "Show Less") {
-      // Hide 2 cards
-      $(".card.group1:visible").slice(0, 2).hide()
-      $("#loadMore").text("Load More"); // Change button text to "Load More"
-    } else {
-      // Show the next set of cards
-      $(".card.group1:hidden").slice(0, 4).slideDown();
-      $("#loadMore").text("Show Less"); // Change button text to "Show Less"
-    }
-  });
-});
-
-
-function RatingHide(){
-  document.getElementById('RatingCard').style.display = "none"
-}
-
-document.getElementById('add-to-cart').onclick = addItemToCart;
 
 </script>
-
+{% endblock %}

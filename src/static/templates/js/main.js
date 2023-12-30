@@ -179,9 +179,6 @@ function ShowReview(){
 }
 
 
-
-
-
 // $(document).ready(function(){
 //   var hiddenCardsOnLoad = $(".card:hidden").length;
 //   if (hiddenCardsOnLoad === 0) {
