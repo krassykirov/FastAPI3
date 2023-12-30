@@ -1,7 +1,7 @@
 {% extends "base_old.html" %}
 
 {% set include_block_app_js  = true %}
-{% set include_modal_add_item = false %}
+{% set include_modal_add_item = true %}
 {% set include_product_component = false %}
 {% set include_whishlist_component = true %}
 
@@ -25,165 +25,19 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 
 {% endblock %}
+
 {% block javascript %}
     <script type="text/javascript">
         {% include "js/main.js" %}
     </script>
 {% endblock %}
 
-{% block more_css %}
-<style>
-:root{
-  --bs-white: #fff;
-  --bs-gray: #6c757d;
-  --bs-hover:#192a56;
-  --bs-primary:#565c64;
-}
-.product-grid{
-background-color: #fff;
-font-family: 'Montserrat', sans-serif;
-text-align: center;
-}
-.product-grid .product-image{
-overflow: hidden;
-position: relative;
-}
-.product-grid .product-image a.image{ display: block; }
-.product-grid .product-image img{
-width: 100%;
-height: auto;
-}
-.product-grid .product-image .pic-1{ transition: all 0.3s ease 0s; }
-.product-grid .product-image:hover .pic-1{ transform: translateX(100%); }
-.product-grid .product-image .pic-2{
-width: 100%;
-height: 100%;
-transform: translateX(-101%);
-position: absolute;
-top: 0;
-left: 0;
-transition: all 0.3s ease 0s;
-}
-.product-grid .product-image:hover .pic-2{ transform: translateX(0); }
-.product-grid .product-sale-label{
-color: #fff;
-background: var(--bs-hover);
-font-size: 13px;
-text-transform: uppercase;
-letter-spacing: 1px;
-padding: 2px 8px;
-position: absolute;
-top: 15px;
-left: 15px;
-}
-.product-grid .product-like-icon{
-color: #696969;
-font-size: 22px;
-line-height: 20px;
-position: absolute;
-top: 15px;
-right: 15px;
-}
-.product-grid .product-like-icon:hover{ color: var(--bs-hover); }
-.product-grid .product-like-icon:before,
-.product-grid .product-like-icon:after{
-content: attr(data-tip);
-color: #fff;
-background-color: #000;
-font-size: 12px;
-line-height: 18px;
-padding: 7px 7px 5px;
-visibility: hidden;
-position: absolute;
-right: 0;
-top: 15px;
-transition: all 0.3s ease 0s;
-}
-.product-grid .product-like-icon:after{
-content: '';
-height: 15px;
-width: 15px;
-padding: 0;
-transform: translateX(-50%) rotate(45deg);
-right: auto;
-left: 50%;
-top: 15px;
-z-index: -1;
-}
-.product-grid .product-like-icon:hover:before,
-.product-grid .product-like-icon:hover:after{
-visibility: visible;
-top: 30px;
-}
-.product-grid .product-links{
-width: 170px;
-padding: 0;
-margin: 0;
-list-style: none;
-opacity: 0;
-transform: translateX(-50%);
-position: absolute;
-bottom: -50px;
-left: 50%;
-transition: all 0.3s ease 0s;
-}
-.product-grid:hover .product-links{
-bottom: 40px;
-opacity: 1;
-}
-.product-grid .product-links li{
-display: inline-block;
-margin: 0 2px;
-}
-.product-grid .product-links li a{
-color: #fff;
-background: #192a56;
-font-size: 16px;
-line-height: 48px;
-width: 48px;
-height: 48px;
-border-radius: 50%;
-display: block;
-transition: all 0.3s ease 0s;
-}
-.product-grid:hover .product-links li a:hover{ background: #333; }
-.product-grid .product-content{
-text-align: left;
-padding: 5px 0 0;
-}
-.product-grid .title{
-font-size: 14px;
-font-weight: 500;
-text-transform: capitalize;
-margin: 0 0 8px;
-}
-.product-grid .title a{
-color: #333;
-transition: all 0.3s ease 0s;
-text-decoration:none;
-font-weight:600;
-font-size:18px;
-}
-.product-grid .title a:hover{ color: var(--bs-hover); }
-.product-grid .price{
-color: var(--bs-hover);
-font-size: 16px;
-font-weight: 500;
-}
-.product-grid .price span{
-color: #555;
-font-size: 14px;
-font-weight: 400;
-text-decoration: line-through;
-margin: 0 5px 0 0;
-}
-@media screen and (max-width: 990px){
-.product-grid{ margin: 0 0 30px; }
-}
-</style>
-{% endblock %}
+
 
 {% block html_read %}
+
+{% endblock %}
+
 <div class="container">
   <div class="row justify-content-center">
       <div class="col-12">
@@ -191,8 +45,8 @@ margin: 0 5px 0 0;
               <h4 class="title mb-4">Our products</h4>
               <p class="text-muted para-desc mx-auto mb-0">There is now an abundance of readable dummy texts. These are usually used when a text is required purely to fill a space.</p>
           </div>
-      </div>
-  </div>
+      </div><!--end col-->
+  </div><!--end row-->
   <div class="row">
       <div class="col-md-3 col-sm-6">
           <div class="product-grid">
@@ -206,7 +60,7 @@ margin: 0 5px 0 0;
                   </a>
                   <ul class="product-links">
                       <li><a href="#"><i class="fa fa-search"></i></a></li>
-                      <li><a href="#" class="product-like-icon" data-tip="Add to Cart" ><i class="fas fa-shopping-cart"></i></a></li>
+                      <li><a href="#"><i class="fas fa-shopping-cart"></i></a></li>
                       <li><a href="#"><i class="fa fa-random"></i></a></li>
                   </ul>
               </div>
@@ -287,109 +141,18 @@ margin: 0 5px 0 0;
       </div>
   </div>
 </div>
-{% endblock %}
 
-
-<div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-12">
-                        <div class="section-title text-center mb-4 pb-2">
-                            <h4 class="title mb-4">Our products</h4>
-                            <p class="text-muted para-desc mx-auto mb-0">There is now an abundance of readable dummy texts. These are usually used when a text is required purely to fill a space.</p>
-                        </div>
-                    </div><!--end col-->
-                </div><!--end row-->
-                <div class="row">
-                    <div class="col-md-3 col-sm-6">
-                        <div class="product-grid">
-                            <div class="product-image">
-                                <a href="#" class="image">
-                                    <img class="pic-1" src="https://images.unsplash.com/photo-1539840093138-9b3e230e5206?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=765a2eb222b1851840a4a157780fb487&auto=format&fit=crop&w=1534&q=80">
-                                    <img class="pic-2" src="https://images.unsplash.com/photo-1539840093138-9b3e230e5206?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=765a2eb222b1851840a4a157780fb487&auto=format&fit=crop&w=1534&q=80">
-                                </a>
-                                <a href="#" class="product-like-icon" data-tip="Add to Wishlist">
-                                    <i class="far fa-heart"></i>
-                                </a>
-                                <ul class="product-links">
-                                    <li><a href="#"><i class="fa fa-search"></i></a></li>
-                                    <li><a href="#"><i class="fas fa-shopping-cart"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-random"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="product-content">
-                                <h3 class="title"><a href="#">Women's Top</a></h3>
-                                <div class="price">$75.99</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-6">
-                        <div class="product-grid">
-                            <div class="product-image">
-                                <a href="#" class="image">
-                                    <img class="pic-1" src="https://images.unsplash.com/photo-1511556820780-d912e42b4980?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=04aebe9a22884efa1a5f61e434215597&auto=format&fit=crop&w=500&q=60">
-                                    <img class="pic-2" src="https://images.unsplash.com/photo-1511556820780-d912e42b4980?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=04aebe9a22884efa1a5f61e434215597&auto=format&fit=crop&w=500&q=60">
-                                </a>
-                                <span class="product-sale-label">Sale</span>
-                                <a href="#" class="product-like-icon" data-tip="Add to Wishlist">
-                                    <i class="far fa-heart"></i>
-                                </a>
-                                <ul class="product-links">
-                                    <li><a href="#"><i class="fa fa-search"></i></a></li>
-                                    <li><a href="#"><i class="fas fa-shopping-cart"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-random"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="product-content">
-                                <h3 class="title"><a href="#">Men's Blazer</a></h3>
-                                <div class="price"><span>$86.33</span> $71.55</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-6">
-                        <div class="product-grid">
-                            <div class="product-image">
-                                <a href="#" class="image">
-                                    <img class="pic-1" src="https://images.unsplash.com/photo-1516961642265-531546e84af2?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=74065eec3c2f6a8284bbe30402432f1d&auto=format&fit=crop&w=500&q=60">
-                                    <img class="pic-2" src="https://images.unsplash.com/photo-1516961642265-531546e84af2?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=74065eec3c2f6a8284bbe30402432f1d&auto=format&fit=crop&w=500&q=60">
-                                </a>
-                                <span class="product-sale-label">Sale</span>
-                                <a href="#" class="product-like-icon" data-tip="Add to Wishlist">
-                                    <i class="far fa-heart"></i>
-                                </a>
-                                <ul class="product-links">
-                                    <li><a href="#"><i class="fa fa-search"></i></a></li>
-                                    <li><a href="#"><i class="fas fa-shopping-cart"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-random"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="product-content">
-                                <h3 class="title"><a href="#">Men's Blazer</a></h3>
-                                <div class="price"><span>$86.33</span> $71.55</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-6">
-                        <div class="product-grid">
-                            <div class="product-image">
-                                <a href="#" class="image">
-                                    <img class="pic-1" src="https://images.unsplash.com/photo-1524010349062-860def6649c3?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=e725946a3f177dce83a705d4b12019c2&auto=format&fit=crop&w=500&q=60">
-                                    <img class="pic-2" src="https://images.unsplash.com/photo-1524010349062-860def6649c3?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=e725946a3f177dce83a705d4b12019c2&auto=format&fit=crop&w=500&q=60">
-                                </a>
-                                <span class="product-sale-label">Sale</span>
-                                <a href="#" class="product-like-icon" data-tip="Add to Wishlist">
-                                    <i class="far fa-heart"></i>
-                                </a>
-                                <ul class="product-links">
-                                    <li><a href="#"><i class="fa fa-search"></i></a></li>
-                                    <li><a href="#"><i class="fas fa-shopping-cart"></i></a></li>
-                                    <li><a href="#"><i class="fa fa-random"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="product-content">
-                                <h3 class="title"><a href="#">Men's Blazer</a></h3>
-                                <div class="price"><span>$86.33</span> $71.55</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<p style="cursor: pointer">
+  <i>
+    <span v-for="i in 5" :key="i" :class="getStarClasses(i, product.rating_float)"></span>
+    <span :id="'overall-rating' + product.id + '-float'"><small>&nbsp[[ product.rating_float ]]</small></span>
+  </i>
+  <span :id="'overall-rating' + product.id"> <small> ([[ product.reviewNumber ]]) </small> </span>
+</p>
+<span class="badge bg-danger" v-if="product.price <= 90">WOW</span>
+<span class="badge bg-primary" v-else-if="product.price > 90 && product.price <= 1000">Value</span>
+<span class="badge bg-success" v-else-if="product.price > 1000">TOP</span>
+<span> <small> $</small>[[ product.price | formatPrice  ]]</span>
+<span v-if="Number.isInteger(product.price) === false" style="font-size: 0.7em; vertical-align: top;">
+  [[ product.price.toString().split('.')[1] ]]
+</span>

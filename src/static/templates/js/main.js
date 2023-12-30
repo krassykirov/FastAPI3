@@ -1,7 +1,6 @@
 
 
 function editItem() {
-
       let id = $("#edit-id").val()
       let price = $("#id-price").val()
       let category = document.getElementById('category-select').value;

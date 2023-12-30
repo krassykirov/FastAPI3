@@ -226,7 +226,6 @@ App.component('product-component', {
           </span>
           <input type="number" :data-price="product.price" hidden>
         </div>
-        <!-- Close the card-body div before opening the next div -->
         <div>
           <button ref="addToCartButton" @click="addToCart(product)" class="btn btn-secondary btn-sm" style="margin-bottom:15px; margin-top:22px">
             <i class="bi bi-cart" style="font-size: 0.9rem;"> Add to Cart</i> 
@@ -342,7 +341,7 @@ App.component('navbar-component', {
           <div v-if="!displayCart"  class="list-group position-absolute">
             <div v-for="(item, index) in cart" :key="index" class="list-group-item d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
-              <img :src="'static/img/' + item.username + '/' + item.name + '/' + item.image" class="mr-2"
+              <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image" class="mr-2"
                   style="width: 50px; height: 60px; object-fit: cover; border-radius: 5px;">
               <div style="cursor: pointer" @click="redirectToItemFromNavbar(item.id)">
                 <div> [[ item.name ]] - $[[ item.price ]] </div>
@@ -441,48 +440,51 @@ App.component('whishlist-component', {
 },
   delimiters: ['[[', ']]'],
   template: `
-      <div class="col-md-3 col-sm-6">
-          <div class="product-grid">
-              <div class="product-image">
-                  <a href="#" class="image">
-                      <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="pic-1">
-                      <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="pic-2">
-                  </a>
-                  <a href="#" class="product-like-icon" data-tip="Add to Wishlist">
-                      <i class="far fa-heart"></i>
-                  </a>
-                  <span class="product-sale-label">Sale</span>
-                  <a href="#" class="product-like-icon" data-tip="Add to Wishlist">
-                      <i class="far fa-heart"></i>
-                  </a>
-                  <ul class="product-links">
-                      <li><a href="#"><i class="fa fa-search"></i></a></li>
-                      <li><a href="#" @click="addToCart(product)"><i class="fas fa-shopping-cart"></i></a></li>
-                      <li><a href="#"><i class="fa fa-random"></i></a></li>
-                  </ul>
-              </div>
-              <div class="product-content">
-                  <h3 class="title"><a href="#">[[ product.name ]]</a></h3>
-                  <div class="price"><span>$86.33</span> $[[ product.price ]]</div>
-                  <div class="price">$ [[ product.price ]]</div>
-                  <p style="cursor: pointer">
-                      <i>
-                        <span v-for="i in 5" :key="i" :class="getStarClasses(i, product.rating_float)"></span>
-                        <span :id="'overall-rating' + product.id + '-float'"><small>&nbsp[[ product.rating_float ]]</small></span>
-                      </i>
-                      <span :id="'overall-rating' + product.id"> <small> ([[ product.reviewNumber ]]) </small> </span>
-                    </p>
-                    <span class="badge bg-danger" v-if="product.price <= 90">WOW</span>
-                    <span class="badge bg-primary" v-else-if="product.price > 90 && product.price <= 1000">Value</span>
-                    <span class="badge bg-success" v-else-if="product.price > 1000">TOP</span>
-                    <span> <small> $</small>[[ product.price | formatPrice  ]]</span>
-                    <span v-if="Number.isInteger(product.price) === false" style="font-size: 0.7em; vertical-align: top;">
-                      [[ product.price.toString().split('.')[1] ]]
-                    </span>
-                    <input type="number" :data-price="product.price" hidden>
-              </div>
-          </div>
-      </div>
+  <div class="col-md-3 col-sm-6">
+    <div class="product-grid">
+        <div class="product-image">
+            <a href="#" class="image" @click="redirectToItemFromProduct(product.id)">
+                <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="pic-1">
+                <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="pic-2">
+            </a>
+            <a href="#" class="product-like-icon" data-tip="Add to Wishlist">
+                <i class="far fa-heart"></i>
+            </a>
+            <span class="product-sale-label">Sale</span>
+            <a href="#" class="product-like-icon" data-tip="Add to Wishlist">
+                <i class="far fa-heart"></i>
+            </a>
+            <ul class="product-links">
+                <li><a href="#"><i class="fa fa-search"></i></a></li>
+                <li><a ref="addToCartButton" @click="addToCart(product)" style="cursor: pointer"><i class="fas fa-shopping-cart"></i></a></li>
+                <li><a href="#"><i class="fa fa-random"></i></a></li>
+            </ul>
+        </div>
+        <div class="product-content">
+            <h3 class="title"><a href="#">[[ product.name ]]</a></h3>
+            <span><small> $</small>[[ product.price | formatPrice  ]]</span>
+            <span v-if="Number.isInteger(product.price) === false" style="font-size: 0.7em; vertical-align: top;">
+                [[ product.price.toString().split('.')[1] ]]
+            </span>
+            <p style="cursor: pointer; margin-top: 0.6em;">
+                <i>
+                    <span v-for="i in 5" :key="i" :class="getStarClasses(i, product.rating_float)"></span>
+                    <span :id="'overall-rating' + product.id + '-float'"><small>&nbsp[[ product.rating_float ]]</small></span>
+                </i>
+                <span :id="'overall-rating' + product.id"> <small> ([[ product.reviewNumber ]]) </small> </span>
+            </p>
+            <span class="badge bg-danger" v-if="product.price <= 90">WOW</span>
+            <span class="badge bg-primary" v-else-if="product.price > 90 && product.price <= 1000">Value</span>
+            <span class="badge bg-success" v-else-if="product.price > 1000">TOP</span>
+            <span><small> $</small>[[ product.price | formatPrice  ]]</span>
+            <span v-if="Number.isInteger(product.price) === false" style="font-size: 0.7em; vertical-align: top;">
+                [[ product.price.toString().split('.')[1] ]]
+            </span>
+            <input type="number" :data-price="product.price" hidden>
+        </div>
+    </div>
+</div>
+
   `,
   methods: {
     redirectToItemFromProduct(itemId) {
@@ -492,8 +494,21 @@ App.component('whishlist-component', {
        return this.cart.some(item => item.id === product.id);
     },
     addToCart(product) {
-      console.log('clicked')
       const itemInCart = this.cart.find(item => item.id === product.id);
+      const popoverContent = itemInCart
+        ? `'${product.name} is already in the cart'`
+        : `'${product.name} was added to the cart'`;
+
+      const buttonElement = this.$refs.addToCartButton;
+      $(buttonElement).popover({
+        content: popoverContent,
+        placement: 'top',
+        trigger: 'manual',
+      });
+      $(buttonElement).popover('show');
+      setTimeout(() => {
+        $(buttonElement).popover('hide');
+      }, 1000);
       if (!itemInCart) {
         fetch('/update-basket', {
           method: 'POST',

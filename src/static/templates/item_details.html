@@ -1,29 +1,336 @@
 {% extends "base_old.html" %}
-
 {% set include_block_app_js  = true %}
-{% set include_modal_add_item = false %}
-{% set include_product_component = false %}
-{% set include_whishlist_component = true %}
 
-{% block head %}
-<meta charset="utf-8">
-<script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="../static/templates/js/main.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-<link rel="stylesheet" href="../static/css/main.css">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css" integrity="sha256-2XFplPlrFClt0bIdPgpz8H7ojnk10H69xRqd9+uTShA=" crossorigin="anonymous" />
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+
+{% block more_css %}
+<style>
+  .card-img-top {
+    width: 100%;
+    height: 16vw;
+    object-fit: cover;
+  }
+  .card{
+    width: 30rem;
+    margin-bottom: auto;
+    margin-right: auto;
+    margin-top: auto;
+    margin-left: 50%;
+    /* border: 15px solid #969696; */
+    text-align: center;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .list-group {
+    margin-left: 7%;
+  }
+  .comment-box {
+  padding: 15px
+  }
+  .comment-area textarea {
+  resize: none;
+  border: 1px solid #9797ca
+  }
+
+  #loadMore {
+    width: 30rem;
+    color: #fff;
+    display: block;
+    text-align: center;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background-color: blue;
+    transition: .3s;
+    margin-bottom: 3px;
+  }
+  #loadMore:hover {
+    color: blue;
+    background-color: #fff;
+    border: 1px solid blue;
+    text-decoration: none;
+  }
+  .noContent {
+    color: #000 !important;
+    background-color: transparent !important;
+    pointer-events: none;
+  }
+
+  .nav.nav-tabs {
+    margin-left: 27%;
+    margin-bottom: 3px;
+    /* overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1; */
+    }
+
+  /* .comment-area{
+    margin-left: 28%;
+  } */
+    /* Style the buttons inside the tab */
+    .tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 15px;
+    }
+ 
+    /* Change background color of buttons on hover */
+    .tab button:hover {
+    background-color: #ddd;
+    }
+
+    /* Create an active/current tablink class */
+    .tab button.active {
+    background-color: #ccc;
+    }
+
+    .tab-content {
+    margin-left: 22%;
+    /* display: block;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+    margin-bottom: 5px;
+    max-width: 35%; */
+    }
+  .tab-pane {
+    margin-left: 7%;
+  }
+</style>
 {% endblock %}
+
+
+{% block html_read %}
+<div class="row" style="margin-top: 20px;">
+  <div class="card-group col-12" id="mycard" style="margin-left: 3%;">
+    <div class="col-lg-auto" style="margin-left: 10%;">
+    <div class="card">
+        <div class="card-body">
+          {% if  'no-image.png' == item.image %}
+          <img class="card-img-top" src="/static/img/{{ item.image }}">
+          {% else %}
+          <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
+          {% endif %}
+        <h4 class="card-title">{{item.name}} </h5>
+        <h5 class="price" id="item-details">Price: ${{ '%0.2f'|format(item.price|float)  }}</h5>
+        <p class="category" id="category"> Category: {{ item.category.name.split('.')[-1]  }}</p>
+        <input type="number" name="id" value="{{ item.id }}" id="id" hidden>
+        <input type="text" id="username" value="{{ current_user }}"  hidden>
+      </div>
+      <p>
+        <i> Overall Rating
+      <span class="fa fa-star checked" id="star1"></span>
+      <span class="fa fa-star checked" id="star2"></span>
+      <span class="fa fa-star checked" id="star3"></span>
+      <span class="fa fa-star" id="star4"></span>
+      <span class="fa fa-star" id="star5"></span>
+      <span id="overall-rating"> No rating Yet </span></i>
+    </p>
+      <div>
+           <a class="btn btn-info" id="add-to-cart" data-toggle="modal" data-target="#addToCartMessage"> Add to Cart</a>
+          {% if current_user == item.username  %}
+        <a class="btn btn-secondary" data-toggle="modal" data-target="#EditItem" id="myModal" style="margin: 15px; text-align:center; display:block;">Update</a>
+        <a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" id="myModal" style="margin:15px; text-align:center; display:block;">Delete</a>
+      {% endif %}
+    </div>
+
+      <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="false">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Please confirm.</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+            <p id="errorMeassge" style="text-align: left;">You're about to delete <b>{{item.name}}! </b>Are you sure?</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <form action="delete_item" id="deleteForm">
+                <input type="number" id="delete-id" name="id" value="{{ item.id }}" required hidden>
+                <button type="submit" class="btn btn-danger" style="text-align: left;">Delete</button>
+            </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br/>
+      <div class="card-footer">
+        <small id="small" class="text-muted">Created at: <b>{{ item.date.strftime('%Y-%m-%d') }} </b> by <b> {{ item.username }}</b></small>
+      </div>
+    </div>
+</div>
+  </div>
+</div>
+<div class="modal fade" id="EditItem" tabindex="-1" role="dialog" aria-labelledby="EditItemlLabel" aria-hidden="true" data-backdrop="false">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="EditItemLabel">Edit</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+             <input type="number" name="id" value="{{ item.id }}" id="edit-id" required hidden>
+            <div class="form-group">
+              <label for="price" class="col-form-label">Price:</label>
+              <input type="number" name="price" id="id-price">
+            </div>
+            <div class="form-group">
+              <label for="Category" class="col-form-label">Category:</label>
+              <select name="Category" id="category-select">
+                  <option value="Finance">Finance</option>
+                  <option value="IT">IT</option>
+                  <option value="TV">TV</option>
+                  <option value="Services">Services</option>
+                  <option value="Miscellaneous">Miscellaneous</option>
+              </select>
+            </div>
+          <div class="form-group">
+            <label for="Description" class="col-form-label">Description:</label>
+            <textarea  name="Description" id="id-description" rows="4" cols="50" maxlength="250"></textarea>
+          </div>
+            <hr>
+            <button type="submit" class="btn btn-primary" id="edit-button" onclick="editItem()">Save</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close">Close</button>
+        </div>
+      </div>
+    </div>
+</div>
+<br>
+<nav>
+<ul class="nav nav-tabs" id="myTab" role="tablist" style="margin-left: 27%;">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" 
+    aria-controls="home-tab-pane" aria-selected="true">Reviews</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" 
+    aria-controls="profile-tab-pane" aria-selected="false">Description</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" 
+    aria-controls="contact-tab-pane" aria-selected="false">Messages</button>
+  </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+  <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+    <div class="row pb-1">
+      <div class="card" id="RatingCard" style="margin-left: 0">
+        <div class="row">
+        <div class="col-12" style="margin-bottom: 5px; margin-left:0;" >
+        <div class="comment-box ml-2">
+        <input type="number" id="comment-item-id" value="{{ item.id }}" required hidden>
+        <div class="rating"> <input type="radio" name="rating" value="5" id="5"><label for="5">☆</label> <input type="radio" name="rating" value="4" id="4"><label for="4">☆</label> <input type="radio" name="rating" value="3" id="3"><label for="3">☆</label> <input type="radio" name="rating" value="2" id="2"><label for="2">☆</label> <input type="radio" name="rating" value="1" id="1"><label for="1">☆</label> </div>
+        <div class="comment-area"> <textarea class="form-control" placeholder="what is your view?" rows="4" id="comment-area"></textarea> </div>
+        <div class="comment-btns mt-2">
+        <div class="row">
+        <div class="col-6">
+        <div class="pull-left"> <button class="btn btn-secondary btn-sm" id="RatingCancel" onclick="RatingHide()">Cancel</button> </div>
+        </div>
+        <div class="col-6">
+        <div class="pull-right"> <button class="btn btn-success send btn-sm" id="SendRaiting" onclick="addReview()"> Submit </button> </div>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
+   </div>
+  </div>
+        {%  if item.reviews  %}
+        {% for review in item.reviews %}
+      <div class="list-group" id="card{{review.id}}" style="display: block; margin-left:0;">
+          <div class="row">
+          <div class="col-12" style="margin-bottom: 5px; margin-left:0">
+          <p style="margin-left:0">
+            <img src="/static/img/img_avatar.png" class="avatar">
+            {{ review.created_by }}
+            <span class="fa fa-star checked" id="star{{ review.id }}1"></span>
+            <span class="fa fa-star checked" id="star{{ review.id }}2"></span>
+            <span class="fa fa-star checked" id="star{{ review.id }}3"></span>
+            <span class="fa fa-star" id="star{{ review.id}}4"></span>
+            <span class="fa fa-star" id="star{{ review.id }}5"></span>
+            <div>  <i>{{ review.text }} </i></div>
+            </p>
+          </div>
+          </div>
+        </div>
+      {% endfor %}
+      {%  endif %}
+  </div>
+</div>
+  <div id="description-tab" class="tab-pane fade">
+      <div class="row pb-2">
+        <div class="form-group" id="description-div">
+          <input type="number" name="id" value="{{ item.id }}" id="item-id" required hidden>
+          <p>Update Description:</p>
+          <textarea  name="description" rows="4" cols="50" maxlength="250"> </textarea>
+        </div>
+        <div class="col-md-5">
+          {%  if item.description  %}
+          <p id="description-text"> <i> {{ item.description}} </i> </p>
+          {% else %}
+          <p id="description-text"> <i> Product has no Description yet </i> </p>
+          {%  endif %}
+        </div>
+          <!-- <div class="col-md-5"><img src="//dummyimage.com/1005x559.png/5fa2dd/ffffff" class="float-right img-fluid img-rounded"></div> -->
+      </div>
+  </div>
+  <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+    <div class="row pb-2">
+      <div class="col-md-5">
+        {%  if item.description  %}
+        <p id="description-text"> <i> {{ item.description}} </i> </p>
+        {% else %}
+        <p id="description-text"> <i> Product has no Description yet </i> </p>
+        {%  endif %}
+      </div>
+    </div>
+  </div>
+  <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0" style="margin-left: 0">
+    <div class="list-group"><a href="#" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">44</span> 
+      Message 1</a> <a href="#" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">8</span> 
+      Message 2</a> <a href="#" class="list-group-item d-inline-block"><span class="float-right badge badge-pill badge-dark">23</span> 
+      Message 3</a> <a href="#" class="list-group-item d-inline-block text-muted">Message n..</a></div>
+  </div>
+</div>
+</nav>
+
+<!-- Modal -->
+<div class="modal fade" id="addToCartMessage" tabindex="-1" role="dialog" aria-labelledby="addToCartMessageTitle" aria-hidden="true" data-backdrop="false">
+<div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLongTitle">This product has been added to your cart.</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="card-body">
+        {% if  'no-image.png' == item.image %}
+        <img class="card-img-top" src="/static/img/{{ item.image }}">
+        {% else %}
+        <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
+        {% endif %}
+      <h5 class="card-title">{{item.name}} </h5>
+      <h5 class="price" id="item-details">Price: ${{ '%0.2f'|format(item.price|float)  }}</h5>
+      <p class="category" id="category"> Category: {{ item.category.name.split('.')[-1]  }}</p>
+  </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
+
 
 {% block javascript %}
     <script type="text/javascript">
@@ -31,159 +338,139 @@
     </script>
 {% endblock %}
 
-{% block more_css %}
-<style>
-:root{
-  --bs-white: #fff;
-  --bs-gray: #6c757d;
-  --bs-hover:#192a56;
-  --bs-primary:#565c64;
-}
-.product-grid{
-background-color: #fff;
-font-family: 'Montserrat', sans-serif;
-text-align: center;
-}
-.product-grid .product-image{
-overflow: hidden;
-position: relative;
-}
-.product-grid .product-image a.image{ display: block; }
-.product-grid .product-image img{
-width: 100%;
-height: auto;
-}
-.product-grid .product-image .pic-1{ transition: all 0.3s ease 0s; }
-.product-grid .product-image:hover .pic-1{ transform: translateX(100%); }
-.product-grid .product-image .pic-2{
-width: 100%;
-height: 100%;
-transform: translateX(-101%);
-position: absolute;
-top: 0;
-left: 0;
-transition: all 0.3s ease 0s;
-}
-.product-grid .product-image:hover .pic-2{ transform: translateX(0); }
-.product-grid .product-sale-label{
-color: #fff;
-background: var(--bs-hover);
-font-size: 13px;
-text-transform: uppercase;
-letter-spacing: 1px;
-padding: 2px 8px;
-position: absolute;
-top: 15px;
-left: 15px;
-}
-.product-grid .product-like-icon{
-color: #696969;
-font-size: 22px;
-line-height: 20px;
-position: absolute;
-top: 15px;
-right: 15px;
-}
-.product-grid .product-like-icon:hover{ color: var(--bs-hover); }
-.product-grid .product-like-icon:before,
-.product-grid .product-like-icon:after{
-content: attr(data-tip);
-color: #fff;
-background-color: #000;
-font-size: 12px;
-line-height: 18px;
-padding: 7px 7px 5px;
-visibility: hidden;
-position: absolute;
-right: 0;
-top: 15px;
-transition: all 0.3s ease 0s;
-}
-.product-grid .product-like-icon:after{
-content: '';
-height: 15px;
-width: 15px;
-padding: 0;
-transform: translateX(-50%) rotate(45deg);
-right: auto;
-left: 50%;
-top: 15px;
-z-index: -1;
-}
-.product-grid .product-like-icon:hover:before,
-.product-grid .product-like-icon:hover:after{
-visibility: visible;
-top: 30px;
-}
-.product-grid .product-links{
-width: 170px;
-padding: 0;
-margin: 0;
-list-style: none;
-opacity: 0;
-transform: translateX(-50%);
-position: absolute;
-bottom: -50px;
-left: 50%;
-transition: all 0.3s ease 0s;
-}
-.product-grid:hover .product-links{
-bottom: 40px;
-opacity: 1;
-}
-.product-grid .product-links li{
-display: inline-block;
-margin: 0 2px;
-}
-.product-grid .product-links li a{
-color: #fff;
-background: #192a56;
-font-size: 16px;
-line-height: 48px;
-width: 48px;
-height: 48px;
-border-radius: 50%;
-display: block;
-transition: all 0.3s ease 0s;
-}
-.product-grid:hover .product-links li a:hover{ background: #333; }
-.product-grid .product-content{
-text-align: left;
-padding: 15px 0 0;
-}
-.product-grid .title{
-font-size: 14px;
-font-weight: 500;
-text-transform: capitalize;
-margin: 0 0 8px;
-}
-.product-grid .title a{
-color: #333;
-transition: all 0.3s ease 0s;
-text-decoration:none;
-font-weight:600;
-font-size:18px;
-}
-.product-grid .title a:hover{ color: var(--bs-hover); }
-.product-grid .price{
-color: var(--bs-hover);
-font-size: 16px;
-font-weight: 500;
-}
-.product-grid .price span{
-color: #555;
-font-size: 14px;
-font-weight: 400;
-text-decoration: line-through;
-margin: 0 5px 0 0;
-}
-@media screen and (max-width: 990px){
-.product-grid{ margin: 0 0 30px; }
-}
-</style>
-{% endblock %}
 
-{% block html_read %}
+<script>
+
+function getItemRating(){
+  let id = $("#id").val()
+  $.ajax({
+        url: "/api/reviews/item/rating",
+        method: "get",
+        headers: { "Content-Type": "application/json",},
+        data:  { "id": `${id}`
+        },
+        success: data => {
+          for (var i=1; i<=5; i++ ){
+            var star = document.getElementById('star' + i )
+            if ( i <= data.rating ){
+                star.classList.add('checked');
+            }
+            else { star.classList.remove('checked')}
+          }
+        document.getElementById('overall-rating').innerText = parseFloat(data.rating_float).toFixed(2) + ' based on (' + data.review_number +' reviews)'
+        },
+        error: (error) => {
+            console.log('error:', error);
+        }
+      });
+   }
+
+function UpdateStarRatings(review_id, rating){
+          for (var i=1; i<=5; i++ ){
+            var star = document.getElementById('star'+ review_id + i)
+            if ( i <= rating ){
+                star.classList.add('checked');
+            }
+            else {
+              star.classList.remove('checked');
+            }
+          }
+   }
+
+function setRveiewsRating(){
+  let id = $("#id").val()
+  $.ajax({
+        url: "/api/reviews",
+        method: "get",
+        headers: { "Content-Type": "application/json",},
+        data:  { "item_id": `${id}`
+        },
+        success: data => {
+          data.forEach(review => {
+            UpdateStarRatings(review.id, review.rating)
+          });
+        },
+        error: (error) => {
+            console.log('error:', error);
+        }
+      });
+   }
+
+$(document).ready(function() {
+  $('#deleteForm').submit(function(e) {
+    e.preventDefault();
+    let id = $("#delete-id").val()
+    $.ajax({
+        url: "/items/" + id,
+        type: "POST",
+        headers: {"Content-Type": "application/json",},
+        data:  { "id": `${id}`},
+        success: function(data){
+          window.location.href = "/products"
+        },
+        error: function (xhr) {
+            if (xhr.status === 403) {
+               $('#errorMeassge').text('User is not allowed to delete this item!')
+            }
+        }
+      });
+   }
+)});
+
+$(document).ready(function() {
+    getItemRating()
+    setRveiewsRating()
+});
+
+function ShowDescription() {
+  var x = document.getElementById("description-div");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+
+function ShowReview(){
+  var x  = document.getElementById('RatingCard')
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+
+$(document).ready(function(){
+  var hiddenCardsOnLoad = $(".card:hidden").length;
+  if (hiddenCardsOnLoad === 0) {
+    $("#loadMore").hide();
+  }
+  // Initially show the first 4 cards
+  $("#home-tab-pane > .card.group1").slice(0, 2).show();
+
+  // Use event delegation to handle click on dynamically added elements
+  $("#home-tab-pane").on("click", "#loadMore", function(e){
+    e.preventDefault();
+
+    // Check if the button is in "Show Less" state
+    if ($("#loadMore").text() === "Show Less") {
+      // Hide 2 cards
+      $(".card.group1:visible").slice(0, 2).hide()
+      $("#loadMore").text("Load More"); // Change button text to "Load More"
+    } else {
+      // Show the next set of cards
+      $(".card.group1:hidden").slice(0, 4).slideDown();
+      $("#loadMore").text("Show Less"); // Change button text to "Show Less"
+    }
+  });
+});
 
 
-{% endblock %}
+function RatingHide(){
+  document.getElementById('RatingCard').style.display = "none"
+}
+
+document.getElementById('add-to-cart').onclick = addItemToCart;
+
+</script>
+
