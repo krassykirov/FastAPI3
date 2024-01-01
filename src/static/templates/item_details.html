@@ -828,8 +828,10 @@ function addReview() {
                 <div class="row" style="margin-left:0;">
                 <div class="col-12" style="margin-bottom: 3px; margin-left:0;">
                 <p style="margin-left:0">
-                <img src="/static/img/img_avatar.png" class="avatar">
-                  ${data.created_by}
+                  <div style="display: flex; align-items: center; justify-content: center;">
+                  <img src="/static/img/img_avatar.png" class="avatar" style="padding: 5px;">
+                  <span style="text-align: center;">${data.created_by}</span>
+                </div>
                   <span class="fa fa-star checked" id="star${data.id}1"></span>
                   <span class="fa fa-star checked" id="star${data.id}2"></span>
                   <span class="fa fa-star checked" id="star${data.id}3"></span>
