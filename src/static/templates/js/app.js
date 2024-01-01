@@ -139,7 +139,12 @@ const App = Vue.createApp({
       });
     },
     redirectToItem(itemId) {
+      var currentPath = window.location.pathname;
+      var regex = /\/items\/(.*)/;
+      var match = regex.exec(currentPath);
+      if (!match) {
         window.location.href = 'items/' + itemId;
+    }
     },
     redirectToCart(itemId) {
       window.location.href = 'items-in-cart/';
