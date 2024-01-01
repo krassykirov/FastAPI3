@@ -1,5 +1,4 @@
 
-
 function editItem() {
       let id = $("#edit-id").val()
       let price = $("#id-price").val()
@@ -30,7 +29,6 @@ function editItem() {
 }
 
 function addReview() {
-
       let review = $("#comment-area").val()
       let id = $("#comment-item-id").val()
       let username = $("#username").val()

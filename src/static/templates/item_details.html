@@ -1,29 +1,161 @@
 {% extends "base_old.html" %}
 {% set include_block_app_js  = true %}
-{% set include_modal_add_item = false %}
-{% set include_product_component = false %}
-{% set include_whishlist_component = false %}
-
 
 {% block more_css %}
 <style>
+:root{
+    --color-primary: #9A3B3B;
+    --color-secondary: #C08261;
+    --color-tertiary: #E2C799;
+}
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+ul{
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+.btn2{
+    display: inline-block;
+    padding: 12px 36px;
+    background-color: var(--color-primary);
+    border: 1px solid var(--color-secondary);
+    color: white;
+    cursor: pointer;
+    transition: all .3s ease-in-out;
+}
+.btn2.active,
+.btn2:hover{
+    background-color: var(--color-secondary);
+    border-color: var(--color-tertiary);
+}
+.text-center{
+  text-align: center;
+}
+
+.container {
+    max-width: 100%;
+    width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media(min-width: 576px) {
+    .container {
+        max-width: 540px;
+    }
+}
+
+@media(min-width: 768px) {
+    .container {
+        max-width: 720px;
+    }
+}
+
+@media(min-width: 992px) {
+    .container {
+        max-width: 960px;
+    }
+}
+
+@media(min-width: 1200px) {
+    .container {
+        max-width: 1140px;
+    }
+}
+
+@media(min-width: 1440px) {
+    .container {
+        max-width: 1310px;
+    }
+}
+section{
+  padding: 64px 0;
+}
+header{
+  margin: 32px 0;
+}
+.hide{
+    display: none;
+}
+
+.tab-nav{
+    max-width: 300px;
+    margin: 0 auto;
+    border: 1px solid gainsboro;
+}
+.tab-nav button{
+    width: 100%;
+}
+.tab-nav ul {
+    display: none;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+}
+.tab-nav ul.show{
+    display: block;
+}
+@media(min-width: 992px){
+    .tab-nav {
+        max-width: 100%;
+        border: 0;
+    }
+    .tab-nav ul {
+        gap: 16px;
+        flex-direction: row;
+    }
+}
+
+.tab-content{
+    padding: 32px;
+    margin-top: 20px;
+    border: 1px solid var(--color-primary);
+}
+.mobile-select{
+    position: relative;
+    max-width: 300px;
+    margin: 0 auto;
+    padding: 12px 16px;
+    padding-right: 48px;
+    cursor: pointer;
+}
+.mobile-select::after{
+    content: '\f282';
+    font-family: bootstrap-icons;
+    display: inline-block;
+    position: absolute;
+    line-height: 1;
+    right: 16px;
+    top: 14px;
+}
+.mobile-select.active::after{
+    transform: rotate(180deg);
+}
+@media(min-width: 992px){
+    .mobile-select{
+        display: none;
+    }
+    .tab-nav ul{
+        display: flex;
+    }
+}
+
   @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap');
 
-*{
-    box-sizing: border-box;
-    padding: 0;
-    margin: 0;
-    font-family: 'Open Sans', sans-serif;
-}
-body{
-    line-height: 1.5;
-}
 .card{
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         grid-gap: 1.5rem;
         justify-content: center;
-        width: 150vh;
+        width: 155vh;
         text-align: center;
         margin-bottom: 2%;
         margin-left: 2%;
@@ -76,15 +208,7 @@ img{
     color: #12263a;
     margin: 1rem 0;
 }
-/* .product-title::after{
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    height: 4px;
-    width: 80px;
-    background: #12263a;
-} */
+
 .product-link{
     text-decoration: none;
     text-transform: uppercase;
@@ -209,8 +333,9 @@ img{
         grid-gap: 1.5rem;
     }
     .card-wrapper{
-        margin-top: 250px;
+        margin-top: 270px;
         margin-bottom: 1%;
+        margin-left: 2%;
         height: 50vh;
         width: 100%;
         display: flex;
@@ -223,12 +348,12 @@ img{
         justify-content: center;
     }
     .product-content{
+        margin-top: 50px;
         padding-top: 0;
     }
 }
 </style>
 {% endblock %}
-
 
 {% block html_read %}
 <div class = "card-wrapper">
@@ -269,9 +394,9 @@ img{
     <div class = "product-content">
       <h2 class = "product-title">{{ item.name }}</h2>
       <div class = "product-rating">
-        <span class="fa fa-star checked" id="star1"></span>
-        <span class="fa fa-star checked" id="star2"></span>
-        <span class="fa fa-star checked" id="star3"></span>
+        <span class="fa fa-star" id="star1"></span>
+        <span class="fa fa-star" id="star2"></span>
+        <span class="fa fa-star" id="star3"></span>
         <span class="fa fa-star" id="star4"></span>
         <span class="fa fa-star" id="star5"></span>
         <span id="overall-rating"> No rating Yet </span></i>
@@ -279,7 +404,7 @@ img{
 
       <div class = "product-price">
         <p class = "last-price">Old Price: <span>{{ '%0.2f' % item.price|float}}</span></p>
-        <p class = "new-price">New Price: <span>{{ '%0.2f' % item.price|float }}</span></p>
+        <p class = "new-price" id="new-price">New Price: <span>{{ '%0.2f' % item.price|float }}</span></p>
       </div>
 
       <div class = "product-detail">
@@ -289,7 +414,7 @@ img{
         <ul>
           <li>Color: <span>Black</span></li>
           <li>Available: <span>in stock</span></li>
-          <li>Category: <span>Shoes</span></li>
+          <li id="category">Category: <span>{{ item.category.name.split('.')[-1] }}</span></li>
           <li>Shipping Area: <span>All over the world</span></li>
           <li>Shipping Fee: <span>Free</span></li>
         </ul>
@@ -297,7 +422,7 @@ img{
 
       <div class = "purchase-info">
         <input type = "number" min = "0" value = "1">
-        <button type = "button" class = "btn">
+        <button type = "button" class="btn" id="add-to-cart" data-target="#addToCartMessage" onclick="addItemToCart()">
           Add to Cart <i class = "fas fa-shopping-cart"></i>
         </button>
         <button type = "button" class = "btn">Compare</button>
@@ -324,12 +449,227 @@ img{
     </div>
   </div>
 </div>
-{% endblock %}
 
+<!-- <a class="btn btn-info" id="add-to-cart" data-toggle="modal" data-target="#addToCartMessage"> Add to Cart</a> -->
+<!-- {% if current_user == item.username  %}
+<a class="btn btn-secondary" data-toggle="modal" data-target="#EditItem"  style="margin: 15px; text-align:center; display:block;">Update</a>
+<a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal"  style="margin:15px; text-align:center; display:block;">Delete</a>
+{% endif %} -->
+
+<section class="container" style="margin-top: 180px;">
+  <div class="tab-container">
+      <nav class="tab-nav">
+          <div class="mobile-select"> <i class="bi bi-chevron-down"></i></div>
+          <ul>
+              <li><button class="btn2 tab-btn active" id="html">Reviews</button></li>
+              <li><button class="btn2 tab-btn" id="csss">CSS</button></li>
+              <li><button class="btn2 tab-btn" id="js">JavaScript</button></li>
+          </ul>
+      </nav>
+      <div class="tab-content">
+          <div class="tab-item" data-id="html" id="reviewTab">
+            {%  if item.reviews  %}
+            {% for review in item.reviews %}
+          <div class="card group1" id="card{{review.id}}" style="display: block; width:500px;">
+              <div class="row">
+              <div class="col-12" style="margin-bottom: 5px;">
+              <p>
+                <img src="/static/img/img_avatar.png" class="avatar">
+                {{ review.created_by }}
+                <span class="fa fa-star checked" id="star{{ review.id }}1"></span>
+                <span class="fa fa-star checked" id="star{{ review.id }}2"></span>
+                <span class="fa fa-star checked" id="star{{ review.id }}3"></span>
+                <span class="fa fa-star" id="star{{ review.id}}4"></span>
+                <span class="fa fa-star" id="star{{ review.id }}5"></span>
+                <div>  <i>{{ review.text }} </i></div>
+                </p>
+              </div>
+              </div>
+            </div> 
+          {% endfor %}
+          {%  endif %}
+          <div class="row pb-2" style="width:700px">
+            <div class="card" id="RatingCard" style="width:550px">
+              <div class="row">
+              <div class="col-12" style="margin-bottom: 5px;">
+              <div class="comment-box ml-2">
+              <input type="number" id="comment-item-id" value="{{ item.id }}" required hidden>
+              <div class="rating" style="padding:10px;"> <input type="radio" name="rating" value="5" id="5"><label for="5">☆</label> <input type="radio" name="rating" value="4" id="4"><label for="4">☆</label> <input type="radio" name="rating" value="3" id="3"><label for="3">☆</label> <input type="radio" name="rating" value="2" id="2"><label for="2">☆</label> <input type="radio" name="rating" value="1" id="1"><label for="1">☆</label> </div>
+              <div class="comment-area" style="width:500px; padding:10px;"> <textarea class="form-control" placeholder="what is your view?" rows="4" id="comment-area"></textarea> </div>
+              <div class="comment-btns mt-2">
+              <div class="row">
+              <div class="col-6">
+              <div class="pull-left"> <button class="btn btn-secondary btn-sm" id="RatingCancel" onclick="RatingHide()">Cancel</button> </div>
+              </div>
+              <div class="col-6">
+              <div class="pull-right"> <button class="btn btn-success send btn-sm" onclick="addReview()"> Submit </button> </div>
+              </div>
+              </div>
+              </div>
+              </div>
+              </div>
+         </div>
+         </div>
+         </div>
+         </div>
+          <div class="tab-item hide" data-id="csss">
+              <h3>CSS</h3>
+              <p>CSS (Cascading Style Sheets) is a stylesheet language used for describing the presentation and
+                  layout of HTML documents. It plays a critical role in web development by allowing web developers
+                  to control the visual appearance of web pages.</p>
+          </div>
+          <div class="tab-item hide" data-id="js">
+              <h3>JavaScript</h3>
+              <p>JavaScript is a high-level, versatile, and widely used programming language primarily known for
+                  its role in web development. It allows developers to add interactivity, dynamic behavior, and
+                  complex functionality to web pages. JavaScript can be executed in web browsers, making it a core
+                  technology for client-side scripting.</p>
+          </div>
+      </div>
+  </div>
+</section>
+
+<!-- Modals -->
+
+<div class="modal fade" id="deleteModal"  data-backdrop="false" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Please confirm.</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <p id="errorMeassge" style="text-align: left;">You're about to delete <b>{{item.name}}! </b>Are you sure?</p>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <form action="delete_item" id="deleteForm">
+          <input type="number" id="delete-id" name="id" value="{{ item.id }}" required hidden>
+          <button type="submit" class="btn btn-danger" style="text-align: left;">Delete</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="EditItem" tabindex="-1" role="dialog" data-backdrop="false" aria-labelledby="EditItemlLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="EditItemLabel">Edit</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+           <input type="number" name="id" value="{{ item.id }}" id="edit-id" required hidden>
+          <div class="form-group">
+            <label for="price" class="col-form-label">Price:</label>
+            <input type="number" name="price" id="id-price">
+          </div>
+          <div class="form-group">
+            <label for="Category" class="col-form-label">Category:</label>
+            <select name="Category" id="category-select">
+                <option value="Finance">Finance</option>
+                <option value="IT">IT</option>
+                <option value="TV">TV</option>
+                <option value="Services">Services</option>
+                <option value="Miscellaneous">Miscellaneous</option>
+            </select>
+          </div>
+        <div class="form-group">
+          <label for="Description" class="col-form-label">Description:</label>
+          <textarea  name="Description" id="id-description" rows="4" cols="50" maxlength="250"></textarea>
+        </div>
+          <hr>
+          <button type="submit" class="btn btn-primary" id="edit-button" onclick="editItem()">Save</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" id="close">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addToCartMessage" data-backdrop="false" tabindex="-1" role="dialog" aria-labelledby="addToCartMessageTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">This product has been added to your cart.</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="card-body">
+          {% if  'no-image.png' == item.image %}
+          <img class="card-img-top" src="/static/img/{{ item.image }}">
+          {% else %}
+          <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
+          {% endif %}
+        <h5 class="card-title">{{item.name}} </h5>
+        <h5 class="price" id="item-details">Price: ${{ '%0.2f'|format(item.price|float)  }}</h5>
+        <p class="category" id="category"> Category: {{ item.category.name.split('.')[-1]  }}</p>
+    </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
 
 
 {% block javascript %}
 <script>
+
+const select = document.querySelector('.mobile-select');
+const selectDynamicText = () => {
+    //mobile select
+    Array.from(select.nextElementSibling.children).forEach(li => {
+        Array.from(li.children).forEach(child => {
+            if (child.classList.contains('active')) {
+                let activeText = child.textContent;
+                select.textContent = activeText;
+            }
+        });
+    });
+}
+select.addEventListener('click', function () {
+    this.classList.toggle('active');
+    this.nextElementSibling.classList.toggle('show');
+});
+
+const handleCloseSelect = () => {
+    select.classList.remove('active');
+    select.nextElementSibling.classList.remove('show');
+}
+
+const tabContainer = document.querySelector('.tab-container');
+
+tabContainer.addEventListener('click', e => {
+    e.stopPropagation();
+    const tabNavs = document.querySelectorAll('.tab-nav button');
+    const tabItems = document.querySelectorAll('.tab-item');
+    if (e.target.classList.contains('tab-btn')) {
+        tabNavs.forEach(tabNav => tabNav.classList.remove('active'));
+        tabItems.forEach(tabItem => {
+            tabItem.classList.add('hide');
+            let tabId = tabItem.getAttribute('data-id');
+
+            if (e.target.getAttribute('id') === tabId) {
+                e.target.classList.add('active');
+                tabItem.classList.remove('hide');
+            }
+        });
+        selectDynamicText();
+        handleCloseSelect();
+    }
+});
+
+selectDynamicText();
+
 const imgs = document.querySelectorAll('.img-select a');
 const imgBtns = [...imgs];
 let imgId = 1;
@@ -350,11 +690,26 @@ function slideImage(){
 
 window.addEventListener('resize', slideImage);
 
+function addItemToCart() {
+  let id = $("#edit-id").val();
+  $.ajax({
+      url: "/update-basket",
+      method: "post",
+      headers: { "Content-Type": "application/json",},
+      data:  JSON.stringify({
+            "item_id": `${id}`,
+          }),
+      success: data => {
+        console.log('success', data)
+      },
+      error: (error) => {
+        console.log('error', error)
+      }
+    });
+  }
 
 function getItemRating(item_id){
   let id = item_id
-  console.log('id', id)
-  console.log('item_id', item_id)
   $.ajax({
         url: "/api/reviews/item/rating",
         method: "get",
@@ -409,10 +764,114 @@ function setRveiewsRating(id){
 
 $(document).ready(function() {
     var item_id = '{{ item.id }}'
-    console.log('item_id', item_id)
     getItemRating(item_id)
-    // setRveiewsRating()
+    setRveiewsRating(item_id)
 });
+
+function editItem() {
+      let id = $("#edit-id").val()
+      let price = $("#id-price").val()
+      let category = document.getElementById('category-select').value;
+      let description = document.getElementById('id-description').value;
+    $.ajax({
+        url: "/update_product_ajax",
+        method: "post",
+        headers: { "Content-Type": "application/json",},
+        data:  JSON.stringify({
+                "id": `${id}`,
+                "price": `${price}`,
+                "category": `${category}`,
+                "description": `${description}`
+        }),
+        success: data => {
+            document.getElementById('new-price').innerText = `Price: $${parseFloat(data.price).toFixed(2)}`;
+            document.getElementById('category').innerText = `Category: ${data.category.name}`;
+            // document.getElementById('description-text').innerText = `${data.description}`;
+            document.getElementById('close').click()
+        },
+        error: (response) => {
+          if (response.status === 403) {
+            $("#EditPriceLabel").text(response.responseJSON.detail)
+         }
+        }
+      });
+}
+
+function addReview() {
+      let review = $("#comment-area").val()
+      let id = '{{ item.id }}'
+      console.log('ietm_id', id)
+      let username = '{{ current_user }}'
+      let rating = document.querySelector('input[name="rating"]:checked').value;
+    $.ajax({
+        url: "/create_review_ajax",
+        method: "post",
+        headers: { "Content-Type": "application/json",},
+        data:  JSON.stringify({
+                "text": `${review}`,
+                "item_id": `${id}`,
+                "rating": `${rating}`,
+                "created_by": `${username}`
+        }),
+        success: data => {
+           const reviewDiv = document.getElementsByClassName('card group1')
+           const newCard = `
+           <div class="card group1" id="card${data.id}" style="display: flex; margin-left:0; margin-bottom:3;">
+                <div class="row" style="margin-left:0;">
+                <div class="col-12" style="margin-bottom: 3px; margin-left:0;">
+                <p style="margin-left:0">
+                <img src="/static/img/img_avatar.png" class="avatar">
+                  ${data.created_by}
+                  <span class="fa fa-star checked" id="star${data.id}1"></span>
+                  <span class="fa fa-star checked" id="star${data.id}2"></span>
+                  <span class="fa fa-star checked" id="star${data.id}3"></span>
+                  <span class="fa fa-star" id="star${data.id}4"></span>
+                  <span class="fa fa-star" id="star${data.id}5"></span>
+                  <div>  <i>${data.text} </i></div>
+                </p>
+                </div>
+                </div>
+           </div >
+           `
+            getItemRating(id)
+            setRveiewsRating(id)
+
+            // document.getElementById('RatingCancel').click()
+            $("#reviewTab").append(newCard)
+            // $("#home-tab-pane").append('<a href="#" id="loadMore" style="margin-left:0%">Load More</a>');
+            // reviewDiv.style.display = "block";
+            // window.location.href = `/items/${id}`
+        },
+        error: (response) => {
+          if (response.status === 403) {
+            $("#comment-area").val(response.responseJSON.detail)
+         }
+        }
+      });
+};
+
+$(document).ready(function() {
+  $('#deleteForm').submit(function(e) {
+    console.log("click delete")
+    e.preventDefault();
+    let id = $("#delete-id").val()
+    $.ajax({
+        url: "/items/" + id,
+        type: "POST",
+        headers: {"Content-Type": "application/json",},
+        data:  { "id": `${id}`},
+        success: function(data){
+          window.location.href = "/products"
+        },
+        error: function (xhr) {
+            if (xhr.status === 403) {
+               $('#errorMeassge').text('User is not allowed to delete this item!')
+            }
+        }
+      });
+   }
+)});
+
 
 </script>
 {% endblock %}

@@ -19,9 +19,9 @@ const App = Vue.createApp({
       productMax: 10000,
     };
   },
-  async beforeMount() {
-    await this.readFromCartVue();
+  async created() {
     await this.getProducts();
+    await this.readFromCartVue();
     await this.fetchCategories();
     this.products.forEach(product => {
     this.getItemRating(product.id);
@@ -43,6 +43,15 @@ const App = Vue.createApp({
    },
   },
   methods: {
+    async getProduct(itemId) {
+      try {
+        const res = await fetch(`/api/items/item/${itemId}`);
+        const item = await res.json();
+        this.item = item;
+      } catch (error) {
+        console.error('Error fetching product:', error);
+      }
+    },
     async getProducts() {
       try {
         const res = await fetch('/api/items');
@@ -130,7 +139,7 @@ const App = Vue.createApp({
       });
     },
     redirectToItem(itemId) {
-      window.location.href = 'items/' + itemId;
+        window.location.href = 'items/' + itemId;
     },
     redirectToCart(itemId) {
       window.location.href = 'items-in-cart/';
@@ -336,19 +345,21 @@ App.component('navbar-component', {
             <input class="form-control mr-sm-2" id="filter" v-on:keyup="Search()" type="text" placeholder="Search in offers">
           </form>
         <div v-if="cart" @mouseleave="hideCart()" @mouseenter="showCart()" d-flex bd-highlight mb-3>
-          <button @click="displayCart = !displayCart" class="btn btn-light dropdown-toggle btn-sm" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
+          <button @click="displayCart = !displayCart" class="btn btn-light dropdown-toggle btn-sm" id="cartDropdown" aria-haspopup="true" aria-expanded="false"
+          style="margin-top:14px">
           <i class="bi bi-cart" style="font-size: 1rem;"></i> Cart <span class="badge badge-pill badge-primary"> [[ cart.length ]]</span>
       </button>
           <div v-if="!displayCart"  class="list-group position-absolute">
-            <div v-for="(item, index) in cart" :key="index" class="list-group-item d-flex justify-content-between align-items-center">
+            <div v-for="(item, index) in cart.slice(0, Math.min(7, cart.length))" :key="index" class="list-group-item d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
               <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image" class="mr-2"
                   style="width: 50px; height: 60px; object-fit: cover; border-radius: 5px;">
               <div style="cursor: pointer" @click="redirectToItemFromNavbar(item.id)">
-                <div> [[ item.name ]] - $[[ item.price ]] </div>
+                <div style="font-size: 1rem;">[[ item.name ]] - $[[ item.price ]]</div>
               </div>
             </div>
-            <button @click="removeFromCart(item.id)" class="btn btn-light btn-sm ml-2" data-bs-placement="top">x</button>
+            <button @click="removeFromCart(item.id)" class="btn btn-light btn-sm ml-2" data-bs-placement="top"
+            style="margin-top:16px">x</button>
           </div>
           <button id="total" class="btn btn-sm btn-light" style="pointer-events: none; opacity: 1; margin-bottom: 1px;">
             Total: [[ cart.length ]] products - <b> $[[ total ]]</b>
@@ -356,7 +367,7 @@ App.component('navbar-component', {
           <button v-if="cart.length > 0" @click="redirectToCart" class="btn btn-sm btn-primary"> Go to Cart </button>
             </div>
         </div>
-          <div class="ml-auto"></div> [[ user ]] 
+          <div class="ml-auto" style="font-family: Raleway; font-size: 16px;">[[ user ]]</div> 
           <form class="form-inline my-2 my-lg-0" style="margin-right: 120px; padding:0">
             <div class="dropdown" style="font-family: Raleway; font-size: 16px;">
                <img src="/static/img/img_avatar.png" class="avatar">
@@ -377,7 +388,7 @@ App.component('navbar-component', {
   },
     redirectToCart() {
      window.location.href = `/items-in-cart`
-    // this.$root.redirectToCart();
+     this.$root.redirectToCart();
   },
   removeFromCart(itemId) {
       fetch('/user/remove-from-basket', {
@@ -457,7 +468,7 @@ App.component('whishlist-component', {
             </a>
             <ul class="product-links">
                 <li><a href="#"><i class="fa fa-search"></i></a></li>
-                <li><a ref="addToCartButton" @click="addToCart(product)" style="cursor: pointer"><i class="fas fa-shopping-cart"></i></a></li>
+                <li><a href="#" ref="addToCartButton" @click="addToCart(product)" style="cursor: pointer"><i class="fas fa-shopping-cart"></i></a></li>
                 <li><a href="#"><i class="fa fa-random"></i></a></li>
             </ul>
         </div>
@@ -547,27 +558,30 @@ App.component('whishlist-component', {
   },
 });
 
-App.component('product-details', {
-  props: ['item', 'min', 'max','cart','selectedRatings','formatPrice'],
-  emits: ['addToCart','getProduct'],
-  data() {
-  return {
-  };
-},
+App.component('item-component', {
+  props: ['item', 'cart'],
   delimiters: ['[[', ']]'],
+  emits: ['addToCart'],
+  data() {
+    return { 
+
+    }},
   template: `
   <div class = "card-wrapper">
   <div class = "card">
     <div class = "product-imgs">
       <div class = "img-display">
         <div class = "img-showcase">
-          <img :src="'static/img/' + item.username + '/' + item.name + '/' + item.image">
+        <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image">
+          <img src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
+          <img src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
+          <img src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
           </div>
       </div>
       <div class = "img-select">
         <div class = "img-item">
           <a href = "#" data-id = "1">
-            <img src = "img :src="'static/img/' + item.username + '/' + item.name + '/' + item.image" alt = "shoe image">
+          <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image">
           </a>
         </div>
         <div class = "img-item">
@@ -589,19 +603,19 @@ App.component('product-details', {
     </div>
     <!-- card right -->
     <div class = "product-content">
-      <h2 class = "product-title">[[ item.name ]]</h2>
+      <h2 class = "product-title">  [[ item.name  ]]   </h2>
       <div class = "product-rating">
-      <i>
-      <span v-for="i in 5" :key="i" :class="getStarClasses(i, item.rating_float)"></span>
-      <span :id="'overall-rating' + item.id + '-float'"><small>&nbsp[[ item.rating_float ]]</small></span>
-      </i>
-        <span :id="'overall-rating' + item.id"> <small> ([[ item.reviewNumber ]]) </small> </span>
-        <span>4.7(21)</span>
+        <span class="fa fa-star checked" id="star1"></span>
+        <span class="fa fa-star checked" id="star2"></span>
+        <span class="fa fa-star checked" id="star3"></span>
+        <span class="fa fa-star" id="star4"></span>
+        <span class="fa fa-star" id="star5"></span>
+        <span id="overall-rating"> No rating Yet </span>
       </div>
 
       <div class = "product-price">
-        <p class = "last-price">Old Price: <span>[[ item.price ]]</span></p>
-        <p class = "new-price">New Price: <span>$249.00 (5%)</span></p>
+        <p class = "last-price">Old Price: <span>{{ item.price }}</span></p>
+        <p class = "new-price">New Price: <span>{{ item.price }}</span></p>
       </div>
 
       <div class = "product-detail">
@@ -611,7 +625,7 @@ App.component('product-details', {
         <ul>
           <li>Color: <span>Black</span></li>
           <li>Available: <span>in stock</span></li>
-          <li>Category: <span>Shoes</span></li>
+          <li>Category: <span>Category</span></li>
           <li>Shipping Area: <span>All over the world</span></li>
           <li>Shipping Fee: <span>Free</span></li>
         </ul>
@@ -624,7 +638,6 @@ App.component('product-details', {
         </button>
         <button type = "button" class = "btn">Compare</button>
       </div>
-
       <div class = "social-links">
         <p>Share At: </p>
         <a href = "#">
@@ -648,19 +661,6 @@ App.component('product-details', {
 </div>
   `,
   methods: {
-    redirectToItemFromProduct(itemId) {
-    this.item = this.getProduct(itemId)
-    this.$root.redirectToItem(itemId);
-   },
-   async getProduct(productId) {
-    try {
-      const res = await fetch(`'/api/items/item/${productId}'`);
-      const item = await res.json();
-      this.item = item;
-      } catch (error) {
-      console.error('Error fetching product:', error);
-    }
-    },
     itemAlreadyInCart(product) {
        return this.cart.some(item => item.id === product.id);
     },
@@ -704,19 +704,8 @@ App.component('product-details', {
           });
       }
     },
-    getStarClasses(index, rating) {
-        const filledStars = Math.floor(rating);
-        if (index <= filledStars) {
-          return 'fa fa-star checked';
-        } else if (index === filledStars + 1 && rating % 1 !== 0) {
-          return 'fa fa-star-half-full checked';
-        } else {
-          return 'fa fa-star-o checked';
-        }
-    },
   },
 });
-
 
 
 App.mount('#app');
