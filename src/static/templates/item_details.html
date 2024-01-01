@@ -462,34 +462,42 @@ img{
           <div class="mobile-select"> <i class="bi bi-chevron-down"></i></div>
           <ul>
               <li><button class="btn2 tab-btn active" id="html">Reviews</button></li>
-              <li><button class="btn2 tab-btn" id="csss">CSS</button></li>
-              <li><button class="btn2 tab-btn" id="js">JavaScript</button></li>
+              <li><button class="btn2 tab-btn" id="csss">Specification</button></li>
+              <li><button class="btn2 tab-btn" id="js">Details</button></li>
           </ul>
       </nav>
       <div class="tab-content">
           <div class="tab-item" data-id="html" id="reviewTab">
             {%  if item.reviews  %}
             {% for review in item.reviews %}
-          <div class="card group1" id="card{{review.id}}" style="display: block; width:500px;">
+          <div class="card group1" id="card{{review.id}}" style="display: block; width:550px; margin-bottom: 2px;">
               <div class="row">
-              <div class="col-12" style="margin-bottom: 5px;">
+              <div class="col-12">
               <p>
-                <img src="/static/img/img_avatar.png" class="avatar">
-                {{ review.created_by }}
+                <div style="display: flex; align-items: center; justify-content: center;">
+                  <img src="/static/img/img_avatar.png" class="avatar" style="padding: 5px;">
+                  <span style="text-align: center;">{{ review.created_by }}</span>
+                </div>
                 <span class="fa fa-star checked" id="star{{ review.id }}1"></span>
                 <span class="fa fa-star checked" id="star{{ review.id }}2"></span>
                 <span class="fa fa-star checked" id="star{{ review.id }}3"></span>
                 <span class="fa fa-star" id="star{{ review.id}}4"></span>
                 <span class="fa fa-star" id="star{{ review.id }}5"></span>
-                <div>  <i>{{ review.text }} </i></div>
+                </p>
+                <hr>
+                <div><p style="text-align: left; padding: 15px;">{{ review.text }}
+                  CSS (Cascading Style Sheets) is a stylesheet language used for describing the presentation and
+                  layout of HTML documents. It plays a critical role in web development by allowing web developers
+                  to control the visual appearance of web pages.
+                </p></div>
                 </p>
               </div>
               </div>
-            </div> 
+          </div> 
           {% endfor %}
           {%  endif %}
           <div class="row pb-2" style="width:700px">
-            <div class="card" id="RatingCard" style="width:550px">
+            <div class="card" id="RatingCard" style="width:550px; margin-left: 35px;">
               <div class="row">
               <div class="col-12" style="margin-bottom: 5px;">
               <div class="comment-box ml-2">
@@ -816,7 +824,7 @@ function addReview() {
         success: data => {
            const reviewDiv = document.getElementsByClassName('card group1')
            const newCard = `
-           <div class="card group1" id="card${data.id}" style="display: flex; margin-left:0; margin-bottom:3; width:550px">
+           <div class="card group1" id="card${data.id}" style="display: flex; margin-left: 25px; margin-bottom:3; width:550px">
                 <div class="row" style="margin-left:0;">
                 <div class="col-12" style="margin-bottom: 3px; margin-left:0;">
                 <p style="margin-left:0">
@@ -872,6 +880,9 @@ $(document).ready(function() {
    }
 )});
 
+function RatingHide(){
+  document.getElementById('RatingCard').style.display = "none"
+}
 
 </script>
 {% endblock %}
