@@ -4,9 +4,9 @@
 {% block more_css %}
 <style>
 :root{
-    --color-primary: #9A3B3B;
-    --color-secondary: #C08261;
-    --color-tertiary: #E2C799;
+    --color-primary: #2354d1;
+    --color-secondary: #2354d1;
+    --color-tertiary: #2354d1;
 }
 *,
 *::before,
@@ -816,7 +816,7 @@ function addReview() {
         success: data => {
            const reviewDiv = document.getElementsByClassName('card group1')
            const newCard = `
-           <div class="card group1" id="card${data.id}" style="display: flex; margin-left:0; margin-bottom:3;">
+           <div class="card group1" id="card${data.id}" style="display: flex; margin-left:0; margin-bottom:3; width:550px">
                 <div class="row" style="margin-left:0;">
                 <div class="col-12" style="margin-bottom: 3px; margin-left:0;">
                 <p style="margin-left:0">
