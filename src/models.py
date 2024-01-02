@@ -70,6 +70,7 @@ class Item(SQLModel, table=True):
     username:     Optional[str] = Field(default=None, foreign_key="user.username")
     description:  Optional[str]
     in_cart:      Optional[Dict[Any,Any]] = Field(default={}, sa_column=Column(JSON))
+    # seen:         Optional[int]= 0
 
     class Config:
         arbitrary_types_allowed = True

@@ -39,11 +39,12 @@
 
 {% block html_read %}
 {% if profile %}
-    <div class="card" style="margin-top: 30px;">
+    <div class="card" style="margin-top: 10px; width: 21vw;">
       <img src="/static/img/{{ current_user }}/profile/{{ profile.avatar }}" id="avatar-image" style="width:100%">
       <h1 id="current_user">{{ current_user }}</h1>
       <p class="title">CEO & Founder, Birds</p>
-      <p id="card-email">Email: {{ profile.email }}</p>
+      <p id="primary-email">Primary Email: {{ current_user }}</p>
+      <p id="card-email"> Secondary Email: {{ profile.email }}</p>
       <p id="card-phone">Phone: {{ profile.number }}</p>
       <p id="card-address">Address: {{ profile.address }}</p>
       <div style="margin: 24px 0;">

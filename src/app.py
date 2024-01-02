@@ -144,7 +144,7 @@ async def read_item(request: Request, id: int, db: Session=Depends(get_session),
         item_rating = ReviewActions().get_item_reviews_rating(db=db,id=id)
         profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
         items = get_user_items_in_cart(db=db, user=user)
-        # item = jsonable_encoder(item)
+        item = jsonable_encoder(item)
         return templates.TemplateResponse("item_details.html", {"request":request,
                                                                 'current_user': user.username,
                                                                 'items': items,
@@ -329,6 +329,7 @@ async def get_category_ajax( request: Request, db: Session=Depends(get_session),
     if json_compatible_item_data:
         return JSONResponse(content = json_compatible_item_data)
     return JSONResponse(content = "No Items in Category Found")
+
 
 @app.post("/update-basket", status_code=status.HTTP_200_OK,  include_in_schema=False)
 async def update_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):

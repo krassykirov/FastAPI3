@@ -1,85 +1,3 @@
-
-function editItem() {
-      let id = $("#edit-id").val()
-      let price = $("#id-price").val()
-      let category = document.getElementById('category-select').value;
-      let description = document.getElementById('id-description').value;
-    $.ajax({
-        url: "/update_product_ajax",
-        method: "post",
-        headers: { "Content-Type": "application/json",},
-        data:  JSON.stringify({
-                "id": `${id}`,
-                "price": `${price}`,
-                "category": `${category}`,
-                "description": `${description}`
-        }),
-        success: data => {
-            document.getElementById('item-details').innerText = `Price: $${parseFloat(data.price).toFixed(2)}`;
-            document.getElementById('category').innerText = `Category: ${data.category.name}`;
-            document.getElementById('description-text').innerText = `${data.description}`;
-            document.getElementById('close').click()
-        },
-        error: (response) => {
-          if (response.status === 403) {
-            $("#EditPriceLabel").text(response.responseJSON.detail)
-         }
-        }
-      });
-}
-
-function addReview() {
-      let review = $("#comment-area").val()
-      let id = $("#comment-item-id").val()
-      let username = $("#username").val()
-      let rating = document.querySelector('input[name="rating"]:checked').value;
-    $.ajax({
-        url: "/create_review_ajax",
-        method: "post",
-        headers: { "Content-Type": "application/json",},
-        data:  JSON.stringify({
-                "text": `${review}`,
-                "item_id": `${id}`,
-                "rating": `${rating}`,
-                "created_by": `${username}`
-        }),
-        success: data => {
-           const reviewDiv = document.getElementsByClassName('card group1"')
-           const newCard = `
-           <div class="card group1" id="card${data.id}" style="display: flex; margin-left:0; margin-bottom:3">
-                <div class="row" style="margin-left:0>
-                <div class="col-12" style="margin-bottom: 3px; margin-left:0"  style="max-width: 35%;">
-                <p style="margin-left:0">
-                <img src="/static/img/img_avatar.png" class="avatar">
-                  ${data.created_by}
-                  <span class="fa fa-star checked" id="star${data.id}1"></span>
-                  <span class="fa fa-star checked" id="star${data.id}2"></span>
-                  <span class="fa fa-star checked" id="star${data.id}3"></span>
-                  <span class="fa fa-star" id="star${data.id}4"></span>
-                  <span class="fa fa-star" id="star${data.id}5"></span>
-                  <div>  <i>${data.text} </i></div>
-                </p>
-                </div>
-                </div>
-           </div >
-           `
-            getItemRating()
-            setRveiewsRating()
-
-            // document.getElementById('RatingCancel').click()
-            $("#home-tab-pane").append(newCard)
-            $("#home-tab-pane").append('<a href="#" id="loadMore" style="margin-left:0%">Load More</a>');
-            // reviewDiv.style.display = "block";
-            // window.location.href = `/items/${id}`
-        },
-        error: (response) => {
-          if (response.status === 403) {
-            $("#comment-area").val(response.responseJSON.detail)
-         }
-        }
-      });
-};
-
 $(document).ready(function() {
   $('#createItem').submit(function(e) {
     e.preventDefault();
@@ -103,23 +21,6 @@ $(document).ready(function() {
    }
 )});
 
-// function addItemToCart() {
-//   let id = $("#edit-id").val();
-//   $.ajax({
-//       url: "/update-basket",
-//       method: "post",
-//       headers: { "Content-Type": "application/json",},
-//       data:  JSON.stringify({
-//             "item_id": `${id}`,
-//           }),
-//       success: data => {
-//         console.log('success', data)
-//       },
-//       error: (error) => {
-//         console.log('error', error)
-//       }
-//     });
-//   }
 
 document.addEventListener('DOMContentLoaded', function () {
  const navLinks = document.querySelectorAll('.nav-link');
@@ -140,32 +41,6 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 })
 
-$(document).ready(function() {
-  $('#deleteForm').submit(function(e) {
-    e.preventDefault();
-    let id = $("#delete-id").val()
-    $.ajax({
-        url: "/items/" + id,
-        type: "POST",
-        headers: {"Content-Type": "application/json",},
-        data:  { "id": `${id}`},
-        success: function(data){
-          window.location.href = "/products"
-        },
-        error: function (xhr) {
-            if (xhr.status === 403) {
-               $('#errorMeassge').text('User is not allowed to delete this item!')
-            }
-        }
-      });
-   }
-)});
-
-// $(document).ready(function() {
-//     getItemRating()
-//     setRveiewsRating()
-// });
-
 
 function ShowReview(){
   var x  = document.getElementById('RatingCard')
@@ -176,6 +51,37 @@ function ShowReview(){
   }
 }
 
+function Search() {
+  var input, filter, cards, cardContainer, h5, title, i;
+  input = document.getElementById("filter");
+  filter = input.value.toUpperCase();
+  cardContainer = document.getElementById("mycard");
+  cards = cardContainer.getElementsByClassName("card");
+  for (i = 0; i < cards.length; i++) {
+      title = cards[i].querySelector(".card-body h5.card-title");
+      if (title.innerText.toUpperCase().indexOf(filter) > -1) {
+          cards[i].style.display = "";
+      } else {
+          cards[i].style.display = "none";
+      }
+  }
+}
+
+// function SearchWish() {
+//   var input, filter, cards, cardContainer, h5, title, i;
+//   input = document.getElementById("filter");
+//   filter = input.value.toUpperCase();
+//   cardContainer = document.getElementById("mycard");
+//   cards = cardContainer.getElementsByClassName("product-grid");
+//   for (i = 0; i < cards.length; i++) {
+//       title = cards[i].querySelector(".h3.title");
+//       if (title.innerText.toUpperCase().indexOf(filter) > -1) {
+//           cards[i].style.display = "";
+//       } else {
+//           cards[i].style.display = "none";
+//       }
+//   }
+// }
 
 // $(document).ready(function(){
 //   var hiddenCardsOnLoad = $(".card:hidden").length;

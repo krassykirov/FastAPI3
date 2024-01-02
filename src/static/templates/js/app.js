@@ -6,7 +6,7 @@ const App = Vue.createApp({
       min: 1,
       max: 10000,
       products: [],
-      item: Vue.ref([]),
+      item: null,
       categories: [],
       cart: Vue.ref([]),
       sortOrder: 'asc',
@@ -48,6 +48,7 @@ const App = Vue.createApp({
         const res = await fetch(`/api/items/item/${itemId}`);
         const item = await res.json();
         this.item = item;
+        console.log('this.item ', this.item )
       } catch (error) {
         console.error('Error fetching product:', error);
       }
@@ -477,13 +478,13 @@ App.component('whishlist-component', {
                 <li><a href="#"><i class="fa fa-random"></i></a></li>
             </ul>
         </div>
-        <div class="product-content">
+        <div class="product-content" style="cursor: pointer;" @click="redirectToItemFromProduct(product.id)">
             <h3 class="title"><a href="#">[[ product.name ]]</a></h3>
             <span><small> $</small>[[ product.price | formatPrice  ]]</span>
             <span v-if="Number.isInteger(product.price) === false" style="font-size: 0.7em; vertical-align: top;">
                 [[ product.price.toString().split('.')[1] ]]
             </span>
-            <p style="cursor: pointer; margin-top: 0.6em;">
+            <p style="margin-top: 0.6em;">
                 <i>
                     <span v-for="i in 5" :key="i" :class="getStarClasses(i, product.rating_float)"></span>
                     <span :id="'overall-rating' + product.id + '-float'"><small>&nbsp[[ product.rating_float ]]</small></span>
@@ -559,7 +560,7 @@ App.component('whishlist-component', {
         } else {
           return 'fa fa-star-o checked';
         }
-      },
+    },
   },
 });
 
@@ -569,8 +570,11 @@ App.component('item-component', {
   emits: ['addToCart'],
   data() {
     return { 
-
     }},
+    updated() {
+      getItemRating(this.item.id)
+      setRveiewsRating(this.item.id)
+    },
   template: `
   <div class = "card-wrapper">
   <div class = "card">
@@ -578,59 +582,59 @@ App.component('item-component', {
       <div class = "img-display">
         <div class = "img-showcase">
         <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image">
-          <img src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
-          <img src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
-          <img src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
+        <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image">
+        <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image">
+        <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image">
           </div>
       </div>
-      <div class = "img-select">
-        <div class = "img-item">
-          <a href = "#" data-id = "1">
+      <div class="img-select">
+        <div class="img-item">
+          <a href="#" data-id = "1">
           <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image">
           </a>
         </div>
-        <div class = "img-item">
-          <a href = "#" data-id = "2">
-            <img src = "https://fadzrinmadu.github.io/hosted-assets/product-detail-page-design-with-image-slider-html-css-and-javascript/shoe_2.jpg" alt = "shoe image">
+        <div class="img-item">
+          <a href="#" data-id = "2">
+          <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image">
           </a>
         </div>
-        <div class = "img-item">
-          <a href = "#" data-id = "3">
-            <img src = "https://fadzrinmadu.github.io/hosted-assets/product-detail-page-design-with-image-slider-html-css-and-javascript/shoe_3.jpg" alt = "shoe image">
+        <div class="img-item">
+          <a href="#" data-id = "3">
+          <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image">
           </a>
         </div>
         <div class="img-item">
           <a href="#" data-id="4">
-            <img src="https://fadzrinmadu.github.io/hosted-assets/product-detail-page-design-with-image-slider-html-css-and-javascript/shoe_4.jpg" alt = "shoe image">
+          <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image">
           </a>
         </div>
       </div>
     </div>
-    <!-- card right -->
+
     <div class = "product-content">
-      <h2 class = "product-title">  [[ item.name  ]]   </h2>
+      <h2 class = "product-title">[[ item.name ]] </h2>
       <div class = "product-rating">
-        <span class="fa fa-star checked" id="star1"></span>
-        <span class="fa fa-star checked" id="star2"></span>
-        <span class="fa fa-star checked" id="star3"></span>
+        <span class="fa fa-star" id="star1"></span>
+        <span class="fa fa-star" id="star2"></span>
+        <span class="fa fa-star" id="star3"></span>
         <span class="fa fa-star" id="star4"></span>
         <span class="fa fa-star" id="star5"></span>
-        <span id="overall-rating"> No rating Yet </span>
+        <span id="overall-rating" onclick="scrollToTarget()" style="cursor: pointer;"></span>
       </div>
 
-      <div class = "product-price">
-        <p class = "last-price">Old Price: <span>{{ item.price }}</span></p>
-        <p class = "new-price">New Price: <span>{{ item.price }}</span></p>
+      <div class="product-price">
+        <p class="last-price">Old Price: <span>[[ item.price ]] </span></p>
+        <p class="new-price" id="new-price">New Price: <span>[[ item.price ]]</span></p>
       </div>
 
-      <div class = "product-detail">
+      <div class="product-detail">
         <h2>about this item: </h2>
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo eveniet veniam tempora fuga tenetur placeat sapiente architecto illum soluta consequuntur, aspernatur quidem at sequi ipsa!</p>
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur, perferendis eius. Dignissimos, labore suscipit. Unde.</p>
         <ul>
           <li>Color: <span>Black</span></li>
           <li>Available: <span>in stock</span></li>
-          <li>Category: <span>Category</span></li>
+          <li id="category">Category: <span>{{ item.category.name.split('.')[-1] }}</span></li>
           <li>Shipping Area: <span>All over the world</span></li>
           <li>Shipping Fee: <span>Free</span></li>
         </ul>
@@ -638,11 +642,12 @@ App.component('item-component', {
 
       <div class = "purchase-info">
         <input type = "number" min = "0" value = "1">
-        <button type = "button" class = "btn">
+        <button type = "button" class="btn" id="add-to-cart" ref="addToCartButton" @click="addToCart(item)">
           Add to Cart <i class = "fas fa-shopping-cart"></i>
         </button>
         <button type = "button" class = "btn">Compare</button>
       </div>
+
       <div class = "social-links">
         <p>Share At: </p>
         <a href = "#">
@@ -664,6 +669,82 @@ App.component('item-component', {
     </div>
   </div>
 </div>
+<section class="container" style="margin-top: 180px;">
+  <div class="tab-container">
+      <nav class="tab-nav">
+          <div class="mobile-select"> <i class="bi bi-chevron-down"></i></div>
+          <ul>
+              <li><button class="btn tab-btn active" id="html">Reviews</button></li>
+              <li><button class="btn tab-btn" id="csss">Specification</button></li>
+              <li><button class="btn tab-btn" id="js">Details</button></li>
+          </ul>
+      </nav>
+      <div class="tab-content">
+          <div class="tab-item" data-id="html" id="reviewTab">
+          <div class="card group1" v-if="item.reviews && item.reviews.length > 0" v-for="review in item.reviews" :key="review.id" :id="'card'+review.id" style="display: block; width:550px; margin-bottom: 2px;">
+              <div class="row">
+              <div class="col-12">
+              <p>
+                <div style="display: flex; align-items: center; justify-content: center;">
+                  <img src="/static/img/img_avatar.png" class="avatar" style="padding: 5px;">
+                  <span style="text-align: center;">[[ review.created_by ]]</span>
+                </div>
+                <span class="fa fa-star checked" :id="'star'+review.id+1"></span>
+                <span class="fa fa-star checked" :id="'star'+review.id+2"></span>
+                <span class="fa fa-star checked" :id="'star'+review.id+3"></span>
+                <span class="fa fa-star" :id="'star'+review.id+4"></span>
+                <span class="fa fa-star" :id="'star'+review.id+5"></span>
+                </p>
+                <hr>
+                <div><p style="text-align: left; padding: 15px;">[[ review.text ]]
+                  CSS (Cascading Style Sheets) is a stylesheet language used for describing the presentation and
+                  layout of HTML documents. It plays a critical role in web development by allowing web developers
+                  to control the visual appearance of web pages.
+                      </p>
+                </div>
+              </div>
+              </div>
+          </div> 
+          <div class="row pb-2" style="width:700px">
+            <div class="card" id="RatingCard" style="width:550px; margin-left: 35px;">
+              <div class="row">
+              <div class="col-12" style="margin-bottom: 5px;">
+              <div class="comment-box ml-2">
+              <input type="number" id="comment-item-id" value="item.id" required hidden>
+              <div class="rating" style="padding:10px;"> <input type="radio" name="rating" value="5" id="5"><label for="5">☆</label> <input type="radio" name="rating" value="4" id="4"><label for="4">☆</label> <input type="radio" name="rating" value="3" id="3"><label for="3">☆</label> <input type="radio" name="rating" value="2" id="2"><label for="2">☆</label> <input type="radio" name="rating" value="1" id="1"><label for="1">☆</label> </div>
+              <div class="comment-area" style="width:500px; padding:10px;"> <textarea class="form-control" placeholder="Write a Review.." rows="4" id="comment-area"></textarea> </div>
+              <div class="comment-btns mt-2">
+              <div class="row">
+              <div class="col-6">
+              <div class="pull-left"> <button class="btn btn-secondary btn-sm" id="RatingCancel" onclick="RatingHide()">Cancel</button> </div>
+              </div>
+              <div class="col-6">
+              <div class="pull-right"> <button class="btn btn-success send btn-sm" onclick="addReview()"> Submit </button> </div>
+              </div>
+              </div>
+              </div>
+              </div>
+              </div>
+         </div>
+         </div>
+         </div>
+         </div>
+          <div class="tab-item hide" data-id="csss">
+              <h3>CSS</h3>
+              <p>CSS (Cascading Style Sheets) is a stylesheet language used for describing the presentation and
+                  layout of HTML documents. It plays a critical role in web development by allowing web developers
+                  to control the visual appearance of web pages.</p>
+          </div>
+          <div class="tab-item hide" data-id="js">
+              <h3>JavaScript</h3>
+              <p>JavaScript is a high-level, versatile, and widely used programming language primarily known for
+                  its role in web development. It allows developers to add interactivity, dynamic behavior, and
+                  complex functionality to web pages. JavaScript can be executed in web browsers, making it a core
+                  technology for client-side scripting.</p>
+          </div>
+      </div>
+  </div>
+</section>
   `,
   methods: {
     itemAlreadyInCart(product) {
@@ -709,6 +790,79 @@ App.component('item-component', {
           });
       }
     },
+    setReviewsRating(id) {
+      fetch(`/api/reviews?item_id=${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          data.forEach(review => {
+            UpdateStarRatings(review.id, review.rating);
+          });
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    },
+    UpdateStarRatings(review_id, rating){
+      for (var i=1; i<=5; i++ ){
+        var star = document.getElementById('star'+ review_id + i)
+        if ( i <= rating ){
+            star.classList.add('checked');
+        }
+        else {
+          star.classList.remove('checked');
+        }
+      }
+     },
+    getItemRating(item_id) {
+      try {
+        fetch(`/api/reviews/item/rating?id=${item_id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`Error: ${response.status} - ${response.statusText}`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log('getItemRating', data);
+            for (let i = 1; i <= 5; i++) {
+              const star = document.getElementById('star' + i);
+              if (i <= data.rating) {
+                star.classList.add('checked');
+              } else {
+                star.classList.remove('checked');
+              }
+            }
+          })
+          document.getElementById('overall-rating').innerText =
+              parseFloat(data.rating_float).toFixed(2) +
+              ' based on (' +
+              data.review_number +
+              ' reviews)';
+        } catch (error) {
+          console.error('Error:', error);
+        }
+    },
+    scrollToTarget() {
+      var targetDiv = document.getElementById('reviewTab');
+      if (targetDiv) {
+        targetDiv.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
   },
 });
 
