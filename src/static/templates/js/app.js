@@ -247,7 +247,6 @@ App.component('product-component', {
             </i>
             <span :id="'overall-rating' + product.id"> <small> ([[ product.reviewNumber ]]) </small> </span>
           </p>
-          <h5> [[ product.category.name ]] </h5>
           <span class="badge bg-danger" v-if="product.price <= 90">WOW</span>
           <span class="badge bg-primary" v-else-if="product.price > 90 && product.price <= 1000">Value</span>
           <span class="badge bg-success" v-else-if="product.price > 1000">TOP</span>
@@ -576,7 +575,7 @@ App.component('whishlist-component', {
 });
 
 App.component('item-component', {
-  props: ['item', 'cart', 'user'],
+  props: ['item', 'cart', 'total', 'user'],
   delimiters: ['[[', ']]'],
   emits: ['addToCart'],
   data() {

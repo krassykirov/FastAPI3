@@ -298,9 +298,9 @@ input[type="text"] {
 {% endblock %}
 
 {% block html_read %}
-<div class="container" style="align-items: center;">
+<div class="container" style="align-items: center; margin-top: 20px;">
 {% for item in items %}
-<div class="card w-100" id="card{{ item.id }}" style="margin-top: 20px;">
+<div class="card w-75" id="card{{ item.id }}">
     <div class="row">
         <div class="col-md-3">
             {% if  'no-image.png' == item.image %}
@@ -450,8 +450,8 @@ input[type="text"] {
   </div>
   <div class="container">
     <div class="actions">
-
-      <a href="#" class="btn action__submit">Place your Order
+      <div> {{items_in_cart}} Items in Cart for Total: ${{ total }} </div>
+      <a href="#" class="btn btn-primary">Place your Order
         <i class="icon icon-arrow-right-circle"></i>
       </a>
       <a href="#" class="backBtn">Go Back to Shop</a>
