@@ -580,8 +580,7 @@ App.component('item-component', {
   delimiters: ['[[', ']]'],
   emits: ['addToCart'],
   data() {
-    return { 
-    }},
+    return {}},
     created() {
       this.getItemRatingItem(this.item.id);
       this.setReviewsRating(this.item.id);
