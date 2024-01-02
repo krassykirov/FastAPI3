@@ -222,7 +222,9 @@ async def create_review_ajax(request: Request, db: Session=Depends(get_session),
             db.rollback()
             return HTTPException(status_code=400, detail=f"Something went wrong, error {e}")
     logger.info('Review_exist, You can write only one review for this item')
-    raise HTTPException(status_code=403,detail=f"You can write only one review for this item.")
+    raise HTTPException(status_code=403, 
+                        detail=f"You can write only one review for this item.",
+                        headers={"X-Error": "You can write only one review for this item"},)
 
 @app.get("/user/profile", response_model=UserRead, include_in_schema=False)
 async def get_user_profile( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
@@ -371,5 +373,5 @@ def get_user_items_in_cart(db: Session=Depends(get_session), user: User = Depend
   items = ItemActions().get_items(db=db)
   items_in_cart =  [item for item in items for k, v in item.in_cart.items()
                     if k == user.username and v['in_cart'] == True]
-  total =sum([item.price for item in items_in_cart])
+  total = sum([item.price for item in items_in_cart])
   return {'items':items_in_cart, 'items_in_cart': len(items_in_cart), 'total': total, 'user': user.username } # user.username.split('@')[0]

@@ -48,7 +48,6 @@ const App = Vue.createApp({
         const res = await fetch(`/api/items/item/${itemId}`);
         const item = await res.json();
         this.item = item;
-        console.log('this.item ', this.item )
       } catch (error) {
         console.error('Error fetching product:', error);
       }
@@ -388,11 +387,11 @@ App.component('navbar-component', {
       </div>
   `,
   methods:{
-    redirectToItemFromNavbar(itemId) {
+  redirectToItemFromNavbar(itemId) {
     this.$root.redirectToItem(itemId);
     // this.$root.redirectToCart();
   },
-    redirectToCart() {
+   redirectToCart() {
      window.location.href = `/items-in-cart`
      this.$root.redirectToCart();
   },
@@ -565,15 +564,15 @@ App.component('whishlist-component', {
 });
 
 App.component('item-component', {
-  props: ['item', 'cart'],
+  props: ['item', 'cart', 'user'],
   delimiters: ['[[', ']]'],
   emits: ['addToCart'],
   data() {
     return { 
     }},
-    updated() {
-      getItemRating(this.item.id)
-      setRveiewsRating(this.item.id)
+    created() {
+      this.getItemRatingItem(this.item.id);
+      this.setReviewsRating(this.item.id);
     },
   template: `
   <div class = "card-wrapper">
@@ -619,7 +618,7 @@ App.component('item-component', {
         <span class="fa fa-star" id="star3"></span>
         <span class="fa fa-star" id="star4"></span>
         <span class="fa fa-star" id="star5"></span>
-        <span id="overall-rating" onclick="scrollToTarget()" style="cursor: pointer;"></span>
+        <span id="overall-rating" @click="scrollToTarget" style="cursor: pointer;"></span>
       </div>
 
       <div class="product-price">
@@ -681,7 +680,8 @@ App.component('item-component', {
       </nav>
       <div class="tab-content">
           <div class="tab-item" data-id="html" id="reviewTab">
-          <div class="card group1" v-if="item.reviews && item.reviews.length > 0" v-for="review in item.reviews" :key="review.id" :id="'card'+review.id" style="display: block; width:550px; margin-bottom: 2px;">
+          <div class="card group1" v-if="item.reviews && item.reviews.length > 0" v-for="review in item.reviews"
+          :key="review.id" :id="'card'+review.id" style="display: block; width:550px; margin-bottom: 2px;">
               <div class="row">
               <div class="col-12">
               <p>
@@ -716,10 +716,10 @@ App.component('item-component', {
               <div class="comment-btns mt-2">
               <div class="row">
               <div class="col-6">
-              <div class="pull-left"> <button class="btn btn-secondary btn-sm" id="RatingCancel" onclick="RatingHide()">Cancel</button> </div>
+              <div class="pull-left"> <button class="btn btn-secondary btn-sm" id="RatingCancel" @click="RatingHide">Cancel</button> </div>
               </div>
               <div class="col-6">
-              <div class="pull-right"> <button class="btn btn-success send btn-sm" onclick="addReview()"> Submit </button> </div>
+              <div class="pull-right"> <button class="btn btn-success send btn-sm" @click="addReview"> Submit </button> </div>
               </div>
               </div>
               </div>
@@ -805,7 +805,7 @@ App.component('item-component', {
         })
         .then(data => {
           data.forEach(review => {
-            UpdateStarRatings(review.id, review.rating);
+            this.UpdateStarRatings(review.id, review.rating);
           });
         })
         .catch(error => {
@@ -823,7 +823,7 @@ App.component('item-component', {
         }
       }
      },
-    getItemRating(item_id) {
+    getItemRatingItem(item_id) {
       try {
         fetch(`/api/reviews/item/rating?id=${item_id}`, {
           method: 'GET',
@@ -838,7 +838,6 @@ App.component('item-component', {
             return response.json();
           })
           .then((data) => {
-            console.log('getItemRating', data);
             for (let i = 1; i <= 5; i++) {
               const star = document.getElementById('star' + i);
               if (i <= data.rating) {
@@ -847,22 +846,87 @@ App.component('item-component', {
                 star.classList.remove('checked');
               }
             }
-          })
-          document.getElementById('overall-rating').innerText =
+            document.getElementById('overall-rating').innerText =
               parseFloat(data.rating_float).toFixed(2) +
               ' based on (' +
               data.review_number +
               ' reviews)';
-        } catch (error) {
-          console.error('Error:', error);
-        }
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    },
+    addReview() {
+      const review = document.getElementById('comment-area').value;
+      const id = this.item.id;
+      const username = this.$root.user;
+      console.log('username', username)
+      const rating = document.querySelector('input[name="rating"]:checked').value;
+      const requestOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: review,
+          item_id: id,
+          rating: rating,
+          created_by: username,
+        }),
+      };
+
+      fetch('/create_review_ajax', requestOptions)
+        .then(response => {
+          if (!response.ok) {
+            if (response.status === 403) {
+               $("#comment-area").val('You can write only one review for this item')
+               return Promise.reject('403 Forbidden');
+           }
+          }
+          return response.json();
+        })
+        .then(data => {
+          const reviewDiv = document.getElementsByClassName('card group1');
+          const newCard = `
+            <div class="card group1" id="card${data.id}" style="display: flex; margin-left: 25px; margin-bottom:3; width:550px">
+              <div class="row" style="margin-left:0;">
+                <div class="col-12" style="margin-bottom: 3px; margin-left:0;">
+                  <p style="margin-left:0">
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                      <img src="/static/img/img_avatar.png" class="avatar" style="padding: 5px;">
+                      <span style="text-align: center;">${data.created_by}</span>
+                    </div>
+                    <span class="fa fa-star checked" id="star${data.id}1"></span>
+                    <span class="fa fa-star checked" id="star${data.id}2"></span>
+                    <span class="fa fa-star checked" id="star${data.id}3"></span>
+                    <span class="fa fa-star" id="star${data.id}4"></span>
+                    <span class="fa fa-star" id="star${data.id}5"></span>
+                    <div>  <i>${data.text} </i></div>
+                  </p>
+                </div>
+              </div>
+            </div>
+          `;
+          this.getItemRatingItem(id);
+          this.setReviewsRating(id);
+          $("#reviewTab").append(newCard)
+        })
+        .catch(error => {
+          // console.error('Error:', error);
+        });
+    },
+    RatingHide(){
+      document.getElementById('RatingCard').style.display = "none"
     },
     scrollToTarget() {
       var targetDiv = document.getElementById('reviewTab');
       if (targetDiv) {
         targetDiv.scrollIntoView({ behavior: 'smooth' });
       }
-    }
+    },
   },
 });
 

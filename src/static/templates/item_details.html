@@ -355,7 +355,7 @@ img{
 
 <!-- Modals -->
 
-<div class="modal fade" id="addToCartMessage" data-backdrop="false" tabindex="-1" role="dialog" aria-labelledby="addToCartMessageTitle" aria-hidden="true">
+<!-- <div class="modal fade" id="addToCartMessage" data-backdrop="false" tabindex="-1" role="dialog" aria-labelledby="addToCartMessageTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -382,7 +382,7 @@ img{
     </div>
   </div>
 </div>
-</div>
+</div> -->
 
 <!-- <div class="modal fade" id="deleteModal"  data-backdrop="false" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -450,7 +450,6 @@ img{
 
 {% block javascript %}
 <script>
-
 const select = document.querySelector('.mobile-select');
 const selectDynamicText = () => {
     //mobile select
@@ -516,198 +515,5 @@ function slideImage(){
 }
 
 window.addEventListener('resize', slideImage);
-
-function addItemToCart() {
-  let id = '{{ item.id}}'
-  $.ajax({
-      url: "/update-basket",
-      method: "post",
-      headers: { "Content-Type": "application/json",},
-      data:  JSON.stringify({
-            "item_id": `${id}`,
-          }),
-      success: data => {
-        // console.log('success', data)
-        // window.location.href = `/items/${id}`
-      },
-      error: (error) => {
-        console.log('error', error)
-      }
-    });
-  }
-
-function getItemRating(item_id){
-  let id = item_id
-  $.ajax({
-        url: "/api/reviews/item/rating",
-        method: "get",
-        headers: { "Content-Type": "application/json",},
-        data:  { "id": item_id},
-        success: data => {
-          console.log('data', data)
-          for (var i=1; i<=5; i++ ){
-            var star = document.getElementById('star' + i )
-            if ( i <= data.rating ){
-                star.classList.add('checked');
-            }
-            else { star.classList.remove('checked')}
-          }
-        document.getElementById('overall-rating').innerText = parseFloat(data.rating_float).toFixed(2) + ' based on (' + data.review_number +' reviews)'
-        },
-        error: (error) => {
-            console.log('error:', error);
-        }
-      });
-   }
-
-function UpdateStarRatings(review_id, rating){
-          for (var i=1; i<=5; i++ ){
-            var star = document.getElementById('star'+ review_id + i)
-            if ( i <= rating ){
-                star.classList.add('checked');
-            }
-            else {
-              star.classList.remove('checked');
-            }
-          }
-   }
-
-function setRveiewsRating(id){
-  $.ajax({
-        url: "/api/reviews",
-        method: "get",
-        headers: { "Content-Type": "application/json",},
-        data:  { "item_id": `${id}`
-        },
-        success: data => {
-          data.forEach(review => {
-            UpdateStarRatings(review.id, review.rating)
-          });
-        },
-        error: (error) => {
-            console.log('error:', error);
-        }
-      });
-   }
-
-
-
-function editItem() {
-      let id = $("#edit-id").val()
-      let price = $("#id-price").val()
-      let category = document.getElementById('category-select').value;
-      let description = document.getElementById('id-description').value;
-    $.ajax({
-        url: "/update_product_ajax",
-        method: "post",
-        headers: { "Content-Type": "application/json",},
-        data:  JSON.stringify({
-                "id": `${id}`,
-                "price": `${price}`,
-                "category": `${category}`,
-                "description": `${description}`
-        }),
-        success: data => {
-            document.getElementById('new-price').innerText = `Price: $${parseFloat(data.price).toFixed(2)}`;
-            document.getElementById('category').innerText = `Category: ${data.category.name}`;
-            // document.getElementById('description-text').innerText = `${data.description}`;
-            document.getElementById('close').click()
-        },
-        error: (response) => {
-          if (response.status === 403) {
-            $("#EditPriceLabel").text(response.responseJSON.detail)
-         }
-        }
-      });
-}
-
-function addReview() {
-      let review = $("#comment-area").val()
-      let id = '{{ item.id }}'
-      console.log('ietm_id', id)
-      let username = '{{ current_user }}'
-      let rating = document.querySelector('input[name="rating"]:checked').value;
-    $.ajax({
-        url: "/create_review_ajax",
-        method: "post",
-        headers: { "Content-Type": "application/json",},
-        data:  JSON.stringify({
-                "text": `${review}`,
-                "item_id": `${id}`,
-                "rating": `${rating}`,
-                "created_by": `${username}`
-        }),
-        success: data => {
-           const reviewDiv = document.getElementsByClassName('card group1')
-           const newCard = `
-           <div class="card group1" id="card${data.id}" style="display: flex; margin-left: 25px; margin-bottom:3; width:550px">
-                <div class="row" style="margin-left:0;">
-                <div class="col-12" style="margin-bottom: 3px; margin-left:0;">
-                <p style="margin-left:0">
-                  <div style="display: flex; align-items: center; justify-content: center;">
-                  <img src="/static/img/img_avatar.png" class="avatar" style="padding: 5px;">
-                  <span style="text-align: center;">${data.created_by}</span>
-                </div>
-                  <span class="fa fa-star checked" id="star${data.id}1"></span>
-                  <span class="fa fa-star checked" id="star${data.id}2"></span>
-                  <span class="fa fa-star checked" id="star${data.id}3"></span>
-                  <span class="fa fa-star" id="star${data.id}4"></span>
-                  <span class="fa fa-star" id="star${data.id}5"></span>
-                  <div>  <i>${data.text} </i></div>
-                </p>
-                </div>
-                </div>
-           </div >
-           `
-            getItemRating(id)
-            setRveiewsRating(id)
-
-            // document.getElementById('RatingCancel').click()
-            $("#reviewTab").append(newCard)
-            // $("#home-tab-pane").append('<a href="#" id="loadMore" style="margin-left:0%">Load More</a>');
-            // reviewDiv.style.display = "block";
-            // window.location.href = `/items/${id}`
-        },
-        error: (response) => {
-          if (response.status === 403) {
-            $("#comment-area").val(response.responseJSON.detail)
-         }
-        }
-      });
-};
-
-$(document).ready(function() {
-  $('#deleteForm').submit(function(e) {
-    console.log("click delete")
-    e.preventDefault();
-    let id = $("#delete-id").val()
-    $.ajax({
-        url: "/items/" + id,
-        type: "POST",
-        headers: {"Content-Type": "application/json",},
-        data:  { "id": `${id}`},
-        success: function(data){
-          window.location.href = "/products"
-        },
-        error: function (xhr) {
-            if (xhr.status === 403) {
-               $('#errorMeassge').text('User is not allowed to delete this item!')
-            }
-        }
-      });
-   }
-)});
-
-function RatingHide(){
-  document.getElementById('RatingCard').style.display = "none"
-}
-
-function scrollToTarget() {
-    var targetDiv = document.getElementById('reviewTab');
-    if (targetDiv) {
-      targetDiv.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
-
 </script>
 {% endblock %}
