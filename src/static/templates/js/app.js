@@ -247,6 +247,7 @@ App.component('product-component', {
             </i>
             <span :id="'overall-rating' + product.id"> <small> ([[ product.reviewNumber ]]) </small> </span>
           </p>
+          <h5> [[ product.category.name ]] </h5>
           <span class="badge bg-danger" v-if="product.price <= 90">WOW</span>
           <span class="badge bg-primary" v-else-if="product.price > 90 && product.price <= 1000">Value</span>
           <span class="badge bg-success" v-else-if="product.price > 1000">TOP</span>
@@ -643,7 +644,7 @@ App.component('item-component', {
         <ul>
           <li>Color: <span>Black</span></li>
           <li>Available: <span>in stock</span></li>
-          <li id="category">Category: <span>{{ item.category.name.split('.')[-1] }}</span></li>
+          <li id="category">Category: <span>[[ item.category.name ]] </span></li>
           <li>Shipping Area: <span>All over the world</span></li>
           <li>Shipping Fee: <span>Free</span></li>
         </ul>

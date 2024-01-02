@@ -21,6 +21,7 @@ def get_item_by_id( item_id: int, db: Session = Depends(get_session)) -> src.sch
     if item is None:
         raise HTTPException(status_code=404, detail=f"No item with id: {item_id} found")
     item = jsonable_encoder(item)
+    item['category'] = item.category.name.split('.')[-1]
     return item
 
 @items_router.get("/", status_code=status.HTTP_200_OK, response_model=list[src.schemas.ItemRead])
