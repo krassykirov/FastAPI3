@@ -362,17 +362,16 @@ App.component('navbar-component', {
             </li>
           </ul>
         <div v-if="cart" @mouseleave="hideCart()" @mouseenter="showCart()" d-flex bd-highlight mb-3>
-          <button @click="displayCart = !displayCart" class="btn btn-light dropdown-toggle btn-sm" id="cartDropdown" aria-haspopup="true" aria-expanded="false"
-          style="margin-top:14px">
-          <i class="bi bi-cart" style="font-size: 1rem;"></i> Cart <span class="badge badge-pill badge-primary"> [[ cart.length ]]</span>
-      </button>
+          <button @click="displayCart = !displayCart" class="btn btn-light dropdown-toggle btn-sm" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
+             <i class="bi bi-cart" style="font-size: 1rem;"></i> Cart <span class="badge badge-pill badge-primary"> [[ cart.length ]]</span>
+         </button>
           <div v-if="!displayCart"  class="list-group position-absolute">
             <div v-for="(item, index) in cart.slice(0, Math.min(7, cart.length))" :key="index" class="list-group-item d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
               <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image" class="mr-2"
                   style="width: 50px; height: 60px; object-fit: cover; border-radius: 5px;">
               <div style="cursor: pointer" @click="redirectToItemFromNavbar(item.id)">
-                <div style="font-size: 1rem;">[[ item.name ]] - $[[ item.price ]]</div>
+                <div style="font-size: 0.9rem;">[[ item.name ]] - $[[ item.price ]]</div>
               </div>
             </div>
             <button @click="removeFromCart(item.id)" class="btn btn-light btn-sm ml-2" data-bs-placement="top"
@@ -384,7 +383,7 @@ App.component('navbar-component', {
           <button v-if="cart.length > 0" @click="redirectToCart" class="btn btn-sm btn-primary"> Go to Cart </button>
             </div>
         </div>
-          <div class="ml-auto" style="font-family: Raleway; font-size: 16px;">[[ user ]]</div> 
+          <div class="ml-auto" style="font-family: Raleway; font-size: 16px;">[[ user ]] &nbsp</div> 
           <form class="form-inline my-2 my-lg-0" style="margin-right: 120px; padding:0">
             <div class="dropdown" style="font-family: Raleway; font-size: 16px;">
                <img src="/static/img/img_avatar.png" class="avatar">

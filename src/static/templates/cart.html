@@ -1,52 +1,469 @@
 {% extends "base_old.html" %}
 
-{% set include_product_component = false %}
-
 {% set include_block_app_js  = true %}
 
+{% block style %}
+<style>
+  *,
+*:after,
+*:before {
+  box-sizing: border-box;
+}
+
+ul {
+  padding-left: 10px;
+}
+
+body {
+  font-family: "Josefin Sans", sans-serif;
+  color: #0a0a0a;
+  line-height: 1.4;
+}
+
+a {
+  color: #000;
+}
+
+.content {
+  z-index: 9999;
+}
+
+.secure,
+.backBtn {
+  display: flex;
+}
+.secure span,
+.backBtn span {
+  margin-left: 5px;
+}
+
+.backBtn {
+  margin-top: 20px;
+}
+
+.secure {
+  color: #afb5c0;
+  align-items: flex-end;
+}
+.secure .icon {
+  font-size: 20px;
+  line-height: 20px;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.logo .icon {
+  font-size: 32px;
+  line-height: 32px;
+  margin-right: 5px;
+}
+
+img {
+  width: 100%;
+  border-radius: 8px 0 0 8px;
+}
+
+.details {
+  max-width: 800px;
+  min-height: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: -200px;
+  background: #fff;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.details__item {
+  display: flex;
+}
+.details__user {
+  background: #f6f9fc;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #dadada;
+}
+
+.shadow {
+  box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+}
+
+.row {
+  display: flex;
+}
+
+.txt {
+  border-color: #e1e8ee;
+  width: 100%;
+}
+
+.input {
+  border-radius: 5px;
+  border-style: solid;
+  border-width: 2px;
+  height: 48px;
+  padding-left: 15px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #5e6977;
+}
+
+input[type="text"] {
+  display: initial;
+  padding: 15px;
+}
+
+.text-validated {
+  border-color: #7dc855;
+  background-image: url("../images/icon-tick.png");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+}
+
+.ddl {
+  border-color: #f0f4f7;
+  background-color: #f0f4f7;
+  width: 100px;
+  margin-right: 10px;
+}
+
+.title {
+  font-size: 14px;
+  padding-bottom: 8px;
+}
+
+.field {
+  padding-top: 15px;
+  padding-right: 30px;
+  width: 50%;
+}
+.field.small {
+  width: auto;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 60px 0 40px 0;
+}
+
+.payment {
+  padding: 20px 0 0 0;
+}
+.payment__title {
+  margin: 40px 0 20px 0;
+  font-size: 18px;
+  display: flex;
+  text-align: left;
+}
+.payment__title .icon {
+  margin-right: 10px;
+}
+
+.payment__types {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.payment__info {
+  display: flex;
+}
+
+.payment__cc {
+  flex: 60%;
+}
+
+.payment__shipping {
+  flex: 40%;
+}
+
+.shipping__info {
+  background: #f6f9fc;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.payment__type {
+  display: flex;
+  border: 2px solid #d9d9d9;
+  border-radius: 8px;
+  padding: 20px 40px;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: #d9d9d9;
+  transition: all 0.15s ease;
+}
+.payment__type:hover {
+  -webkit-transform: translateY(-1px);
+          transform: translateY(-1px);
+}
+.payment__type.active {
+  color: #0a0a0a;
+  background: #f6fcf7;
+  border-color: #7dc855;
+}
+.payment__type .icon {
+  font-size: 32px;
+  margin-right: 10px;
+}
+.payment__type + .payment__type {
+  margin-left: 10px;
+}
+
+.icon-xl {
+  font-size: 48px;
+  line-height: 48px;
+}
+
+.content {
+  display: block;
+}
+
+.thankyou {
+  display: block;
+}
+.thankyou .details {
+  opacity: 1;
+  justify-content: center;
+  align-items: center;
+}
+.thankyou .details h3 {
+  font-weight: 600;
+}
+.thankyou .details__item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.thankyou .details__item .icon-xl {
+  font-size: 32px;
+  color: #7dc855;
+  line-height: 32px;
+}
+
+.loading {
+  position: relative;
+}
+.loading:after {
+  -webkit-animation: spinAround .5s infinite linear;
+          animation: spinAround .5s infinite linear;
+  border: 4px solid #7dc855;
+  border-radius: 290486px;
+  border-right-color: transparent;
+  border-top-color: transparent;
+  content: "";
+  height: 5em;
+  width: 5em;
+  position: absolute;
+}
+.loading .details__item {
+  opacity: 0;
+}
+
+@-webkit-keyframes spinAround {
+  from {
+    -webkit-transform: rotate(0);
+    transform: rotate(0);
+  }
+  to {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+
+@keyframes spinAround {
+  from {
+    -webkit-transform: rotate(0);
+    transform: rotate(0);
+  }
+  to {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+
+</style>
+{% endblock %}
 
 {% block html_read %}
-
-{% if not items %}
-<h1> You don't have items in your Cart :( </h1>
-{% endif %}
-    {% for item in items %}
-    <div class="card w-75" id="card{{ item.id }}" style="margin-left: 200px;">
-        <div class="row no-gutters">
-            <div class="col-md-3" style="background: #868e96;">
-                {% if  'no-image.png' == item.image %}
-                <img class="card-img" src="/static/img/{{ item.image }}">
-                {% else %}
-                <img class="card-img" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
-                 {% endif %}
-            </div>
-            <div class="col-sm-7">
-                <div class="card-body">
-                    <h5 class="card-title">{{ item.name }} </h5>
-                    <p class="card-text"> Price: ${{ '%0.2f'|format(item.price|float)  }}.</p>
-                    <p class="card-text"> Category: {{ item.category.name.split('.')[-1] }}</p>
-                    <input type="number" name="id" value="{{ item.id }}" id="id" hidden>
-                    <input type="text" id="username" value="{{ current_user }}"  hidden>
-                    <p>
-                        <span class="fa fa-star checked" id="star{{ item.id }}1"></span>
-                        <span class="fa fa-star checked" id="star{{ item.id }}2"></span>
-                        <span class="fa fa-star checked" id="star{{ item.id }}3"></span>
-                        <span class="fa fa-star" id="star{{ item.id }}4"></span>
-                        <span class="fa fa-star" id="star{{ item.id }}5"></span>
-                        <span id="overall-rating{{ item.id }}"> No rating Yet </span>
-                    </p>
-                    <a href="#" id="card{{ item.id }}" class="btn btn-primary" onclick="removeCard(this.id)">Remove from Cart</a>
-                </div>
+<div class="container" style="align-items: center;">
+{% for item in items %}
+<div class="card w-100" id="card{{ item.id }}" style="margin-top: 20px;">
+    <div class="row">
+        <div class="col-md-3">
+            {% if  'no-image.png' == item.image %}
+            <img class="card-img" src="/static/img/{{ item.image }}">
+            {% else %}
+            <img class="card-img" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
+             {% endif %}
+        </div>
+        <div class="col-sm-7">
+            <div class="card-body">
+                <h5 class="card-title">{{ item.name }} </h5>
+                <p class="card-text"> Price: ${{ '%0.2f'|format(item.price|float)  }}.</p>
+                <p class="card-text"> Category: {{ item.category.name.split('.')[-1] }}</p>
+                <input type="number" name="id" value="{{ item.id }}" id="id" hidden>
+                <input type="text" id="username" value="{{ current_user }}"  hidden>
+                <p>
+                    <span class="fa fa-star checked" id="star{{ item.id }}1"></span>
+                    <span class="fa fa-star checked" id="star{{ item.id }}2"></span>
+                    <span class="fa fa-star checked" id="star{{ item.id }}3"></span>
+                    <span class="fa fa-star" id="star{{ item.id }}4"></span>
+                    <span class="fa fa-star" id="star{{ item.id }}5"></span>
+                    <span id="overall-rating{{ item.id }}"> No rating Yet </span>
+                </p>
+                <a href="#" id="card{{ item.id }}" class="btn btn-primary" onclick="removeCard(this.id)">Remove from Cart</a>
             </div>
         </div>
     </div>
-    {% endfor %}
+</div>
+{% endfor %}
+</div>
+  </div>
+  <div class="discount"></div>
 
-    {% endblock %}
+  <div class="container">
+    <div class="payment">
+      <div class="payment__title">
+        Payment Method
+      </div>
+      <div class="payment__types">
+        <div class="payment__type payment__type--cc active">
+          <i class="icon icon-credit-card"></i>Credit Card</div>
+        <div class="payment__type payment__type--paypal">
+          <i class="icon icon-paypal"></i>Paypal</div>
+        <div class="payment__type payment__type--paypal">
+          <i class="icon icon-wallet"></i>SEPA</div>
+        <div class="payment__type payment__type--paypal">
+          <i class="icon icon-note"></i>Invoice</div>
+      </div>
+
+      <div class="payment__info">
+        <div class="payment__cc">
+          <div class="payment__title">
+            <i class="icon icon-user"></i>Personal Information
+          </div>
+          <form>
+            <div class="form__cc">
+              <div class="row">
+                <div class="field">
+                  <div class="title">Credit Card Number
+                  </div>
+                  <input type="text" class="input txt text-validated" value="4542 9931 9292 2293" />
+                </div>
+              </div>
+              <div class="row">
+                <div class="field small">
+                  <div class="title">Expiry Date
+                  </div>
+                  <select class="input ddl">
+                    <option selected>01</option>
+                    <option>02</option>
+                    <option>03</option>
+                    <option>04</option>
+                    <option>05</option>
+                    <option>06</option>
+                    <option>07</option>
+                    <option>08</option>
+                    <option>09</option>
+                    <option>10</option>
+                    <option>11</option>
+                    <option>12</option>
+                  </select>
+                  <select class="input ddl">
+                    <option>01</option>
+                    <option>02</option>
+                    <option>03</option>
+                    <option>04</option>
+                    <option>05</option>
+                    <option>06</option>
+                    <option>07</option>
+                    <option>08</option>
+                    <option>09</option>
+                    <option>10</option>
+                    <option>11</option>
+                    <option>12</option>
+                    <option>13</option>
+                    <option>14</option>
+                    <option>15</option>
+                    <option selected>16</option>
+                    <option>17</option>
+                    <option>18</option>
+                    <option>19</option>
+                    <option>20</option>
+                    <option>21</option>
+                    <option>22</option>
+                    <option>23</option>
+                    <option>24</option>
+                    <option>25</option>
+                    <option>26</option>
+                    <option>27</option>
+                    <option>28</option>
+                    <option>29</option>
+                    <option>30</option>
+                    <option>31</option>
+                  </select>
+                </div>
+                <div class="field small">
+                  <div class="title">CVV Code
+                    <span class="numberCircle">?</span>
+                  </div>
+                  <input type="text" class="input txt" />
+                </div>
+              </div>
+              <div class="row">
+                <div class="field">
+                  <div class="title">Name on Card
+                  </div>
+                  <input type="text" class="input txt" />
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="payment__shipping">
+          <div class="payment__title">
+            <i class="icon icon-plane"></i> Shiping Information
+          </div>
+          <div class="details__user">
+            <div class="user__name">John Doe
+              <br> 13/03/1980</div>
+            <div class="user__address">Shipping Address: 22 Street, Address
+              <br>Country</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="actions">
+
+      <a href="#" class="btn action__submit">Place your Order
+        <i class="icon icon-arrow-right-circle"></i>
+      </a>
+      <a href="#" class="backBtn">Go Back to Shop</a>
+
+    </div>
+</section>
+
+{% endblock %}
+
 
 {% block javascript %}
 <script>
-
 function getItemRating(item_id){
   $.ajax({
         url: "/api/reviews/item/rating",
@@ -95,33 +512,9 @@ function removeCard(cardID){
       });
 }
 
+
+
+
 </script>
 
 {% endblock %}
-
-<div class="row">
-  <div class="col-md-3 col-sm-6">
-      <div class="product-grid">
-          <div class="product-image">
-              <a href="#" class="image">
-              <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="pic-1">
-              <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="pic-2">
-              </a>
-              <span class="product-sale-label">Sale</span>
-              <a href="#" class="product-like-icon" data-tip="Add to Wishlist">
-                  <i class="far fa-heart"></i>
-              </a>
-              <ul class="product-links">
-                  <li><a href="#"><i class="fa fa-search"></i></a></li>
-                  <li><a href="#"><i class="fas fa-shopping-cart"></i></a></li>
-                  <li><a href="#"><i class="fa fa-random"></i></a></li>
-              </ul>
-          </div>
-          <div class="product-content">
-              <h4 class="title">[[ product.name ]] </h5>
-                <h5 class="price" id="item-details">Price: [[ product.price]]</h5>
-                <input type="number" name="id" value="product.id" id="id" hidden>
-          </div>
-      </div>
-  </div>
-  </div>
