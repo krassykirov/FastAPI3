@@ -208,6 +208,21 @@ const App = Vue.createApp({
         rangeInputMax.value = this.max;
       }
     },
+    Search() {
+      var input, filter, cards, cardContainer, h5, title, i;
+      input = document.getElementById("filter");
+      filter = input.value.toUpperCase();
+      cardContainer = document.getElementById("mycard");
+      cards = cardContainer.getElementsByClassName("card");
+      for (i = 0; i < cards.length; i++) {
+          title = cards[i].querySelector(".card-body h5.card-title");
+          if (title.innerText.toUpperCase().indexOf(filter) > -1) {
+              cards[i].style.display = "";
+          } else {
+              cards[i].style.display = "none";
+          }
+      }
+    }
   },
   filters: {
     formatPrice(price) {
@@ -308,7 +323,7 @@ methods: {
         } else {
           return 'fa fa-star-o checked';
         }
-      },
+      }
   },
 });
 
@@ -346,9 +361,6 @@ App.component('navbar-component', {
               <a class="nav-link mx-2 text-uppercase" href="#">About</a>
             </li>
           </ul>
-          <form class="d-flex">
-            <input class="form-control mr-sm-2" id="filter" v-on:keyup="Search()" type="text" placeholder="Search in offers">
-          </form>
         <div v-if="cart" @mouseleave="hideCart()" @mouseenter="showCart()" d-flex bd-highlight mb-3>
           <button @click="displayCart = !displayCart" class="btn btn-light dropdown-toggle btn-sm" id="cartDropdown" aria-haspopup="true" aria-expanded="false"
           style="margin-top:14px">
