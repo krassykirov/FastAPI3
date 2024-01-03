@@ -253,10 +253,10 @@ App.component('product-component', {
             <span :id="'overall-rating' + product.id"> <small> ([[ product.reviewNumber ]]) </small> </span>
           </p>
           <div>
-          <div v-if="product.discount >= 0.5" style="display: flex; flex-direction: column; align-items: center; ">
+          <div v-if="product.discount >= 0.5" style="display: flex; flex-direction: column; align-items: center;">
             <span style="font-size: 1em;">Price: $[[ discountedPrice ]]</span>
             <span style="text-decoration: line-through; font-size: 0.8em;">
-              <small>Old Price $</small>[[ Math.floor(product.price) | formatPrice ]]
+              <small>Old Price $</small>[[ Math.floor(product.price) | formatPrice ]] </span>
           </div>
           <div v-else>
             <span style="font-size: 1em;">
@@ -337,7 +337,7 @@ methods: {
         } else {
           return 'fa fa-star-o checked';
         }
-      }
+    },
   },
 });
 
@@ -383,9 +383,9 @@ App.component('navbar-component', {
             <div v-for="(item, index) in cart.slice(0, Math.min(7, cart.length))" :key="index" class="list-group-item d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
               <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image" class="mr-2"
-                  style="width: 50px; height: 60px; object-fit: cover; border-radius: 5px;">
+                  style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
               <div style="cursor: pointer" @click="redirectToItemFromNavbar(item.id)">
-                <div style="font-size: 0.8rem;">[[ item.name ]] - $[[ item.price ]]</div>
+                <div style="font-size: 0.8rem; width:180px">[[ item.name  ]] - $[[ item.price ]]</div>
               </div>
             </div>
             <button @click="removeFromCart(item.id)" class="btn btn-light btn-sm ml-2" data-bs-placement="top"
@@ -407,7 +407,6 @@ App.component('navbar-component', {
               </div>
             </div>
           </form>
-
         </div>
       </div>
   `,
