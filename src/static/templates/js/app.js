@@ -160,15 +160,13 @@ const App = Vue.createApp({
     updateRange() {
       const productMinPrice = Math.min(...this.products.map(product => product.price));
       const productMaxPrice = Math.max(...this.products.map(product => product.price));
-      // Ensure min is not greater than max
+
       if (this.min > this.max || this.min === '' || isNaN(this.min)) {
         this.min = productMinPrice;
       }
-      // Ensure max is not less than min
       if (this.max < this.min || this.max === '' || isNaN(this.max) ) {
         this.max = productMaxPrice;
       }
-      // Update range inputs based on min and max values
       const rangeInput = document.querySelector(".min-range");
       if (rangeInput) {
         rangeInput.value = this.min;
@@ -179,24 +177,16 @@ const App = Vue.createApp({
       }
     },
     updateInputs() {
-      // Parse min and max values of the range inputs
       let minVal = parseInt(document.querySelector(".min-range").value);
       let maxVal = parseInt(document.querySelector(".max-range").value);
-
-      // Ensure min is not greater than max
       if (minVal >= maxVal) {
         minVal = maxVal;
       }
- 
-      // Ensure max is not less than min
       if (maxVal <= minVal) {
         maxVal = minVal;
       }
-      // Update min and max values based on the range inputs
       this.min = minVal;
       this.max = maxVal;
-
-      // Update range slider positions
       const rangeInput = document.querySelector(".min-range");
       const rangeInputMax = document.querySelector(".max-range");
 
@@ -215,7 +205,7 @@ const App = Vue.createApp({
       cardContainer = document.getElementById("mycard");
       cards = cardContainer.getElementsByClassName("card");
       for (i = 0; i < cards.length; i++) {
-          title = cards[i].querySelector(".card-body h5.card-title");
+          title = cards[i].querySelector(".card-body h6.card-title");
           if (title.innerText.toUpperCase().indexOf(filter) > -1) {
               cards[i].style.display = "";
           } else {
@@ -251,7 +241,10 @@ App.component('product-component', {
         <span class="badge bg-danger position-absolute top-0 start-0" v-if="product.discount >= 0.5"
          style="font-size: 0.8em; margin: 3px; top: 0; start: 0;">-[[ Math.floor(product.discount * 100) ]]%</span>
           <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="card-img-top">
-          <h5 class="card-title">[[ product.name ]]</h5>
+          <h6 class="card-title" style="margin-bottom: 15px; padding:1px; height: 2em; overflow: hidden; display: -webkit-box;
+          -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1;">
+          [[ product.name ]]
+          </h6>
           <p style="cursor: pointer">
             <i>
               <span v-for="i in 5" :key="i" :class="getStarClasses(i, product.rating_float)"></span>
@@ -260,14 +253,14 @@ App.component('product-component', {
             <span :id="'overall-rating' + product.id"> <small> ([[ product.reviewNumber ]]) </small> </span>
           </p>
           <div>
-          <div v-if="product.discount >= 0.5" style="display: flex; flex-direction: column; align-items: center;">
-            <span style="font-size: 1em;">$[[ discountedPrice ]]</span>
+          <div v-if="product.discount >= 0.5" style="display: flex; flex-direction: column; align-items: center; ">
+            <span style="font-size: 1em;">Price: $[[ discountedPrice ]]</span>
             <span style="text-decoration: line-through; font-size: 0.8em;">
               <small>Old Price $</small>[[ Math.floor(product.price) | formatPrice ]]
           </div>
           <div v-else>
             <span style="font-size: 1em;">
-              <small>$</small>[[ product.price | formatPrice ]]
+             Price: <small>$</small>[[ product.price | formatPrice ]]
             </span>
             <span v-if="!Number.isInteger(product.price)" style="font-size: 0.7em; vertical-align: top;">
               [[ product.price.toString().split('.')[1] ]]
@@ -392,7 +385,7 @@ App.component('navbar-component', {
               <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image" class="mr-2"
                   style="width: 50px; height: 60px; object-fit: cover; border-radius: 5px;">
               <div style="cursor: pointer" @click="redirectToItemFromNavbar(item.id)">
-                <div style="font-size: 0.9rem;">[[ item.name ]] - $[[ item.price ]]</div>
+                <div style="font-size: 0.8rem;">[[ item.name ]] - $[[ item.price ]]</div>
               </div>
             </div>
             <button @click="removeFromCart(item.id)" class="btn btn-light btn-sm ml-2" data-bs-placement="top"
@@ -462,21 +455,6 @@ App.component('navbar-component', {
   showCart() {
       this.displayCart = false;
       },
-   Search() {
-    var input, filter, cards, cardContainer, h5, title, i;
-    input = document.getElementById("filter");
-    filter = input.value.toUpperCase();
-    cardContainer = document.getElementById("mycard");
-    cards = cardContainer.getElementsByClassName("card");
-    for (i = 0; i < cards.length; i++) {
-        title = cards[i].querySelector(".card-body h5.card-title");
-        if (title.innerText.toUpperCase().indexOf(filter) > -1) {
-            cards[i].style.display = "";
-        } else {
-            cards[i].style.display = "none";
-        }
-    }
-}
   }
 });
 
