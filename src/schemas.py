@@ -46,6 +46,7 @@ class ItemRead(BaseModel):
     category:  Optional[Category]
     category_id:  Optional[int]
     in_cart: Optional[Dict[Any,Any]]
+    discount: Optional[decimal.Decimal]
     class Config:
         orm_mode = True
         schema_extra = {

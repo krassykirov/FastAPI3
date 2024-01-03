@@ -314,6 +314,7 @@ input[type="text"] {
                 <h5 class="card-title">{{ item.name }} </h5>
                 <p class="card-text"> Price: ${{ '%0.2f'|format(item.price|float)  }}.</p>
                 <p class="card-text"> Category: {{ item.category.name.split('.')[-1] }}</p>
+                <!-- <p class="card-text"> Product Code: {{ item.product_code }}</p> -->
                 <input type="number" name="id" value="{{ item.id }}" id="id" hidden>
                 <input type="text" id="username" value="{{ current_user }}"  hidden>
                 <p>
@@ -324,7 +325,7 @@ input[type="text"] {
                     <span class="fa fa-star" id="star{{ item.id }}5"></span>
                     <span id="overall-rating{{ item.id }}"> No rating Yet </span>
                 </p>
-                <a href="#" id="card{{ item.id }}" class="btn btn-primary" onclick="removeCard(this.id)">Remove from Cart</a>
+                <a href="#" id="card{{ item.id }}" class="btn btn-primary btn-sm" onclick="removeCard(this.id)">Remove from Cart</a>
             </div>
         </div>
     </div>

@@ -234,10 +234,22 @@ App.component('product-component', {
   props: ['product', 'min', 'max','cart','selectedRatings','formatPrice'],
   delimiters: ['[[', ']]'],
   emits: ['addToCart'],
+  computed: {
+    discountedPrice() {
+      if (this.product.discount) {
+      return (this.product.price * this.product.discount).toFixed(2);
+      }
+      else {
+       return (this.product.price * 1).toFixed(2);
+      }
+    },
+  },
   template: `
   <div class="col-lg-auto">
       <div class="card" :id="product.id" :data-category="product.category_id" style="margin: 1px; margin-bottom: 3px;">
         <div class="card-body" style="cursor: pointer; padding:0" @click="redirectToItemFromProduct(product.id)">
+        <span class="badge bg-danger position-absolute top-0 start-0" v-if="product.discount >= 0.5"
+         style="font-size: 0.8em; margin: 3px; top: 0; start: 0;">-[[ Math.floor(product.discount * 100) ]]%</span>
           <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="card-img-top">
           <h5 class="card-title">[[ product.name ]]</h5>
           <p style="cursor: pointer">
@@ -247,22 +259,31 @@ App.component('product-component', {
             </i>
             <span :id="'overall-rating' + product.id"> <small> ([[ product.reviewNumber ]]) </small> </span>
           </p>
-          <span class="badge bg-danger" v-if="product.price <= 90">WOW</span>
-          <span class="badge bg-primary" v-else-if="product.price > 90 && product.price <= 1000">Value</span>
-          <span class="badge bg-success" v-else-if="product.price > 1000">TOP</span>
-          <span> <small> $</small>[[ product.price | formatPrice  ]]</span>
-          <span v-if="Number.isInteger(product.price) === false" style="font-size: 0.7em; vertical-align: top;">
-            [[ product.price.toString().split('.')[1] ]]
-          </span>
+          <div>
+          <div v-if="product.discount >= 0.5" style="display: flex; flex-direction: column; align-items: center;">
+            <span style="font-size: 1em;">$[[ discountedPrice ]]</span>
+            <span style="text-decoration: line-through; font-size: 0.8em;">
+              <small>Old Price $</small>[[ Math.floor(product.price) | formatPrice ]]
+          </div>
+          <div v-else>
+            <span style="font-size: 1em;">
+              <small>$</small>[[ product.price | formatPrice ]]
+            </span>
+            <span v-if="!Number.isInteger(product.price)" style="font-size: 0.7em; vertical-align: top;">
+              [[ product.price.toString().split('.')[1] ]]
+            </span>
+          </div>
+        </div>
           <input type="number" :data-price="product.price" hidden>
         </div>
         <div>
           <button ref="addToCartButton" @click="addToCart(product)" class="btn btn-secondary btn-sm" style="margin-bottom:15px; margin-top:22px">
-          Add to Cart <i class="bi bi-cart-fill" style="font-size: 0.9rem;"> </i> 
+          Add to Cart <i class="bi bi-cart-fill" style="font-size: 0.9rem;"> </i>
           </button>
         </div>
         <div class="card-footer">
           <small class="text-muted">Added: [[ product.date.slice(0, 10)  ]] </small>
+          <p class="text-muted" style="margin-bottom:2px"> <small> Category [[ product.category.name  ]]  </small></p>
        </div>
       </div>
     </div>
@@ -578,12 +599,21 @@ App.component('item-component', {
   props: ['item', 'cart', 'total', 'user'],
   delimiters: ['[[', ']]'],
   emits: ['addToCart'],
-  data() {
-    return {}},
+  data() {return {}},
     created() {
       this.getItemRatingItem(this.item.id);
       this.setReviewsRating(this.item.id);
-    },
+  },
+  computed: {
+        discountedPrice() {
+          if (this.item.discount) {
+          return (this.item.price * this.item.discount).toFixed(2);
+          }
+          else {
+           return (this.item.price * 1).toFixed(2);
+          }
+        },
+  },
   template: `
   <div class = "card-wrapper">
   <div class = "card">
@@ -621,7 +651,7 @@ App.component('item-component', {
     </div>
 
     <div class = "product-content">
-      <h2 class = "product-title">[[ item.name ]] </h2>
+      <h2 class = "product-title">[[ item.name ]]</h2>
       <div class = "product-rating">
         <span class="fa fa-star" id="star1"></span>
         <span class="fa fa-star" id="star2"></span>
@@ -632,13 +662,16 @@ App.component('item-component', {
       </div>
 
       <div class="product-price">
-        <p class="last-price">Old Price: <span>[[ item.price ]] </span></p>
-        <p class="new-price" id="new-price">New Price: <span>[[ item.price ]]</span></p>
+        <p class="new-price" id="new-price">New Price: <span>$[[ discountedPrice ]] </span></p>
+        <p class="last-price">Old Price: <span> <small> $[[ item.price ]] </small> </span></p>
+          <span class="badge bg-danger" style="font-size: 0.8em;">
+          -[[ Math.floor(item.discount * 100) ]]%
+          </span>
       </div>
 
       <div class="product-detail">
         <h2>about this item: </h2>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo eveniet veniam tempora fuga tenetur placeat sapiente architecto illum soluta consequuntur, aspernatur quidem at sequi ipsa!</p>
+        <p>te architecto illum soluta consequuntur, aspernatur quidem at sequi ipsa!</p>
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur, perferendis eius. Dignissimos, labore suscipit. Unde.</p>
         <ul>
           <li>Color: <span>Black</span></li>
@@ -740,17 +773,17 @@ App.component('item-component', {
          </div>
          </div>
           <div class="tab-item hide" data-id="csss">
-              <h3>CSS</h3>
-              <p>CSS (Cascading Style Sheets) is a stylesheet language used for describing the presentation and
-                  layout of HTML documents. It plays a critical role in web development by allowing web developers
-                  to control the visual appearance of web pages.</p>
+              <p>[[ item.description ]]</p>
           </div>
           <div class="tab-item hide" data-id="js">
-              <h3>JavaScript</h3>
-              <p>JavaScript is a high-level, versatile, and widely used programming language primarily known for
-                  its role in web development. It allows developers to add interactivity, dynamic behavior, and
-                  complex functionality to web pages. JavaScript can be executed in web browsers, making it a core
-                  technology for client-side scripting.</p>
+          <li> Samsung UE43CU8072U - 43" Diagonal Class CU8000 Series LED-backlit LCD TV </li> 
+          <li>  Flat 2.16 m (85") LCD </li>
+          <li>  Crystal UHD - Smart TV - Tizen OS - 4K UHD (2160p) 3840 x 2160 - HDR - black</li>
+          <li>  DVB-S2, DVB-T2, ISDB-C </li> 
+          <li>  Smart TV Internet TV </li> 
+          <li>  Wi-Fi Ethernet LAN Bluetooth </li> 
+          <li>  High Dynamic Range (HDR) supported </li> 
+          <li>  G 168 kWh 168 W </li> 
           </div>
       </div>
   </div>
@@ -856,7 +889,7 @@ App.component('item-component', {
                 star.classList.remove('checked');
               }
             }
-            document.getElementById('overall-rating').innerText =
+            document.getElementById('overall-rating').innerText = ' ' +
               parseFloat(data.rating_float).toFixed(2) +
               ' based on (' +
               data.review_number +

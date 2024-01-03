@@ -88,6 +88,7 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         price=form_data['price']
         category_select = form_data['Category']
         description = form_data['Description']
+        discount = form_data['discount']
         category = CategoryActions().get_category_by_name(db=db, name=category_select)
         item = db.query(Item).where(Item.name == item_name).first()
         if item:
@@ -100,7 +101,7 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
                os.makedirs(path,exist_ok=True)
         with open(f"src/static/img/{user.username}/{item_name}/{filename}", 'wb') as f:
             f.write(content)
-            item = Item(name=item_name, price=price, image=filename, username=user.username, category=category, description=description)
+            item = Item(name=item_name, price=price, image=filename, username=user.username, category=category, discount=discount, description=description)
         try:
             db.add(item)
             db.commit()
