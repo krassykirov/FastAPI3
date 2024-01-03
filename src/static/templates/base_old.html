@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+{% block head %}
+<head>
+  <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
+<script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="../static/templates/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+<link rel="stylesheet" href="../static/css/main.css">
+</head>
+{% endblock %}
+
+{% block style %}
+<style>
+
+#cartDropdown {
+  margin-top: 14px;
+}
+.last-price{
+    color: #f64749;
+    text-decoration: line-through;
+}
+  .btn{
+    /* border: 1px solid #ddd; */
+    /* border-radius: 25px; */
+    text-align: center;
+    padding: 0.45rem 0.7rem;
+    outline: 0;
+    margin-right: 0.2rem;
+    margin-bottom: 1rem;
+}
+
+  .filter-card {
+    margin-bottom: 10px; /* Adjust the margin to control the space between cards */
+    padding: 10px; /* Optional padding inside the card */
+    border: 1px solid #cfcdcd; /* Border to create a card-like appearance */
+    border-radius: 9px; /* Optional border radius for rounded corners */
+  }
+.filter-group {
+  user-select: none;
+    margin-bottom: 30px; /* Adjust the margin to control the space between articles */
+    border-bottom: 10px solid #ddd; /* Border to visually separate articles */
+    padding-bottom: 10px; /* Optional padding between border and content */
+  }
+
+  .filter-group:last-child {
+    margin-bottom: 0; /* Remove margin for the last article to prevent extra space */
+    border-bottom: none; /* Remove border for the last article */
+  }
+
+  .fa-star.unchecked{
+    color: rgb(203, 197, 197)
+  }
+  .fa-star.checked{
+    color: orange
+  }
+  .custom-button {
+    width: 150px; 
+    margin: auto;
+    margin-left: 14%;
+    margin-bottom: 3px;
+    font-size: 14px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    padding: 6px 30px;
+    cursor: pointer; 
+    color: #000; 
+  }
+
+  .form-check { 
+      display: block;
+      margin-bottom: 5px; /* Adjust the margin as needed */
+  }
+  
+  .custom-button:hover {
+    background-color: #e0e0e0; 
+  }
+  .fade-enter-active, .fade-leave-active {
+      transition: opacity 0.5s;
+    }
+    .fade-enter, .fade-leave-to {
+      opacity: 0;
+      z-index: 1;
+    }
+    .fade-enter-to {
+      opacity: 1;
+    }
+  .fade-enter-from {
+    opacity: 0;
+  }
+/* NEW */
+
+:root{
+  --bs-white: #fff;
+  --bs-gray: #6c757d;
+  --bs-hover:#192a56;
+  --bs-primary:#565c64;
+}
+.product-grid{
+background-color: #fff;
+font-family: 'Montserrat', sans-serif;
+text-align: center;
+height: 100%;
+padding: 5px;
+margin-bottom: 10px;
+}
+.product-grid .product-image{
+overflow: hidden;
+position: relative;
+height: 260px;
+object-fit: cover;
+}
+.product-grid .product-image a.image{ display: block; }
+.product-grid .product-image img{
+width: 100%;
+height: auto;;
+}
+.product-grid .product-image .pic-1{ transition: all 0.3s ease 0s; }
+.product-grid .product-image:hover .pic-1{ transform: translateX(100%); }
+.product-grid .product-image .pic-2{
+width: 100%;
+height: 100%;
+transform: translateX(-101%);
+position: absolute;
+top: 0;
+left: 0;
+transition: all 0.3s ease 0s;
+}
+.product-grid .product-image:hover .pic-2{ transform: translateX(0); }
+.product-grid .product-sale-label{
+color: #fff;
+background: var(--bs-hover);
+font-size: 13px;
+text-transform: uppercase;
+letter-spacing: 1px;
+padding: 2px 8px;
+position: absolute;
+top: 15px;
+left: 15px;
+}
+.product-grid .product-like-icon{
+color: #696969;
+font-size: 22px;
+line-height: 20px;
+position: absolute;
+top: 15px;
+right: 15px;
+}
+.product-grid .product-like-icon:hover{ color: var(--bs-hover); }
+.product-grid .product-like-icon:before,
+.product-grid .product-like-icon:after{
+content: attr(data-tip);
+color: #fff;
+background-color: #000;
+font-size: 12px;
+line-height: 18px;
+padding: 7px 7px 5px;
+visibility: hidden;
+position: absolute;
+right: 0;
+top: 15px;
+transition: all 0.3s ease 0s;
+}
+.product-grid .product-like-icon:after{
+content: '';
+height: 15px;
+width: 15px;
+padding: 0;
+transform: translateX(-50%) rotate(45deg);
+right: auto;
+left: 50%;
+top: 15px;
+z-index: -1;
+}
+.product-grid .product-like-icon:hover:before,
+.product-grid .product-like-icon:hover:after{
+visibility: visible;
+top: 30px;
+}
+.product-grid .product-links{
+width: 170px;
+padding: 0;
+margin: 0;
+list-style: none;
+opacity: 0;
+transform: translateX(-50%);
+position: absolute;
+bottom: -50px;
+left: 50%;
+transition: all 0.3s ease 0s;
+}
+.product-grid:hover .product-links{
+bottom: 40px;
+opacity: 1;
+}
+.product-grid .product-links li{
+display: inline-block;
+margin: 0 2px;
+}
+.product-grid .product-links li a{
+color: #fff;
+background: #192a56;
+font-size: 16px;
+line-height: 48px;
+width: 48px;
+height: 48px;
+border-radius: 50%;
+display: block;
+transition: all 0.3s ease 0s;
+}
+.product-grid:hover .product-links li a:hover{ background: #333; }
+.product-grid .product-content{
+padding: 10px 0 0;
+height: 100%;
+text-align:center
+}
+.product-grid .title{
+font-size: 14px;
+font-weight: 500;
+text-transform: capitalize;
+margin: 0 0 8px;
+}
+.product-grid .title a{
+color: #333;
+transition: all 0.3s ease 0s;
+text-decoration:none;
+font-weight:600;
+font-size:18px;
+}
+.product-grid .title a:hover{ color: var(--bs-hover); }
+.product-grid .price{
+color: var(--bs-hover);
+font-size: 16px;
+font-weight: 500;
+margin-bottom: 0.7em;
+}
+.product-grid .price span{
+color: #555;
+font-size: 14px;
+font-weight: 400;
+text-decoration: line-through;
+margin: 0 5px 0 0;
+}
+@media screen and (max-width: 990px){
+.product-grid{ margin: 0 0 30px; }
+}
+
+</style>
+{% endblock %}
+
+{% block more_css %}
+{% endblock %}
+
+
+{% block nav %}
+<div class="container-fluid" id="app" style="width: 100vw; position: sticky; margin: 0; padding: 0;">
+  <nav class="navbar navbar-expand-lg bg-white sticky-top navbar-light ms-auto shadow-lg"
+  style="height: 70px; margin-left: 0; margin-right: 0;">
+  <navbar-component :cart="cart" :total="total" :user="user">
+  </navbar-component>
+</nav>
+{% endblock %}
+
+
+{% if include_product_component %}
+{% block products %}
+<form class="d-flex">
+  <input class="form-control mr-sm-2" id="filter" v-on:keyup="Search()" type="text" placeholder="Search by product name" 
+  style="width: 50vw; margin-top: 15px; margin-left: 28%; margin-right: 5%;">
+</form>
+ <div class="filter-products-container row col-2" style="float: left; margin-left: 5%; margin-top: 20px; ">
+  <div class="filter-card" style="padding: 12px; background-color: white;"> <button class="custom-button" data-toggle="modal" data-target="#addItem" href="#"
+    style="font-family: inherit; align-items: center;">Add Product </button>
+  </div>
+
+  <div class="filter-card" style="background-color: white;">
+    <article class="filter-group">
+      <div class="filter-content collapse show" id="collapse_2">
+        <label style="font-size: 1rem; display: block; margin-bottom: 10px; font-weight: 900;">Categories </label>
+        <div class="card-body">
+            <div class="container" v-for="category in categories" :key="category[2]" :class="{ active: category[1] !== 0 }">
+                <label style="font-size: 1rem">
+                    <input
+                        type="checkbox"
+                        class="cat-checkbox"
+                        :data-category="category[2]"
+                        :disabled="category[1] === 0"
+                        @change="handleCategoryChange"
+                    />
+                     [[ category[0] ]]
+                </label>
+                  <span class="text-muted">
+                      ([[ category[1] ]]) 
+                  </span>
+            </div>
+        </div>
+    </div>
+    </article>
+  </div>
+  <div class="filter-card" style="background-color: white;">
+    <article class="filter-group" style="float: left; margin-left: 0;">
+      <div class="card-body">
+        <label style="font-size: 1rem; display: block; margin-bottom: 5px;">Price</label>
+        <div class="price-input row">
+          <div class="form-group col-md-6">
+            <label for="minPrice" style="font-size: 0.9rem">Min Price</label>
+            <input v-model.number="min" type="text" class="min-input form-control" id="minPrice" @input="updateRange" :min="productMin" :max="productMax" pattern="[1-9][0-9]*" type="text" required>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="maxPrice" style="font-size: 0.9rem">Max Price</label>
+            <input v-model.number="max" type="text" class="max-input form-control" id="maxPrice" @input="updateRange" pattern="[1-9][0-9]*" type="text" :min="productMin" :max="productMax" required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="slider-container">
+              <div class="price-slider" :style="{ left: `${(min / productMax) * 100}%`, right: `${100 - (max / productMax) * 100}%` }"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Slider -->
+      <div class="range-input">
+        <input type="range" class="min-range" :min="productMin" :max="productMax" :value="min" step="1" @input="updateInputs">
+        <input type="range" class="max-range" :min="productMin" :max="productMax" :value="max" step="1" @input="updateInputs">
+      </div>
+      <div style="padding-top: 25px;">
+      <button type="button" class="custom-button" @click="toggleSortOrder" style="align-items: center;">Sort Price
+        <span v-if="sortOrder === 'asc'" class="bi bi-sort-up-alt" style="font-size: 1rem;"></span>
+        <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
+      </button>
+    </div>
+    </article>
+  </div>
+  <div class="filter-card" style="background-color: white;">
+    <article class="filter-group">
+      <div class="filter-content collapse show" id="collapse_3">
+        <label style="font-size: 1rem">Overall Rating</label>
+        <div class="form-check form-check-inline" v-for="rating in ratings.slice().reverse()">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            :id="'rating' + rating"
+            :value="rating"
+            v-model="selectedRating"
+          />
+          <label class="form-check-label" :for="'rating' + rating">
+            <span v-for="i in 5" :key="i" class="fa" :class="{ 'fa-star checked': i <= rating, 'fa-star unchecked': i > rating }" 
+              style="font-size: 1rem;"></span>
+          </label>
+        </div>
+      </div>
+    </article>
+  </div>
+ </div>
+ <div class="row g-0 col-8" id="mycard" style="justify-content: left; margin-left: 70px; margin-top: 20px;">
+   <product-component v-for="product in filteredProducts" :key="product.id" :cart="cart"
+                       class="row g-0 col-auto" :product="product" :min="min" :max="max"
+                       style="justify-content: left;">
+   </product-component>
+ </div>
+</div>
+{% endblock %}
+{% endif %}
+
+{% if include_product_details %}
+{% block product_details %}
+<item-component :item="{{item}}" :cart="cart"> </item-component>
+{% endblock %}
+{% endif %}
+
+{% if include_whishlist_component %}
+{% block whishlist %}
+<div class="filter-products-container row col-2" style="float: left; margin-left: 1%; margin-top: 80px;">
+  <div class="filter-card" style="margin-bottom: 10px;"> <button class="custom-button" data-toggle="modal" data-target="#addItem" href="#"
+    style="font-family: inherit; align-items: center;">Add Product </button>
+    <button type="button" class="custom-button" @click="toggleSortOrder" style="align-items: center;">Sort Price
+      <span v-if="sortOrder === 'asc'" class="bi bi-sort-up-alt" style="font-size: 1rem;"></span>
+      <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
+    </button>
+  </div>
+
+  <div class="filter-card">
+    <article class="filter-group">
+      <div class="filter-content collapse show" id="collapse_2">
+        <label style="font-size: 1rem; display: block; margin-bottom: 10px; font-weight: 900;">Categories </label>
+        <div class="card-body">
+            <div class="container" v-for="category in categories" :key="category[2]" :class="{ active: category[1] !== 0 }">
+                <label style="font-size: 1rem">
+                    <input
+                        type="checkbox"
+                        class="cat-checkbox"
+                        :data-category="category[2]"
+                        :disabled="category[1] === 0"
+                        @change="handleCategoryChange"
+                    />
+                     [[ category[0] ]]
+                </label>
+                  <span class="text-muted">
+                      ([[ category[1] ]]) 
+                  </span>
+            </div>
+        </div>
+    </div>
+    </article>
+  </div>
+  <div class="filter-card">
+    <article class="filter-group" style="float: left; margin-left: 0;">
+      <div class="card-body">
+        <label style="font-size: 1rem; display: block; margin-bottom: 5px;">Price</label>
+        <div class="price-input row">
+          <div class="form-group col-md-6">
+            <label for="minPrice" style="font-size: 0.9rem">Min Price</label>
+            <input v-model.number="min" type="text" class="min-input form-control" id="minPrice" @input="updateRange" :min="productMin" :max="productMax" pattern="[1-9][0-9]*" type="text" required>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="maxPrice" style="font-size: 0.9rem">Max Price</label>
+            <input v-model.number="max" type="text" class="max-input form-control" id="maxPrice" @input="updateRange" pattern="[1-9][0-9]*" type="text" :min="productMin" :max="productMax" required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="slider-container">
+              <div class="price-slider" :style="{ left: `${(min / productMax) * 100}%`, right: `${100 - (max / productMax) * 100}%` }"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Slider -->
+      <div class="range-input">
+        <input type="range" class="min-range" :min="productMin" :max="productMax" :value="min" step="1" @input="updateInputs">
+        <input type="range" class="max-range" :min="productMin" :max="productMax" :value="max" step="1" @input="updateInputs">
+      </div>
+    </article>
+  </div>
+  <div class="filter-card">
+    <article class="filter-group">
+      <div class="filter-content collapse show" id="collapse_3">
+        <label style="font-size: 1rem">Overall Rating</label>
+        <div class="form-check form-check-inline" v-for="rating in ratings.slice().reverse()">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            :id="'rating' + rating"
+            :value="rating"
+            v-model="selectedRating"
+          />
+          <label class="form-check-label" :for="'rating' + rating">
+            <span v-for="i in 5" :key="i" class="fa" :class="{ 'fa-star checked': i <= rating, 'fa-star unchecked': i > rating }" 
+              style="font-size: 1rem;"></span>
+          </label>
+        </div>
+      </div>
+    </article>
+  </div>
+</div>
+<div class="container" style="float: right; margin-right: 5%; margin-top: 60px;">
+  <div class="row">
+      <whishlist-component v-for="product in filteredProducts" :key="product.id" :cart="cart"
+           class="row g-0 col-auto" :product="product" :min="min" :max="max">
+      </whishlist-component>
+</div>
+</div>
+{% endblock %}
+{% endif %}
+
+
+{% if include_block_app_js %}
+{% block block_app_js %}
+<script src="../static/templates/js/app.js"></script>
+{% endblock %}
+{% endif %}
+
+{% if include_modal_add_item %}
+{% block modal_add_item %}
+<div class="modal fade" id="addItem" role="dialog" aria-labelledby="addItemlLabel" aria-hidden="true" data-backdrop="false">
+   <div class="modal-dialog" role="document">
+     <div class="modal-content">
+       <div class="modal-header">
+         <h5 class="modal-title" id="addItemLabel">Add Product</h5>
+       </div>
+       <div class="modal-body">
+         <form enctype="multipart/form-data" data-toggle="validator" id="createItem">
+           <b> <p id="error" style="text-align: left;"></p>
+           <div class="form-group">
+             <label for="name" class="col-form-label">Name:</label>
+             <input type="text" name="name" id="item-name" placeholder="Item Name"  maxlength="55" required>
+            </div>
+           <div class="form-group">
+             <label for="price" class="col-form-label">Price: </label>
+             <input type="number" step="any" name="price" id="item-price" placeholder="99.99" max="10000" min="1" required>
+           </div>
+           <div class="form-group">
+             <label for="discount" class="col-form-label">Discount: </label>
+             <input type="number" step="0.01" name="discount" id="discount-price" placeholder="0.8" max="0.95" min="0.1">
+           </div>
+           <div class="form-group" form-group-file>
+             <label for="file" class="col-form-label">Upload Photo:</label>
+             <input type="file" id="file" name="file" class="form-control" data-filesize="1000000" data-filesize-error="File must be smaller then 1MB" accept="image/*" required/>
+           </div>
+           <div class="form-group">
+             <label for="Category" class="col-form-label">Category:</label>
+             <select name="Category">
+                 <option value="Finance">Finance</option>
+                 <option value="IT">IT</option>
+                 <option value="TV">TV</option>
+                 <option value="Services">Services</option>
+                 <option value="Miscellaneous">Miscellaneous</option>
+             </select>
+           </div>
+           <div class="form-group">
+             <label for="Description" class="col-form-label">Description:</label>
+             <textarea name="Description" id="add-description" rows="4" cols="50" maxlength="250"></textarea>
+           </div>
+           <button id="submit-button" class="btn btn-primary">Save</button>
+           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+         </form>
+       </div>
+     </div>
+   </div>
+ </div>
+ {% endblock %}
+ {% endif %}
+
+
+{% block html_read %}
+{% endblock %}
+
+{% block javascript %}
+{% endblock %}
+
