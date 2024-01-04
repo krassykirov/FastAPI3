@@ -595,7 +595,13 @@ App.component('item-component', {
   props: ['item', 'cart', 'total', 'user'],
   delimiters: ['[[', ']]'],
   emits: ['addToCart'],
-  data() {return {}},
+  data() {
+    return {
+      currentPage: 1,
+      reviewsPerPage: 2,
+      reviewsData: []
+    };
+  },
     created() {
       this.getItemRatingItem(this.item.id);
       this.setReviewsRating(this.item.id);
@@ -608,6 +614,17 @@ App.component('item-component', {
           else {
            return (this.item.price * 1).toFixed(2);
           }
+        },
+        totalPages() {
+          return Math.ceil(this.item.reviews.length / this.reviewsPerPage);
+        },
+        pages() {
+          return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+        },
+        displayedReviews() {
+          const startIndex = (this.currentPage - 1) * this.reviewsPerPage;
+          const endIndex = startIndex + this.reviewsPerPage;
+          return this.item.reviews.slice(startIndex, endIndex);
         },
   },
   template: `
@@ -718,32 +735,35 @@ App.component('item-component', {
           </ul>
       </nav>
       <div class="tab-content">
-          <div class="tab-item" data-id="html" id="reviewTab">
-          <div class="card group1" v-if="item.reviews && item.reviews.length > 0" v-for="review in item.reviews"
-          :key="review.id" :id="'card'+review.id" style="display: block; width:550px; margin-bottom: 2px;">
-              <div class="row">
-              <div class="col-12">
+      <div class="tab-item" data-id="html" id="reviewTab">
+        <nav aria-label="Review Pagination">
+          <ul class="pagination">
+            <li class="page-item" v-for="(page, index) in pages" :key="index">
+              <a class="page-link" @click="setCurrentPage(page)">[[ page ]]</a>
+            </li>
+          </ul>
+        </nav>
+        <div class="card group1" v-if="displayedReviews.length > 0" v-for="review in displayedReviews" :key="review.id" :id="'card'+review.id" style="display: block; width:550px; margin-bottom: 2px;">
+        <div class="row">
+            <div class="col-12">
               <p>
                 <div style="display: flex; align-items: center; justify-content: center;">
                   <img src="/static/img/img_avatar.png" class="avatar" style="padding: 5px;">
                   <span style="text-align: center;">[[ review.created_by ]]</span>
                 </div>
-                <span class="fa fa-star checked" :id="'star'+review.id+1"></span>
-                <span class="fa fa-star checked" :id="'star'+review.id+2"></span>
-                <span class="fa fa-star checked" :id="'star'+review.id+3"></span>
-                <span class="fa fa-star" :id="'star'+review.id+4"></span>
-                <span class="fa fa-star" :id="'star'+review.id+5"></span>
-                </p>
-                <hr>
-                <div><p style="text-align: left; padding: 15px;">[[ review.text ]]
+                <span class="fa fa-star" :class="{ checked: star.checked }" :id="star.id" v-for="star in updateStarRatings(review)"></span>
+              </p>
+              <hr>
+              <div>
+                <p style="text-align: left; padding: 15px;">[[ review.text ]]
                   CSS (Cascading Style Sheets) is a stylesheet language used for describing the presentation and
                   layout of HTML documents. It plays a critical role in web development by allowing web developers
                   to control the visual appearance of web pages.
-                      </p>
-                </div>
+                </p>
               </div>
-              </div>
-          </div> 
+            </div>
+          </div>
+        </div>
           <div class="row pb-2" style="width:700px">
             <div class="card" id="RatingCard" style="width:550px; margin-left: 35px;">
               <div class="row">
@@ -769,6 +789,7 @@ App.component('item-component', {
          </div>
          </div>
           <div class="tab-item hide" data-id="csss">
+             Item Description Goes Here
               <p>[[ item.description ]]</p>
           </div>
           <div class="tab-item hide" data-id="js">
@@ -831,9 +852,9 @@ App.component('item-component', {
     },
     setReviewsRating(id) {
       fetch(`/api/reviews?item_id=${id}`, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       })
         .then(response => {
@@ -843,25 +864,18 @@ App.component('item-component', {
           return response.json();
         })
         .then(data => {
-          data.forEach(review => {
-            this.UpdateStarRatings(review.id, review.rating);
-          });
+          this.reviewsData = data;
         })
         .catch(error => {
           console.error('Error:', error);
         });
     },
-    UpdateStarRatings(review_id, rating){
-      for (var i=1; i<=5; i++ ){
-        var star = document.getElementById('star'+ review_id + i)
-        if ( i <= rating ){
-            star.classList.add('checked');
-        }
-        else {
-          star.classList.remove('checked');
-        }
-      }
-     },
+    updateStarRatings(review) {
+      return Array.from({ length: 5 }, (_, i) => i + 1).map(starIndex => ({
+        id: `star${review.id}${starIndex}`,
+        checked: starIndex <= review.rating,
+      }));
+    },
     getItemRatingItem(item_id) {
       try {
         fetch(`/api/reviews/item/rating?id=${item_id}`, {
@@ -965,6 +979,9 @@ App.component('item-component', {
       if (targetDiv) {
         targetDiv.scrollIntoView({ behavior: 'smooth' });
       }
+    },
+    setCurrentPage(page) {
+      this.currentPage = page;
     },
   },
 });
