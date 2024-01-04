@@ -403,7 +403,8 @@ App.component('navbar-component', {
           <div v-if="!displayCart"  class="list-group position-absolute">
             <div v-for="(item, index) in cart.slice(0, Math.min(7, cart.length))" :key="index" class="list-group-item d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
-              <img :src="profile" class="mr-2" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
+            <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image" class="mr-2"
+            style="width: 50px; height: 60px; object-fit: cover; border-radius: 5px;">
               <div style="cursor: pointer" @click="redirectToItemFromNavbar(item.id)">
                 <div style="font-size: 0.8rem; width:180px">[[ item.name  ]] - $[[ item.price ]]</div>
               </div>
@@ -737,11 +738,21 @@ App.component('item-component', {
       <div class="tab-content">
       <div class="tab-item" data-id="html" id="reviewTab">
         <nav aria-label="Review Pagination">
-          <ul class="pagination">
-            <li class="page-item" v-for="(page, index) in pages" :key="index">
+          <ul class="pagination" style="margin-left:20px">
+          <li class="page-item">
+          <a class="page-link"  @click="prevPage" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <li v-for="(page, index) in pages" :key="index" :class="{ 'page-item': true, 'active': page === currentPage }">
               <a class="page-link" @click="setCurrentPage(page)">[[ page ]]</a>
             </li>
-          </ul>
+          <li class="page-item">
+              <a class="page-link" @click="nextPage" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+        </ul>
         </nav>
         <div class="card group1" v-if="displayedReviews.length > 0" v-for="review in displayedReviews" :key="review.id" :id="'card'+review.id" style="display: block; width:550px; margin-bottom: 2px;">
         <div class="row">
@@ -789,7 +800,13 @@ App.component('item-component', {
          </div>
          </div>
           <div class="tab-item hide" data-id="csss">
-             Item Description Goes Here
+             <p> Item Description Goes Here </p>
+             <p> Item Description Goes Here </p>
+             <p> Item Description Goes Here </p>
+             <p> Item Description Goes Here </p>
+             <p> Item Description Goes Here </p>
+             <p> Item Description Goes Here </p>
+             <p> Item Description Goes Here </p>
               <p>[[ item.description ]]</p>
           </div>
           <div class="tab-item hide" data-id="js">
@@ -983,6 +1000,16 @@ App.component('item-component', {
     setCurrentPage(page) {
       this.currentPage = page;
     },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },  
   },
 });
 

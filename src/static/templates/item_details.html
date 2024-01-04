@@ -5,7 +5,22 @@
 
 {% block more_css %}
 <style>
-  
+
+.pagination {
+  margin-top: 20px;
+}
+
+.pagination .page-item {
+  display: inline-block;
+  margin-right: 3px;
+}
+
+.pagination .page-item.active a {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
 :root{
     --color-primary: #4670d9;
     --color-secondary: #2354d1;
