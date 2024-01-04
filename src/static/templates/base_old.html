@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="../static/css/main.css">
 </head>
 {% endblock %}
+<body>
 
 {% block style %}
 <style>
@@ -37,7 +38,38 @@
     margin-bottom: 1rem;
 }
 
-  .filter-card {
+INPUT[type=checkbox]:focus
+{
+  outline: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+INPUT[type=checkbox]
+{
+    background-color: #e6eaeb;
+    border-radius: 1px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+    position: relative;
+    top: 5px;
+}
+
+INPUT[type=checkbox]:checked
+{
+    background-color: #409fd6;
+    background: #409fd6 url("data:image/gif;base64,R0lGODlhCwAKAIABAP////3cnSH5BAEKAAEALAAAAAALAAoAAAIUjH+AC73WHIsw0UCjglraO20PNhYAOw==") 3px 3px no-repeat;
+}
+
+INPUT[type="checkbox"]:disabled {
+  background: #e6e6e6;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.filter-card {
     margin-bottom: 10px; /* Adjust the margin to control the space between cards */
     padding: 10px; /* Optional padding inside the card */
     border: 1px solid #cfcdcd; /* Border to create a card-like appearance */
@@ -79,7 +111,7 @@
       display: block;
       margin-bottom: 5px; /* Adjust the margin as needed */
   }
-  
+
   .custom-button:hover {
     background-color: #e0e0e0; 
   }
@@ -96,170 +128,12 @@
   .fade-enter-from {
     opacity: 0;
   }
-/* NEW */
-
-:root{
-  --bs-white: #fff;
-  --bs-gray: #6c757d;
-  --bs-hover:#192a56;
-  --bs-primary:#565c64;
-}
-.product-grid{
-background-color: #fff;
-font-family: 'Montserrat', sans-serif;
-text-align: center;
-height: 100%;
-padding: 5px;
-margin-bottom: 10px;
-}
-.product-grid .product-image{
-overflow: hidden;
-position: relative;
-height: 260px;
-object-fit: cover;
-}
-.product-grid .product-image a.image{ display: block; }
-.product-grid .product-image img{
-width: 100%;
-height: auto;;
-}
-.product-grid .product-image .pic-1{ transition: all 0.3s ease 0s; }
-.product-grid .product-image:hover .pic-1{ transform: translateX(100%); }
-.product-grid .product-image .pic-2{
-width: 100%;
-height: 100%;
-transform: translateX(-101%);
-position: absolute;
-top: 0;
-left: 0;
-transition: all 0.3s ease 0s;
-}
-.product-grid .product-image:hover .pic-2{ transform: translateX(0); }
-.product-grid .product-sale-label{
-color: #fff;
-background: var(--bs-hover);
-font-size: 13px;
-text-transform: uppercase;
-letter-spacing: 1px;
-padding: 2px 8px;
-position: absolute;
-top: 15px;
-left: 15px;
-}
-.product-grid .product-like-icon{
-color: #696969;
-font-size: 22px;
-line-height: 20px;
-position: absolute;
-top: 15px;
-right: 15px;
-}
-.product-grid .product-like-icon:hover{ color: var(--bs-hover); }
-.product-grid .product-like-icon:before,
-.product-grid .product-like-icon:after{
-content: attr(data-tip);
-color: #fff;
-background-color: #000;
-font-size: 12px;
-line-height: 18px;
-padding: 7px 7px 5px;
-visibility: hidden;
-position: absolute;
-right: 0;
-top: 15px;
-transition: all 0.3s ease 0s;
-}
-.product-grid .product-like-icon:after{
-content: '';
-height: 15px;
-width: 15px;
-padding: 0;
-transform: translateX(-50%) rotate(45deg);
-right: auto;
-left: 50%;
-top: 15px;
-z-index: -1;
-}
-.product-grid .product-like-icon:hover:before,
-.product-grid .product-like-icon:hover:after{
-visibility: visible;
-top: 30px;
-}
-.product-grid .product-links{
-width: 170px;
-padding: 0;
-margin: 0;
-list-style: none;
-opacity: 0;
-transform: translateX(-50%);
-position: absolute;
-bottom: -50px;
-left: 50%;
-transition: all 0.3s ease 0s;
-}
-.product-grid:hover .product-links{
-bottom: 40px;
-opacity: 1;
-}
-.product-grid .product-links li{
-display: inline-block;
-margin: 0 2px;
-}
-.product-grid .product-links li a{
-color: #fff;
-background: #192a56;
-font-size: 16px;
-line-height: 48px;
-width: 48px;
-height: 48px;
-border-radius: 50%;
-display: block;
-transition: all 0.3s ease 0s;
-}
-.product-grid:hover .product-links li a:hover{ background: #333; }
-.product-grid .product-content{
-padding: 10px 0 0;
-height: 100%;
-text-align:center
-}
-.product-grid .title{
-font-size: 14px;
-font-weight: 500;
-text-transform: capitalize;
-margin: 0 0 8px;
-}
-.product-grid .title a{
-color: #333;
-transition: all 0.3s ease 0s;
-text-decoration:none;
-font-weight:600;
-font-size:18px;
-}
-.product-grid .title a:hover{ color: var(--bs-hover); }
-.product-grid .price{
-color: var(--bs-hover);
-font-size: 16px;
-font-weight: 500;
-margin-bottom: 0.7em;
-}
-.product-grid .price span{
-color: #555;
-font-size: 14px;
-font-weight: 400;
-text-decoration: line-through;
-margin: 0 5px 0 0;
-}
-@media screen and (max-width: 990px){
-.product-grid{ margin: 0 0 30px; }
-}
 
 </style>
 {% endblock %}
 
 {% block more_css %}
 {% endblock %}
-
-
 
 {% block nav %}
 <div class="container-fluid" id="app" style="width: 100vw; position: sticky; margin: 0; padding: 0;">
@@ -269,7 +143,6 @@ margin: 0 5px 0 0;
   </navbar-component>
 </nav>
 {% endblock %}
-
 
 {% if include_product_component %}
 {% block products %}
@@ -299,7 +172,7 @@ margin: 0 5px 0 0;
                      [[ category[0] ]]
                 </label>
                   <span class="text-muted">
-                      ([[ category[1] ]]) 
+                      ([[ category[1] ]])
                   </span>
             </div>
         </div>
@@ -339,6 +212,21 @@ margin: 0 5px 0 0;
         <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
       </button>
     </div>
+    </article>
+  </div>
+  <div class="filter-card" style="background-color: white; height: 70px;">
+    <article class="filter-group">
+      <div class="filter-content collapse show" id="collapse_3">
+        <label style="font-size: 1rem; display: block; margin-bottom: 10px; font-weight: 900;">Discounts</label>
+        <div class="form-check form-check-inline">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="discountCheckbox"
+            v-model="isDiscountedChecked"
+          />
+        </div>
+      </div>
     </article>
   </div>
   <div class="filter-card" style="background-color: white;">
@@ -381,8 +269,7 @@ margin: 0 5px 0 0;
 {% if include_whishlist_component %}
 {% block whishlist %}
 <div class="filter-products-container row col-2" style="float: left; margin-left: 1%; margin-top: 80px;">
-  <div class="filter-card" style="margin-bottom: 10px;"> <button class="custom-button" data-toggle="modal" data-target="#addItem" href="#"
-    style="font-family: inherit; align-items: center;">Add Product </button>
+  <div class="filter-card" style="margin-bottom: 10px;">
     <button type="button" class="custom-button" @click="toggleSortOrder" style="align-items: center;">Sort Price
       <span v-if="sortOrder === 'asc'" class="bi bi-sort-up-alt" style="font-size: 1rem;"></span>
       <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
@@ -473,13 +360,6 @@ margin: 0 5px 0 0;
 {% endblock %}
 {% endif %}
 
-
-{% if include_block_app_js %}
-{% block block_app_js %}
-<script src="../static/templates/js/app.js"></script>
-{% endblock %}
-{% endif %}
-
 {% if include_modal_add_item %}
 {% block modal_add_item %}
 <div class="modal fade" id="addItem" role="dialog" aria-labelledby="addItemlLabel" aria-hidden="true" data-backdrop="false">
@@ -536,6 +416,12 @@ margin: 0 5px 0 0;
 {% endblock %}
 
 {% block javascript %}
-<script> const itemsInCartUrl = "{{ url_for('items-in-get_items_in_cart') }}"; </script>
 {% endblock %}
 
+{% if include_block_app_js %}
+{% block block_app_js %}
+<script src="../static/templates/js/app.js"></script>
+{% endblock %}
+{% endif %}
+</body>
+</html>

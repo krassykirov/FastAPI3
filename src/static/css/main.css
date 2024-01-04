@@ -1,16 +1,6 @@
 @import url("//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
 @import url("https://fonts.googleapis.com/css?family=Raleway");
 
-/* html, body {
-	margin: 0;
-	padding: 0;
-  margin-left: 0;
-  margin-right: 0;
-  /* overflow-y: scroll; */
-  /* width: calc(100vw - 34px); */
-  /* scrollbar-gutter: stable both-edges; */
-/* } */
-
 html {
   width: 100vw;
 }
@@ -200,7 +190,7 @@ display: block;
     color: #555;
 }
 
-/* Remove Arrows/Spinners */
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -220,8 +210,8 @@ input::-webkit-inner-spin-button {
 
 .slider-container .price-slider {
     height: 100%;
-    left: 0%; /* Adjusted left value */
-    right: 0%; /* Adjusted right value */
+    left: 0%; 
+    right: 0%; 
     position: absolute;
     border-radius: 5px;
     background: #5e95e2;

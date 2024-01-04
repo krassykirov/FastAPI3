@@ -6,6 +6,7 @@ const App = Vue.createApp({
       min: 1,
       max: 10000,
       products: [],
+      isDiscountedChecked: false,
       item: null,
       categories: [],
       cart: Vue.ref([]),
@@ -41,7 +42,8 @@ const App = Vue.createApp({
     const priceCondition = item.price >= this.min && item.price <= this.max;
     const categoryCondition = this.selectedCategories.length === 0 || this.selectedCategories.includes(String(item.category_id));
     const ratingCondition = this.selectedRating.length === 0 || this.selectedRating.includes(Math.ceil(item.rating_float));
-    return priceCondition && categoryCondition && ratingCondition;
+    const discountCondition = !this.isDiscountedChecked || item.discount != null;
+    return priceCondition && categoryCondition && ratingCondition && discountCondition;
     });
    },
   },
@@ -185,7 +187,7 @@ const App = Vue.createApp({
       if (this.min > this.max || this.min === '' || isNaN(this.min)) {
         this.min = productMinPrice;
       }
-      if (this.max < this.min || this.max === '' || isNaN(this.max) ) {
+      if (this.max < this.min || this.max === '' || isNaN(this.max) || this.max > productMaxPrice ) {
         this.max = productMaxPrice;
       }
       const rangeInput = document.querySelector(".min-range");
@@ -260,7 +262,7 @@ App.component('product-component', {
       <div class="card" :id="product.id" :data-category="product.category_id" style="margin: 1px; margin-bottom: 3px;">
         <div class="card-body" style="cursor: pointer; padding:0" @click="redirectToItemFromProduct(product.id)">
         <span class="badge bg-danger position-absolute top-0 start-0" v-if="product.discount >= 0.5"
-         style="font-size: 0.8em; margin: 3px; top: 0; start: 0;">-[[ Math.floor(product.discount * 100) ]]%</span>
+         style="font-size: 0.8em; margin: 1px; top: 0; start: 0;">-[[ Math.floor(product.discount * 100) ]]%</span>
           <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="card-img-top">
           <h6 class="card-title" style="margin-bottom: 15px; padding:1px; height: 2em; overflow: hidden; display: -webkit-box;
           -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1;">
@@ -401,7 +403,8 @@ App.component('navbar-component', {
              <i class="bi bi-cart" style="font-size: 1rem;"></i> Cart <span class="badge badge-pill badge-primary"> [[ cart.length ]]</span>
          </button>
           <div v-if="!displayCart"  class="list-group position-absolute">
-            <div v-for="(item, index) in cart.slice(0, Math.min(7, cart.length))" :key="index" class="list-group-item d-flex justify-content-between align-items-center">
+            <div v-for="(item, index) in cart.slice(0, Math.min(7, cart.length))" :key="index"
+            class="list-group-item d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
             <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image" class="mr-2"
             style="width: 50px; height: 60px; object-fit: cover; border-radius: 5px;">
@@ -600,7 +603,7 @@ App.component('item-component', {
     return {
       currentPage: 1,
       reviewsPerPage: 2,
-      reviewsData: []
+      reviewsData: [],
     };
   },
     created() {
@@ -725,7 +728,7 @@ App.component('item-component', {
     </div>
   </div>
 </div>
-<section class="container" style="margin-top: 180px;">
+<section class="container" style="margin-top: 140px;">
   <div class="tab-container">
       <nav class="tab-nav">
           <div class="mobile-select"> <i class="bi bi-chevron-down"></i></div>

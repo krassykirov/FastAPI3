@@ -40,29 +40,12 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 })
 
-
 function ShowReview(){
   var x  = document.getElementById('RatingCard')
   if (x.style.display === "none") {
     x.style.display = "block";
   } else {
     x.style.display = "none";
-  }
-}
-
-function Search() {
-  var input, filter, cards, cardContainer, h5, title, i;
-  input = document.getElementById("filter");
-  filter = input.value.toUpperCase();
-  cardContainer = document.getElementById("mycard");
-  cards = cardContainer.getElementsByClassName("card");
-  for (i = 0; i < cards.length; i++) {
-      title = cards[i].querySelector(".card-body h5.card-title");
-      if (title.innerText.toUpperCase().indexOf(filter) > -1) {
-          cards[i].style.display = "";
-      } else {
-          cards[i].style.display = "none";
-      }
   }
 }
 
