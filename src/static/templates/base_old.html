@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 {% block head %}
 <head>
-  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
 <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -260,11 +260,12 @@ margin: 0 5px 0 0;
 {% endblock %}
 
 
+
 {% block nav %}
 <div class="container-fluid" id="app" style="width: 100vw; position: sticky; margin: 0; padding: 0;">
   <nav class="navbar navbar-expand-lg bg-white sticky-top navbar-light ms-auto shadow-lg"
   style="height: 70px; margin-left: 0; margin-right: 0;">
-  <navbar-component :cart="cart" :total="total" :user="user">
+  <navbar-component :cart="cart" :total="total" :user="user" :profile="profile">
   </navbar-component>
 </nav>
 {% endblock %}
@@ -535,5 +536,6 @@ margin: 0 5px 0 0;
 {% endblock %}
 
 {% block javascript %}
+<script> const itemsInCartUrl = "{{ url_for('items-in-get_items_in_cart') }}"; </script>
 {% endblock %}
 

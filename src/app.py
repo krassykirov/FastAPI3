@@ -378,4 +378,5 @@ def get_user_items_in_cart(db: Session=Depends(get_session), user: User = Depend
   items_in_cart =  [item for item in items for k, v in item.in_cart.items()
                     if k == user.username and v['in_cart'] == True]
   total = sum([item.price for item in items_in_cart])
-  return {'items':items_in_cart, 'items_in_cart': len(items_in_cart), 'total': total, 'user': user.username } # user.username.split('@')[0]
+  return {'items':items_in_cart, 'items_in_cart': len(items_in_cart),
+          'total': total, 'user': user.username, 'user_id': user.id}

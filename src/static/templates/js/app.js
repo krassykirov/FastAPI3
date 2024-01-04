@@ -15,6 +15,8 @@ const App = Vue.createApp({
       selectedRating: [],
       ratings: [1, 2, 3, 4, 5],
       user: Vue.ref([]),
+      user_id: null,
+      profile: '/static/img/img_avatar.png',
       productMin: 0,
       productMax: 10000,
     };
@@ -23,6 +25,7 @@ const App = Vue.createApp({
     await this.getProducts();
     await this.readFromCartVue();
     await this.fetchCategories();
+    await this.getProfile();
     this.products.forEach(product => {
     this.getItemRating(product.id);
     this.updateRange();
@@ -133,10 +136,28 @@ const App = Vue.createApp({
       .then(data => {
         this.cart  = data.items
         this.user  = data.user
+        this.user_id = data.user_id
       })
       .catch(error => {
         console.error('error', error);
       });
+    },
+    async getProfile() {
+      try {
+          const response = await fetch(`/api/profile/${this.user_id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          if (!response.ok) {
+              this.profile = '/static/img/img_avatar.png'
+          } else {
+            const data = await response.json();
+            this.profile = `/static/img/${this.user}/profile/${data.avatar}`;
+          }
+        } catch (error) {
+        }
     },
     redirectToItem(itemId) {
       var currentPath = window.location.pathname;
@@ -147,7 +168,7 @@ const App = Vue.createApp({
     }
     },
     redirectToCart(itemId) {
-      window.location.href = 'items-in-cart/';
+      window.location.href = '/items-in-cart/';
     },
     handleRatingChange(rating) {
     const index = this.selectedRating.indexOf(rating);
@@ -255,7 +276,7 @@ App.component('product-component', {
           <div>
           <div v-if="product.discount >= 0.5" style="display: flex; flex-direction: column; align-items: center;">
             <span style="font-size: 1em;">Price: $[[ discountedPrice ]]</span>
-            <span style="text-decoration: line-through; font-size: 0.8em;">
+            <span style="text-decoration: line-through; font-size: 0.9em;">
               <small>Old Price $</small>[[ Math.floor(product.price) | formatPrice ]] </span>
           </div>
           <div v-else>
@@ -342,7 +363,7 @@ methods: {
 });
 
 App.component('navbar-component', {
-  props: ['product','cart', 'total', 'user'],
+  props: ['product','cart', 'total', 'user', 'profile'],
   data() {
   return {
     displayCart: true,
@@ -382,8 +403,7 @@ App.component('navbar-component', {
           <div v-if="!displayCart"  class="list-group position-absolute">
             <div v-for="(item, index) in cart.slice(0, Math.min(7, cart.length))" :key="index" class="list-group-item d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
-              <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image" class="mr-2"
-                  style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
+              <img :src="profile" class="mr-2" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
               <div style="cursor: pointer" @click="redirectToItemFromNavbar(item.id)">
                 <div style="font-size: 0.8rem; width:180px">[[ item.name  ]] - $[[ item.price ]]</div>
               </div>
@@ -400,7 +420,7 @@ App.component('navbar-component', {
           <div class="ml-auto" style="font-family: Raleway; font-size: 16px;">[[ user ]] &nbsp</div> 
           <form class="form-inline my-2 my-lg-0" style="margin-right: 120px; padding:0">
             <div class="dropdown" style="font-family: Raleway; font-size: 16px;">
-               <img src="/static/img/img_avatar.png" class="avatar">
+               <img :src="profile" class="avatar">
               <div class="dropdown-content">
               <a class="nav-link mx-2 text-uppercase" href="/user/profile"> Profile</a>
                 <a class="nav-link mx-2 text-uppercase" href="/logout"> Logout</a>
@@ -413,7 +433,6 @@ App.component('navbar-component', {
   methods:{
   redirectToItemFromNavbar(itemId) {
     this.$root.redirectToItem(itemId);
-    // this.$root.redirectToCart();
   },
    redirectToCart() {
      window.location.href = `/items-in-cart`
@@ -639,9 +658,9 @@ App.component('item-component', {
       </div>
 
       <div class="product-price">
-        <p class="new-price" id="new-price">New Price: <span>$[[ discountedPrice ]] </span></p>
-        <p class="last-price">Old Price: <span> <small> $[[ item.price ]] </small> </span></p>
-          <span class="badge bg-danger" style="font-size: 0.8em;">
+        <p class="new-price" id="new-price">Price: <span>$[[ discountedPrice ]] </span></p>
+        <p v-if="item.discount" class="last-price">Old Price: <span> <small> $[[ item.price ]] </small> </span></p>
+          <span  v-if="item.discount" class="badge bg-danger" style="font-size: 0.8em;">
           -[[ Math.floor(item.discount * 100) ]]%
           </span>
       </div>
