@@ -258,11 +258,12 @@ App.component('product-component', {
     },
   },
   template: `
-  <div class="col-lg-auto">
       <div class="card" :id="product.id" :data-category="product.category_id" style="margin: 1px; margin-bottom: 3px;">
         <div class="card-body" style="cursor: pointer; padding:0" @click="redirectToItemFromProduct(product.id)">
         <span class="badge bg-danger position-absolute top-0 start-0" v-if="product.discount >= 0.1"
-         style="font-size: 0.8em; margin: 1px; top: 0; start: 0;">-[[ Math.floor(product.discount * 100) ]]%</span>
+             style="font-size: 0.8em; margin: 1px; top: 0; start: 0;">-[[ Math.floor(product.discount * 100) ]]%
+         </span>
+        <span class="fa fa-heart-o" style="position: absolute; top:5px;right:5px; font-weight:900; font-size:1.1em"></span>
           <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="card-img-top">
           <h6 class="card-title" style="margin-bottom: 5px; padding:1px; height: 2em; overflow: hidden; display: -webkit-box;
           -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1;">
@@ -271,25 +272,25 @@ App.component('product-component', {
           <p style="cursor: pointer; margin-bottom:8px">
             <i>
               <span v-for="i in 5" :key="i" :class="getStarClasses(i, product.rating_float)"></span>
-              <span :id="'overall-rating' + product.id + '-float'"><small>&nbsp[[ product.rating_float ]]</small></span>
+              <span :id="'overall-rating' + product.id + '-float'"><small style="font-family:Raleway:wght@500">&nbsp[[ product.rating_float ]]</small></span>
             </i>
-            <span :id="'overall-rating' + product.id"> <small> ([[ product.reviewNumber ]]) </small> </span>
+            <span :id="'overall-rating' + product.id">  ([[ product.reviewNumber ]])  </span>
           </p>
           <div>
           <div v-if="product.discount >= 0.1" style="display: flex; flex-direction: column; align-items: center;">
-            <span style="font-size: 1em; font-weight: 600; color:red;">Price: $[[ discountedPrice ]]</span>
+            <span style="font-size: 1em; font-weight: 600; color:#dc3545;font-family:'Raleway:wght@500'">Price: $[[ discountedPrice ]]</span>
             <span style="text-decoration: line-through; font-size: 0.9em;margin-bottom:10px">
               <small>Old Price $</small>[[ Math.floor(product.price) | formatPrice ]] </span>
           </div>
           <div v-else>
-            <span style="font-size: 1em;color:red;margin-bottom:25px;font-weight: 900;">
-             Price: <small>$</small>[[ product.price | formatPrice ]]
+            <span style="font-size: 1em;color:#dc3545;margin-bottom:25px;font-weight: 900;font-family:'Raleway:wght@500'">
+             Price: $[[ product.price | formatPrice ]]
             </span>
-            <span v-if="!Number.isInteger(product.price)" style="font-size: 0.7em; vertical-align: top;color:red">
+            <span v-if="!Number.isInteger(product.price)" style="font-size: 0.7em; vertical-align: top;color:#dc3545; font-family:'Raleway:wght@500'">
              [[ product.price.toString().split('.')[1] ]]
             </span>
           </div>
-          <p style="margin:5px; font-size:0.9em">[[ product.description ]]</p>
+          <p style="margin:5px; font-size:1em; font-family:'Raleway:wght@500'">[[ product.description ]]</p>
         </div>
           <input type="number" :data-price="product.price" hidden>
         </div>
@@ -303,7 +304,6 @@ App.component('product-component', {
           <p class="text-muted" style="margin-bottom:2px"> <small> Category [[ product.category.name  ]]  </small></p>
        </div>
       </div>
-    </div>
   `,
 methods: {
     redirectToItemFromProduct(itemId) {
@@ -314,20 +314,19 @@ methods: {
     },
     addToCart(product) {
       const itemInCart = this.cart.find(item => item.id === product.id);
-      const popoverContent = itemInCart
-        ? `'${product.name} is already in the cart'`
-        : `'${product.name} was added to the cart'`;
+      const toastContent = itemInCart
+        ? `${product.name} is already in the cart`
+        : `${product.name} was added to the cart`;
 
-      const buttonElement = this.$refs.addToCartButton;
-      $(buttonElement).popover({
-        content: popoverContent,
-        placement: 'top',
-        trigger: 'manual',
+      const toastElement = new bootstrap.Toast(document.getElementById('cartToast'), {
+        delay: 2000,
       });
-      $(buttonElement).popover('show');
-      setTimeout(() => {
-        $(buttonElement).popover('hide');
-      }, 1000);
+
+      const toastBodyElement = document.getElementById('cartToastBody');
+      toastBodyElement.innerText = toastContent;
+
+      toastElement.show();
+
       if (!itemInCart) {
         fetch('/update-basket', {
           method: 'POST',
@@ -393,7 +392,7 @@ App.component('navbar-component', {
   },
   template: `
  <div class="container-fluid" style="width: 100%; font-size: 14px;">
-        <a class="navbar-brand" href="#" style="font-size: 14px;">
+        <a class="navbar-brand" href="#" style="font-size: 14px; margin-left:50px">
            <i class="fa fa-home"></i> <strong>KRASSY SHOP</strong>
          </a>
         <div class="container" style="align-items:center; text-align:center; margin-left:500px">
@@ -429,17 +428,17 @@ App.component('navbar-component', {
           <button v-if="cart.length > 0" @click="redirectToCart" class="btn btn-sm btn-primary"> Go to Cart </button>
             </div>
         </div>
-          <div class="ml-auto" style="font-family: Raleway; font-size: 16px; margin-left: 0; margin-right: 0;">[[ user ]] &nbsp </div>
-          <form class="form-inline my-2 my-lg-0" style="margin-right: 120px; padding:0">
-            <div class="dropdown" style="font-family: Raleway; font-size: 16px;">
-               <img :src="avatar" class="avatar">
-              <div class="dropdown-content">
-              <a class="nav-link mx-2 text-uppercase" href="/user/profile"> Profile</a>
-                <a class="nav-link mx-2 text-uppercase" href="/logout"> Logout</a>
-              </div>
+        <div class="ml-auto" style="font-family: Raleway; font-size: 14px; margin-left: 0; margin-right: 0;">
+        <form class="form-inline my-2" style="margin-right: 80px;">
+          <div class="dropdown" style="font-family: Raleway; font-size: 16px;">
+            <img :src="avatar" class="avatar">
+            <div class="dropdown-content" style="text-align: center;">
+              <a class="nav-link text-uppercase" href="/user/profile" style="width: 100%;">Profile</a>
+              <a class="nav-link text-uppercase" href="/logout" style="width: 100%;">Logout</a>
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
+      </div>
       </div>
       </div>
   `,
@@ -721,25 +720,6 @@ App.component('item-component', {
         </button>
         <button type = "button" class = "btn">Compare</button>
       </div>
-
-      <div class = "social-links">
-        <p>Share At: </p>
-        <a href = "#">
-          <i class = "fab fa-facebook-f"></i>
-        </a>
-        <a href = "#">
-          <i class = "fab fa-twitter"></i>
-        </a>
-        <a href = "#">
-          <i class = "fab fa-instagram"></i>
-        </a>
-        <a href = "#">
-          <i class = "fab fa-whatsapp"></i>
-        </a>
-        <a href = "#">
-          <i class = "fab fa-pinterest"></i>
-        </a>
-      </div>
     </div>
   </div>
 </div>
@@ -812,8 +792,8 @@ App.component('item-component', {
               </div>
               </div>
               </div>
-              </div>
-         </div>
+            </div>
+          </div>
          </div>
          </div>
          </div>
