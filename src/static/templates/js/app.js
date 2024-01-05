@@ -17,7 +17,6 @@ const App = Vue.createApp({
       ratings: [1, 2, 3, 4, 5],
       user: Vue.ref([]),
       user_id: null,
-      profile: '/static/img/img_avatar.png',
       productMin: 0,
       productMax: 10000,
     };
@@ -26,7 +25,6 @@ const App = Vue.createApp({
     await this.getProducts();
     await this.readFromCartVue();
     await this.fetchCategories();
-    await this.getProfile();
     this.products.forEach(product => {
     this.getItemRating(product.id);
     this.updateRange();
@@ -110,7 +108,7 @@ const App = Vue.createApp({
           selectedCategories.push(categoryId);
         });
         return selectedCategories;
-      },
+    },
     toggleSortOrder() {
       this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
       this.sortProducts();
@@ -145,22 +143,20 @@ const App = Vue.createApp({
       });
     },
     async getProfile() {
-      try {
-          const response = await fetch(`/api/profile/${this.user_id}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-          if (!response.ok) {
-              this.profile = '/static/img/img_avatar.png'
-          } else {
-            const data = await response.json();
-            this.profile = `/static/img/${this.user}/profile/${data.avatar}`;
-          }
-        } catch (error) {
+        const response = await fetch(`/api/profile/${this.user_id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) {
+
+        } else {
+          const data = await response.json();
+          console.log('response', response)
+          this.profile = `/static/img/${this.user}/profile/${data.avatar}`;
         }
-    },
+      },
     redirectToItem(itemId) {
       var currentPath = window.location.pathname;
       var regex = /\/items\/(.*)/;
@@ -179,6 +175,10 @@ const App = Vue.createApp({
     } else {
       this.selectedRating.splice(index, 1);
     }
+    },
+    getRatingItemCount(rating) {
+      const items = this.filteredProducts;
+      return items.filter(item => Math.ceil(item.rating_float) === rating).length;
     },
     updateRange() {
       const productMinPrice = Math.min(...this.products.map(product => product.price));
@@ -235,7 +235,7 @@ const App = Vue.createApp({
               cards[i].style.display = "none";
           }
       }
-    }
+    },
   },
   filters: {
     formatPrice(price) {
@@ -250,7 +250,7 @@ App.component('product-component', {
   computed: {
     discountedPrice() {
       if (this.product.discount) {
-      return (this.product.price * this.product.discount).toFixed(2);
+      return (this.product.price - (this.product.price * this.product.discount)).toFixed(2);
       }
       else {
        return (this.product.price * 1).toFixed(2);
@@ -261,14 +261,14 @@ App.component('product-component', {
   <div class="col-lg-auto">
       <div class="card" :id="product.id" :data-category="product.category_id" style="margin: 1px; margin-bottom: 3px;">
         <div class="card-body" style="cursor: pointer; padding:0" @click="redirectToItemFromProduct(product.id)">
-        <span class="badge bg-danger position-absolute top-0 start-0" v-if="product.discount >= 0.5"
+        <span class="badge bg-danger position-absolute top-0 start-0" v-if="product.discount >= 0.1"
          style="font-size: 0.8em; margin: 1px; top: 0; start: 0;">-[[ Math.floor(product.discount * 100) ]]%</span>
           <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="card-img-top">
-          <h6 class="card-title" style="margin-bottom: 15px; padding:1px; height: 2em; overflow: hidden; display: -webkit-box;
+          <h6 class="card-title" style="margin-bottom: 5px; padding:1px; height: 2em; overflow: hidden; display: -webkit-box;
           -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1;">
           [[ product.name ]]
           </h6>
-          <p style="cursor: pointer">
+          <p style="cursor: pointer; margin-bottom:8px">
             <i>
               <span v-for="i in 5" :key="i" :class="getStarClasses(i, product.rating_float)"></span>
               <span :id="'overall-rating' + product.id + '-float'"><small>&nbsp[[ product.rating_float ]]</small></span>
@@ -276,19 +276,20 @@ App.component('product-component', {
             <span :id="'overall-rating' + product.id"> <small> ([[ product.reviewNumber ]]) </small> </span>
           </p>
           <div>
-          <div v-if="product.discount >= 0.5" style="display: flex; flex-direction: column; align-items: center;">
-            <span style="font-size: 1em;">Price: $[[ discountedPrice ]]</span>
-            <span style="text-decoration: line-through; font-size: 0.9em;">
+          <div v-if="product.discount >= 0.1" style="display: flex; flex-direction: column; align-items: center;">
+            <span style="font-size: 1em; font-weight: 600; color:red;">Price: $[[ discountedPrice ]]</span>
+            <span style="text-decoration: line-through; font-size: 0.9em;margin-bottom:10px">
               <small>Old Price $</small>[[ Math.floor(product.price) | formatPrice ]] </span>
           </div>
           <div v-else>
-            <span style="font-size: 1em;">
+            <span style="font-size: 1em;color:red;margin-bottom:25px;font-weight: 900;">
              Price: <small>$</small>[[ product.price | formatPrice ]]
             </span>
-            <span v-if="!Number.isInteger(product.price)" style="font-size: 0.7em; vertical-align: top;">
-              [[ product.price.toString().split('.')[1] ]]
+            <span v-if="!Number.isInteger(product.price)" style="font-size: 0.7em; vertical-align: top;color:red">
+             [[ product.price.toString().split('.')[1] ]]
             </span>
           </div>
+          <p style="margin:5px; font-size:0.9em">[[ product.description ]]</p>
         </div>
           <input type="number" :data-price="product.price" hidden>
         </div>
@@ -365,34 +366,41 @@ methods: {
 });
 
 App.component('navbar-component', {
-  props: ['product','cart', 'total', 'user', 'profile'],
+  props: ['product','cart', 'total', 'user', 'avatar'],
   data() {
   return {
     displayCart: true,
   };
 },
   delimiters: ['[[', ']]'],
+  mounted() {
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          navLinks.forEach(otherLink => {
+            otherLink.classList.remove('active');
+          });
+          link.classList.add('active');
+        });
+      });
+        const currentUrl = window.location.href;
+        navLinks.forEach(link => {
+          const linkUrl = link.href;
+          if (currentUrl === linkUrl) {
+            link.classList.add('active');
+          }
+        });
+  },
   template: `
  <div class="container-fluid" style="width: 100%; font-size: 14px;">
         <a class="navbar-brand" href="#" style="font-size: 14px;">
            <i class="fa fa-home"></i> <strong>KRASSY SHOP</strong>
          </a>
+        <div class="container" style="align-items:center; text-align:center; margin-left:500px">
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" aria-current="page" href="#"></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" href="#"></a>
-            </li>
+          <ul class="navbar-nav">
             <li class="nav-item">
               <a class="nav-link mx-2 text-uppercase" href="/products">Offers</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" href="/categories">Products</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link mx-2 text-uppercase" href="/items-in-cart">Cart</a>
             </li>
             <li class="nav-item">
               <a class="nav-link mx-2 text-uppercase" href="#">About</a>
@@ -402,29 +410,29 @@ App.component('navbar-component', {
           <button @click="displayCart = !displayCart" class="btn btn-light dropdown-toggle btn-sm" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
              <i class="bi bi-cart" style="font-size: 1rem;"></i> Cart <span class="badge badge-pill badge-primary"> [[ cart.length ]]</span>
          </button>
-          <div v-if="!displayCart"  class="list-group position-absolute">
+          <div v-if="!displayCart" class="list-group position-absolute">
             <div v-for="(item, index) in cart.slice(0, Math.min(7, cart.length))" :key="index"
             class="list-group-item d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
             <img :src="'/static/img/' + item.username + '/' + item.name + '/' + item.image" class="mr-2"
-            style="width: 50px; height: 60px; object-fit: cover; border-radius: 5px;">
+                  style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
               <div style="cursor: pointer" @click="redirectToItemFromNavbar(item.id)">
-                <div style="font-size: 0.8rem; width:180px">[[ item.name  ]] - $[[ item.price ]]</div>
+                <div style="font-size: 0.9rem; width:180px">[[ item.name  ]] - $[[ item.price ]]</div>
               </div>
             </div>
             <button @click="removeFromCart(item.id)" class="btn btn-light btn-sm ml-2" data-bs-placement="top"
-            style="margin-top:16px">x</button>
+            style="margin-top:16px;">x</button>
           </div>
           <button id="total" class="btn btn-sm btn-light" style="pointer-events: none; opacity: 1; margin-bottom: 1px;">
-            Total: [[ cart.length ]] products - <b> $[[ total ]]</b>
+            Total: [[ cart.length ]] products - <b> $[[ total ]] </b>
           </button>
           <button v-if="cart.length > 0" @click="redirectToCart" class="btn btn-sm btn-primary"> Go to Cart </button>
             </div>
         </div>
-          <div class="ml-auto" style="font-family: Raleway; font-size: 16px;">[[ user ]] &nbsp</div> 
+          <div class="ml-auto" style="font-family: Raleway; font-size: 16px; margin-left: 0; margin-right: 0;">[[ user ]] &nbsp </div>
           <form class="form-inline my-2 my-lg-0" style="margin-right: 120px; padding:0">
             <div class="dropdown" style="font-family: Raleway; font-size: 16px;">
-               <img :src="profile" class="avatar">
+               <img :src="avatar" class="avatar">
               <div class="dropdown-content">
               <a class="nav-link mx-2 text-uppercase" href="/user/profile"> Profile</a>
                 <a class="nav-link mx-2 text-uppercase" href="/logout"> Logout</a>
@@ -432,6 +440,7 @@ App.component('navbar-component', {
             </div>
           </form>
         </div>
+      </div>
       </div>
   `,
   methods:{
@@ -613,7 +622,7 @@ App.component('item-component', {
   computed: {
         discountedPrice() {
           if (this.item.discount) {
-          return (this.item.price * this.item.discount).toFixed(2);
+            return (this.item.price - (this.item.price * this.item.discount)).toFixed(2);
           }
           else {
            return (this.item.price * 1).toFixed(2);
@@ -679,17 +688,23 @@ App.component('item-component', {
       </div>
 
       <div class="product-price">
-        <p class="new-price" id="new-price">Price: <span>$[[ discountedPrice ]] </span></p>
-        <p v-if="item.discount" class="last-price">Old Price: <span> <small> $[[ item.price ]] </small> </span></p>
-          <span  v-if="item.discount" class="badge bg-danger" style="font-size: 0.8em;">
+        <p class="new-price" id="new-price">Price: <span> <b> $[[ discountedPrice ]] </b></span></p>
+        <p v-if="item.discount" class="last-price">Old Price: <span> <small> $[[ item.price ]]  </small> </span></p>
+          <span  v-if="item.discount" class="badge bg-danger" style="font-size: 0.9em;">
           -[[ Math.floor(item.discount * 100) ]]%
           </span>
       </div>
 
       <div class="product-detail">
-        <h2>about this item: </h2>
-        <p>te architecto illum soluta consequuntur, aspernatur quidem at sequi ipsa!</p>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur, perferendis eius. Dignissimos, labore suscipit. Unde.</p>
+        <h3>Description: </h3>
+          <li> Made entirely of metal with a weight of 1.68kg. </li>
+          <li> Intel i5-13500H processor with up to 4.7GHz.</li>
+          <li> Intel Iris Xe integrated graphics.</li>
+          <li>512GB or 1TB ultrafast SSD storage.</li>
+          <li>16″ display in 2.5K resolution.</li>
+          <li>16GB of dual-channel LPDDR5-6400 RAM.</li>
+          <li>72Wh battery with Thunderbolt 4 type C charger <br />  with ultra-fast charging at 100W,<br /> 
+           allowing you to charge up to 50% of the battery <br />  in just 35 minutes and, mind you, it can last up to 16 hours.</li>
         <ul>
           <li>Color: <span>Black</span></li>
           <li>Available: <span>in stock</span></li>
@@ -728,7 +743,7 @@ App.component('item-component', {
     </div>
   </div>
 </div>
-<section class="container" style="margin-top: 140px;">
+<section class="container" style="margin-top: 160px;">
   <div class="tab-container">
       <nav class="tab-nav">
           <div class="mobile-select"> <i class="bi bi-chevron-down"></i></div>
@@ -803,13 +818,6 @@ App.component('item-component', {
          </div>
          </div>
           <div class="tab-item hide" data-id="csss">
-             <p> Item Description Goes Here </p>
-             <p> Item Description Goes Here </p>
-             <p> Item Description Goes Here </p>
-             <p> Item Description Goes Here </p>
-             <p> Item Description Goes Here </p>
-             <p> Item Description Goes Here </p>
-             <p> Item Description Goes Here </p>
               <p>[[ item.description ]]</p>
           </div>
           <div class="tab-item hide" data-id="js">

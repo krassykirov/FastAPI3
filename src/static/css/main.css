@@ -29,8 +29,8 @@ padding-right: -17px;
   object-fit: cover;
   padding-left: 15px;
   padding-right: 15px;
-  padding-bottom: 0;
-  margin-bottom: 0;
+  padding-bottom: 5px;
+  margin-top: 15px;
 }
 
 .card{
@@ -248,4 +248,114 @@ input[type="range"]::-webkit-slider-thumb {
         align-items: center;
     }
 }
+
+/* From Base_OLD */
+
+#cartDropdown {
+  margin-top: 14px;
+}
+.last-price{
+    color: #f64749;
+    text-decoration: line-through;
+}
+.btn{
+    /* border: 1px solid #ddd; */
+    /* border-radius: 25px; */
+    text-align: center;
+    padding: 0.45rem 0.7rem;
+    outline: 0;
+    margin-right: 0.2rem;
+    margin-bottom: 1rem;
+}
+
+INPUT[type=checkbox]:focus
+{
+  outline: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+INPUT[type=checkbox]
+{
+    background-color: #e6eaeb;
+    border-radius: 1px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+    position: relative;
+    top: 5px;
+}
+
+INPUT[type=checkbox]:checked
+{
+    background-color: #409fd6;
+    background: #409fd6 url("data:image/gif;base64,R0lGODlhCwAKAIABAP////3cnSH5BAEKAAEALAAAAAALAAoAAAIUjH+AC73WHIsw0UCjglraO20PNhYAOw==") 3px 3px no-repeat;
+}
+
+INPUT[type="checkbox"]:disabled {
+  background: #e6e6e6;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.filter-card {
+    margin-bottom: 10px; /* Adjust the margin to control the space between cards */
+    padding: 10px; /* Optional padding inside the card */
+    border: 1px solid #cfcdcd; /* Border to create a card-like appearance */
+    border-radius: 9px; /* Optional border radius for rounded corners */
+  }
+.filter-group {
+  user-select: none;
+    margin-bottom: 30px; /* Adjust the margin to control the space between articles */
+    border-bottom: 10px solid #ddd; /* Border to visually separate articles */
+    padding-bottom: 10px; /* Optional padding between border and content */
+  }
+
+  .filter-group:last-child {
+    margin-bottom: 0; /* Remove margin for the last article to prevent extra space */
+    border-bottom: none; /* Remove border for the last article */
+  }
+
+  .fa-star.unchecked{
+    color: rgb(203, 197, 197)
+  }
+  .fa-star.checked{
+    color: orange
+  }
+  .custom-button {
+    width: 150px; 
+    margin: auto;
+    margin-left: 14%;
+    margin-bottom: 3px;
+    font-size: 14px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    padding: 6px 30px;
+    cursor: pointer; 
+    color: #000; 
+  }
+
+  .form-check { 
+      display: block;
+      margin-bottom: 5px; /* Adjust the margin as needed */
+  }
+
+  .custom-button:hover {
+    background-color: #e0e0e0; 
+  }
+  .fade-enter-active, .fade-leave-active {
+      transition: opacity 0.5s;
+    }
+    .fade-enter, .fade-leave-to {
+      opacity: 0;
+      z-index: 1;
+    }
+    .fade-enter-to {
+      opacity: 1;
+    }
+  .fade-enter-from {
+    opacity: 0;
+  }
 

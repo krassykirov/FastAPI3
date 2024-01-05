@@ -3,15 +3,32 @@
 {% set include_block_app_js  = true %}
 {% set include_product_component = true %}
 {% set include_modal_add_item  = true %}
-
-
-{% block javascript %}
-    <script type="text/javascript">
-        {% include "js/main.js" %}
-    </script>
-{% endblock %}
-
+{% set include_main_css  = true %}
 
 {% block html_read %}
 
+{% endblock %}
+
+{% block javascript %}
+<script>
+     $('#createItem').submit((e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      $.ajax({
+        url: '/products/create_item',
+        type: 'POST',
+        processData: false,
+        contentType: false,
+        data: formData,
+        success: function (data) {
+          window.location.href = '/products';
+        },
+        error: function (xhr) {
+          if (xhr.status === 403) {
+            $('#error').text('Item with that name already exists!');
+          }
+        },
+      });
+    });
+</script>
 {% endblock %}

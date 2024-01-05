@@ -76,11 +76,11 @@ class Item(SQLModel, table=True):
         arbitrary_types_allowed = True
 
 class Categories(str, enum.Enum):
-    Finance = "Finance"
-    IT = "IT"
+    Laptops = "Laptops"
+    Smartphones = "Smartphones"
+    Tablets = "Tablets"
+    Smartwatches = "Smart Watches"
     TV = "TV"
-    Services = "Services"
-    Miscellaneous = "Miscellaneous"
 
 class Category(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)

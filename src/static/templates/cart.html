@@ -1,8 +1,9 @@
 {% extends "base_old.html" %}
 
 {% set include_block_app_js  = true %}
+{% set include_main_css  = true %}
 
-{% block style %}
+{% block more_css %}
 <style>
   *,
 *:after,
@@ -10,14 +11,14 @@
   box-sizing: border-box;
 }
 
-ul {
-  padding-left: 10px;
-}
-
 body {
   font-family: "Josefin Sans", sans-serif;
   color: #0a0a0a;
   line-height: 1.4;
+}
+
+ul {
+  padding-left: 10px;
 }
 
 a {
@@ -297,7 +298,7 @@ input[type="text"] {
 {% endblock %}
 
 {% block html_read %}
-<div class="container" style="align-items: center; margin-top: 20px;">
+<div class="container" style="align-items: center; margin-top: 100px;">
 {% for item in items %}
 <div class="card w-75" id="card{{ item.id }}">
     <div class="row">
@@ -331,9 +332,7 @@ input[type="text"] {
 </div>
 {% endfor %}
 </div>
-  </div>
   <div class="discount"></div>
-
   <div class="container">
     <div class="payment">
       <div class="payment__title">
@@ -511,8 +510,6 @@ function removeCard(cardID){
         }
       });
 }
-
-
 
 
 </script>

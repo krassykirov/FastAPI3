@@ -18,9 +18,9 @@ reviews_router = APIRouter(prefix='/api/reviews', tags=["reviews"], dependencies
 def get_reviews(db: Session = Depends(get_session)):
     """ Return all reviews"""
     reviews = db.query(Review).all()
-    print('reviews', reviews)
     if reviews is None:
         raise HTTPException(status_code=404, detail=f"No comments found")
+    print('reviews', reviews)
     return reviews
 
 @reviews_router.get("/{id}", status_code=status.HTTP_200_OK, response_model=Review)
