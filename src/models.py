@@ -79,7 +79,7 @@ class Categories(str, enum.Enum):
     Laptops = "Laptops"
     Smartphones = "Smartphones"
     Tablets = "Tablets"
-    Smartwatches = "Smart Watches"
+    Smartwatches = "Smartwatches"
     TV = "TV"
 
 class Category(SQLModel, table=True):

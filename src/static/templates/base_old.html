@@ -36,7 +36,7 @@
 {% endblock %}
 
 {% block nav %}
-<div class="container-fluid" id="app" style="width: 100vw; position: sticky; margin: 0; padding: 0; ">
+<div class="container-fluid" id="app" style="width: 100vw; position: sticky; margin: 0; padding: 0;">
   <nav class="navbar navbar-expand-lg bg-white sticky-top navbar-light ms-auto shadow-lg"
   style="height: 60px; margin-left: 0; margin-right: 0;">
   <navbar-component :cart="cart" :total="total" :user="user" :avatar="'{{ avatar }}'">
@@ -153,10 +153,12 @@
   </div>
  </div>
  <div class="row g-0 col-8" id="mycard" style="justify-content: left; margin-left: 70px; margin-top: 20px;">
+  <transition-group name="product-fade" mode="out-in">
    <product-component v-for="product in filteredProducts" :key="product.id" :cart="cart"
                        class="row g-0 col-auto" :product="product" :min="min" :max="max" :total="total"
                        style="justify-content: left;">
    </product-component>
+  </transition-group>
  </div>
 </div>
 {% endblock %}
