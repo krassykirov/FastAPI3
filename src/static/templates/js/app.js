@@ -236,6 +236,16 @@ const App = Vue.createApp({
           }
       }
     },
+    scrollToTop() {
+      document.body.scrollIntoView({ behavior: 'smooth' });
+    },
+  },
+  watch: {
+    filteredProducts() {
+      if (this.filteredProducts.length < 4 ) {
+        this.scrollToTop();
+      }
+    }
   },
   filters: {
     formatPrice(price) {
@@ -258,52 +268,40 @@ App.component('product-component', {
     },
   },
   template: `
-  <div class="card" :id="product.id" :data-category="product.category_id" style="margin: 1px; margin-bottom: 1px;">
-  <div class="card-body" style="cursor: pointer; padding: 10px;" @click="redirectToItemFromProduct(product.id)">
+  <div class="card" :id="product.id" :data-category="product.category_id" style="margin: 1px; padding: 1px;">
+  <div class="card-body" style="cursor: pointer; padding: 5px;" @click="redirectToItemFromProduct(product.id)">
     <span class="badge bg-danger position-absolute top-0 start-0" v-if="product.discount >= 0.1"
-      style="font-size: 0.8em; margin: 10px; top: 0; start: 0;">-[[ Math.floor(product.discount * 100) ]]%
+      style="font-size: 0.8em; margin: 5px; top: 0; start: 0;">-[[ Math.floor(product.discount * 100) ]]%
     </span>
-    <span class="fa fa-heart-o" style="position: absolute; top:10px;right:10px; font-weight:900; font-size:1.5em"></span>
+    <span class="fa fa-heart-o" style="position: absolute; top:5px;right:5px; font-weight:900; font-size:1.5em"></span>
     <img :src="'static/img/' + product.username + '/' + product.name + '/' + product.image" class="card-img-top">
-    <h6 class="card-title" style="margin-bottom: 10px; padding: 5px; height: 3em; overflow: hidden; display: -webkit-box;
+    <h6 class="card-title" style="margin-bottom: 3px; padding: 5px; height: 3em; overflow: hidden; display: -webkit-box;
     -webkit-line-clamp: 3; -webkit-box-orient: vertical; line-height: 1;">
       [[ product.name ]]
     </h6>
-    <p style="cursor: pointer; margin-bottom: 10px;">
+    <p style="cursor: pointer; margin-bottom: 2px;">
       <i>
         <span v-for="i in 5" :key="i" :class="getStarClasses(i, product.rating_float)"></span>
-        <span :id="'overall-rating' + product.id + '-float'"><small style="font-family:Raleway:wght@500">&nbsp[[ product.rating_float ]]</small></span>
+        <span :id="'overall-rating' + product.id + '-float'" style="font-size:0.9em">&nbsp[[ product.rating_float ]]</span>
       </i>
       <span :id="'overall-rating' + product.id"> ([[ product.reviewNumber ]]) </span>
     </p>
-    <div>
-        <p style="margin: 5px; margin-bottom: 15px; font-size: 1em; max-height: 5em; font-family: 'Raleway:wght@500';">
-            [[ truncateDescription(product.description, 120) ]]
-        </p>
-    </div>
     <input type="number" :data-price="product.price" hidden>
   </div>
-  <div style="margin-bottom: 5px; margin-top: 5px; padding: 10px;">
-  <button ref="addToCartButton" @click="addToCart(product)" class="btn btn-secondary btn-sm"
-    style="margin-top: 0; margin-bottom: 0; padding-top: 5px; padding-bottom: 5px;">
-    Add to Cart <i class="bi bi-cart-fill" style="font-size: 0.9rem;"> </i>
-      </button>
-  </div>
-  <div class="card-footer" style="margin: 10px; font-size: 1em; height: 4em;">
-    <div v-if="product.discount >= 0.1" style="display: flex; flex-direction: column; align-items: center;">
-      <span style="font-size: 1em; font-weight: 600; color:#dc3545;font-family:'Raleway:wght@500'">Price: $[[ discountedPrice ]]</span>
-      <span style="text-decoration: line-through; font-size: 0.9em; margin-bottom: 10px;">
-        <small>Old Price $</small>[[ Math.floor(product.price) | formatPrice ]]
-      </span>
-    </div>
-    <div v-else>
-      <span style="font-size: 1em;color:#dc3545;margin-bottom:15px;font-weight: 900;font-family:'Raleway:wght@500'">
-        Price: $[[ product.price | formatPrice ]]
-      </span>
-      <span v-if="!Number.isInteger(product.price)" style="font-size: 0.7em; vertical-align: top;color:#dc3545; font-family:'Raleway:wght@500'">
+  <div style="margin: 5px; padding: 5px; display: flex; flex-direction: column;">
+    <span style="font-size: 1em;color:#dc3545;font-weight: 900;">
+      Price: $[[ product.price|formatPrice ]]<span v-if="!Number.isInteger(product.price)" style="font-size: 0.7em; vertical-align: top;color:#dc3545;">
         [[ product.price.toString().split('.')[1] ]]
       </span>
-    </div>
+    </span>
+    <span v-if="product.discount >= 0.1" style="font-size: 0.9em; text-decoration: line-through; color: #6c757d; margin-top: 5px;">
+      Old Price: $[[ Math.floor(product.price) | formatPrice]]
+    </span>
+    <div v-else style="font-size: 0.9em; margin-top: 3px;">&nbsp;</div>
+    <button ref="addToCartButton" @click="addToCart(product)" class="btn btn-secondary btn-sm"
+      style="margin-top: 5px; padding: 5px;">
+      Add to Cart <i class="bi bi-cart-fill" style="font-size: 0.9rem;"> </i>
+    </button>
   </div>
 </div>
 
