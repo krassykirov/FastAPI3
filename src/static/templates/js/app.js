@@ -419,6 +419,10 @@ App.component('navbar-component', {
               <a class="nav-link mx-2 text-uppercase" href="#">About</a>
             </li>
           </ul>
+          <div d-flex bd-highlight mb-3>
+          <button class="btn btn-light btn-sm" data-toggle="modal" data-target="#addItem" href="#"
+          style="font-family: inherit; margin-top:14%">Add Product </button>
+          </div>
         <div v-if="cart" @mouseleave="hideCart()" @mouseenter="showCart()" d-flex bd-highlight mb-3>
           <button @click="displayCart = !displayCart" class="btn btn-light dropdown-toggle btn-sm" id="cartDropdown" aria-haspopup="true" aria-expanded="false">
              <i class="bi bi-cart" style="font-size: 1rem;"></i> Cart <span class="badge badge-pill badge-primary"> [[ cart.length ]]</span>
