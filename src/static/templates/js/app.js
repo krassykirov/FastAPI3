@@ -402,14 +402,10 @@ App.component('navbar-component', {
   },
   template: `
  <div class="container-fluid" style="width: 100%; font-size: 14px;">
-        <a class="navbar-brand" href="#" style="font-size: 14px; margin-left:50px">
+        <a class="navbar-brand" href="#" style="font-size: 14px; margin-left:1%">
            <i class="fa fa-home"></i> <strong>KRASSY SHOP</strong>
          </a>
-        <div class="container" style="align-items:center; text-align:center; margin-left:500px">
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
-          aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-        </button>
+        <div class="container" style="align-items:center; text-align:center; margin-left:26%">
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
           <ul class="navbar-nav">
             <li class="nav-item">
@@ -419,7 +415,7 @@ App.component('navbar-component', {
               <a class="nav-link mx-2 text-uppercase" href="#">About</a>
             </li>
           </ul>
-          <div d-flex bd-highlight mb-3>
+          <div v-if="user === 'krassy@mail.bg'" d-flex bd-highlight mb-3>
           <button class="btn btn-light btn-sm" data-toggle="modal" data-target="#addItem" href="#"
           style="font-family: inherit; margin-top:14%">Add Product </button>
           </div>

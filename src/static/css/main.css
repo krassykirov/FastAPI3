@@ -322,22 +322,45 @@ INPUT[type="checkbox"]:disabled {
   pointer-events: none;
 }
 
+.product-container {
+  display: flex;
+}
+
+.filter-products-container {
+  display: flex;
+  flex-direction: column;
+  margin-left: 5.5%;
+  margin-top: 1.2%;
+}
+
+.product-list {
+  flex-grow: 1;
+  padding-right: 1%;
+  padding-left: 0.03%;
+  margin-top: 1.20%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
 .filter-card {
-    margin-bottom: 10px; /* Adjust the margin to control the space between cards */
-    padding: 10px; /* Optional padding inside the card */
-    border: 1px solid #cfcdcd; /* Border to create a card-like appearance */
-    border-radius: 9px; /* Optional border radius for rounded corners */
+    margin-bottom: 5px;
+    padding: 10px;
+    border: 1px solid #cfcdcd;
+    border-radius: 9px;
+    background-color: white;
   }
+
 .filter-group {
   user-select: none;
-    margin-bottom: 30px; /* Adjust the margin to control the space between articles */
-    border-bottom: 10px solid #ddd; /* Border to visually separate articles */
-    padding-bottom: 10px; /* Optional padding between border and content */
+    margin-bottom: 30px;
+    border-bottom: 10px solid #ddd;
+    padding-bottom: 10px;
   }
 
   .filter-group:last-child {
-    margin-bottom: 0; /* Remove margin for the last article to prevent extra space */
-    border-bottom: none; /* Remove border for the last article */
+    margin-bottom: 0;
+    border-bottom: none;
   }
 
   .fa-star.unchecked{
