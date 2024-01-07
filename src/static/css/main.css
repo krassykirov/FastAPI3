@@ -33,7 +33,7 @@ body {
 
 label {
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 400;
 }
 
 body.modal-open {
@@ -116,6 +116,11 @@ display: block;
   outline: 0;
   box-shadow: 0 0 0 1px rgb(139, 133, 133) !important
   }
+
+  .form-control {
+    font-size: 0.9rem
+  }
+
   .send {
   color: #fff;
   background-color: #13b942;
