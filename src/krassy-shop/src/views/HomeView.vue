@@ -6,280 +6,246 @@
   >
     <nav
       class="navbar navbar-expand-lg bg-white sticky-top navbar-light ms-auto shadow-lg"
-      style="height: 70px; margin-left: 0; margin-right: 0"
+      style="height: 4em; margin-left: 0; margin-right: 0"
     >
-      <MyNavbar :cart="cart" :total="total"> </MyNavbar>
-    </nav>
-    <div class="container" style="margin-top: 12px">
-      <div class="row pt-2">
-        <div class="col-md-12">
-          <input
-            class="form-control mr-sm-2"
-            id="filter"
-            onkeyup="Search()"
-            type="text"
-            placeholder="Search for products by name..."
-          />
-        </div>
-      </div>
-      <br />
-    </div>
-    <div
-      class="filter-products-container row col-2"
-      style="float: left; margin-left: 3%"
-    >
-      <!-- <div class="quick-filter ph-card"> <button class="custom-button" @click="toggleSortOrder">Sort</button></div> -->
-      <div class="quick-filter ph-card">
-        <button
-          class="custom-button"
-          data-toggle="modal"
-          data-target="#addItem"
-          href="#"
-          style="font-family: inherit"
-        >
-          Add Product
-        </button>
-        <button
-          type="button"
-          class="custom-button"
-          @click="toggleSortOrder"
-          style="align-items: center"
-        >
-          Sort Price
-          <span
-            v-if="sortOrder === 'asc'"
-            class="bi bi-sort-up-alt"
-            style="font-size: 1rem"
-          ></span>
-          <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
-        </button>
-      </div>
-      <article class="filter-group">
-        <!-- <p style="font-family: inherit; text-align: center"> Categories </p> -->
-        <hr />
-        <div class="filter-content collapse show" id="collapse_2">
-          <div class="card-body">
-            <div
-              class="cat"
-              v-for="category in categories"
-              :key="category[2]"
-              :class="{ active: category[1] !== 0 }"
-            >
-              <label>
-                <input
-                  type="checkbox"
-                  class="cat-checkbox"
-                  :data-category="category[2]"
-                  :disabled="category[1] === 0"
-                  @change="handleCategoryChange"
-                />
-                <span>{{ category[0] }}</span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </article>
-      <article class="filter-group" style="float: left; margin-left: 0">
-        <hr />
-        <!-- Sort:  <button type="button" class="btn btn-secondary btn-sm" @click="toggleSortOrder">
-                 <span v-if="sortOrder === 'asc'" class="bi bi-sort-up-alt" style="font-size: 1rem"></span>
-                 <span v-else class="bi bi-sort-down" style="font-size: 1rem"></span>
-               </button> -->
-        <div class="filter-content collapse show" id="collapse_3">
-          <div class="card-body">
-            <div class="form-row">
-              <div class="form-group col-md-6">
-                <label style="font-size: 1rem">Min price</label>
-                <input
-                  v-model.number="min"
-                  class="form-control"
-                  id="minPrice"
-                  @input="validateMin"
-                  placeholder="0"
-                  min="0"
-                  :max="max"
-                  value="0"
-                  pattern="[1-9][0-9]*"
-                  type="text"
-                  required
-                />
-              </div>
-              <div class="form-group col-md-6">
-                <label style="font-size: 1rem">Max price</label>
-                <input
-                  v-model.number="max"
-                  class="form-control"
-                  id="maxPrice"
-                  value="0"
-                  placeholder="10000"
-                  @input="validateMax"
-                  pattern="[1-9][0-9]*"
-                  type="text"
-                  :min="min"
-                  :max="max"
-                  style="width: 100%"
-                  required
-                />
-              </div>
-              <div class="form-group col-md-6">
-                <input
-                  v-model.number="min"
-                  type="range"
-                  :min="0"
-                  :max="10000"
-                  step="50"
-                  style="width: 200px"
-                />
-                <!-- <p> <span style="color:blue"></span> ${{ min }} - ${{ max }} </p> -->
-                <input
-                  v-model.number="max"
-                  class="form-control"
-                  type="number"
-                  id="max-price"
-                  hidden
-                />
-              </div>
-            </div>
-            <!-- <button class="btn btn-block btn-primary" @click="filterByPrice">Apply</button> -->
-          </div>
-        </div>
-      </article>
-      <article class="filter-group">
-        <div class="filter-content collapse show" id="collapse_3">
-          <label>Overall Rating</label>
-          <div
-            v-for="rating in ratings"
-            :key="rating"
-            class="form-check form-check-inline"
-          >
-            <input
-              class="form-check-input"
-              type="checkbox"
-              :id="'rating' + rating"
-              :value="rating"
-              v-model="selectedRating"
-            />
-            <label class="form-check-label" :for="'rating' + rating">
-              <span
-                v-for="i in 5"
-                :key="i"
-                class="fa fa-star"
-                :class="{ checked: i <= rating }"
-              ></span>
-            </label>
-          </div>
-        </div>
-      </article>
-    </div>
-
-    <div
-      class="row g-0 col-auto"
-      id="mycard"
-      style="justify-content: left; margin-left: 50px; margin-right: 3%"
-    >
-      <!-- <transition-group name="fade" tag="div" class="row g-0 col-auto" id="mycard" style="justify-content: left; margin: 20px;"> -->
-      <ProductList
-        v-for="product in filteredProducts"
-        :key="product.id"
+      <MyNavbar
         :cart="cart"
-        class="row g-0 col-auto"
-        :product="product"
-        :min="min"
-        :max="max"
-        style="justify-content: left"
+        :total="total"
+        :user="user"
+        :avatar="'{{ avatar }}'"
       >
-      </ProductList>
-      <!-- </transition-group> -->
-    </div>
-    <div
-      class="modal fade"
-      id="addItem"
-      role="dialog"
-      aria-labelledby="addItemlLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="addItemLabel">Add Product</h5>
-          </div>
-          <div class="modal-body">
-            <form
-              enctype="multipart/form-data"
-              data-toggle="validator"
-              id="createItem"
-            >
-              <p id="error" style="text-align: left"></p>
-              <div class="form-group">
-                <label for="name" class="col-form-label">Name:</label>
-                <input
-                  type="text"
-                  name="name"
-                  id="item-name"
-                  placeholder="Item Name"
-                  maxlength="15"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label for="price" class="col-form-label">Price: </label>
-                <input
-                  type="number"
-                  step="any"
-                  name="price"
-                  id="item-price"
-                  placeholder="99.99"
-                  max="10000"
-                  min="1"
-                  required
-                />
-              </div>
-              <div class="form-group" form-group-file>
-                <label for="file" class="col-form-label">Upload Photo:</label>
-                <input
-                  type="file"
-                  id="file"
-                  name="file"
-                  class="form-control"
-                  data-filesize="1000000"
-                  data-filesize-error="File must be smaller then 1MB"
-                  accept="image/*"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label for="Category" class="col-form-label">Category:</label>
-                <select name="Category">
-                  <option value="Finance">Finance</option>
-                  <option value="IT">IT</option>
-                  <option value="TV">TV</option>
-                  <option value="Services">Services</option>
-                  <option value="Miscellaneous">Miscellaneous</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="Description" class="col-form-label"
-                  >Description:</label
+      </MyNavbar>
+    </nav>
+
+    <form class="d-flex">
+      <input
+        class="form-control mr-sm-2"
+        id="filter"
+        v-on:keyup="Search()"
+        type="text"
+        placeholder="Search by product name"
+        style="
+          width: 50vw;
+          margin-top: 1.25%;
+          margin-left: 28%;
+          margin-right: 5%;
+        "
+      />
+    </form>
+    <div class="product-container">
+      <div class="filter-products-container row col-2">
+        <div class="filter-card">
+          <article class="filter-group">
+            <div class="filter-content collapse show" id="collapse_2">
+              <label
+                style="
+                  font-size: 1rem;
+                  display: block;
+                  margin-bottom: 10px;
+                  font-weight: 400;
+                "
+                >Categories
+              </label>
+              <div class="card-body">
+                <div
+                  class="container"
+                  v-for="category in categories"
+                  :key="category[2]"
+                  :class="{ active: category[1] !== 0 }"
                 >
-                <textarea
-                  name="Description"
-                  id="add-description"
-                  rows="4"
-                  cols="50"
-                  maxlength="250"
-                ></textarea>
+                  <label style="font-size: 1rem">
+                    <input
+                      style="font-size: 1rem; margin-bottom: 2px"
+                      type="checkbox"
+                      class="cat-checkbox"
+                      :data-category="category[2]"
+                      :disabled="category[1] === 0"
+                      @change="handleCategoryChange"
+                    />
+                    [[ category[0] ]]
+                  </label>
+                  <span class="text-muted" style="font-size: 0.9rem">
+                    ([[ category[1] ]])
+                  </span>
+                </div>
               </div>
-              <button id="submit-button" class="btn btn-primary">Save</button>
+            </div>
+          </article>
+        </div>
+        <div class="filter-card">
+          <article class="filter-group">
+            <div class="card-body">
+              <label style="font-size: 1rem; display: block; margin-bottom: 5px"
+                >Price</label
+              >
+              <div class="price-input row">
+                <div class="form-group col-md-6">
+                  <label for="minPrice" style="font-size: 0.9rem"
+                    >Min Price</label
+                  >
+                  <input
+                    v-model.number="min"
+                    type="text"
+                    class="min-input form-control"
+                    id="minPrice"
+                    @input="updateRange"
+                    :min="productMin"
+                    :max="productMax"
+                    pattern="[1-9][0-9]*"
+                    required
+                  />
+                </div>
+                <div class="form-group col-md-6">
+                  <label for="maxPrice" style="font-size: 0.9rem"
+                    >Max Price</label
+                  >
+                  <input
+                    v-model.number="max"
+                    type="text"
+                    class="max-input form-control"
+                    id="maxPrice"
+                    @input="updateRange"
+                    pattern="[1-9][0-9]*"
+                    :min="productMin"
+                    :max="productMax"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="slider-container">
+                    <div
+                      class="price-slider"
+                      :style="{
+                        left: `${(min / productMax) * 100}%`,
+                        right: `${100 - (max / productMax) * 100}%`
+                      }"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Slider -->
+            <div class="range-input">
+              <input
+                type="range"
+                class="min-range"
+                :min="productMin"
+                :max="productMax"
+                :value="min"
+                step="1"
+                @input="updateInputs"
+              />
+              <input
+                type="range"
+                class="max-range"
+                :min="productMin"
+                :max="productMax"
+                :value="max"
+                step="1"
+                @input="updateInputs"
+              />
+            </div>
+            <div style="padding-top: 11%; padding-bottom: 1%">
               <button
                 type="button"
-                class="btn btn-secondary"
-                data-dismiss="modal"
+                class="custom-button"
+                @click="toggleSortOrder"
+                style="align-items: center"
               >
-                Close
+                Sort Price
+                <span
+                  v-if="sortOrder === 'asc'"
+                  class="bi bi-sort-up-alt"
+                  style="font-size: 1rem"
+                ></span>
+                <span
+                  v-else
+                  class="bi bi-sort-down"
+                  style="font-size: 1rem"
+                ></span>
               </button>
-            </form>
-          </div>
+            </div>
+          </article>
         </div>
+        <div
+          class="filter-card"
+          style="height: 45px; align-items: center; text-align: left"
+        >
+          <article class="filter-group">
+            <div class="filter-content collapse show" id="collapse_3">
+              <div
+                class="form-check form-check-inline"
+                style="display: flex; align-items: center"
+              >
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="discountCheckbox"
+                  v-model="isDiscountedChecked"
+                  style="margin-top: 0; margin-bottom: 0"
+                />
+                <label style="font-size: 1rem; margin-top: 0; margin-bottom: 0"
+                  >Discount > 10%</label
+                >
+              </div>
+            </div>
+          </article>
+        </div>
+        <div class="filter-card">
+          <article class="filter-group">
+            <div class="filter-content collapse show" id="collapse_3">
+              <label style="font-size: 1rem">Overall Rating</label>
+              <div
+                class="form-check form-check-inline"
+                v-for="rating in ratings.slice().reverse()"
+                :key="rating"
+              >
+                <input
+                  style="font-size: 1rem; margin-top: 7px"
+                  class="form-check-input"
+                  type="checkbox"
+                  :id="'rating' + rating"
+                  :value="rating"
+                  v-model="selectedRating"
+                />
+                <label class="form-check-label" :for="'rating' + rating">
+                  <span
+                    v-for="i in 5"
+                    :key="i"
+                    class="fa"
+                    :class="{
+                      'fa-star checked': i <= rating,
+                      'fa-star unchecked': i > rating
+                    }"
+                    style="font-size: 1rem; margin-top: 7px"
+                  >
+                  </span>
+                  <span style="font-size: 0.9rem"
+                    >([[ getRatingItemCount(rating) ]])
+                  </span>
+                </label>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+      <div class="product-list" id="mycard">
+        <transition-group name="product-fade" mode="out-in">
+          <ProductList
+            v-for="product in filteredProducts"
+            :key="product.id"
+            :cart="cart"
+            class="row g-0 col-auto"
+            :product="product"
+            :min="min"
+            :max="max"
+            :total="total"
+            style="justify-content: left"
+          >
+          </ProductList>
+        </transition-group>
       </div>
     </div>
   </div>
@@ -287,33 +253,41 @@
 
 <script>
 // import $ from 'jquery'
+import { ref } from 'vue'
 import ProductList from '@/components/ProductList.vue'
 import MyNavbar from '@/components/MyNavbar.vue'
 export default {
   name: 'HomeView',
   data() {
     return {
-      min: 1,
-      max: 10000,
-      products: [],
-      categories: [],
-      cart: [],
-      sortOrder: 'asc',
-      selectedCategories: [],
-      selectedRating: [],
-      ratings: [1, 2, 3, 4, 5]
+      min: ref(1),
+      max: ref(10000),
+      products: ref([]),
+      isDiscountedChecked: ref(false),
+      item: ref(null),
+      categories: ref([]),
+      cart: ref([]),
+      sortOrder: ref('asc'),
+      selectedCategories: ref([]),
+      selectedRating: ref([]),
+      ratings: ref([1, 2, 3, 4, 5]),
+      user: ref([]),
+      user_id: ref(null),
+      productMin: ref(0),
+      productMax: ref(10000)
     }
   },
   components: {
     MyNavbar,
     ProductList
   },
-  async beforeMount() {
-    await this.readFromCartVue()
+  async created() {
     await this.getProducts()
+    await this.readFromCartVue()
     await this.fetchCategories()
     this.products.forEach(product => {
       this.getItemRating(product.id)
+      this.updateRange()
     })
   },
   computed: {
@@ -333,11 +307,29 @@ export default {
         const ratingCondition =
           this.selectedRating.length === 0 ||
           this.selectedRating.includes(Math.ceil(item.rating_float))
-        return priceCondition && categoryCondition && ratingCondition
+        const discountCondition =
+          !this.isDiscountedChecked || item.discount != null
+        return (
+          priceCondition &&
+          categoryCondition &&
+          ratingCondition &&
+          discountCondition
+        )
       })
     }
   },
   methods: {
+    async getProduct(itemId) {
+      try {
+        const res = await fetch(
+          `http://127.0.0.1:8000/api/items/item/${itemId}`
+        )
+        const item = await res.json()
+        this.item = item
+      } catch (error) {
+        console.error('Error fetching product:', error)
+      }
+    },
     async getProducts() {
       try {
         const res = await fetch('http://127.0.0.1:8000/api/items')
@@ -387,12 +379,11 @@ export default {
           product.rating_float = parseFloat(data.rating_float).toFixed(2)
         }
       } catch (error) {
-        console.log('error', error)
+        console.log(error)
       }
     },
     handleCategoryChange() {
       this.selectedCategories = this.getSelectedCategories()
-      console.log('selectedCategories', this.selectedCategories)
     },
     getSelectedCategories() {
       var selectedCategories = []
@@ -405,7 +396,6 @@ export default {
     },
     toggleSortOrder() {
       this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc'
-      console.log('Sort Order:', this.sortOrder)
       this.sortProducts()
     },
     sortProducts() {
@@ -415,34 +405,8 @@ export default {
         this.products.sort((a, b) => b.price - a.price)
       }
     },
-    validateMin() {
-      const productMinPrice = Math.min(
-        ...this.products.map(product => product.price)
-      )
-      if (this.min === '' || isNaN(this.min)) {
-        this.min = productMinPrice
-      }
-      if (this.min > this.max) {
-        this.min = this.max
-      }
-    },
-    validateMax() {
-      const productMaxPrice = Math.max(
-        ...this.products.map(product => product.price)
-      )
-      if (this.max === '' || isNaN(this.max)) {
-        this.max = productMaxPrice
-      }
-
-      if (this.max > productMaxPrice) {
-        this.max = productMaxPrice
-      }
-      if (this.max < this.min) {
-        this.max = this.min
-      }
-    },
     async readFromCartVue() {
-      fetch('http://127.0.0.1:8000/user_items_in_cart', {
+      fetch('/user_items_in_cart', {
         method: 'get',
         headers: {
           'Content-Type': 'application/json'
@@ -455,18 +419,42 @@ export default {
           return response.json()
         })
         .then(data => {
-          console.log('data.items', data.items)
           this.cart = data.items
+          this.user = data.user
+          this.user_id = data.user_id
         })
         .catch(error => {
           console.error('error', error)
         })
     },
-    // redirectToItem(itemId) {
-    //   window.location.href = 'items/' + itemId
-    // },
+    async getProfile() {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/profile/${this.user_id}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+      if (!response.ok) {
+        console.log(response.error)
+      } else {
+        const data = await response.json()
+        console.log('response', response)
+        this.profile = `http://127.0.0.1:8000/static/img/${this.user}/profile/${data.avatar}`
+      }
+    },
+    redirectToItem(itemId) {
+      var currentPath = window.location.pathname
+      var regex = /\/items\/(.*)/
+      var match = regex.exec(currentPath)
+      if (!match) {
+        window.location.href = 'items/' + itemId
+      }
+    },
     // redirectToCart(itemId) {
-    //   window.location.href = 'items-in-cart/'
+    //   window.location.href = '/items-in-cart/'
     // },
     handleRatingChange(rating) {
       const index = this.selectedRating.indexOf(rating)
@@ -475,6 +463,79 @@ export default {
       } else {
         this.selectedRating.splice(index, 1)
       }
+    },
+    getRatingItemCount(rating) {
+      const items = this.filteredProducts
+      return items.filter(item => Math.ceil(item.rating_float) === rating)
+        .length
+    },
+    updateRange() {
+      const productMinPrice = Math.min(
+        ...this.products.map(product => product.price)
+      )
+      const productMaxPrice = Math.max(
+        ...this.products.map(product => product.price)
+      )
+
+      if (this.min > this.max || this.min === '' || isNaN(this.min)) {
+        this.min = productMinPrice
+      }
+      if (
+        this.max < this.min ||
+        this.max === '' ||
+        isNaN(this.max) ||
+        this.max > productMaxPrice
+      ) {
+        this.max = productMaxPrice
+      }
+      const rangeInput = document.querySelector('.min-range')
+      if (rangeInput) {
+        rangeInput.value = this.min
+      }
+      const rangeInputMax = document.querySelector('.max-range')
+      if (rangeInputMax) {
+        rangeInputMax.value = this.max
+      }
+    },
+    updateInputs() {
+      let minVal = parseInt(document.querySelector('.min-range').value)
+      let maxVal = parseInt(document.querySelector('.max-range').value)
+      if (minVal >= maxVal) {
+        minVal = maxVal
+      }
+      if (maxVal <= minVal) {
+        maxVal = minVal
+      }
+      this.min = minVal
+      this.max = maxVal
+      const rangeInput = document.querySelector('.min-range')
+      const rangeInputMax = document.querySelector('.max-range')
+
+      if (rangeInput) {
+        rangeInput.value = this.min
+      }
+
+      if (rangeInputMax) {
+        rangeInputMax.value = this.max
+      }
+    },
+    Search() {
+      var input, filter, cards, cardContainer, title, i
+      input = document.getElementById('filter')
+      filter = input.value.toUpperCase()
+      cardContainer = document.getElementById('mycard')
+      cards = cardContainer.getElementsByClassName('card')
+      for (i = 0; i < cards.length; i++) {
+        title = cards[i].querySelector('.card-body h6.card-title')
+        if (title.innerText.toUpperCase().indexOf(filter) > -1) {
+          cards[i].style.display = ''
+        } else {
+          cards[i].style.display = 'none'
+        }
+      }
+    },
+    scrollToTop() {
+      document.body.scrollIntoView({ behavior: 'smooth' })
     }
   },
   filters: {
@@ -486,40 +547,81 @@ export default {
 </script>
 
 <style>
+@import url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+@import url('https://fonts.googleapis.com/css?family=Raleway');
+
 html {
   width: 100vw;
 }
 body {
   overflow-x: hidden;
   scrollbar-gutter: stable both-edges;
-  width: 100%;
+  background-color: #f2f6f6;
 }
 
 * {
   font-family: 'Raleway';
 }
 
+.product-fade-enter-active,
+.product-fade-leave-active {
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.product-fade-enter,
+.product-fade-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.dropdown-menu {
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
+  margin-bottom: 0;
+}
+
 label {
   font-size: 14px;
+  font-weight: 400;
 }
+
 body.modal-open {
   padding-right: -17px;
 }
+
 .card-img-top {
   width: 100%;
-  height: 10vw;
+  height: 13vw;
   object-fit: cover;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-bottom: 5px;
+  margin-top: 15px;
 }
+
 .card {
-  margin-bottom: 5px;
+  margin-bottom: 3px;
   margin-left: 1px;
   margin-right: 1px;
-  width: 12vw;
+  width: 16vw;
   justify-content: left;
   /* border: 2px solid #969696; */
   text-align: center;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
+
+.card-title {
+  margin-top: 0;
+  /* margin: 0; */
+}
+/* .card-body{
+  padding: 0;
+  padding-left: 0;
+  padding-top: 0;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+} */
 
 .dropbtn {
   background-color: #919d98;
@@ -565,6 +667,11 @@ body.modal-open {
   outline: 0;
   box-shadow: 0 0 0 1px rgb(139, 133, 133) !important;
 }
+
+.form-control {
+  font-size: 0.9rem;
+}
+
 .send {
   color: #fff;
   background-color: #13b942;
@@ -615,11 +722,11 @@ body.modal-open {
 .card button:hover {
   opacity: 0.7;
 }
+/* Style the tab */
 
 .checked {
   color: orange;
 }
-
 .dropdown-content a:hover {
   background-color: #ddd;
 }
@@ -632,137 +739,226 @@ body.modal-open {
   background-color: #606c97;
 }
 
-/* .padding-0{
-  padding-right:0;
-  padding-left:50px;
-} */
+/* Styles for the price input container */
 
-.badge-light {
-  color: #212529;
-  background-color: #f8f9fa;
+.price-input .price-field {
+  display: flex;
+  margin-bottom: 22px;
 }
 
-input[type='range'] {
+.price-field span {
+  margin-right: 10px;
+  margin-top: 10px; /* Adjusted margin-top */
+  font-size: 17px;
+  color: #404447;
+}
+
+.price-field input {
+  flex: 1;
+  height: 35px;
+  font-size: 15px;
+  font-family: 'DM Sans', sans-serif;
+  border-radius: 9px;
+  text-align: center;
+  border: 0px;
+  background: #e4e4e4;
+}
+
+.price-input {
+  width: 100%;
+  font-size: 19px;
+  color: #555;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
   -webkit-appearance: none;
-  margin: 20px 0;
+  margin: 0;
+}
+
+.slider-container {
   width: 100%;
 }
-input[type='range']:focus {
-  outline: none;
+
+.slider-container {
+  height: 6px;
+  position: relative;
+  background: #e4e4e4;
+  border-radius: 5px;
 }
-input[type='range']::-webkit-slider-runnable-track {
-  width: 100%;
-  height: 4px;
-  cursor: pointer;
-  animate: 0.2s;
-  background: #03a9f4;
-  border-radius: 25px;
+
+.slider-container .price-slider {
+  height: 100%;
+  left: 0%;
+  right: 0%;
+  position: absolute;
+  border-radius: 5px;
+  background: #5e95e2;
 }
-input[type='range']::-webkit-slider-thumb {
-  height: 20px;
-  width: 20px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 1);
-  cursor: pointer;
-  -webkit-appearance: none;
-  margin-top: -8px;
-}
-input[type='range']:focus::-webkit-slider-runnable-track {
-  background: #03a9f4;
-}
-.range-wrap {
-  width: 170px;
+
+.range-input {
   position: relative;
 }
-.range-value {
-  position: absolute;
-  top: -50%;
-}
-.range-value span {
-  width: 10px;
-  height: 24px;
-  line-height: 10px;
-  text-align: center;
-  background: #03a9f4;
-  color: #fff;
-  font-size: 12px;
-  display: block;
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, 0);
-  border-radius: 6px;
-}
 
-.range-value span:before {
-  content: '';
+.range-input input {
   position: absolute;
-  width: 0;
-  height: 0;
-  border-top: 10px solid #03a9f4;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  margin-top: -1px;
-}
-
-.cat {
-  margin: 4px;
-  background-color: #6c757d;
-  border-radius: 40px;
-  /* border: 1px solid #fff; */
-  overflow: hidden;
-  float: left;
-}
-
-.cat label {
-  float: left;
-  line-height: 3em;
-  width: 10em;
-  height: 3em;
+  width: 100%;
+  height: 5px;
+  background: none;
+  top: -5px;
+  pointer-events: none;
   cursor: pointer;
-  user-select: none;
+  -webkit-appearance: none;
 }
 
-.cat label span {
+/* Styles for the range thumb in WebKit browsers */
+input[type='range']::-webkit-slider-thumb {
+  height: 14px;
+  width: 14px;
+  border-radius: 70%;
+  background: #1261b5;
+  pointer-events: auto;
+  -webkit-appearance: none;
+}
+
+@media screen and (max-width: 768px) {
+  .price-input {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* From Base_OLD */
+
+#cartDropdown {
+  margin-top: 14px;
+}
+.last-price {
+  color: #f64749;
+  text-decoration: line-through;
+}
+.btn {
+  /* border: 1px solid #ddd; */
+  /* border-radius: 25px; */
   text-align: center;
-  padding: 3px 0;
-  display: block;
-  color: #fff;
+  padding: 0.45rem 0.7rem;
+  outline: 0;
+  margin-right: 0.2rem;
+  margin-bottom: 1rem;
 }
 
-.cat label input:disabled + span {
-  background-color: #6c757d; /* Adjust the color as needed */
-  cursor: not-allowed;
+INPUT[type='checkbox']:focus {
+  outline: 1px solid rgba(0, 0, 0, 0.2);
 }
 
-.cat label input {
-  position: absolute;
-  display: none;
-  color: #fff !important;
+INPUT[type='checkbox'] {
+  background-color: #e6eaeb;
+  border-radius: 1px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+  position: relative;
+  top: 5px;
 }
 
-.cat label input:checked + span {
-  background-color: #007bff; /* Change the background color as needed */
+INPUT[type='checkbox']:checked {
+  background-color: #409fd6;
+  background: #409fd6
+    url('data:image/gif;base64,R0lGODlhCwAKAIABAP////3cnSH5BAEKAAEALAAAAAALAAoAAAIUjH+AC73WHIsw0UCjglraO20PNhYAOw==')
+    3px 3px no-repeat;
 }
-.cat label b {
-  margin-left: 5px; /* Adjust the margin as needed */
+
+INPUT[type='checkbox']:disabled {
+  background: #e6e6e6;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.product-container {
+  display: flex;
+}
+
+.filter-products-container {
+  display: flex;
+  flex-direction: column;
+  margin-left: 5.5%;
+  margin-top: 1.2%;
+}
+
+.product-list {
+  flex-grow: 1;
+  padding-right: 1%;
+  padding-left: 0.03%;
+  margin-top: 1.2%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.filter-card {
+  margin-bottom: 5px;
+  padding: 10px;
+  border: 1px solid #cfcdcd;
+  border-radius: 9px;
+  background-color: white;
+}
+
+.filter-group {
+  user-select: none;
+  margin-bottom: 30px;
+  border-bottom: 10px solid #ddd;
+  padding-bottom: 10px;
+}
+
+.filter-group:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.fa-star.unchecked {
+  color: rgb(203, 197, 197);
+}
+.fa-star.checked {
+  color: orange;
 }
 .custom-button {
-  width: 160px;
-  margin: 5px 10px 0 0;
+  width: 150px;
+  margin: auto;
+  margin-left: 14%;
+  margin-bottom: 3px;
   font-size: 14px;
   border-radius: 20px;
   border: 1px solid #ccc;
   background-color: #fff;
   padding: 6px 30px;
-  cursor: pointer; /* Add cursor style for pointer */
-  color: #000; /* Set text color */
+  cursor: pointer;
+  color: #000;
+}
+
+.form-check {
+  display: block;
+  margin-bottom: 5px; /* Adjust the margin as needed */
 }
 
 .custom-button:hover {
-  background-color: #e0e0e0; /* Change background color on hover if needed */
+  background-color: #e0e0e0;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+  z-index: 1;
+}
+.fade-enter-to {
+  opacity: 1;
+}
+.fade-enter-from {
+  opacity: 0;
 }
 </style>

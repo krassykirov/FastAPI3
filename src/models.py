@@ -70,16 +70,17 @@ class Item(SQLModel, table=True):
     username:     Optional[str] = Field(default=None, foreign_key="user.username")
     description:  Optional[str]
     in_cart:      Optional[Dict[Any,Any]] = Field(default={}, sa_column=Column(JSON))
+    discount:     Optional[decimal.Decimal]
 
     class Config:
         arbitrary_types_allowed = True
 
 class Categories(str, enum.Enum):
-    Finance = "Finance"
-    IT = "IT"
+    Laptops = "Laptops"
+    Smartphones = "Smartphones"
+    Tablets = "Tablets"
+    Smartwatches = "Smartwatches"
     TV = "TV"
-    Services = "Services"
-    Miscellaneous = "Miscellaneous"
 
 class Category(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -100,6 +101,7 @@ class Review(SQLModel, table=True):
     rating:       Optional[int]    = Field(default=None)
     created_by:   Optional[str]    = Field(default=None, foreign_key="user.username")
     user:         Optional['User'] = Relationship(back_populates='reviews')
+    date:         Optional[datetime.datetime] = Field(default=datetime.datetime.now().replace(microsecond=0), nullable=False)
 
 # class Cart(BaseSQLModel, table=True):
 #       id: Optional[int] = Field(default=None, primary_key=True)

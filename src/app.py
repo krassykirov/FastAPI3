@@ -64,14 +64,16 @@ async def home(request: Request, user: User = Depends(get_current_user)):
 @app.get("/products", include_in_schema=False, response_model=src.schemas.ItemRead)
 def get_products(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     """ Return all Items """
-    print("Getting Products")
-    # items_db = ItemActions().get_items(db=db) #, user=user.username
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
-    # in_cart = ItemActions().get_user_items_in_cart(db=db)
-    # categories = CategoryActions().get_categories_len(db=db)
-    return templates.TemplateResponse("base.html", {"request": request,
-                                                    'current_user': user.username,
-                                                    'profile': profile})
+    if not profile:
+        avatar = '/static/img/img_avatar.png'
+    else:
+      avatar = jsonable_encoder(profile).get('avatar')
+      avatar = f"/static/img/{user.username}/profile/{avatar}"
+    return templates.TemplateResponse("items.html", { "request": request,
+                                                      "current_user": user.username,
+                                                      "profile": profile,
+                                                       "avatar": avatar})
                                                     #  'items': items,
                                                     #  'categories': categories,
                                                     #  'profile': profile})
@@ -89,6 +91,7 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         price=form_data['price']
         category_select = form_data['Category']
         description = form_data['Description']
+        discount = form_data['discount']
         category = CategoryActions().get_category_by_name(db=db, name=category_select)
         item = db.query(Item).where(Item.name == item_name).first()
         if item:
@@ -101,7 +104,8 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
                os.makedirs(path,exist_ok=True)
         with open(f"src/static/img/{user.username}/{item_name}/{filename}", 'wb') as f:
             f.write(content)
-            item = Item(name=item_name, price=price, image=filename, username=user.username, category=category, description=description)
+            item = Item(name=item_name, price=price, image=filename, username=user.username,
+                        category=category, discount=discount, description=description)
         try:
             db.add(item)
             db.commit()
@@ -144,9 +148,19 @@ async def read_item(request: Request, id: int, db: Session=Depends(get_session),
         item = src.schemas.ItemRead.from_orm(item_db)
         item_rating = ReviewActions().get_item_reviews_rating(db=db,id=id)
         profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
-        return templates.TemplateResponse("item_details.html", {"request":request, 'item': item,
+        if not profile:
+            avatar = '/static/img/img_avatar.png'
+        else:
+            avatar = jsonable_encoder(profile).get('avatar')
+            avatar = f"/static/img/{user.username}/profile/{avatar}"
+        items = get_user_items_in_cart(db=db, user=user)
+        item = jsonable_encoder(item)
+        return templates.TemplateResponse("item_details.html", {"request":request,
                                                                 'current_user': user.username,
+                                                                'items': items,
+                                                                'item': item,
                                                                 'rating' : item_rating,
+                                                                'avatar' : avatar,
                                                                 'profile': profile})
     else:
         redirect_url = request.url_for('get_products')
@@ -219,14 +233,22 @@ async def create_review_ajax(request: Request, db: Session=Depends(get_session),
             db.rollback()
             return HTTPException(status_code=400, detail=f"Something went wrong, error {e}")
     logger.info('Review_exist, You can write only one review for this item')
-    raise HTTPException(status_code=403,detail=f"You can write only one review for this item.")
+    raise HTTPException(status_code=403, 
+                        detail=f"You can write only one review for this item.",
+                        headers={"X-Error": "You can write only one review for this item"},)
 
 @app.get("/user/profile", response_model=UserRead, include_in_schema=False)
 async def get_user_profile( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
+    if not profile:
+        avatar = '/static/img/img_avatar.png'
+    else:
+      avatar = jsonable_encoder(profile).get('avatar')
+      avatar = f"/static/img/{user.username}/profile/{avatar}"
     return templates.TemplateResponse("profile.html", {"request": request,
                                                        'current_user': user.username,
-                                                       'profile': profile })
+                                                       'profile': profile,
+                                                        'avatar': avatar})
 
 @app.post("/create_profile", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @app.post("/user/create_profile", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
@@ -267,7 +289,6 @@ async def create_profile(request: Request, db: Session = Depends(get_session), u
                                                        'current_user': user.username,
                                                        'profile': user_profile })
 
-
 @app.post("/update_profile", status_code=status.HTTP_200_OK, include_in_schema=False)
 @app.post("/user/update_profile", status_code=status.HTTP_200_OK, include_in_schema=False)
 async def update_profile(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -284,9 +305,10 @@ async def update_profile(request: Request, db: Session = Depends(get_session), u
     user_db = db.exec(query).first()
     if user_db:
         try:
-            content = await form_data['file'].read()
-            with open(f"src/static/img/{user.username}/profile/{form_data['file'].filename}", 'wb') as f:
-                f.write(content)
+            if form_data['file'].filename:
+                content = await form_data['file'].read()
+                with open(f"src/static/img/{user.username}/profile/{form_data['file'].filename}", 'wb') as f:
+                    f.write(content)
         except Exception as e:
             logger.error(f"Something went wrong, error: {e}")
         new_data = UserProfile(**dict(json_data), user=user, avatar=filename if filename else None).dict(exclude_unset=True,
@@ -301,22 +323,12 @@ async def update_profile(request: Request, db: Session = Depends(get_session), u
     #                                                    'current_user': user.username,
     #                                                    'profile': db_profile })
 
-@app.get("/products/{category_name}", status_code=status.HTTP_200_OK, include_in_schema=False)
-async def get_category(request: Request, category_name: str, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
-    if category_name not in list(Categories):
-        logger.error("Invalid Category")
-        raise
-    category = CategoryActions().get_category_by_name(db=db, name=category_name)
-    return templates.TemplateResponse("categories.html", {"request": request,
-                                                         'current_user': user.username,
-                                                         'items': category.items })
-
 @app.get("/categories", status_code=status.HTTP_200_OK, include_in_schema=False)
 async def get_category(request: Request,  db: Session = Depends(get_session), user: User = Depends(get_current_user)):
-    category = CategoryActions().get_category_by_name(db=db, name='Finance')
+    category = CategoryActions().get_category_by_name(db=db, name='TV')
     return templates.TemplateResponse("categories.html", {"request": request,
-                                                         'current_user': user.username,
-                                                         'items': category.items })
+                                                          'current_user': user.username,
+                                                          'items': category.items})
 
 @app.post("/category", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead, include_in_schema=False)
 async def get_category_ajax( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
@@ -327,7 +339,7 @@ async def get_category_ajax( request: Request, db: Session=Depends(get_session),
         return JSONResponse(content = json_compatible_item_data)
     return JSONResponse(content = "No Items in Category Found")
 
-@app.post("/update-basket", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead,  include_in_schema=False)
+@app.post("/update-basket", status_code=status.HTTP_200_OK,  include_in_schema=False)
 async def update_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     data = await request.json()
     item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
@@ -336,7 +348,9 @@ async def update_basket(request: Request, db: Session = Depends(get_session), us
     item.in_cart = basket
     db.commit()
     db.refresh(item)
-    return item
+    result = get_user_items_in_cart(db=db, user=user)
+    total = result.get('total')
+    return {'total', total}
 
 @app.post("/user/remove-from-basket", status_code=status.HTTP_200_OK,  include_in_schema=False)
 async def remove_from_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -349,21 +363,31 @@ async def remove_from_basket(request: Request, db: Session = Depends(get_session
     db.refresh(item)
     return item
 
-@app.get("/items-in-cart", status_code=status.HTTP_200_OK, include_in_schema=True)
+@app.get("/items-in-cart", status_code=status.HTTP_200_OK, include_in_schema=False)
 async def get_items_in_cart(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     items = ItemActions().get_items(db=db)
     items_in_cart =  [item for item in items for k, v in item.in_cart.items()
                       if k == user.username and v['in_cart'] == True]
-    print('items_in_cart', jsonable_encoder(items_in_cart))
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
-    return templates.TemplateResponse("cart.html", {"request":request,
+    if not profile:
+        avatar = '/static/img/img_avatar.png'
+    else:
+      avatar = jsonable_encoder(profile).get('avatar')
+      avatar = f"/static/img/{user.username}/profile/{avatar}"
+    total = sum([item.price for item in items_in_cart])
+    return templates.TemplateResponse("cart.html",  {"request":request,
                                                      'items': items_in_cart,
+                                                     'items_in_cart': len(items_in_cart),
+                                                     'total': ("%.2f" % total),
                                                      'current_user': user.username,
-                                                     'profile': profile})
+                                                     'profile': profile,
+                                                     'avatar':avatar})
 
-@app.get("/user_items_in_cart", status_code=status.HTTP_200_OK, include_in_schema=False)
-def get_user_in_cart_len(db: Session=Depends(get_session), user: User = Depends(get_current_user)):
+@app.get("/user_items_in_cart", status_code=status.HTTP_200_OK, include_in_schema=True)
+def get_user_items_in_cart(db: Session=Depends(get_session), user: User = Depends(get_current_user)):
   items = ItemActions().get_items(db=db)
   items_in_cart =  [item for item in items for k, v in item.in_cart.items()
                     if k == user.username and v['in_cart'] == True]
-  return {'items_in_cart': len(items_in_cart), 'items': items_in_cart,}
+  total = sum([item.price for item in items_in_cart])
+  return {'items':items_in_cart, 'items_in_cart': len(items_in_cart),
+          'total': total, 'user': user.username, 'user_id': user.id}

@@ -78,6 +78,7 @@ import $ from '../../node_modules/jquery'
 export default {
   props: ['product', 'min', 'max', 'cart'],
   emits: ['addToCart'],
+  delimiters: ['[[', ']]'],
   // compatConfig: { MODE: 3 },
   // components: {
   //   MyNavbar
