@@ -188,6 +188,7 @@ display: block;
     margin-right: 10px;
     margin-top: 10px; /* Adjusted margin-top */
     font-size: 17px;
+    color: #404447;
 }
 
 .price-field input {

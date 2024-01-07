@@ -288,23 +288,23 @@ App.component('product-component', {
     </p>
     <input type="number" :data-price="product.price" hidden>
   </div>
-  <div style="margin: 5px; padding: 5px; display: flex; flex-direction: column;">
+  <div style="margin:0; padding:0; display: flex; flex-direction: column;">
     <span style="font-size: 1em;color:#dc3545;font-weight: 900;">
       Price: $[[ product.price|formatPrice ]]<span v-if="!Number.isInteger(product.price)" style="font-size: 0.7em; vertical-align: top;color:#dc3545;">
         [[ product.price.toString().split('.')[1] ]]
       </span>
     </span>
-    <span v-if="product.discount >= 0.1" style="font-size: 0.9em; text-decoration: line-through; color: #6c757d; margin-top: 5px;">
+    <span v-if="product.discount >= 0.1" style="font-size: 0.8em; 
+    text-decoration: line-through; color: #404447; margin-top: 2%; margin-bottom: 2%;">
       Old Price: $[[ Math.floor(product.price) | formatPrice]]
     </span>
     <div v-else style="font-size: 0.9em; margin-top: 3px;">&nbsp;</div>
     <button ref="addToCartButton" @click="addToCart(product)" class="btn btn-secondary btn-sm"
-      style="margin-top: 5px; padding: 5px;">
+      style="margin-top: 3%;; margin-bottom: 0; padding: 5px; width:100%;">
       Add to Cart <i class="bi bi-cart-fill" style="font-size: 0.9rem;"> </i>
     </button>
   </div>
 </div>
-
   `,
 methods: {
     redirectToItemFromProduct(itemId) {
