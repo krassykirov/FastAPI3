@@ -72,6 +72,7 @@ const App = Vue.createApp({
       try {
         const res = await fetch('/api/categories/category_items_len/');
         this.categories = await res.json();
+        console.log('this.categories', this.categories)
       } catch (error) {
         console.error('Error fetching categories:', error);
       }

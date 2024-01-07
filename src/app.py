@@ -350,7 +350,7 @@ async def update_basket(request: Request, db: Session = Depends(get_session), us
     db.refresh(item)
     result = get_user_items_in_cart(db=db, user=user)
     total = result.get('total')
-    return {'total', total}
+    return total
 
 @app.post("/user/remove-from-basket", status_code=status.HTTP_200_OK,  include_in_schema=False)
 async def remove_from_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
