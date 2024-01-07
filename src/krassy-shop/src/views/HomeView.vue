@@ -353,6 +353,7 @@ export default {
           'http://127.0.0.1:8000/api/categories/category_items_len'
         )
         this.categories = await res.json()
+        console.log('this.categories', this.categories)
       } catch (error) {
         console.error('Error fetching categories:', error)
       }
@@ -536,6 +537,48 @@ export default {
     },
     scrollToTop() {
       document.body.scrollIntoView({ behavior: 'smooth' })
+    },
+    addToCart(product) {
+      const itemInCart = this.cart.find(item => item.id === product.id)
+      // const toastContent = itemInCart
+      //   ? `${product.name} is already in the cart`
+      //   : `${product.name} was added to the cart`
+
+      // const toastElement = new bootstrap.Toast(
+      //   document.getElementById('cartToast'),
+      //   {
+      //     delay: 2000
+      //   }
+      // )
+
+      // const toastBodyElement = document.getElementById('cartToastBody')
+      // toastBodyElement.innerText = toastContent
+
+      // toastElement.show()
+
+      if (!itemInCart) {
+        fetch('/update-basket', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            item_id: product.id
+          })
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`)
+            }
+            return response.json()
+          })
+          .then(() => {
+            this.cart.push(product)
+          })
+          .catch(error => {
+            console.error('error', error)
+          })
+      }
     }
   },
   filters: {

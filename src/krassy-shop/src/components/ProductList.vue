@@ -149,7 +149,7 @@ export default {
       // toastElement.show()
 
       if (!itemInCart) {
-        fetch('/update-basket', {
+        fetch('http://127.0.0.1:8000/update-basket', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -164,7 +164,8 @@ export default {
             }
             return response.json()
           })
-          .then(() => {
+          .then(data => {
+            console.log('data', data)
             this.$emit('add-to-cart', product)
           })
           .catch(error => {
