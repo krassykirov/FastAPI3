@@ -50,7 +50,8 @@ def get_categories_items_len(request: Request, db: Session = Depends(get_session
     categories = CategoryActions().get_categories_len(db=db)
     if categories is None:
         raise HTTPException(status_code=404, detail=f"No categories found")
-    return categories
+    print('jsonable_encoder(categories)', jsonable_encoder(categories))
+    return jsonable_encoder(categories)
 
 
 @category_router.post("/", status_code=status.HTTP_201_CREATED, response_model=CategoryRead, include_in_schema=False)

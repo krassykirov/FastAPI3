@@ -44,7 +44,7 @@
           >
             <i class="bi bi-cart" style="font-size: 1rem"></i> Cart
             <span class="badge badge-pill badge-primary">
-              [[ cart.length ]]</span
+              {{ cart.length }}</span
             >
           </button>
           <div v-if="!displayCart" class="list-group position-absolute">
@@ -56,7 +56,7 @@
               <div class="d-flex align-items-center">
                 <img
                   :src="
-                    '/static/img/' +
+                    'http://127.0.0.1:8000/static/img/' +
                     item.username +
                     '/' +
                     item.name +
@@ -76,7 +76,7 @@
                   @click="redirectToItemFromNavbar(item.id)"
                 >
                   <div style="font-size: 0.9rem; width: 180px">
-                    [[ item.name ]] - $[[ item.price ]]
+                    {{ item.name }} - ${{ item.price }}
                   </div>
                 </div>
               </div>
@@ -94,7 +94,7 @@
               class="btn btn-sm btn-light"
               style="pointer-events: none; opacity: 1; margin-bottom: 1px"
             >
-              Total: [[ cart.length ]] products - <b> $[[ total ]] </b>
+              Total: {{ cart.length }} products - <b> ${{ total }} </b>
             </button>
             <button
               v-if="cart.length > 0"
@@ -143,7 +143,7 @@
 // import ProductList from 'ProductList.vue'
 export default {
   props: ['product', 'cart', 'total', 'user', 'avatar'],
-  delimiters: ['[[', ']]'],
+  delimiters: ['{{', '}}'],
   data() {
     return {
       displayCart: true

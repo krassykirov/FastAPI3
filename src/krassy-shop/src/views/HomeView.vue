@@ -62,10 +62,10 @@
                       :disabled="category[1] === 0"
                       @change="handleCategoryChange"
                     />
-                    [[ category[0] ]]
+                    {{ category[0] }}
                   </label>
                   <span class="text-muted" style="font-size: 0.9rem">
-                    ([[ category[1] ]])
+                    ({{ category[1] }})
                   </span>
                 </div>
               </div>
@@ -223,7 +223,7 @@
                   >
                   </span>
                   <span style="font-size: 0.9rem"
-                    >([[ getRatingItemCount(rating) ]])
+                    >( {{ getRatingItemCount(rating) }})
                   </span>
                 </label>
               </div>
@@ -350,7 +350,7 @@ export default {
     async fetchCategories() {
       try {
         const res = await fetch(
-          'http://127.0.0.1:8000/api/categories/category_items_len/'
+          'http://127.0.0.1:8000/api/categories/category_items_len'
         )
         this.categories = await res.json()
       } catch (error) {
@@ -406,7 +406,7 @@ export default {
       }
     },
     async readFromCartVue() {
-      fetch('/user_items_in_cart', {
+      fetch('http://127.0.0.1:8000/user_items_in_cart', {
         method: 'get',
         headers: {
           'Content-Type': 'application/json'
