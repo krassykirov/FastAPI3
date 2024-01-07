@@ -260,7 +260,7 @@ App.component('product-component', {
   computed: {
     discountedPrice() {
       if (this.product.discount) {
-      return (this.product.price - (this.product.price * this.product.discount)).toFixed(2);
+        return (this.product.price - (this.product.price * this.product.discount)).toFixed(2);
       }
       else {
        return (this.product.price * 1).toFixed(2);
@@ -268,7 +268,7 @@ App.component('product-component', {
     },
   },
   template: `
-  <div class="card" :id="product.id" :data-category="product.category_id" style="margin: 1px; padding: 1px;">
+  <div class="card" :id="product.id" :data-category="product.category_id" style="margin: 0.15%; padding: 0.15%;">
   <div class="card-body" style="cursor: pointer; padding: 5px;" @click="redirectToItemFromProduct(product.id)">
     <span class="badge bg-danger position-absolute top-0 start-0" v-if="product.discount >= 0.1"
       style="font-size: 0.8em; margin: 5px; top: 0; start: 0;">-[[ Math.floor(product.discount * 100) ]]%
@@ -290,18 +290,18 @@ App.component('product-component', {
   </div>
   <div style="margin:0; padding:0; display: flex; flex-direction: column;">
     <span style="font-size: 1em;color:#dc3545;font-weight: 900;">
-      Price: $[[ product.price|formatPrice ]]<span v-if="!Number.isInteger(product.price)" style="font-size: 0.7em; vertical-align: top;color:#dc3545;">
+      Price: $[[ discountedPrice |formatPrice ]]<span v-if="!Number.isInteger(product.price)" style="font-size: 0.7em; vertical-align: top;color:#dc3545;">
         [[ product.price.toString().split('.')[1] ]]
       </span>
     </span>
-    <span v-if="product.discount >= 0.1" style="font-size: 0.8em; 
+    <span v-if="product.discount >= 0.1" style="font-size: 0.8em;
     text-decoration: line-through; color: #404447; margin-top: 2%; margin-bottom: 2%;">
-      Old Price: $[[ Math.floor(product.price) | formatPrice]]
+      Old Price: $[[ Math.floor(product.price) | formatPrice ]]
     </span>
     <div v-else style="font-size: 0.9em; margin-top: 3px;">&nbsp;</div>
     <button ref="addToCartButton" @click="addToCart(product)" class="btn btn-secondary btn-sm"
       style="margin-top: 3%;; margin-bottom: 0; padding: 5px; width:100%;">
-      Add to Cart <i class="bi bi-cart-fill" style="font-size: 0.9rem;"> </i>
+      Add to Cart <i class="bi bi-cart-fill" style="font-size: 1rem;"> </i>
     </button>
   </div>
 </div>
