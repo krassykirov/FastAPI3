@@ -57,7 +57,7 @@
           <span
             v-for="i in 5"
             :key="i"
-            :class="this.getStarClasses(i, product.rating_float)"
+            :class="getStarClasses(i, product.rating_float)"
           ></span>
           <span
             :id="'overall-rating' + product.id + '-float'"
@@ -81,7 +81,7 @@
           margin-top: 1.5%;
         "
       >
-        Price: ${{ product.price
+        Price: ${{ discountedPrice
         }}<span
           v-if="!Number.isInteger(product.price)"
           style="font-size: 0.7em; vertical-align: top; color: #dc3545"
@@ -118,6 +118,18 @@
 export default {
   props: ['product', 'min', 'max', 'cart'],
   emits: ['addToCart'],
+  computed: {
+    discountedPrice() {
+      if (this.product.discount) {
+        return (
+          this.product.price -
+          this.product.price * this.product.discount
+        ).toFixed(2)
+      } else {
+        return (this.product.price * 1).toFixed(2)
+      }
+    }
+  },
   methods: {
     redirectToItemFromProduct(itemId) {
       this.$root.redirectToItem(itemId)
