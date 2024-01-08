@@ -126,7 +126,6 @@ export default {
       return this.cart.some(item => item.id === product.id)
     },
     addToCart(product) {
-      console.log('addToCart method triggered in ProductList', product)
       this.$emit('addToCart', product)
     },
     getStarClasses(index, rating) {

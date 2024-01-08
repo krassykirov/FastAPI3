@@ -120,13 +120,13 @@
               <div class="dropdown-content" style="text-align: center">
                 <a
                   class="nav-link text-uppercase"
-                  href="/user/profile"
+                  href="http://127.0.0.1:8000/user/profile"
                   style="width: 100%"
                   >Profile</a
                 >
                 <a
                   class="nav-link text-uppercase"
-                  href="/logout"
+                  href="http://127.0.0.1:8000/logout"
                   style="width: 100%"
                   >Logout</a
                 >

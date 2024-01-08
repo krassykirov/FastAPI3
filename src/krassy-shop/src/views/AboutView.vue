@@ -81,14 +81,12 @@
 </template>
 
 <script>
-import eventBus from '@/eventBus'
+import VueCookies from 'vue-cookies'
 export default {
-  inject: ['accessToken'],
   data() {
     return {
       username: '',
-      password: '',
-      accessToken: ''
+      password: ''
     }
   },
   methods: {
@@ -114,8 +112,7 @@ export default {
         .then(data => {
           console.log('token', data)
           this.accessToken = data.access_token
-          eventBus.value.accessToken = this.accessToken
-          console.log('this.accessToken', this.accessToken)
+          VueCookies.set('access_token', this.accessToken, '12h')
           this.$router.push('/')
         })
         .catch(error => {

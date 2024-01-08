@@ -1,5 +1,6 @@
-import { createApp, ref } from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
+import VueCookies from 'vue-cookies'
 import $ from 'jquery'
 window.$ = window.jQuery = $
 import 'bootstrap'
@@ -17,11 +18,9 @@ import 'bootstrap-vue-3/dist/bootstrap-vue-3.css'
 
 const app = createApp(App)
 
-const accessToken = ref('')
-app.provide('accessToken', accessToken)
-
 app
   .use(router)
+  .use(VueCookies)
   .use(BootstrapVue3)
   .component('font-awesome-icon', FontAwesomeIcon)
   .mount('#app')

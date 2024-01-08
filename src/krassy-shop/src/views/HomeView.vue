@@ -257,8 +257,8 @@
 
 <script>
 // import $ from 'jquery'
-import eventBus from '@/eventBus'
 import { ref } from 'vue'
+import VueCookies from 'vue-cookies'
 import ProductList from '@/components/ProductList.vue'
 import MyNavbar from '@/components/MyNavbar.vue'
 export default {
@@ -277,7 +277,7 @@ export default {
       selectedRating: ref([]),
       ratings: ref([1, 2, 3, 4, 5]),
       user: ref([]),
-      accessToken: ref(eventBus.value.accessToken || ''),
+      accessToken: VueCookies.get('access_token') || '',
       user_id: ref(null),
       productMin: ref(0),
       productMax: ref(10000)
@@ -288,7 +288,6 @@ export default {
     ProductList
   },
   async created() {
-    console.log('accessToken', this.accessToken)
     await this.getProducts()
     await this.readFromCartVue()
     await this.fetchCategories()
@@ -326,6 +325,10 @@ export default {
     }
   },
   methods: {
+    getCookie() {
+      const access_token = this.$cookies.get('access_token')
+      console.log('access_token from HomeVue methods', access_token)
+    },
     async getProduct(itemId) {
       try {
         const res = await fetch(
@@ -414,7 +417,6 @@ export default {
     },
     async readFromCartVue() {
       try {
-        console.log('readFromCartVue call', this.accessToken)
         const headers = new Headers({
           Authorization: `Bearer ${this.accessToken}`,
           Accept: 'application/json'
@@ -589,7 +591,6 @@ export default {
         Authorization: `Bearer ${this.accessToken}`,
         Accept: 'application/json'
       })
-      console.log('removeFromCart headers', headers)
       const requestOptions = {
         method: 'POST',
         headers: headers,
