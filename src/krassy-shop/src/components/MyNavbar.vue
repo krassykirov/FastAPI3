@@ -1,139 +1,138 @@
 <template>
-  <div class="container-fluid" style="width: 100%; font-size: 14px">
-    <a class="navbar-brand" href="#" style="font-size: 14px; margin-left: 1%">
-      <i class="fa fa-home"></i> <strong>KRASSY SHOP</strong>
-    </a>
-    <div
-      class="container"
-      style="align-items: center; text-align: center; margin-left: 26%"
-    >
-      <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link mx-2 text-uppercase" href="/products">Offers</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link mx-2 text-uppercase" href="#">About</a>
-          </li>
-        </ul>
-        <div v-if="user === 'krassy@mail.bg'" d-flex bd-highlight mb-3>
-          <button
-            class="btn btn-light btn-sm"
-            data-toggle="modal"
-            data-target="#addItem"
-            href="#"
-            style="font-family: inherit; margin-top: 14%"
-          >
-            Add Product
-          </button>
-        </div>
-        <div
-          v-if="cart"
-          @mouseleave="hideCart()"
-          @mouseenter="showCart()"
-          d-flex
-          bd-highlight
-          mb-3
+  <div
+    class="container"
+    style="align-items: center; text-align: center; margin-left: 26%"
+  >
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <a class="navbar-brand" href="#" style="font-size: 14px; margin-left: 1%">
+        <i class="fa fa-home"></i> <strong>KRASSY SHOP</strong>
+      </a>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link mx-2 text-uppercase" href="/products">Offers</a>
+        </li>
+        <li class="nav-item">
+          <!-- <a class="nav-link mx-2 text-uppercase" href="/about">About</a> -->
+          <a class="nav-link mx-2 text-uppercase"
+            ><router-link to="/login">Login</router-link>
+          </a>
+        </li>
+      </ul>
+      <div v-if="user === 'krassy@mail.bg'" d-flex bd-highlight mb-3>
+        <button
+          class="btn btn-light btn-sm"
+          data-toggle="modal"
+          data-target="#addItem"
+          href="#"
+          style="font-family: inherit; margin-top: 14%"
         >
-          <button
-            @click="displayCart = !displayCart"
-            class="btn btn-light dropdown-toggle btn-sm"
-            id="cartDropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
+          Add Product
+        </button>
+      </div>
+      <div
+        v-if="cart"
+        @mouseleave="hideCart()"
+        @mouseenter="showCart()"
+        d-flex
+        bd-highlight
+        mb-3
+      >
+        <button
+          @click="displayCart = !displayCart"
+          class="btn btn-light dropdown-toggle btn-sm"
+          id="cartDropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <i class="bi bi-cart" style="font-size: 1rem"></i> Cart
+          <span class="badge badge-pill badge-primary"> {{ cart.length }}</span>
+        </button>
+        <div v-if="!displayCart" class="list-group position-absolute">
+          <div
+            v-for="(item, index) in cart.slice(0, Math.min(7, cart.length))"
+            :key="index"
+            class="list-group-item d-flex justify-content-between align-items-center"
           >
-            <i class="bi bi-cart" style="font-size: 1rem"></i> Cart
-            <span class="badge badge-pill badge-primary">
-              {{ cart.length }}</span
-            >
-          </button>
-          <div v-if="!displayCart" class="list-group position-absolute">
-            <div
-              v-for="(item, index) in cart.slice(0, Math.min(7, cart.length))"
-              :key="index"
-              class="list-group-item d-flex justify-content-between align-items-center"
-            >
-              <div class="d-flex align-items-center">
-                <img
-                  :src="
-                    'http://127.0.0.1:8000/static/img/' +
-                    item.username +
-                    '/' +
-                    item.name +
-                    '/' +
-                    item.image
-                  "
-                  class="mr-2"
-                  style="
-                    width: 60px;
-                    height: 60px;
-                    object-fit: cover;
-                    border-radius: 5px;
-                  "
-                />
-                <div
-                  style="cursor: pointer"
-                  @click="redirectToItemFromNavbar(item.id)"
-                >
-                  <div style="font-size: 0.9rem; width: 180px">
-                    {{ item.name }} - ${{ item.price }}
-                  </div>
+            <div class="d-flex align-items-center">
+              <img
+                :src="
+                  'http://127.0.0.1:8000/static/img/' +
+                  item.username +
+                  '/' +
+                  item.name +
+                  '/' +
+                  item.image
+                "
+                class="mr-2"
+                style="
+                  width: 60px;
+                  height: 60px;
+                  object-fit: cover;
+                  border-radius: 5px;
+                "
+              />
+              <div
+                style="cursor: pointer"
+                @click="redirectToItemFromNavbar(item.id)"
+              >
+                <div style="font-size: 0.9rem; width: 180px">
+                  {{ item.name }} - ${{ item.price }}
                 </div>
               </div>
-              <button
-                @click="removeFromCart(item.id)"
-                class="btn btn-light btn-sm ml-2"
-                data-bs-placement="top"
-                style="margin-top: 16px"
-              >
-                x
-              </button>
             </div>
             <button
-              id="total"
-              class="btn btn-sm btn-light"
-              style="pointer-events: none; opacity: 1; margin-bottom: 1px"
+              @click="removeFromCart(item.id)"
+              class="btn btn-light btn-sm ml-2"
+              data-bs-placement="top"
+              style="margin-top: 16px"
             >
-              Total: {{ cart.length }} products - <b> ${{ total }} </b>
-            </button>
-            <button
-              v-if="cart.length > 0"
-              @click="redirectToCart"
-              class="btn btn-sm btn-primary"
-            >
-              Go to Cart
+              x
             </button>
           </div>
+          <button
+            id="total"
+            class="btn btn-sm btn-light"
+            style="pointer-events: none; opacity: 1; margin-bottom: 1px"
+          >
+            Total: {{ cart.length }} products - <b> ${{ total }} </b>
+          </button>
+          <button
+            v-if="cart.length > 0"
+            @click="redirectToCart"
+            class="btn btn-sm btn-primary"
+          >
+            Go to Cart
+          </button>
         </div>
-        <div
-          class="ml-auto"
-          style="
-            font-family: Raleway;
-            font-size: 14px;
-            margin-left: 0;
-            margin-right: 0;
-          "
-        >
-          <form class="form-inline my-2" style="margin-right: 80px">
-            <div class="dropdown" style="font-family: Raleway; font-size: 16px">
-              <img :src="avatar" class="avatar" />
-              <div class="dropdown-content" style="text-align: center">
-                <a
-                  class="nav-link text-uppercase"
-                  href="http://127.0.0.1:8000/user/profile"
-                  style="width: 100%"
-                  >Profile</a
-                >
-                <a
-                  class="nav-link text-uppercase"
-                  href="http://127.0.0.1:8000/logout"
-                  style="width: 100%"
-                  >Logout</a
-                >
-              </div>
+      </div>
+      <div
+        class="ml-auto"
+        style="
+          font-family: Raleway;
+          font-size: 14px;
+          margin-left: 0;
+          margin-right: 0;
+        "
+      >
+        <form class="form-inline my-2" style="margin-right: 80px">
+          <div class="dropdown" style="font-family: Raleway; font-size: 16px">
+            <img :src="avatar" class="avatar" />
+            <div class="dropdown-content" style="text-align: center">
+              <a
+                class="nav-link text-uppercase"
+                href="http://127.0.0.1:8000/user/profile"
+                style="width: 100%"
+                >Profile</a
+              >
+              <a
+                class="nav-link text-uppercase"
+                href="http://127.0.0.1:8000/logout"
+                style="width: 100%"
+                >Logout</a
+              >
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>

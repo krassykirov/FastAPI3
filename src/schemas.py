@@ -46,6 +46,7 @@ class ItemRead(BaseModel):
     category:  Optional[Category]
     category_id:  Optional[int]
     in_cart: Optional[Dict[Any,Any]]
+    discount: Optional[decimal.Decimal]
     class Config:
         orm_mode = True
         schema_extra = {
@@ -57,7 +58,8 @@ class ItemRead(BaseModel):
             "image": "image.pgn",
             "username": "Krassy",
             "description": "description",
-            'in_cart': "false"
+            'in_cart': "false",
+            'discount': 0.2
            }
         }
 

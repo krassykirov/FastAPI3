@@ -81,8 +81,8 @@
           margin-top: 1.5%;
         "
       >
-        Price: ${{ discountedPrice
-        }}<span
+        Price: ${{ discountedPrice }}
+        <span
           v-if="!Number.isInteger(product.price)"
           style="font-size: 0.7em; vertical-align: top; color: #dc3545"
         >

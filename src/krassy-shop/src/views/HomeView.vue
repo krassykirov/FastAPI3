@@ -1,7 +1,6 @@
 <template>
   <div
     class="container-fluid"
-    id="app"
     style="width: 100vw; position: sticky; margin: 0; padding: 0"
   >
     <nav
@@ -15,8 +14,7 @@
         :avatar="'{{ avatar }}'"
         @addToCart="addToCart"
         @removeFromCart="removeFromCart"
-      >
-      </MyNavbar>
+      />
     </nav>
 
     <form class="d-flex">
