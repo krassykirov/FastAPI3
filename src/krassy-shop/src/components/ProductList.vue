@@ -106,7 +106,7 @@
         ref="addToCartButton"
         @click="addToCart(product)"
         class="btn btn-secondary btn-sm"
-        style="margin-top: 1%; margin-bottom: 0; padding: 1.2%; width: 100%"
+        style="margin-top: 1px; margin-bottom: 0; padding: 1.2%; width: 100%"
       >
         Add to Cart <i class="bi bi-cart-fill" style="font-size: 1rem"> </i>
       </button>
@@ -117,7 +117,7 @@
 <script>
 export default {
   props: ['product', 'min', 'max', 'cart'],
-  emits: ['addToCart'],
+  emits: ['addToCart', 'redirectToItem'],
   computed: {
     discountedPrice() {
       if (this.product.discount) {
@@ -132,7 +132,9 @@ export default {
   },
   methods: {
     redirectToItemFromProduct(itemId) {
-      this.$root.redirectToItem(itemId)
+      console.log('redirectToItemFromProduct(itemId)', itemId)
+      // this.$root.redirectToItem(itemId)
+      this.$emit('redirectToItem', itemId)
     },
     itemAlreadyInCart(product) {
       return this.cart.some(item => item.id === product.id)

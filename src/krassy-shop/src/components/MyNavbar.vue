@@ -4,7 +4,11 @@
     style="align-items: center; text-align: center; margin-left: 26%"
   >
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
-      <a class="navbar-brand" href="#" style="font-size: 14px; margin-left: 1%">
+      <a
+        class="navbar-brand"
+        href="#"
+        style="font-size: 14px; margin-left: 1%; font-family: inherit"
+      >
         <i class="fa fa-home"></i> <strong>KRASSY SHOP</strong>
       </a>
       <ul class="navbar-nav">
@@ -12,9 +16,16 @@
           <a class="nav-link mx-2 text-uppercase" href="/products">Offers</a>
         </li>
         <li class="nav-item">
-          <!-- <a class="nav-link mx-2 text-uppercase" href="/about">About</a> -->
           <a class="nav-link mx-2 text-uppercase"
-            ><router-link to="/login">Login</router-link>
+            ><router-link
+              style="
+                text-decoration: none;
+                color: inherit;
+                font-family: inherit;
+              "
+              to="/login"
+              >Login</router-link
+            >
           </a>
         </li>
       </ul>
