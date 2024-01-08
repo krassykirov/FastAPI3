@@ -349,8 +349,8 @@ async def update_basket(request: Request, db: Session = Depends(get_session), us
     db.commit()
     db.refresh(item)
     result = get_user_items_in_cart(db=db, user=user)
-    total = result.get('total')
-    return {'total', total}
+    total = jsonable_encoder(result.get('total'))
+    return total
 
 @app.post("/user/remove-from-basket", status_code=status.HTTP_200_OK,  include_in_schema=False)
 async def remove_from_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -386,8 +386,10 @@ async def get_items_in_cart(request: Request, db: Session=Depends(get_session), 
 @app.get("/user_items_in_cart", status_code=status.HTTP_200_OK, include_in_schema=True)
 def get_user_items_in_cart(db: Session=Depends(get_session), user: User = Depends(get_current_user)):
   items = ItemActions().get_items(db=db)
-  items_in_cart =  [item for item in items for k, v in item.in_cart.items()
+  items_in_cart =  [item for item in items 
+                    for k, v in item.in_cart.items()
                     if k == user.username and v['in_cart'] == True]
   total = sum([item.price for item in items_in_cart])
-  return {'items':items_in_cart, 'items_in_cart': len(items_in_cart),
+  json_items = {'items':items_in_cart, 'items_in_cart': len(items_in_cart),
           'total': total, 'user': user.username, 'user_id': user.id}
+  return json_items

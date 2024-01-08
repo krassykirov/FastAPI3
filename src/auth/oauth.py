@@ -90,6 +90,7 @@ def get_current_user(request: Request, token: str = Depends(oauth2_scheme), db: 
         return response
     return user
 
+
 @oauth_router.post('/token', include_in_schema=False)
 def login_access_token(*, request: Request, response: Response, form_data: OAuth2PasswordRequestForm=Depends(),
                 db: Session = Depends(get_session), background_tasks: BackgroundTasks ):

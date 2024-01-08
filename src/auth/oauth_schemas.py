@@ -35,7 +35,8 @@ class OAuth2PasswordBearerCookie(OAuth2): # https://nilsdebruin.medium.com/fasta
         super().__init__(flows=flows, scheme_name=scheme_name, auto_error=auto_error)
 
     async def __call__(self, request: Request) -> Optional[str]:
-        header_authorization: str = request.headers.get("access_token")
+        header_authorization: str = request.headers.get("Authorization")
+        print('header auth', header_authorization)
         cookie_authorization: str = request.cookies.get("access_token")
 
         header_scheme, header_param = get_authorization_scheme_param(

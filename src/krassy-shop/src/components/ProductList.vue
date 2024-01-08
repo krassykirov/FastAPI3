@@ -81,7 +81,7 @@
           margin-top: 1.5%;
         "
       >
-        Price: ${{ discountedPrice
+        Price: ${{ product.price
         }}<span
           v-if="!Number.isInteger(product.price)"
           style="font-size: 0.7em; vertical-align: top; color: #dc3545"
@@ -115,14 +115,9 @@
 </template>
 
 <script>
-// import MyNavbar from 'MyNavbar.vue'
 export default {
   props: ['product', 'min', 'max', 'cart'],
   emits: ['addToCart'],
-  // compatConfig: { MODE: 3 },
-  // components: {
-  //   MyNavbar
-  // },
   methods: {
     redirectToItemFromProduct(itemId) {
       this.$root.redirectToItem(itemId)
@@ -131,47 +126,8 @@ export default {
       return this.cart.some(item => item.id === product.id)
     },
     addToCart(product) {
-      const itemInCart = this.cart.find(item => item.id === product.id)
-      // const toastContent = itemInCart
-      //   ? `${product.name} is already in the cart`
-      //   : `${product.name} was added to the cart`
-
-      // const toastElement = new bootstrap.Toast(
-      //   document.getElementById('cartToast'),
-      //   {
-      //     delay: 2000
-      //   }
-      // )
-
-      // const toastBodyElement = document.getElementById('cartToastBody')
-      // toastBodyElement.innerText = toastContent
-
-      // toastElement.show()
-
-      if (!itemInCart) {
-        fetch('http://127.0.0.1:8000/update-basket', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            item_id: product.id
-          })
-        })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`)
-            }
-            return response.json()
-          })
-          .then(data => {
-            console.log('data', data)
-            this.$emit('add-to-cart', product)
-          })
-          .catch(error => {
-            console.error('error', error)
-          })
-      }
+      console.log('addToCart method triggered in ProductList', product)
+      this.$emit('addToCart', product)
     },
     getStarClasses(index, rating) {
       const filledStars = Math.floor(rating)

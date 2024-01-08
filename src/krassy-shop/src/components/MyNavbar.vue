@@ -143,7 +143,7 @@
 // import ProductList from 'ProductList.vue'
 export default {
   props: ['product', 'cart', 'total', 'user', 'avatar'],
-  delimiters: ['{{', '}}'],
+  emits: ['removeFromCart'],
   data() {
     return {
       displayCart: true
@@ -158,31 +158,8 @@ export default {
       this.$root.redirectToCart()
     },
     removeFromCart(itemId) {
-      fetch('/user/remove-from-basket', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          item_id: itemId
-        })
-      })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`)
-          }
-          return response.json()
-        })
-        .then(() => {
-          const index = this.cart.findIndex(item => item.id === itemId)
-
-          if (index !== -1) {
-            this.$emit('removeFromCart', this.cart[index])
-          }
-        })
-        .catch(error => {
-          console.error('Error removing item from cart:', error)
-        })
+      console.log('removeFromCart method triggered in Navbar', itemId)
+      this.$emit('removeFromCart', itemId)
     },
     hideCart() {
       setTimeout(() => {

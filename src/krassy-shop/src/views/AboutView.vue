@@ -10,14 +10,11 @@
                   <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">
                     Login
                   </p>
-                  <form
-                    class="mx-1 mx-md-4"
-                    action="http://127.0.0.1:8000/api/token"
-                    method="post"
-                  >
+                  <form class="mx-1 mx-md-4" @submit.prevent="getToken">
                     <div class="d-flex flex-row align-items-center mb-4">
                       <div class="form-outline flex-fill mb-0">
                         <input
+                          v-model="username"
                           type="email"
                           id="username"
                           name="username"
@@ -32,6 +29,7 @@
                     <div class="d-flex flex-row align-items-center mb-4">
                       <div class="form-outline flex-fill mb-0">
                         <input
+                          v-model="password"
                           type="password"
                           id="password"
                           name="password"
@@ -54,10 +52,10 @@
                         Login
                       </button>
                       <button
-                        type="submit"
+                        type="button"
                         class="btn btn-info"
                         style="margin: 2px"
-                        onclick="location.href='{{ url_for('signup') }}'"
+                        @click="redirectToSignup"
                       >
                         Signup
                       </button>
@@ -81,3 +79,49 @@
     </div>
   </section>
 </template>
+
+<script>
+import eventBus from '@/eventBus'
+export default {
+  inject: ['accessToken'],
+  data() {
+    return {
+      username: '',
+      password: '',
+      accessToken: ''
+    }
+  },
+  methods: {
+    getToken() {
+      const formData = new URLSearchParams()
+      formData.append('grant_type', '')
+      formData.append('username', this.username)
+      formData.append('password', this.password)
+      formData.append('scope', '')
+      formData.append('client_id', '')
+      formData.append('client_secret', '')
+
+      fetch('http://127.0.0.1:8000/api/token', {
+        method: 'POST',
+        body: formData
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`)
+          }
+          return response.json()
+        })
+        .then(data => {
+          console.log('token', data)
+          this.accessToken = data.access_token
+          eventBus.value.accessToken = this.accessToken
+          console.log('this.accessToken', this.accessToken)
+          this.$router.push('/')
+        })
+        .catch(error => {
+          console.error('error', error)
+        })
+    }
+  }
+}
+</script>

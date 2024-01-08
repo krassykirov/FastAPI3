@@ -13,6 +13,8 @@
         :total="total"
         :user="user"
         :avatar="'{{ avatar }}'"
+        @addToCart="addToCart"
+        @removeFromCart="removeFromCart"
       >
       </MyNavbar>
     </nav>
@@ -232,7 +234,7 @@
         </div>
       </div>
       <div class="product-list" id="mycard">
-        <transition-group name="product-fade" mode="out-in">
+        <transition-group name="product-fade">
           <ProductList
             v-for="product in filteredProducts"
             :key="product.id"
@@ -242,6 +244,8 @@
             :min="min"
             :max="max"
             :total="total"
+            @addToCart="addToCart"
+            @removeFromCart="removeFromCart"
             style="justify-content: left"
           >
           </ProductList>
@@ -253,6 +257,7 @@
 
 <script>
 // import $ from 'jquery'
+import eventBus from '@/eventBus'
 import { ref } from 'vue'
 import ProductList from '@/components/ProductList.vue'
 import MyNavbar from '@/components/MyNavbar.vue'
@@ -272,6 +277,7 @@ export default {
       selectedRating: ref([]),
       ratings: ref([1, 2, 3, 4, 5]),
       user: ref([]),
+      accessToken: ref(eventBus.value.accessToken || ''),
       user_id: ref(null),
       productMin: ref(0),
       productMax: ref(10000)
@@ -282,6 +288,7 @@ export default {
     ProductList
   },
   async created() {
+    console.log('accessToken', this.accessToken)
     await this.getProducts()
     await this.readFromCartVue()
     await this.fetchCategories()
@@ -350,10 +357,9 @@ export default {
     async fetchCategories() {
       try {
         const res = await fetch(
-          'http://127.0.0.1:8000/api/categories/category_items_len'
+          'http://127.0.0.1:8000/api/categories/category_items_len/'
         )
         this.categories = await res.json()
-        console.log('this.categories', this.categories)
       } catch (error) {
         console.error('Error fetching categories:', error)
       }
@@ -407,26 +413,34 @@ export default {
       }
     },
     async readFromCartVue() {
-      fetch('http://127.0.0.1:8000/user_items_in_cart', {
-        method: 'get',
-        headers: {
-          'Content-Type': 'application/json'
+      try {
+        console.log('readFromCartVue call', this.accessToken)
+        const headers = new Headers({
+          Authorization: `Bearer ${this.accessToken}`,
+          Accept: 'application/json'
+        })
+
+        const requestOptions = {
+          method: 'GET',
+          headers: headers,
+          redirect: 'follow'
         }
-      })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`)
-          }
-          return response.json()
-        })
-        .then(data => {
-          this.cart = data.items
-          this.user = data.user
-          this.user_id = data.user_id
-        })
-        .catch(error => {
-          console.error('error', error)
-        })
+        const response = await fetch(
+          'http://127.0.0.1:8000/api/items/user-items-in-cart',
+          requestOptions
+        )
+        if (!response.ok) {
+          console.log('readFromCartVue error')
+          throw new Error(`HTTP error! Status: ${response.status}`)
+        }
+        const data = await response.json()
+
+        this.cart = data.items
+        this.user = data.user
+        this.user_id = data.user_id
+      } catch (error) {
+        console.error('error', error)
+      }
     },
     async getProfile() {
       const response = await fetch(
@@ -539,33 +553,22 @@ export default {
       document.body.scrollIntoView({ behavior: 'smooth' })
     },
     addToCart(product) {
-      const itemInCart = this.cart.find(item => item.id === product.id)
-      // const toastContent = itemInCart
-      //   ? `${product.name} is already in the cart`
-      //   : `${product.name} was added to the cart`
-
-      // const toastElement = new bootstrap.Toast(
-      //   document.getElementById('cartToast'),
-      //   {
-      //     delay: 2000
-      //   }
-      // )
-
-      // const toastBodyElement = document.getElementById('cartToastBody')
-      // toastBodyElement.innerText = toastContent
-
-      // toastElement.show()
-
-      if (!itemInCart) {
-        fetch('/update-basket', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            item_id: product.id
-          })
+      console.log('addToCart method triggered in HomeView')
+      const headers = new Headers({
+        Authorization: `Bearer ${this.accessToken}`,
+        Accept: 'application/json'
+      })
+      const requestOptions = {
+        method: 'POST',
+        headers: headers,
+        redirect: 'follow',
+        body: JSON.stringify({
+          item_id: product.id
         })
+      }
+      const itemInCart = this.cart.find(item => item.id === product.id)
+      if (!itemInCart) {
+        fetch('http://127.0.0.1:8000/api/items/update-basket', requestOptions)
           .then(response => {
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`)
@@ -579,6 +582,38 @@ export default {
             console.error('error', error)
           })
       }
+    },
+    removeFromCart(itemId) {
+      console.log('removeFromCart', this.accessToken)
+      const headers = new Headers({
+        Authorization: `Bearer ${this.accessToken}`,
+        Accept: 'application/json'
+      })
+      console.log('removeFromCart headers', headers)
+      const requestOptions = {
+        method: 'POST',
+        headers: headers,
+        redirect: 'follow',
+        body: JSON.stringify({
+          item_id: itemId
+        })
+      }
+      fetch('http://127.0.0.1:8000/user/remove-from-basket', requestOptions)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`)
+          }
+          return response.json()
+        })
+        .then(() => {
+          const index = this.cart.findIndex(item => item.id === itemId)
+          if (index !== -1) {
+            this.cart.splice(index, 1)
+          }
+        })
+        .catch(error => {
+          console.error('Error removing item from cart:', error)
+        })
     }
   },
   filters: {

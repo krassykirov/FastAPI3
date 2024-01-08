@@ -10,7 +10,7 @@ from src.crud.crud import ItemActions, CategoryActions
 from typing import Optional, List, Annotated, Union
 from src.auth.oauth import get_current_user
 
-# PROTECTED = [Depends(get_current_user)]
+PROTECTED = [Depends(get_current_user)] 
 
 items_router = APIRouter(prefix='/api/items', tags=["items"],
                           responses={404: {"description": "Not found"}})
@@ -61,14 +61,36 @@ def delete_item_by_id(item_id: int, db: Session = Depends(get_session), user: Us
     ItemActions().delete_item_by_id(db=db, id=item_id)
 
 
-@items_router.get("/items-in-cart", status_code=status.HTTP_200_OK, include_in_schema=True)
-async def get_user_items_in_cart(request: Request, db: Session=Depends(get_session)):
-    items = ItemActions().get_items(db=db)
-    items_in_cart =  [item for item in items for k, v in item.in_cart.items()
-                      if k == 'krassy@mail.bg' and v['in_cart'] == True]
-    return items_in_cart
+# @items_router.get("/items-in-cart", status_code=status.HTTP_200_OK, include_in_schema=True)
+# async def get_user_items_in_cart(request: Request, db: Session=Depends(get_session)):
+#     items = ItemActions().get_items(db=db)
+#     items_in_cart =  [item for item in items for k, v in item.in_cart.items()
+#                       if k == 'krassy@mail.bg' and v['in_cart'] == True]
+#     return items_in_cart
 
+@items_router.get("/user-items-in-cart", status_code=status.HTTP_200_OK, include_in_schema=True)
+def get_user_items_in_cart(db: Session=Depends(get_session), user: User = Depends(get_current_user)):
+  items = ItemActions().get_items(db=db)
+  items_in_cart =  [item for item in items
+                    for k, v in item.in_cart.items()
+                    if k == user.username and v['in_cart'] == True]
+  total = sum([item.price for item in items_in_cart])
+  json_items = {'items':items_in_cart, 'items_in_cart': len(items_in_cart),
+          'total': total, 'user': user.username, 'user_id': user.id}
+  return json_items
 
+@items_router.post("/update-basket", status_code=status.HTTP_200_OK,  include_in_schema=False)
+async def update_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+    data = await request.json()
+    item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
+    new_dict = {user.username: {"in_cart": True}}
+    basket = dict(item.in_cart, **new_dict )
+    item.in_cart = basket
+    db.commit()
+    db.refresh(item)
+    result = get_user_items_in_cart(db=db, user=user)
+    total = jsonable_encoder(result.get('total'))
+    return total
 
 
 
