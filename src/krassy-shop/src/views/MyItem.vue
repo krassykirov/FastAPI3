@@ -1,4 +1,22 @@
 <template>
+  <div
+    class="container-fluid"
+    style="width: 100vw; position: sticky; margin: 0; padding: 0"
+  >
+    <nav
+      class="navbar navbar-expand-lg bg-white sticky-top navbar-light ms-auto shadow-lg"
+      style="height: 4em; margin-left: 0; margin-right: 0"
+    >
+      <NavBar
+        :cart="cart"
+        :total="total"
+        :user="user"
+        :avatar="'{{ avatar }}'"
+        @addToCart="addToCart"
+        @removeFromCart="removeFromCart"
+      />
+    </nav>
+  </div>
   <div class="card-wrapper">
     <div class="card">
       <div class="product-imgs" v-if="item">
@@ -10,14 +28,11 @@
             <img
               :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
             />
-            />
             <img
               :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
             />
-            />
             <img
               :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
-            />
             />
           </div>
         </div>
@@ -26,7 +41,6 @@
             <a href="#" data-id="1">
               <img
                 :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
-              />
               />
             </a>
           </div>
@@ -53,7 +67,6 @@
           </div>
         </div>
       </div>
-
       <div class="product-content">
         <h2 class="product-title" v-if="item">{{ item.name }}</h2>
         <div class="product-rating">
@@ -93,27 +106,16 @@
 
         <div class="product-detail">
           <h3>Description:</h3>
-          <li>Made entirely of metal with a weight of 1.68kg.</li>
-          <li>Intel i5-13500H processor with up to 4.7GHz.</li>
-          <li>Intel Iris Xe integrated graphics.</li>
-          <li>512GB or 1TB ultrafast SSD storage.</li>
-          <li>16″ display in 2.5K resolution.</li>
-          <li>16GB of dual-channel LPDDR5-6400 RAM.</li>
-          <li>
-            72Wh battery with Thunderbolt 4 type C charger <br />
-            with ultra-fast charging at 100W,<br />
-            allowing you to charge up to 50% of the battery <br />
-            in just 35 minutes and, mind you, it can last up to 16 hours.
+          <li v-if="item">
+            {{ item.description }}
           </li>
-          <ul>
-            <li>Color: <span>Black</span></li>
-            <li>Available: <span>in stock</span></li>
-            <li id="category">
-              Category: <span v-if="item">{{ item.category.name }} </span>
-            </li>
-            <li>Shipping Area: <span>All over the world</span></li>
-            <li>Shipping Fee: <span>Free</span></li>
-          </ul>
+          <li>Color: <span>Black</span></li>
+          <li>Available: <span>in stock</span></li>
+          <li id="category">
+            Category: <span v-if="item">{{ item.category.name }} </span>
+          </li>
+          <li>Shipping Area: <span>All over the world</span></li>
+          <li>Shipping Fee: <span>Free</span></li>
         </div>
 
         <div class="purchase-info">
@@ -130,171 +132,186 @@
           <button type="button" class="btn">Compare</button>
         </div>
       </div>
-    </div>
-  </div>
-  <section class="container" style="margin-top: 30%">
-    <div class="tab-container">
-      <nav class="tab-nav">
-        <div class="mobile-select"><i class="bi bi-chevron-down"></i></div>
-        <ul>
-          <li><button class="btn tab-btn active" id="html">Reviews</button></li>
-          <li><button class="btn tab-btn" id="csss">Specification</button></li>
-          <li><button class="btn tab-btn" id="js">Details</button></li>
-        </ul>
-      </nav>
-      <div class="tab-content">
-        <div class="tab-item" data-id="html" id="reviewTab">
-          <nav aria-label="Review Pagination" v-if="item && item.reviews">
-            <ul class="pagination" style="margin-left: 20px">
-              <li class="page-item">
-                <a class="page-link" @click="prevPage" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                </a>
+      <div class="container" style="margin-top: 1%">
+        <div class="tab-container">
+          <nav class="tab-nav">
+            <div class="mobile-select">
+              <i class="bi bi-chevron-down"></i>
+            </div>
+            <ul>
+              <li>
+                <button class="btn tab-btn active" id="html">Reviews</button>
               </li>
-              <li
-                v-for="(page, index) in pages"
-                :key="index"
-                :class="{ 'page-item': true, active: page === currentPage }"
-              >
-                <a class="page-link" @click="setCurrentPage(page)">{{
-                  page
-                }}</a>
+              <li>
+                <button class="btn tab-btn" id="csss">Specification</button>
               </li>
-              <li class="page-item">
-                <a class="page-link" @click="nextPage" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                </a>
-              </li>
+              <li><button class="btn tab-btn" id="js">Details</button></li>
             </ul>
           </nav>
-          <div v-if="item && item.reviews">
-            <div
-              class="card group1"
-              v-for="review in displayedReviews"
-              :key="review.id"
-              :id="'card' + review.id"
-              style="display: block; width: 550px; margin-bottom: 2px"
-            >
-              <div class="row">
-                <div class="col-12">
-                  <p></p>
-                  <div
-                    style="
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                    "
+          <div class="tab-content">
+            <div class="tab-item" data-id="html" id="reviewTab">
+              <nav aria-label="Review Pagination" v-if="item && item.reviews">
+                <ul class="pagination" style="margin-left: 20px">
+                  <li class="page-item">
+                    <a
+                      class="page-link"
+                      @click="prevPage"
+                      aria-label="Previous"
+                    >
+                      <span aria-hidden="true"></span>
+                    </a>
+                  </li>
+                  <li
+                    v-for="(page, index) in pages"
+                    :key="index"
+                    :class="{
+                      'page-item': true,
+                      active: page === currentPage
+                    }"
                   >
-                    <img
-                      src="/static/img/img_avatar.png"
-                      class="avatar"
-                      style="padding: 5px"
-                    />
-                    <span style="text-align: center">{{
-                      review.created_by
-                    }}</span>
-                  </div>
-                  <span
-                    class="fa fa-star"
-                    :class="{ checked: star.checked }"
-                    :id="star.id"
-                    v-for="star in updateStarRatings(review)"
-                    :key="star.id"
-                  ></span>
-                  <hr />
-                  <div>
-                    <p style="text-align: left; padding: 15px">
-                      {{ review.text }} CSS (Cascading Style Sheets) is a
-                      stylesheet language used for describing the presentation
-                      and layout of HTML documents. It plays a critical role in
-                      web development by allowing web developers to control the
-                      visual appearance of web pages.
-                    </p>
+                    <a class="page-link" @click="setCurrentPage(page)">{{
+                      page
+                    }}</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" @click="nextPage" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+              <div v-if="item && item.reviews">
+                <div
+                  class="cardgroup1"
+                  v-for="review in displayedReviews"
+                  :key="review.id"
+                  :id="'card' + review.id"
+                  style="display: block; width: 550px; margin-bottom: 2px"
+                >
+                  <div class="row">
+                    <div class="col-12">
+                      <p></p>
+                      <div
+                        style="
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                        "
+                      >
+                        <img
+                          src="/static/img/img_avatar.png"
+                          class="avatar"
+                          style="padding: 5px"
+                        />
+                        <span style="text-align: center">{{
+                          review.created_by
+                        }}</span>
+                      </div>
+                      <span
+                        class="fa fa-star"
+                        :class="{ checked: star.checked }"
+                        :id="star.id"
+                        v-for="star in updateStarRatings(review)"
+                        :key="star.id"
+                      ></span>
+                      <hr />
+                      <div>
+                        <p style="text-align: left; padding: 15px">
+                          {{ review.text }} CSS (Cascading Style Sheets) is a
+                          stylesheet language used for describing the
+                          presentation and layout of HTML documents. It plays a
+                          critical role in web development by allowing web
+                          developers to control the visual appearance of web
+                          pages.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <div class="row pb-2" style="width: 700px">
-            <div
-              class="card"
-              id="RatingCard"
-              style="width: 550px; margin-left: 35px"
-            >
-              <div class="row">
-                <div class="col-12" style="margin-bottom: 5px">
-                  <div class="comment-box ml-2">
-                    <input
-                      type="number"
-                      id="comment-item-id"
-                      value="item.id"
-                      required
-                      hidden
-                    />
-                    <div class="rating" style="padding: 10px">
-                      <input
-                        type="radio"
-                        name="rating"
-                        value="5"
-                        id="5"
-                      /><label for="5">☆</label>
-                      <input
-                        type="radio"
-                        name="rating"
-                        value="4"
-                        id="4"
-                      /><label for="4">☆</label>
-                      <input
-                        type="radio"
-                        name="rating"
-                        value="3"
-                        id="3"
-                      /><label for="3">☆</label>
-                      <input
-                        type="radio"
-                        name="rating"
-                        value="2"
-                        id="2"
-                      /><label for="2">☆</label>
-                      <input
-                        type="radio"
-                        name="rating"
-                        value="1"
-                        id="1"
-                      /><label for="1">☆</label>
-                    </div>
-                    <div
-                      class="comment-area"
-                      style="width: 500px; padding: 10px"
-                    >
-                      <textarea
-                        class="form-control"
-                        placeholder="Write a Review.."
-                        rows="4"
-                        id="comment-area"
-                      ></textarea>
-                    </div>
-                    <div class="comment-btns mt-2">
-                      <div class="row">
-                        <div class="col-6">
-                          <div class="pull-left">
-                            <button
-                              class="btn btn-secondary btn-sm"
-                              id="RatingCancel"
-                              @click="RatingHide"
-                            >
-                              Cancel
-                            </button>
-                          </div>
+              <div class="row pb-2" style="width: 700px">
+                <div
+                  class="card"
+                  id="RatingCard"
+                  style="width: 550px; margin-left: 35px"
+                >
+                  <div class="row">
+                    <div class="col-12" style="margin-bottom: 5px">
+                      <div class="comment-box ml-2">
+                        <input
+                          type="number"
+                          id="comment-item-id"
+                          value="
+                        item.id"
+                          required
+                          hidden
+                        />
+                        <div class="rating" style="padding: 10px">
+                          <input
+                            type="radio"
+                            name="rating"
+                            value="5"
+                            id="5"
+                          /><label for="5">☆</label>
+                          <input
+                            type="radio"
+                            name="rating"
+                            value="4"
+                            id="4"
+                          /><label for="4">☆</label>
+                          <input
+                            type="radio"
+                            name="rating"
+                            value="3"
+                            id="3"
+                          /><label for="3">☆</label>
+                          <input
+                            type="radio"
+                            name="rating"
+                            value="2"
+                            id="2"
+                          /><label for="2">☆</label>
+                          <input
+                            type="radio"
+                            name="rating"
+                            value="1"
+                            id="1"
+                          /><label for="1">☆</label>
                         </div>
-                        <div class="col-6">
-                          <div class="pull-right">
-                            <button
-                              class="btn btn-success send btn-sm"
-                              @click="addReview"
-                            >
-                              Submit
-                            </button>
+                        <div
+                          class="comment-area"
+                          style="width: 500px; padding: 10px"
+                        >
+                          <textarea
+                            class="form-control"
+                            placeholder="Write a Review.."
+                            rows="4"
+                            id="comment-area"
+                          ></textarea>
+                        </div>
+                        <div class="comment-btns mt-2">
+                          <div class="row">
+                            <div class="col-6">
+                              <div class="pull-left">
+                                <button
+                                  class="btn btn-secondary btn-sm"
+                                  id="RatingCancel"
+                                  @click="RatingHide"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                            <div class="col-6">
+                              <div class="pull-right">
+                                <button
+                                  class="btn btn-success send btn-sm"
+                                  @click="addReview"
+                                >
+                                  Submit
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -303,37 +320,41 @@
                 </div>
               </div>
             </div>
+            <div class="tab-item hide" data-id="csss">
+              <p v-if="item">{{ item.description }}</p>
+            </div>
+            <div class="tab-item hide" data-id="js">
+              <li>
+                Samsung UE43CU8072U - 43" Diagonal Class CU8000 Series
+                LED-backlit LCD TV
+              </li>
+              <li>Flat 2.16 m (85") LCD</li>
+              <li>
+                Crystal UHD - Smart TV - Tizen OS - 4K UHD (2160p) 3840 x 2160 -
+                HDR - black
+              </li>
+              <li>DVB-S2, DVB-T2, ISDB-C</li>
+              <li>Smart TV Internet TV</li>
+              <li>Wi-Fi Ethernet LAN Bluetooth</li>
+              <li>High Dynamic Range (HDR) supported</li>
+              <li>G 168 kWh 168 W</li>
+            </div>
           </div>
-        </div>
-        <div class="tab-item hide" data-id="csss">
-          <p v-if="item">{{ item.description }}</p>
-        </div>
-        <div class="tab-item hide" data-id="js">
-          <li>
-            Samsung UE43CU8072U - 43" Diagonal Class CU8000 Series LED-backlit
-            LCD TV
-          </li>
-          <li>Flat 2.16 m (85") LCD</li>
-          <li>
-            Crystal UHD - Smart TV - Tizen OS - 4K UHD (2160p) 3840 x 2160 - HDR
-            - black
-          </li>
-          <li>DVB-S2, DVB-T2, ISDB-C</li>
-          <li>Smart TV Internet TV</li>
-          <li>Wi-Fi Ethernet LAN Bluetooth</li>
-          <li>High Dynamic Range (HDR) supported</li>
-          <li>G 168 kWh 168 W</li>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <script>
 import $ from 'jquery'
+import NavBar from '../components/MyNavbar.vue'
 
 export default {
-  props: ['cart', 'total', 'user'],
+  components: {
+    NavBar
+  },
+  props: ['product', 'cart', 'total', 'user', 'avatar'],
   emits: ['addToCart'],
   data() {
     return {
@@ -546,7 +567,7 @@ export default {
 </script>
 <style scoped>
 .pagination {
-  margin-top: 30% !important;
+  margin-top: 0.5% !important;
 }
 
 .pagination .page-item {
@@ -620,18 +641,19 @@ ul {
   }
 }
 section {
-  padding: 64px 0 !important;
+  padding: 10px 0 !important;
 }
 header {
-  margin: 32px 0 !important;
+  margin: 12px 0 !important;
 }
 .hide {
   display: none !important;
 }
 
 .tab-nav {
-  max-width: 300px !important;
+  max-width: 1% !important;
   margin: 0 auto !important;
+  margin-top: 30% !important;
   border: 1px solid gainsboro !important;
 }
 .tab-nav button {
@@ -657,35 +679,16 @@ header {
   }
 }
 
+.cardgroup1 {
+  margin-top: 10px !important;
+  margin-right: 10% !important;
+}
 .tab-content {
   padding: 32px !important;
-  margin-top: 3px !important;
+  margin-top: 10px !important;
   border: 1px solid var(--color-primary) !important;
 }
-.mobile-select {
-  position: relative !important;
-  max-width: 300px !important;
-  margin: 0 auto !important;
-  padding: 12px 16px !important;
-  padding-right: 48px !important;
-  cursor: pointer !important;
-}
-.mobile-select::after {
-  content: '\f282';
-  font-family: bootstrap-icons !important;
-  display: inline-block !important;
-  position: absolute !important;
-  line-height: 1 !important;
-  right: 16px !important;
-  top: 14px !important;
-}
-.mobile-select.active::after {
-  transform: rotate(180deg) !important;
-}
 @media (min-width: 992px) {
-  .mobile-select {
-    display: none !important;
-  }
   .tab-nav ul {
     display: flex !important;
   }
@@ -706,7 +709,7 @@ header {
   margin-right: 2% !important;
 }
 .card-wrapper {
-  margin-top: 5% !important;
+  margin-top: 5px !important;
   margin-bottom: 1% !important;
   width: 100% !important;
   height: 75vh !important;
@@ -719,14 +722,14 @@ img {
 }
 .img-display {
   overflow: hidden !important;
-  max-height: 75vh !important;
+  max-height: 65vh !important;
 }
 .img-showcase {
   display: flex !important;
-  width: 100% !important;
+  width: 40vh !important;
   transition: all 0.5s ease !important;
   padding: 5px !important;
-  max-height: 75vh !important;
+  max-height: 65vh !important;
 }
 .img-showcase img {
   min-width: 100% !important;
@@ -886,7 +889,7 @@ img {
   }
   .card-wrapper {
     margin-top: 2% !important;
-    margin-bottom: 5% !important;
+    margin-bottom: 3% !important;
     height: 50vh !important;
     width: 100% !important;
     display: flex !important;
@@ -901,6 +904,12 @@ img {
   .product-content {
     margin-top: 50px !important;
     padding-top: 0 !important;
+  }
+  .fa-star.unchecked {
+    color: rgb(203, 197, 197) !important;
+  }
+  .fa-star.checked {
+    color: orange !important;
   }
 }
 </style>

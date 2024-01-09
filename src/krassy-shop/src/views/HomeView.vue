@@ -56,200 +56,194 @@
     <div class="product-container">
       <div class="filter-products-container row col-2">
         <div class="filter-card">
-          <article class="filter-group">
-            <div class="filter-content collapse show" id="collapse_2">
-              <label
-                style="
-                  font-size: 1rem;
-                  display: block;
-                  margin-bottom: 10px;
-                  font-weight: 400;
-                "
-                >Categories
-              </label>
-              <div class="card-body">
-                <div
-                  class="container"
-                  v-for="category in categories"
-                  :key="category[2]"
-                  :class="{ active: category[1] !== 0 }"
-                >
-                  <label style="font-size: 1rem">
-                    <input
-                      style="font-size: 1rem; margin-bottom: 2px"
-                      type="checkbox"
-                      class="cat-checkbox"
-                      :data-category="category[2]"
-                      :disabled="category[1] === 0"
-                      @change="handleCategoryChange"
-                    />
-                    {{ category[0] }}
-                  </label>
-                  <span class="text-muted" style="font-size: 0.9rem">
-                    ({{ category[1] }})
-                  </span>
-                </div>
+          <div class="filter-content collapse show" id="collapse_2">
+            <label
+              style="
+                font-size: 1rem;
+                display: block;
+                margin-bottom: 10px;
+                font-weight: 400;
+              "
+              >Categories
+            </label>
+            <div class="card-body">
+              <div
+                class="container"
+                v-for="category in categories"
+                :key="category[2]"
+                :class="{ active: category[1] !== 0 }"
+              >
+                <label style="font-size: 1rem">
+                  <input
+                    style="font-size: 1rem; margin-bottom: 2px"
+                    type="checkbox"
+                    class="cat-checkbox"
+                    :data-category="category[2]"
+                    :disabled="category[1] === 0"
+                    @change="handleCategoryChange"
+                  />
+                  {{ category[0] }}
+                </label>
+                <span class="text-muted" style="font-size: 0.9rem">
+                  ({{ category[1] }})
+                </span>
               </div>
             </div>
-          </article>
+          </div>
         </div>
         <div class="filter-card">
-          <article class="filter-group">
-            <div class="card-body">
-              <label style="font-size: 1rem; display: block; margin-bottom: 5px"
-                >Price</label
-              >
-              <div class="price-input row">
-                <div class="form-group col-md-6">
-                  <label for="minPrice" style="font-size: 0.9rem"
-                    >Min Price</label
-                  >
-                  <input
-                    v-model.number="min"
-                    type="text"
-                    class="min-input form-control"
-                    id="minPrice"
-                    @input="updateRange"
-                    :min="productMin"
-                    :max="productMax"
-                    pattern="[1-9][0-9]*"
-                    required
-                  />
-                </div>
-                <div class="form-group col-md-6">
-                  <label for="maxPrice" style="font-size: 0.9rem"
-                    >Max Price</label
-                  >
-                  <input
-                    v-model.number="max"
-                    type="text"
-                    class="max-input form-control"
-                    id="maxPrice"
-                    @input="updateRange"
-                    pattern="[1-9][0-9]*"
-                    :min="productMin"
-                    :max="productMax"
-                    required
-                  />
-                </div>
+          <div class="card-body">
+            <label style="font-size: 1rem; display: block; margin-bottom: 5px"
+              >Price</label
+            >
+            <div class="price-input row">
+              <div class="form-group col-md-6">
+                <label for="minPrice" style="font-size: 0.9rem"
+                  >Min Price</label
+                >
+                <input
+                  v-model.number="min"
+                  type="text"
+                  class="min-input form-control"
+                  id="minPrice"
+                  @input="updateRange"
+                  :min="productMin"
+                  :max="productMax"
+                  pattern="[1-9][0-9]*"
+                  required
+                />
               </div>
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="slider-container">
-                    <div
-                      class="price-slider"
-                      :style="{
-                        left: `${(min / productMax) * 100}%`,
-                        right: `${100 - (max / productMax) * 100}%`
-                      }"
-                    ></div>
-                  </div>
+              <div class="form-group col-md-6">
+                <label for="maxPrice" style="font-size: 0.9rem"
+                  >Max Price</label
+                >
+                <input
+                  v-model.number="max"
+                  type="text"
+                  class="max-input form-control"
+                  id="maxPrice"
+                  @input="updateRange"
+                  pattern="[1-9][0-9]*"
+                  :min="productMin"
+                  :max="productMax"
+                  required
+                />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="slider-container">
+                  <div
+                    class="price-slider"
+                    :style="{
+                      left: `${(min / productMax) * 100}%`,
+                      right: `${100 - (max / productMax) * 100}%`
+                    }"
+                  ></div>
                 </div>
               </div>
             </div>
-            <!-- Slider -->
-            <div class="range-input">
-              <input
-                type="range"
-                class="min-range"
-                :min="productMin"
-                :max="productMax"
-                :value="min"
-                step="1"
-                @input="updateInputs"
-              />
-              <input
-                type="range"
-                class="max-range"
-                :min="productMin"
-                :max="productMax"
-                :value="max"
-                step="1"
-                @input="updateInputs"
-              />
-            </div>
-            <div style="padding-top: 11%; padding-bottom: 1%">
-              <button
-                type="button"
-                class="custom-button"
-                @click="toggleSortOrder"
-                style="align-items: center"
-              >
-                Sort Price
-                <span
-                  v-if="sortOrder === 'asc'"
-                  class="bi bi-sort-up-alt"
-                  style="font-size: 1rem"
-                ></span>
-                <span
-                  v-else
-                  class="bi bi-sort-down"
-                  style="font-size: 1rem"
-                ></span>
-              </button>
-            </div>
-          </article>
+          </div>
+          <!-- Slider -->
+          <div class="range-input">
+            <input
+              type="range"
+              class="min-range"
+              :min="productMin"
+              :max="productMax"
+              :value="min"
+              step="1"
+              @input="updateInputs"
+            />
+            <input
+              type="range"
+              class="max-range"
+              :min="productMin"
+              :max="productMax"
+              :value="max"
+              step="1"
+              @input="updateInputs"
+            />
+          </div>
+          <div style="padding-top: 11%; padding-bottom: 1%">
+            <button
+              type="button"
+              class="custom-button"
+              @click="toggleSortOrder"
+              style="align-items: center"
+            >
+              Sort Price
+              <span
+                v-if="sortOrder === 'asc'"
+                class="bi bi-sort-up-alt"
+                style="font-size: 1rem"
+              ></span>
+              <span
+                v-else
+                class="bi bi-sort-down"
+                style="font-size: 1rem"
+              ></span>
+            </button>
+          </div>
         </div>
         <div
           class="filter-card"
           style="height: 45px; align-items: center; text-align: left"
         >
-          <article class="filter-group">
-            <div class="filter-content collapse show" id="collapse_3">
-              <div
-                class="form-check form-check-inline"
-                style="display: flex; align-items: center"
+          <div class="filter-content collapse show" id="collapse_3">
+            <div
+              class="form-check form-check-inline"
+              style="display: flex; align-items: center"
+            >
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="discountCheckbox"
+                v-model="isDiscountedChecked"
+                style="margin-top: 0; margin-bottom: 0"
+              />
+              <label style="font-size: 1rem; margin-top: 0; margin-bottom: 0"
+                >Discount > 10%</label
               >
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  id="discountCheckbox"
-                  v-model="isDiscountedChecked"
-                  style="margin-top: 0; margin-bottom: 0"
-                />
-                <label style="font-size: 1rem; margin-top: 0; margin-bottom: 0"
-                  >Discount > 10%</label
-                >
-              </div>
             </div>
-          </article>
+          </div>
         </div>
         <div class="filter-card">
-          <article class="filter-group">
-            <div class="filter-content collapse show" id="collapse_3">
-              <label style="font-size: 1rem">Overall Rating</label>
-              <div
-                class="form-check form-check-inline"
-                v-for="rating in ratings.slice().reverse()"
-                :key="rating"
-              >
-                <input
+          <div class="filter-content collapse show" id="collapse_4">
+            <label style="font-size: 1rem">Overall Rating</label>
+            <div
+              class="form-check form-check-inline"
+              v-for="rating in ratings.slice().reverse()"
+              :key="rating"
+              style="display: flex; align-items: center; font-size: 1rem"
+            >
+              <input
+                style="font-size: 1rem; margin-top: 7px"
+                class="form-check-input"
+                type="checkbox"
+                :id="'rating' + rating"
+                :value="rating"
+                v-model="selectedRating"
+              />
+              <label class="form-check-label" :for="'rating' + rating">
+                <span
+                  v-for="i in 5"
+                  :key="i"
+                  class="fa"
+                  :class="{
+                    'fa-star checked': i <= rating,
+                    'fa-star unchecked': i > rating
+                  }"
                   style="font-size: 1rem; margin-top: 7px"
-                  class="form-check-input"
-                  type="checkbox"
-                  :id="'rating' + rating"
-                  :value="rating"
-                  v-model="selectedRating"
-                />
-                <label class="form-check-label" :for="'rating' + rating">
-                  <span
-                    v-for="i in 5"
-                    :key="i"
-                    class="fa"
-                    :class="{
-                      'fa-star checked': i <= rating,
-                      'fa-star unchecked': i > rating
-                    }"
-                    style="font-size: 1rem; margin-top: 7px"
-                  >
-                  </span>
-                  <span style="font-size: 0.9rem"
-                    >( {{ getRatingItemCount(rating) }})
-                  </span>
-                </label>
-              </div>
+                >
+                </span>
+                <!-- prettier-ignore -->
+                <span style="font-size: 0.9rem"
+                  >&nbsp;({{ getRatingItemCount(rating) }})
+                </span>
+              </label>
             </div>
-          </article>
+          </div>
         </div>
       </div>
       <div class="product-list" id="mycard">
@@ -348,10 +342,6 @@ export default {
     }
   },
   methods: {
-    getCookie() {
-      const access_token = this.$cookies.get('access_token')
-      console.log('access_token from HomeVue methods', access_token)
-    },
     async getProduct(itemId) {
       try {
         const res = await fetch(

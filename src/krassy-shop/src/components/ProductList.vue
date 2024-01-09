@@ -81,24 +81,12 @@
           margin-top: 1.5%;
         "
       >
-        Price: ${{ discountedPrice }}
-        <span
-          v-if="!Number.isInteger(product.price)"
-          style="font-size: 0.7em; vertical-align: top; color: #dc3545"
-        >
+        Price: ${{ formatPrice(discountedPrice) }}
+        <span v-if="!Number.isInteger(product.price)" class="decimal-part">
           {{ product.price.toString().split('.')[1] }}
         </span>
       </span>
-      <span
-        v-if="product.discount >= 0.1"
-        style="
-          font-size: 0.8em;
-          text-decoration: line-through;
-          color: #404447;
-          margin-top: 1%;
-          margin-bottom: 2%;
-        "
-      >
+      <span v-if="product.discount >= 0.1" class="old-price">
         Old Price: ${{ Math.floor(product.price) }}
       </span>
       <div v-else style="font-size: 0.9em; margin-top: 1%">&nbsp;</div>
@@ -131,9 +119,13 @@ export default {
     }
   },
   methods: {
+    formatPrice(price) {
+      const numericPrice = parseFloat(price)
+      return Number.isInteger(numericPrice)
+        ? numericPrice
+        : numericPrice.toFixed(2)
+    },
     redirectToItemFromProduct(itemId) {
-      console.log('redirectToItemFromProduct(itemId)', itemId)
-      // this.$root.redirectToItem(itemId)
       this.$emit('redirectToItem', itemId)
     },
     itemAlreadyInCart(product) {
