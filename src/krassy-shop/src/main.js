@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import store from '@/store/index.js'
 import App from './App.vue'
 import VueCookies from 'vue-cookies'
 import $ from 'jquery'
@@ -25,6 +26,7 @@ const app = createApp(App)
 
 app
   .use(router)
+  .use(store)
   .use(VueCookies)
   .use(BootstrapVue3)
   .component('font-awesome-icon', FontAwesomeIcon)

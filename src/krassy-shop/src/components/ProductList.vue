@@ -107,6 +107,9 @@ export default {
   props: ['product', 'min', 'max', 'cart'],
   emits: ['addToCart', 'redirectToItem'],
   computed: {
+    filteredProducts() {
+      return this.$store.state.filteredProducts
+    },
     discountedPrice() {
       if (this.product.discount) {
         return (
@@ -119,6 +122,9 @@ export default {
     }
   },
   methods: {
+    async updateFilters() {
+      await this.$store.dispatch('filterProducts')
+    },
     formatPrice(price) {
       const numericPrice = parseFloat(price)
       return Number.isInteger(numericPrice)
@@ -126,13 +132,13 @@ export default {
         : numericPrice.toFixed(2)
     },
     redirectToItemFromProduct(itemId) {
-      this.$emit('redirectToItem', itemId)
+      this.$store.dispatch('redirectToItem', itemId)
     },
     itemAlreadyInCart(product) {
-      return this.cart.some(item => item.id === product.id)
+      return this.$store.getters.isItemInCart(product.id)
     },
     addToCart(product) {
-      this.$emit('addToCart', product)
+      this.$store.dispatch('addToCart', product)
     },
     getStarClasses(index, rating) {
       const filledStars = Math.floor(rating)

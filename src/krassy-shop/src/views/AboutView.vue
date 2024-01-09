@@ -48,6 +48,7 @@
                         type="submit"
                         class="btn btn-primary"
                         style="margin: 2px"
+                        @click="getToken"
                       >
                         Login
                       </button>
@@ -81,7 +82,6 @@
 </template>
 
 <script>
-import VueCookies from 'vue-cookies'
 export default {
   data() {
     return {
@@ -90,34 +90,11 @@ export default {
     }
   },
   methods: {
-    getToken() {
-      const formData = new URLSearchParams()
-      formData.append('grant_type', '')
-      formData.append('username', this.username)
-      formData.append('password', this.password)
-      formData.append('scope', '')
-      formData.append('client_id', '')
-      formData.append('client_secret', '')
-
-      fetch('http://127.0.0.1:8000/api/token', {
-        method: 'POST',
-        body: formData
+    async getToken() {
+      this.$store.dispatch('login', {
+        username: this.username,
+        password: this.password
       })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`)
-          }
-          return response.json()
-        })
-        .then(data => {
-          console.log('token', data)
-          this.accessToken = data.access_token
-          VueCookies.set('access_token', this.accessToken, '12h')
-          this.$router.push('/')
-        })
-        .catch(error => {
-          console.error('error', error)
-        })
     }
   }
 }

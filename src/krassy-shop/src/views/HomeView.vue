@@ -209,11 +209,15 @@
           </div>
         </div>
         <div class="filter-card">
-          <div class="filter-content collapse show" id="collapse_4">
+          <div
+            class="filter-content collapse show"
+            id="collapse_4"
+            v-if="ratings && ratings.length"
+          >
             <label style="font-size: 1rem">Overall Rating</label>
             <div
               class="form-check form-check-inline"
-              v-for="rating in ratings.slice().reverse()"
+              v-for="rating in ratings"
               :key="rating"
               style="display: flex; align-items: center; font-size: 1rem"
             >
@@ -239,8 +243,8 @@
                 </span>
                 <!-- prettier-ignore -->
                 <span style="font-size: 0.9rem"
-                  >&nbsp;({{ getRatingItemCount(rating) }})
-                </span>
+                >&nbsp;({{ getRatingItemCount(rating) }})
+              </span>
               </label>
             </div>
           </div>
@@ -271,285 +275,108 @@
 
 <script>
 // import $ from 'jquery'
-import { ref } from 'vue'
 import 'bootstrap'
-import VueCookies from 'vue-cookies'
+// import VueCookies from 'vue-cookies'
 import ProductList from '@/components/ProductList.vue'
-import MyNavbar from '@/components/MyNavbar.vue'
-
-/* global bootstrap */
 
 export default {
   name: 'HomeView',
-  data() {
-    return {
-      min: ref(1),
-      max: ref(10000),
-      products: ref([]),
-      isDiscountedChecked: ref(false),
-      categories: ref([]),
-      cart: ref([]),
-      sortOrder: ref('asc'),
-      selectedCategories: ref([]),
-      selectedRating: ref([]),
-      ratings: ref([1, 2, 3, 4, 5]),
-      user: ref([]),
-      accessToken: VueCookies.get('access_token') || '',
-      user_id: ref(null),
-      productMin: ref(0),
-      productMax: ref(10000)
-    }
-  },
   components: {
-    MyNavbar,
     ProductList
   },
-  async created() {
-    await this.getProducts()
-    await this.readFromCartVue()
-    await this.fetchCategories()
-    this.products.forEach(product => {
-      this.getItemRating(product.id)
-      this.updateRange()
+  created() {
+    this.$store.dispatch('getProducts')
+    this.$store.dispatch('readFromCartVue')
+    this.$store.dispatch('fetchCategories').then(() => {
+      this.$store.state.products.forEach(product => {
+        this.$store.dispatch('getItemRating', product.id)
+        this.$store.dispatch('updateRange')
+      })
     })
   },
   computed: {
     total() {
-      const sum = this.cart.reduce(
-        (total, item) => total + Number(item.price),
-        0
-      )
-      return sum.toFixed(2)
+      return this.$store.getters.total
     },
     filteredProducts() {
-      return this.products.filter(item => {
-        const priceCondition = item.price >= this.min && item.price <= this.max
-        const categoryCondition =
-          this.selectedCategories.length === 0 ||
-          this.selectedCategories.includes(String(item.category_id))
-        const ratingCondition =
-          this.selectedRating.length === 0 ||
-          this.selectedRating.includes(Math.ceil(item.rating_float))
-        const discountCondition =
-          !this.isDiscountedChecked || item.discount != null
-        return (
-          priceCondition &&
-          categoryCondition &&
-          ratingCondition &&
-          discountCondition
-        )
-      })
+      return this.$store.getters.filteredProducts
+    },
+    cart() {
+      return this.$store.getters.cart
+    },
+    min() {
+      return this.$store.getters.min
+    },
+    max() {
+      return this.$store.getters.max
+    },
+    productMin() {
+      return this.$store.getters.productMin
+    },
+    productMax() {
+      return this.$store.getters.productMax
+    },
+    selectedCategories() {
+      return this.$store.getters.selectedCategories
+    },
+    selectedRating() {
+      return this.$store.getters.selectedRating
+    },
+    ratings() {
+      return this.$store.getters.ratings
+    },
+    user() {
+      return this.$store.getters.user
+    },
+    accessToken() {
+      return this.$store.getters.accessToken
+    },
+    userId() {
+      return this.$store.getters.userId
+    },
+    isDiscountedChecked() {
+      return this.$store.getters.isDiscountedChecked
     }
   },
   methods: {
     async getProduct(itemId) {
-      try {
-        const res = await fetch(
-          `http://127.0.0.1:8000/api/items/item/${itemId}`
-        )
-        const item = await res.json()
-        this.item = item
-      } catch (error) {
-        console.error('Error fetching product:', error)
-      }
+      this.$store.dispatch('getProduct', itemId)
     },
     async getProducts() {
-      try {
-        const res = await fetch('http://127.0.0.1:8000/api/items')
-        const products = await res.json()
-        this.products = products
-        const maxPrice = Math.max(
-          ...this.products.map(product => product.price)
-        )
-        const minPrice = Math.min(
-          ...this.products.map(product => product.price)
-        )
-        this.max = maxPrice
-        this.min = minPrice
-      } catch (error) {
-        console.error('Error fetching products:', error)
-      }
+      this.$store.dispatch('getProducts')
     },
     async fetchCategories() {
-      try {
-        const res = await fetch(
-          'http://127.0.0.1:8000/api/categories/category_items_len/'
-        )
-        this.categories = await res.json()
-      } catch (error) {
-        console.error('Error fetching categories:', error)
-      }
+      this.$store.dispatch('fetchCategories')
     },
     async getItemRating(itemId) {
-      try {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/reviews/item/rating?id=${itemId}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }
-        )
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`)
-        }
-        const data = await response.json()
-        const product = this.products.find(p => p.id === itemId)
-        if (product) {
-          product.rating = data.rating
-          product.reviewNumber = data.review_number
-          product.rating_float = parseFloat(data.rating_float).toFixed(2)
-        }
-      } catch (error) {
-        console.log(error)
-      }
+      this.$store.dispatch('getItemRating', itemId)
     },
     handleCategoryChange() {
-      this.selectedCategories = this.getSelectedCategories()
+      this.$store.dispatch('handleCategoryChange')
     },
     getSelectedCategories() {
-      var selectedCategories = []
-      var checkboxes = document.querySelectorAll('.cat-checkbox:checked')
-      checkboxes.forEach(checkbox => {
-        var categoryId = checkbox.getAttribute('data-category')
-        selectedCategories.push(categoryId)
-      })
-      return selectedCategories
+      this.$store.dispatch('getSelectedCategories')
     },
     toggleSortOrder() {
-      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc'
-      this.sortProducts()
-    },
-    sortProducts() {
-      if (this.sortOrder === 'asc') {
-        this.products.sort((a, b) => a.price - b.price)
-      } else {
-        this.products.sort((a, b) => b.price - a.price)
-      }
+      this.$store.dispatch('toggleSortOrder')
     },
     async readFromCartVue() {
-      try {
-        const headers = new Headers({
-          Authorization: `Bearer ${this.accessToken}`,
-          Accept: 'application/json'
-        })
-
-        const requestOptions = {
-          method: 'GET',
-          headers: headers,
-          redirect: 'follow'
-        }
-        const response = await fetch(
-          'http://127.0.0.1:8000/api/items/user-items-in-cart',
-          requestOptions
-        )
-        if (!response.ok) {
-          console.log('readFromCartVue error')
-          throw new Error(`HTTP error! Status: ${response.status}`)
-        }
-        const data = await response.json()
-
-        this.cart = data.items
-        this.user = data.user
-        this.user_id = data.user_id
-      } catch (error) {
-        console.error('error', error)
-      }
-    },
-    async getProfile() {
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/profile/${this.user_id}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      )
-      if (!response.ok) {
-        console.log(response.error)
-      } else {
-        const data = await response.json()
-        console.log('response', response)
-        this.profile = `http://127.0.0.1:8000/static/img/${this.user}/profile/${data.avatar}`
-      }
+      this.$store.dispatch('readFromCartVue')
     },
     redirectToItem(itemId) {
-      console.log('redirectToItem in HomeVue', itemId)
-      this.$router.push({ name: 'Item', params: { itemId } })
-      // var currentPath = window.location.pathname
-      // var regex = /\/items\/(.*)/
-      // var match = regex.exec(currentPath)
-      // if (!match) {
-      //   window.location.href = 'items/' + itemId
-      // }
+      this.$store.dispatch('redirectToItem', itemId)
     },
-    // redirectToCart(itemId) {
-    //   window.location.href = '/items-in-cart/'
-    // },
     handleRatingChange(rating) {
-      const index = this.selectedRating.indexOf(rating)
-      if (index === -1) {
-        this.selectedRating.push(rating)
-      } else {
-        this.selectedRating.splice(index, 1)
-      }
+      this.$store.dispatch('handleRatingChange', rating)
     },
     getRatingItemCount(rating) {
-      const items = this.filteredProducts
-      return items.filter(item => Math.ceil(item.rating_float) === rating)
-        .length
+      this.$store.dispatch('getRatingItemCount', rating)
     },
     updateRange() {
-      const productMinPrice = Math.min(
-        ...this.products.map(product => product.price)
-      )
-      const productMaxPrice = Math.max(
-        ...this.products.map(product => product.price)
-      )
-
-      if (this.min > this.max || this.min === '' || isNaN(this.min)) {
-        this.min = productMinPrice
-      }
-      if (
-        this.max < this.min ||
-        this.max === '' ||
-        isNaN(this.max) ||
-        this.max > productMaxPrice
-      ) {
-        this.max = productMaxPrice
-      }
-      const rangeInput = document.querySelector('.min-range')
-      if (rangeInput) {
-        rangeInput.value = this.min
-      }
-      const rangeInputMax = document.querySelector('.max-range')
-      if (rangeInputMax) {
-        rangeInputMax.value = this.max
-      }
+      this.$store.dispatch('updateRange')
     },
     updateInputs() {
-      let minVal = parseInt(document.querySelector('.min-range').value)
-      let maxVal = parseInt(document.querySelector('.max-range').value)
-      if (minVal >= maxVal) {
-        minVal = maxVal
-      }
-      if (maxVal <= minVal) {
-        maxVal = minVal
-      }
-      this.min = minVal
-      this.max = maxVal
-      const rangeInput = document.querySelector('.min-range')
-      const rangeInputMax = document.querySelector('.max-range')
-
-      if (rangeInput) {
-        rangeInput.value = this.min
-      }
-
-      if (rangeInputMax) {
-        rangeInputMax.value = this.max
-      }
+      this.$store.dispatch('updateInputs')
     },
     Search() {
       var input, filter, cards, cardContainer, title, i
@@ -570,85 +397,15 @@ export default {
       document.body.scrollIntoView({ behavior: 'smooth' })
     },
     addToCart(product) {
-      const headers = new Headers({
-        Authorization: `Bearer ${this.accessToken}`,
-        Accept: 'application/json'
-      })
-      const requestOptions = {
-        method: 'POST',
-        headers: headers,
-        redirect: 'follow',
-        body: JSON.stringify({
-          item_id: product.id
-        })
-      }
-      const itemInCart = this.cart.find(item => item.id === product.id)
-      const toastContent = itemInCart
-        ? `${product.name} is already in the cart`
-        : `${product.name} was added to the cart`
-
-      const toastElement = new bootstrap.Toast(
-        document.getElementById('cartToast'),
-        {
-          delay: 2000
-        }
-      )
-
-      const toastBodyElement = document.getElementById('cartToastBody')
-      toastBodyElement.innerText = toastContent
-
-      toastElement.show()
-      if (!itemInCart) {
-        fetch('http://127.0.0.1:8000/api/items/update-basket', requestOptions)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`)
-            }
-            return response.json()
-          })
-          .then(() => {
-            this.cart.push(product)
-          })
-          .catch(error => {
-            console.error('error', error)
-          })
-      }
+      this.$store.dispatch('addToCart', product)
     },
     removeFromCart(itemId) {
-      console.log('removeFromCart', this.accessToken)
-      const headers = new Headers({
-        Authorization: `Bearer ${this.accessToken}`,
-        Accept: 'application/json'
-      })
-      const requestOptions = {
-        method: 'POST',
-        headers: headers,
-        redirect: 'follow',
-        body: JSON.stringify({
-          item_id: itemId
-        })
+      this.$store.dispatch('removeFromCart', itemId)
+    },
+    filters: {
+      formatPrice(price) {
+        return Number.isInteger(price) ? price : price.toFixed(2)
       }
-      fetch('http://127.0.0.1:8000/user/remove-from-basket', requestOptions)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`)
-          }
-          return response.json()
-        })
-        .then(() => {
-          const index = this.cart.findIndex(item => item.id === itemId)
-          if (index !== -1) {
-            this.cart.splice(index, 1)
-          }
-        })
-        .catch(error => {
-          console.error('Error removing item from cart:', error)
-        })
-    }
-  },
-  filters: {
-    formatPrice(price) {
-      return Number.isInteger(price) ? price : price.toFixed(2)
     }
   }
 }

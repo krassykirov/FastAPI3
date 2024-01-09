@@ -152,7 +152,7 @@
 <script>
 // import ProductList from 'ProductList.vue'
 export default {
-  props: ['product', 'cart', 'total', 'user', 'avatar'],
+  props: ['cart', 'total', 'user', 'avatar'],
   emits: ['removeFromCart'],
   data() {
     return {
@@ -161,11 +161,11 @@ export default {
   },
   methods: {
     redirectToItemFromNavbar(itemId) {
-      this.$root.redirectToItem(itemId)
+      this.$store.dispatch('redirectToItem', itemId)
     },
     redirectToCart() {
-      window.location.href = `/items-in-cart`
-      this.$root.redirectToCart()
+      this.$router.push({ name: 'ItemsInCart' })
+      this.$store.dispatch('redirectToCart')
     },
     removeFromCart(itemId) {
       console.log('removeFromCart method triggered in Navbar', itemId)
