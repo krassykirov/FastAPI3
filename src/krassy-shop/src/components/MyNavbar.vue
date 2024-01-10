@@ -28,6 +28,19 @@
             >
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link mx-2 text-uppercase"
+            ><router-link
+              style="
+                text-decoration: none;
+                color: inherit;
+                font-family: inherit;
+              "
+              to="/signup"
+              >SignUp</router-link
+            >
+          </a>
+        </li>
       </ul>
       <div v-if="user === 'krassy@mail.bg'" d-flex bd-highlight mb-3>
         <button

@@ -134,7 +134,6 @@ export default createStore({
       formData.append('scope', '')
       formData.append('client_id', '')
       formData.append('client_secret', '')
-      console.log('login store running')
       try {
         const response = await fetch('http://127.0.0.1:8000/api/token', {
           method: 'POST',
