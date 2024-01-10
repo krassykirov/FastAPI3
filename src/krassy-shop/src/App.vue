@@ -7,7 +7,7 @@
 
 <script>
 // import MyNavbar from '@/components/MyNavbar.vue'
-// import AboutVue from './views/AboutView.vue'
+// import Login from './views/Login.vue'
 
 export default {
   components: {

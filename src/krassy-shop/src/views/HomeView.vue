@@ -106,10 +106,10 @@
                   type="text"
                   class="min-input form-control"
                   id="minPrice"
-                  @input="updateRange"
                   :min="productMin"
                   :max="productMax"
                   pattern="[1-9][0-9]*"
+                  disabled
                   required
                 />
               </div>
@@ -122,10 +122,10 @@
                   type="text"
                   class="max-input form-control"
                   id="maxPrice"
-                  @input="updateRange"
                   pattern="[1-9][0-9]*"
                   :min="productMin"
                   :max="productMax"
+                  disabled
                   required
                 />
               </div>
@@ -199,7 +199,8 @@
                 class="form-check-input"
                 type="checkbox"
                 id="discountCheckbox"
-                v-model="isDiscountedChecked"
+                v-model="isChecked"
+                @change="handleDiscountChange"
                 style="margin-top: 0; margin-bottom: 0"
               />
               <label style="font-size: 1rem; margin-top: 0; margin-bottom: 0"
@@ -217,7 +218,7 @@
             <label style="font-size: 1rem">Overall Rating</label>
             <div
               class="form-check form-check-inline"
-              v-for="rating in ratings"
+              v-for="rating in ratings.slice().reverse()"
               :key="rating"
               style="display: flex; align-items: center; font-size: 1rem"
             >
@@ -243,7 +244,7 @@
                 </span>
                 <!-- prettier-ignore -->
                 <span style="font-size: 0.9rem"
-                >&nbsp;({{ getRatingItemCount(rating) }})
+                >&nbsp;({{ getRatingItemCount(rating) || 0 }})
               </span>
               </label>
             </div>
@@ -278,21 +279,33 @@
 import 'bootstrap'
 // import VueCookies from 'vue-cookies'
 import ProductList from '@/components/ProductList.vue'
+import MyNavbar from '@/components/MyNavbar.vue'
 
 export default {
   name: 'HomeView',
   components: {
-    ProductList
+    ProductList,
+    MyNavbar
+  },
+  data() {
+    return {
+      isChecked: this.$store.state.isDiscountedChecked
+    }
   },
   created() {
-    this.$store.dispatch('getProducts')
-    this.$store.dispatch('readFromCartVue')
-    this.$store.dispatch('fetchCategories').then(() => {
-      this.$store.state.products.forEach(product => {
-        this.$store.dispatch('getItemRating', product.id)
-        this.$store.dispatch('updateRange')
+    this.$store
+      .dispatch('getProducts')
+      .then(() => this.$store.dispatch('readFromCartVue'))
+      .then(() => this.$store.dispatch('fetchCategories'))
+      .then(() => {
+        const fetchRatingsPromises = this.$store.state.products.map(product => {
+          return this.$store.dispatch('getItemRating', product.id)
+        })
+        return Promise.all(fetchRatingsPromises)
       })
-    })
+      .catch(error => {
+        console.error('Error during initialization:', error)
+      })
   },
   computed: {
     total() {
@@ -319,8 +332,13 @@ export default {
     selectedCategories() {
       return this.$store.getters.selectedCategories
     },
-    selectedRating() {
-      return this.$store.getters.selectedRating
+    selectedRating: {
+      get() {
+        return this.$store.getters.selectedRating
+      },
+      set(value) {
+        this.$store.commit('SET_SELECTED_RATING', value)
+      }
     },
     ratings() {
       return this.$store.getters.ratings
@@ -334,8 +352,11 @@ export default {
     userId() {
       return this.$store.getters.userId
     },
-    isDiscountedChecked() {
-      return this.$store.getters.isDiscountedChecked
+    categories() {
+      return this.$store.getters.categories
+    },
+    sortOrder() {
+      return this.$store.getters.sortOrder
     }
   },
   methods: {
@@ -351,8 +372,11 @@ export default {
     async getItemRating(itemId) {
       this.$store.dispatch('getItemRating', itemId)
     },
-    handleCategoryChange() {
-      this.$store.dispatch('handleCategoryChange')
+    async handleCategoryChange() {
+      const selectedCategories = await this.$store.dispatch(
+        'getSelectedCategories'
+      )
+      this.$store.commit('UPDATE_SELECTED_CATEGORIES', selectedCategories)
     },
     getSelectedCategories() {
       this.$store.dispatch('getSelectedCategories')
@@ -370,10 +394,12 @@ export default {
       this.$store.dispatch('handleRatingChange', rating)
     },
     getRatingItemCount(rating) {
-      this.$store.dispatch('getRatingItemCount', rating)
-    },
-    updateRange() {
-      this.$store.dispatch('updateRange')
+      const items = this.filteredProducts
+      const count = items.filter(item => {
+        const floatRating = parseFloat(item.rating_float)
+        return Math.floor(floatRating) === rating
+      }).length
+      return count
     },
     updateInputs() {
       this.$store.dispatch('updateInputs')
@@ -401,6 +427,10 @@ export default {
     },
     removeFromCart(itemId) {
       this.$store.dispatch('removeFromCart', itemId)
+    },
+    handleDiscountChange() {
+      this.isChecked = !this.isChecked
+      this.$store.dispatch('handleDiscountChange', this.isChecked)
     },
     filters: {
       formatPrice(price) {

@@ -1,5 +1,6 @@
 import { createStore } from 'vuex'
 import VueCookies from 'vue-cookies'
+import router from '@/router'
 /* global bootstrap */
 export default createStore({
   state: {
@@ -34,9 +35,6 @@ export default createStore({
         product.reviewNumber = ratingData.review_number
         product.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
       }
-    },
-    SET_RATING_ITEM_COUNT(state, { rating, count }) {
-      state.ratingItemCount = { ...state.ratingItemCount, [rating]: count }
     },
     UPDATE_SELECTED_CATEGORIES(state, selectedCategories) {
       state.selectedCategories = selectedCategories
@@ -95,6 +93,12 @@ export default createStore({
     },
     setAccessToken(state, accessToken) {
       state.accessToken = accessToken
+    },
+    SET_SELECTED_RATING(state, value) {
+      state.selectedRating = value
+    },
+    UPDATE_DISCOUNT_CHECKED(state, isChecked) {
+      state.isDiscountedChecked = isChecked
     }
   },
   actions: {
@@ -130,7 +134,7 @@ export default createStore({
       formData.append('scope', '')
       formData.append('client_id', '')
       formData.append('client_secret', '')
-
+      console.log('login store running')
       try {
         const response = await fetch('http://127.0.0.1:8000/api/token', {
           method: 'POST',
@@ -141,7 +145,9 @@ export default createStore({
           throw new Error(`HTTP error! Status: ${response.status}`)
         }
         const data = await response.json()
+        VueCookies.set('access_token', data.access_token, '12h')
         commit('setAccessToken', data.access_token)
+        router.push('/')
       } catch (error) {
         console.error('error', error)
       }
@@ -177,18 +183,20 @@ export default createStore({
         console.log(error)
       }
     },
-    handleCategoryChange({ commit, dispatch }) {
-      const selectedCategories = dispatch('getSelectedCategories')
+    async handleCategoryChange({ commit, dispatch }) {
+      const selectedCategories = await dispatch('getSelectedCategories')
       commit('UPDATE_SELECTED_CATEGORIES', selectedCategories)
     },
-    getSelectedCategories() {
-      var selectedCategories = []
-      var checkboxes = document.querySelectorAll('.cat-checkbox:checked')
-      checkboxes.forEach(checkbox => {
-        var categoryId = checkbox.getAttribute('data-category')
-        selectedCategories.push(categoryId)
+    async getSelectedCategories() {
+      return new Promise(resolve => {
+        var selectedCategories = []
+        var checkboxes = document.querySelectorAll('.cat-checkbox:checked')
+        checkboxes.forEach(checkbox => {
+          var categoryId = checkbox.getAttribute('data-category')
+          selectedCategories.push(categoryId)
+        })
+        resolve(selectedCategories)
       })
-      return selectedCategories
     },
     toggleSortOrder({ commit }) {
       commit('TOGGLE_SORT_ORDER')
@@ -224,7 +232,7 @@ export default createStore({
     },
     redirectToItem({ commit }, itemId) {
       commit('UPDATE_SELECTED_ITEM', itemId)
-      this.$router.push({ name: 'Item', params: { itemId } })
+      router.push({ name: 'Item', params: { itemId } })
     },
     handleRatingChange({ commit, state }, rating) {
       const index = state.selectedRating.indexOf(rating)
@@ -234,37 +242,10 @@ export default createStore({
         commit('REMOVE_RATING', index)
       }
     },
-    getRatingItemCount({ commit, state }, rating) {
-      const items = state.filteredProducts
-      const count = items.filter(
-        item => Math.ceil(item.rating_float) === rating
-      ).length
+    updateInputs({ commit }) {
+      let minVal = parseInt(document.querySelector('.min-range').value)
+      let maxVal = parseInt(document.querySelector('.max-range').value)
 
-      commit('SET_RATING_ITEM_COUNT', { rating, count })
-    },
-    updateRange({ commit, state }) {
-      const productMinPrice = Math.min(
-        ...state.products.map(product => product.price)
-      )
-      const productMaxPrice = Math.max(
-        ...state.products.map(product => product.price)
-      )
-      if (state.min > state.max || state.min === '' || isNaN(state.min)) {
-        commit('SET_MIN_PRICE', productMinPrice)
-      }
-      if (
-        state.max < state.min ||
-        state.max === '' ||
-        isNaN(state.max) ||
-        state.max > productMaxPrice
-      ) {
-        commit('SET_MAX_PRICE', productMaxPrice)
-      }
-      commit('SET_RANGE_INPUT', { min: state.min, max: state.max })
-    },
-    updateInputs({ commit, state }) {
-      let minVal = parseInt(state.rangeInput.min)
-      let maxVal = parseInt(state.rangeInput.max)
       if (minVal >= maxVal) {
         minVal = maxVal
       }
@@ -366,6 +347,9 @@ export default createStore({
         .catch(error => {
           console.error('Error removing item from cart:', error)
         })
+    },
+    handleDiscountChange({ commit }, isChecked) {
+      commit('UPDATE_DISCOUNT_CHECKED', isChecked)
     }
   },
   getters: {
@@ -398,7 +382,6 @@ export default createStore({
     min: state => state.min,
     max: state => state.max,
     products: state => state.products,
-    isDiscountedChecked: state => state.isDiscountedChecked,
     categories: state => state.categories,
     cart: state => state.cart,
     sortOrder: state => state.sortOrder,

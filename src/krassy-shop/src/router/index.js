@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import store from '@/store/index.js'
 
 const routes = [
   {
@@ -10,12 +11,13 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('../views/AboutView.vue')
+    component: () => import('../views/LoginVue.vue')
   },
   {
     path: '/item/:itemId',
     name: 'Item',
-    component: () => import('../views/MyItem.vue')
+    component: () => import('../views/MyItem.vue'),
+    props: route => ({ itemId: route.params.itemId, cart: store.state.cart })
   }
 ]
 
