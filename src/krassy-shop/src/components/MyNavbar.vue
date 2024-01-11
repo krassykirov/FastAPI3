@@ -127,7 +127,8 @@
             class="btn btn-sm btn-light"
             style="pointer-events: none; opacity: 1; margin-bottom: 1px"
           >
-            Total: {{ cart.length }} products - <b> ${{ total }} </b>
+            Total: {{ cart.length }} products -
+            <b> ${{ formatPrice(total) }} </b>
           </button>
           <button
             v-if="cart.length > 0"
@@ -315,6 +316,9 @@ export default {
     },
     logout() {
       this.$store.dispatch('removeAccessToken')
+    },
+    formatPrice(price) {
+      return Number.isInteger(price) ? price : price.toFixed(2)
     },
     hideCart() {
       setTimeout(() => {
