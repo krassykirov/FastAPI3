@@ -181,8 +181,7 @@ export default {
       this.$store.dispatch('redirectToCart')
     },
     removeFromCart(itemId) {
-      console.log('removeFromCart method triggered in Navbar', itemId)
-      this.$emit('removeFromCart', itemId)
+      this.$store.dispatch('removeFromCart', itemId)
     },
     hideCart() {
       setTimeout(() => {

@@ -14,22 +14,22 @@ const routes = [
     component: () => import('../views/LoginVue.vue')
   },
   {
-    path: '/itemnew/:itemId',
-    name: 'itemnew',
+    path: '/item/:itemId',
+    name: 'item',
     component: () => import('../views/MyItemNew.vue'),
-    props: () => ({ cart: store.state.cart })
+    props: route => ({ itemId: route.params.itemId, cart: store.state.cart })
   },
   {
     path: '/signup',
     name: 'signup',
     component: () => import('../views/SignUp.vue')
-  },
-  {
-    path: '/item/:itemId',
-    name: 'Item',
-    component: () => import('../views/MyItem.vue'),
-    props: route => ({ itemId: route.params.itemId, cart: store.state.cart })
   }
+  // {
+  //   path: '/item/:itemId',
+  //   name: 'Item',
+  //   component: () => import('../views/MyItem.vue'),
+  //   props: route => ({ itemId: route.params.itemId, cart: store.state.cart })
+  // }
 ]
 
 const router = createRouter({

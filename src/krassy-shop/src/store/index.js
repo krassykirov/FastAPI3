@@ -231,7 +231,7 @@ export default createStore({
     },
     redirectToItem({ commit }, itemId) {
       commit('UPDATE_SELECTED_ITEM', itemId)
-      router.push({ name: 'Item', params: { itemId } })
+      router.push({ name: 'item', params: { itemId } })
     },
     handleRatingChange({ commit, state }, rating) {
       const index = state.selectedRating.indexOf(rating)
