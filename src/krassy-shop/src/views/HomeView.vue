@@ -429,7 +429,6 @@ export default {
       this.$store.dispatch('removeFromCart', itemId)
     },
     handleDiscountChange() {
-      this.isChecked = !this.isChecked
       this.$store.dispatch('handleDiscountChange', this.isChecked)
     },
     filters: {
