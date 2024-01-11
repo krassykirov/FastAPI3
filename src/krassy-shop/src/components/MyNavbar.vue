@@ -15,7 +15,7 @@
         <li class="nav-item">
           <a class="nav-link mx-2 text-uppercase" href="/products">Offers</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" v-if="!accessToken">
           <a class="nav-link mx-2 text-uppercase"
             ><router-link
               style="
@@ -28,7 +28,7 @@
             >
           </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" v-if="!accessToken">
           <a class="nav-link mx-2 text-uppercase"
             ><router-link
               style="
@@ -54,7 +54,7 @@
         </button>
       </div>
       <div
-        v-if="cart"
+        v-if="cart && accessToken"
         @mouseleave="hideCart()"
         @mouseenter="showCart()"
         d-flex
@@ -149,7 +149,12 @@
       >
         <form class="form-inline my-2" style="margin-right: 80px">
           <div class="dropdown" style="font-family: Raleway; font-size: 16px">
-            <img :src="avatar" class="avatar" />
+            <img :src="avatar" class="avatar" v-if="!avatar" />
+            <img
+              src="http://127.0.0.1:8000/static/img/img_avatar.png"
+              class="avatar"
+              v-else
+            />
             <div class="dropdown-content" style="text-align: center">
               <a
                 class="nav-link text-uppercase"
@@ -159,8 +164,9 @@
               >
               <a
                 class="nav-link text-uppercase"
-                href="http://127.0.0.1:8000/logout"
                 style="width: 100%"
+                type="button"
+                @click="logout"
                 >Logout</a
               >
             </div>
@@ -168,17 +174,132 @@
         </form>
       </div>
     </div>
+    <div
+      class="modal fade"
+      id="addItem"
+      role="dialog"
+      aria-labelledby="addItemlLabel"
+      aria-hidden="true"
+      data-backdrop="false"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addItemLabel">Add Product</h5>
+          </div>
+          <div class="modal-body">
+            <form
+              enctype="multipart/form-data"
+              data-toggle="validator"
+              id="createItem"
+            >
+              <p id="error" style="text-align: left"></p>
+              <div class="form-group">
+                <label for="name" class="col-form-label">Name:</label>
+                <input
+                  type="text"
+                  name="name"
+                  id="item-name"
+                  placeholder="Item Name"
+                  maxlength="55"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="price" class="col-form-label">Price: </label>
+                <input
+                  type="number"
+                  step="any"
+                  name="price"
+                  id="item-price"
+                  placeholder="99.99"
+                  max="10000"
+                  min="1"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="discount" class="col-form-label">Discount: </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  name="discount"
+                  id="discount-price"
+                  placeholder="0.8"
+                  max="0.95"
+                  min="0.1"
+                />
+              </div>
+              <div class="form-group" form-group-file>
+                <label for="file" class="col-form-label">Upload Photo:</label>
+                <input
+                  type="file"
+                  id="file"
+                  name="file"
+                  class="form-control"
+                  data-filesize="1000000"
+                  data-filesize-error="File must be smaller then 1MB"
+                  accept="image/*"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="Category" class="col-form-label">Category:</label>
+                <select name="Category">
+                  <option value="Laptops">Laptops</option>
+                  <option value="Smartphones">Smartphones</option>
+                  <option value="Tablets">Tablets</option>
+                  <option value="Smartwatches">Smart Watches</option>
+                  <option value="TV">TV</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="Description" class="col-form-label"
+                  >Description:</label
+                >
+                <textarea
+                  name="Description"
+                  id="add-description"
+                  rows="4"
+                  cols="50"
+                  maxlength="250"
+                ></textarea>
+              </div>
+              <button
+                id="submit-button"
+                class="btn btn-primary"
+                @click="createItem"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-// import ProductList from 'ProductList.vue'
+import $ from 'jquery'
 export default {
   props: ['cart', 'total', 'user', 'avatar'],
-  emits: ['removeFromCart'],
+  emits: ['removeFromCart', 'removeAccessToken'],
   data() {
     return {
       displayCart: true
+    }
+  },
+  computed: {
+    accessToken() {
+      return this.$store.state.accessToken || null
     }
   },
   methods: {
@@ -192,6 +313,9 @@ export default {
     removeFromCart(itemId) {
       this.$store.dispatch('removeFromCart', itemId)
     },
+    logout() {
+      this.$store.dispatch('removeAccessToken')
+    },
     hideCart() {
       setTimeout(() => {
         this.displayCart = true
@@ -199,6 +323,32 @@ export default {
     },
     showCart() {
       this.displayCart = false
+    },
+    createItem() {
+      $('#createItem').submit(e => {
+        console.log('#createItem...', this.$store.state.accessToken)
+        e.preventDefault()
+        const formData = new FormData(e.target)
+        $.ajax({
+          url: 'http://127.0.0.1:8000/products/create_item',
+          type: 'POST',
+          processData: false,
+          contentType: false,
+          headers: {
+            Authorization: `Bearer ${this.$store.state.accessToken}`
+          },
+          data: formData,
+          success: function () {
+            console.log('success')
+            window.location.href = '/products'
+          },
+          error: function (xhr) {
+            if (xhr.status === 403) {
+              $('#error').text('Item with that name already exists!')
+            }
+          }
+        })
+      })
     }
   }
 }

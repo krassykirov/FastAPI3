@@ -85,6 +85,7 @@ def get_products(request: Request, db: Session = Depends(get_session), user: Use
 async def create_item(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
         """ Create an Item """
         form_data = await request.form()
+        print('form_data', form_data)
         file = form_data['file']
         filename = form_data['file'].filename
         item_name =form_data['name']
@@ -112,9 +113,10 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
             db.refresh(item)
         except:
             db.rollback()
-        redirect_url = request.url_for('get_products')
-        response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
-        return response
+        return True
+        # redirect_url = request.url_for('get_products')
+        # response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+        # return response
 
 @app.post("/delete_item/", include_in_schema=False)
 @app.post("/items/{id}", include_in_schema=False)

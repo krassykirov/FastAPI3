@@ -1,11 +1,6 @@
 {% extends "base_old.html" %}
 
 {% block html_read %}
-{% block javascript %}
-    <script type="text/javascript">
-        {% include "js/main.js" %}
-    </script>
-{% endblock %}
 {% block head %}
   <style>
   .card-img-top {
@@ -160,7 +155,7 @@
         </div>
         <br/>
         <div class="card-footer">
-          <small id="small" class="text-muted">Created at: <b>{{ item.date.strftime('%Y-%m-%d') }} </b> by <b> {{ item.username }}</b></small>
+          <small id="small" class="text-muted">Created at: <b>{{ item.date }} </b> by <b> {{ item.username }}</b></small>
         </div>
       </div>
   </div>

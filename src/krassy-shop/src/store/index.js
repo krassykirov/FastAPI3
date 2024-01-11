@@ -16,7 +16,7 @@ export default createStore({
     selectedRating: [],
     ratings: [1, 2, 3, 4, 5],
     user: null,
-    accessToken: VueCookies.get('access_token') || '',
+    accessToken: VueCookies.get('access_token') || null,
     user_id: null,
     productMin: 0,
     productMax: 10000
@@ -94,6 +94,9 @@ export default createStore({
     setAccessToken(state, accessToken) {
       state.accessToken = accessToken
     },
+    removeAccessToken(state) {
+      state.accessToken = null
+    },
     SET_SELECTED_RATING(state, value) {
       state.selectedRating = value
     },
@@ -151,6 +154,11 @@ export default createStore({
         console.error('error', error)
       }
     },
+    async removeAccessToken({ commit }) {
+      VueCookies.remove('access_token')
+      commit('removeAccessToken')
+      router.push('/login')
+    },
     async fetchCategories({ commit }) {
       try {
         const res = await fetch(
@@ -202,32 +210,27 @@ export default createStore({
       commit('SORT_PRODUCTS')
     },
     async readFromCartVue({ commit, state }) {
-      try {
-        const headers = new Headers({
-          Authorization: `Bearer ${state.accessToken}`,
-          Accept: 'application/json'
-        })
+      const headers = new Headers({
+        Authorization: `Bearer ${state.accessToken}`,
+        Accept: 'application/json'
+      })
 
-        const requestOptions = {
-          method: 'GET',
-          headers: headers,
-          redirect: 'follow'
-        }
-        const response = await fetch(
-          'http://127.0.0.1:8000/api/items/user-items-in-cart',
-          requestOptions
-        )
-        if (!response.ok) {
-          console.log('readFromCartVue error')
-          throw new Error(`HTTP error! Status: ${response.status}`)
-        }
-        const data = await response.json()
-        commit('UPDATE_CART', data.items)
-        commit('UPDATE_USER', data.user)
-        commit('UPDATE_USER_ID', data.user_id)
-      } catch (error) {
-        console.error('error', error)
+      const requestOptions = {
+        method: 'GET',
+        headers: headers,
+        redirect: 'follow'
       }
+      const response = await fetch(
+        'http://127.0.0.1:8000/api/items/user-items-in-cart',
+        requestOptions
+      )
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
+      }
+      const data = await response.json()
+      commit('UPDATE_CART', data.items)
+      commit('UPDATE_USER', data.user)
+      commit('UPDATE_USER_ID', data.user_id)
     },
     redirectToItem({ commit }, itemId) {
       commit('UPDATE_SELECTED_ITEM', itemId)
