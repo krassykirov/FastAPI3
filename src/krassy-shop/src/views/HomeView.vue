@@ -430,12 +430,12 @@ export default {
     },
     handleDiscountChange() {
       this.$store.dispatch('handleDiscountChange', this.isChecked)
-    },
-    filters: {
-      formatPrice(price) {
-        return Number.isInteger(price) ? price : price.toFixed(2)
-      }
     }
+    // filters: {
+    //   formatPrice(price) {
+    //     return Number.isInteger(price) ? price : price.toFixed(2)
+    //   }
+    // }
   }
 }
 </script>

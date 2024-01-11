@@ -71,7 +71,16 @@
           <i class="bi bi-cart" style="font-size: 1rem"></i> Cart
           <span class="badge badge-pill badge-primary"> {{ cart.length }}</span>
         </button>
-        <div v-if="!displayCart" class="list-group position-absolute">
+        <div
+          v-if="!displayCart"
+          class="list-group position-absolute"
+          style="
+            left: 60%;
+            transform: translateX(-40%);
+            z-index: 1000;
+            min-width: 200px;
+          "
+        >
           <div
             v-for="(item, index) in cart.slice(0, Math.min(7, cart.length))"
             :key="index"
