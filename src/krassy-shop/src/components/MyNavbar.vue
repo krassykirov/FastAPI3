@@ -75,7 +75,7 @@
           v-if="!displayCart"
           class="list-group position-absolute"
           style="
-            left: 60%;
+            left: 50%;
             transform: translateX(-40%);
             z-index: 1000;
             min-width: 200px;
