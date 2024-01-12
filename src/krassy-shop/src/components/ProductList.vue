@@ -81,7 +81,7 @@
           margin-top: 1.5%;
         "
       >
-        Price: ${{ formatPrice(discountedPrice) }}
+        Price: ${{ product.discount_price }}
         <span v-if="!Number.isInteger(product.price)" class="decimal-part">
           {{ product.price.toString().split('.')[1] }}
         </span>
@@ -124,12 +124,6 @@ export default {
   methods: {
     async updateFilters() {
       await this.$store.dispatch('filterProducts')
-    },
-    formatPrice(price) {
-      const numericPrice = parseFloat(price)
-      return Number.isInteger(numericPrice)
-        ? numericPrice
-        : numericPrice.toFixed(2)
     },
     redirectToItemFromProduct(itemId) {
       this.$store.dispatch('redirectToItem', itemId)

@@ -370,11 +370,9 @@ export default {
   computed: {
     discountedPrice() {
       if (this.item.discount) {
-        return (this.item.price - this.item.price * this.item.discount).toFixed(
-          2
-        )
+        return this.item.price - this.item.price * this.item.discount
       } else {
-        return (this.item.price * 1).toFixed(2)
+        return this.item.price * 1
       }
     },
     totalPages() {

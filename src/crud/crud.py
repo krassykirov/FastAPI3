@@ -18,7 +18,6 @@ class ItemActions:
     def get_items(self, db: Session, skip: int = 0, limit: int = 100, user=None):
         if user:
             items = db.query(Item).where(Item.username==user).order_by(Item.name).offset(skip).limit(limit).all()
-            print('user_items')
             return items
         items = db.query(Item).order_by(Item.name).offset(skip).limit(limit).all()
         return items

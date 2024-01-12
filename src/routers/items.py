@@ -18,17 +18,27 @@ items_router = APIRouter(prefix='/api/items', tags=["items"],
 @items_router.get("/item/{item_id}", status_code=status.HTTP_200_OK, response_model=src.schemas.ItemRead)
 def get_item_by_id( item_id: int, db: Session = Depends(get_session)) -> src.schemas.ItemRead:
     item = ItemActions().get_item_by_id(db=db, id=item_id)
+    item = jsonable_encoder(item)
     if item is None:
         raise HTTPException(status_code=404, detail=f"No item with id: {item_id} found")
+    item.update({'discount_price' : round((item.get('price')
+                                            - item.get('price') * item.get('discount')
+                                            if item.get('discount') else item.get('price')),2)})
+    print('item discount_price', item)
     return item
 
 @items_router.get("/", status_code=status.HTTP_200_OK, response_model=list[src.schemas.ItemRead])
 def get_items(skip: int = 0, limit: int = 100,
               db: Session = Depends(get_session), user=None) -> List[src.schemas.ItemRead]:
     items = ItemActions().get_items(db=db, skip=skip, limit=limit, user=user)
+    items = jsonable_encoder(items)
+    for item in items:
+        item.update({'discount_price' : round((item.get('price')
+                                             - item.get('price') * item.get('discount')
+                                               if item.get('discount') else item.get('price')),2)})
     if items is None:
         raise HTTPException(status_code=404, detail=f"No items found")
-    return jsonable_encoder(items)
+    return items
 
 @items_router.get("/by-category", status_code=status.HTTP_200_OK, response_model=list[src.schemas.ItemRead])
 async def get_items_by_category( request: Request, category_id: int, db: Session=Depends(get_session)):

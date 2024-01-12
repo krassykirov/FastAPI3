@@ -26,7 +26,7 @@ import src.schemas
 import os
 from os.path import abspath
 from src.my_logger import detailed_logger
-from fastapi.responses import FileResponse
+from decimal import Decimal
 
 PROJECT_ROOT = Path(__file__).parent.parent # /
 BASE_DIR = Path(__file__).resolve().parent # / src
@@ -89,7 +89,7 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         file = form_data['file']
         filename = form_data['file'].filename
         item_name =form_data['name']
-        price=form_data['price']
+        formated_price = Decimal("{:.2f}".format(float(form_data['price'])))
         category_select = form_data['Category']
         description = form_data['Description']
         discount = form_data['discount']
@@ -105,7 +105,7 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
                os.makedirs(path,exist_ok=True)
         with open(f"src/static/img/{user.username}/{item_name}/{filename}", 'wb') as f:
             f.write(content)
-            item = Item(name=item_name, price=price, image=filename, username=user.username,
+            item = Item(name=item_name, price=formated_price, image=filename, username=user.username,
                         category=category, discount=discount, description=description)
         try:
             db.add(item)

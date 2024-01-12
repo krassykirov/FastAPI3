@@ -61,7 +61,7 @@ class Item(SQLModel, table=True):
     name:         Optional[str] = Field(default=None, unique=True)
     product_code: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, nullable=False)
     date:         Optional[datetime.datetime] = Field(default=datetime.datetime.now().replace(microsecond=0), nullable=False)
-    price:        Optional[decimal.Decimal]
+    price:        Optional[decimal.Decimal] = Field(default=0, max_digits=6, decimal_places=2)
     image:        Optional[str] = Field(default="no-image.png")
     reviews:      Optional[List['Review']] = Relationship(sa_relationship_kwargs={"cascade": "delete"}, back_populates='item')
     category_id:  Optional[int] = Field(default=None, foreign_key="category.id")
