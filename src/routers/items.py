@@ -24,7 +24,6 @@ def get_item_by_id( item_id: int, db: Session = Depends(get_session)) -> src.sch
     item.update({'discount_price' : round((item.get('price')
                                             - item.get('price') * item.get('discount')
                                             if item.get('discount') else item.get('price')),2)})
-    print('item discount_price', item)
     return item
 
 @items_router.get("/", status_code=status.HTTP_200_OK, response_model=list[src.schemas.ItemRead])

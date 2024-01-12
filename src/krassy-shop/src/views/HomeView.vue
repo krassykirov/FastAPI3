@@ -172,7 +172,7 @@
               @click="toggleSortOrder"
               style="align-items: center"
             >
-              Sort Price
+              Sort by Price
               <span
                 v-if="sortOrder === 'asc'"
                 class="bi bi-sort-up-alt"
@@ -244,7 +244,7 @@
                 </span>
                 <!-- prettier-ignore -->
                 <span style="font-size: 0.9rem"
-                >&nbsp;({{ getRatingItemCount(rating) || 0 }})
+                >&nbsp;({{ getRatingItemCount(rating) }})
               </span>
               </label>
             </div>
@@ -394,11 +394,15 @@ export default {
       this.$store.dispatch('handleRatingChange', rating)
     },
     getRatingItemCount(rating) {
-      const items = this.filteredProducts
-      const count = items.filter(item => {
+      const items = this.$store.state.products // Assuming products are stored in the store
+      const count = items.reduce((accumulator, item) => {
         const floatRating = parseFloat(item.rating_float)
-        return Math.floor(floatRating) === rating
-      }).length
+        const roundedRating = Math.floor(floatRating + 0.5) // Round to the nearest integer
+        if (roundedRating === rating) {
+          return accumulator + 1
+        }
+        return accumulator
+      }, 0)
       return count
     },
     updateInputs() {
@@ -431,11 +435,6 @@ export default {
     handleDiscountChange() {
       this.$store.dispatch('handleDiscountChange', this.isChecked)
     }
-    // filters: {
-    //   formatPrice(price) {
-    //     return Number.isInteger(price) ? price : price.toFixed(2)
-    //   }
-    // }
   }
 }
 </script>

@@ -128,7 +128,7 @@
             style="pointer-events: none; opacity: 1; margin-bottom: 1px"
           >
             Total: {{ cart.length }} products -
-            <b> ${{ formatPrice(total) }} </b>
+            <b> ${{ total }} </b>
           </button>
           <button
             v-if="cart.length > 0"
@@ -291,7 +291,7 @@
 <script>
 import $ from 'jquery'
 export default {
-  props: ['cart', 'total', 'user', 'avatar'],
+  props: ['cart', 'user', 'avatar'],
   emits: ['removeFromCart', 'removeAccessToken'],
   data() {
     return {
@@ -301,6 +301,9 @@ export default {
   computed: {
     accessToken() {
       return this.$store.state.accessToken || null
+    },
+    total() {
+      return this.$store.getters.total
     }
   },
   methods: {
@@ -316,9 +319,6 @@ export default {
     },
     logout() {
       this.$store.dispatch('removeAccessToken')
-    },
-    formatPrice(price) {
-      return Number.isInteger(price) ? price : price.toFixed(2)
     },
     hideCart() {
       setTimeout(() => {

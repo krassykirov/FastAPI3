@@ -79,7 +79,7 @@ export default createStore({
       state.filteredProducts = filteredProducts
     },
     SET_TOTAL(state, total) {
-      state.total = total
+      state.total = total.toFixed()
     },
     TOGGLE_SORT_ORDER(state) {
       state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc'
@@ -370,7 +370,7 @@ export default createStore({
           state.selectedCategories.includes(String(item.category_id))
         const ratingCondition =
           state.selectedRating.length === 0 ||
-          state.selectedRating.includes(Math.ceil(item.rating_float))
+          state.selectedRating.includes(Math.round(item.rating_float))
         const discountCondition =
           !state.isDiscountedChecked || item.discount != null
         return (
