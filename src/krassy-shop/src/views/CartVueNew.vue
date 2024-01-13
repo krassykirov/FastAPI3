@@ -49,111 +49,105 @@
         style="font-weight: 900; font: 1.1em"
       ></div>
     </div>
-    <main class="main bd-grid">
-      <div
-        v-for="product in cart"
-        :key="product.id"
-        class="col-lg-4 col-md-6 col-sm-12"
-      >
-        <article class="card">
-          <div
-            class="card-title"
-            style="
-              margin-bottom: 1%;
-              padding: 1%;
-              height: 2em;
-              overflow: hidden;
-              display: -webkit-box;
-              -webkit-line-clamp: 3;
-              -webkit-box-orient: vertical;
-              line-height: 1;
+    <main class="main bd-grid" v-for="product in cart" :key="product.id">
+      <article class="card">
+        <div
+          class="card-title"
+          style="
+            margin-bottom: 1%;
+            padding: 1%;
+            height: 2.7em;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            line-height: 1;
+          "
+        >
+          {{ product.name }}
+        </div>
+        <div class="card__img">
+          <img
+            :src="
+              'http://127.0.0.1:8000/static/img/' +
+              product.username +
+              '/' +
+              product.name +
+              '/' +
+              product.image
             "
+            class="card-img-top"
+            style="cursor: pointer; padding: 1%"
+            @click="redirectToItemFromProduct(product.id)"
+          />
+        </div>
+        <div class="card__name">
+          <p>{{ product.name }}</p>
+        </div>
+        <div class="card-body">
+          <span
+            class="badge bg-danger position-absolute top-0 start-0"
+            v-if="product.discount >= 0.1"
+            style="font-size: 0.8em; margin: 1%; top: 0; start: 0"
+            >-{{ Math.floor(product.discount * 100) }}%
+          </span>
+          <p
+            v-if="product"
+            style="cursor: pointer"
+            @click="redirectToItemFromProduct(product.id)"
           >
-            {{ product.name }}
-          </div>
-          <div class="card__img">
-            <img
-              :src="
-                'http://127.0.0.1:8000/static/img/' +
-                product.username +
-                '/' +
-                product.name +
-                '/' +
-                product.image
-              "
-              class="card-img-top"
-              style="cursor: pointer; padding: 1%"
-              @click="redirectToItemFromProduct(product.id)"
-            />
-          </div>
-          <div class="card__name">
-            <p>{{ product.name }}</p>
-          </div>
-          <div class="card-body">
-            <span
-              class="badge bg-danger position-absolute top-0 start-0"
-              v-if="product.discount >= 0.1"
-              style="font-size: 0.8em; margin: 1%; top: 0; start: 0"
-              >-{{ Math.floor(product.discount * 100) }}%
+            <i>
+              <span
+                v-for="i in 5"
+                :key="i"
+                :class="getStarClasses(i, product.rating_float)"
+              ></span>
+              <span
+                :id="'overall-rating' + product.id + '-float'"
+                style="
+                  font-size: 0.9em;
+                  font-family: Raleway;
+                  margin-bottom: 2%;
+                "
+                >{{ product.rating_float }}</span
+              >
+            </i>
+            <span :id="'overall-rating' + product.id">
+              ({{ product.reviewNumber }})
             </span>
-            <p
-              v-if="product"
-              style="cursor: pointer"
-              @click="redirectToItemFromProduct(product.id)"
-            >
-              <i>
-                <span
-                  v-for="i in 5"
-                  :key="i"
-                  :class="getStarClasses(i, product.rating_float)"
-                ></span>
-                <span
-                  :id="'overall-rating' + product.id + '-float'"
-                  style="
-                    font-size: 0.9em;
-                    font-family: Raleway;
-                    margin-bottom: 2%;
-                  "
-                  >{{ product.rating_float }}</span
-                >
-              </i>
-              <span :id="'overall-rating' + product.id">
-                ({{ product.reviewNumber }})
-              </span>
-            </p>
-            <input type="number" :data-price="product.price" hidden />
-          </div>
-          <div class="card__precis">
-            <a class="card__icon"
-              ><span
-                class="fa fa-heart-o"
-                style="font-weight: 900; font-size: 1em"
-              ></span
-            ></a>
+          </p>
+          <input type="number" :data-price="product.price" hidden />
+        </div>
+        <div class="card__precis">
+          <a class="card__icon"
+            ><span
+              class="fa fa-heart-o"
+              style="font-weight: 900; font-size: 1em"
+            ></span
+          ></a>
 
-            <div class="product-price">
-              <p class="new-price" id="price" v-if="product">
-                Price:
-                <span>
-                  <b>
-                    ${{
-                      product.price -
-                      (product.price * product.discount).toFixed(2)
-                    }}
-                  </b></span
-                >
-              </p>
-              <p v-if="product && product.discount" class="last-price">
-                Old Price:
-                <span> ${{ product.price }} </span>
-              </p>
-            </div>
-            <a @click="removeFromCart(product.id)" class="card__icon"
-              ><i class="bi bi-trash"></i>
-            </a>
+          <div class="product-price">
+            <p class="new-price" id="price" v-if="product">
+              Price:
+              <span>
+                <b>
+                  ${{
+                    product.price -
+                    (product.price * product.discount).toFixed(2)
+                  }}
+                </b></span
+              >
+            </p>
+            <p v-if="product && product.discount" class="last-price">
+              Old Price:
+              <span> ${{ product.price }} </span>
+            </p>
           </div>
-        </article>
-      </div>
+          <a @click="removeFromCart(product.id)" class="card__icon"
+            ><i class="bi bi-trash"></i>
+          </a>
+        </div>
+      </article>
     </main>
   </div>
 </template>
@@ -196,13 +190,14 @@ export default {
   },
   methods: {
     getStarClasses(index, rating) {
+      console.log(`Index: ${index}, Rating: ${rating}`)
       const filledStars = Math.floor(rating)
       if (index <= filledStars) {
         return 'fa fa-star checked'
       } else if (index === filledStars + 1 && rating % 1 !== 0) {
         return 'fa fa-star-half-full checked'
       } else {
-        return 'fa fa-star-o'
+        return 'fa fa-star-o checked'
       }
     },
     itemAlreadyInCart(product) {
@@ -221,14 +216,6 @@ export default {
 }
 </script>
 <style>
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
-@import url('https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css');
-@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css');
-@import url('https://fonts.googleapis.com/css?family=Raleway');
-
-/*-- VARIABLES CSS--*/
-/*Colores*/
 :root {
   --first-color: #e3f8ff;
   --second-color: #dcfafb;
@@ -237,7 +224,6 @@ export default {
   --dark-color: #161616;
 }
 
-/*Tipografia responsive*/
 body {
   margin: 0 !important;
   padding: 0 !important;
@@ -323,9 +309,8 @@ article:nth-child(4) {
   background-color: var(--second-color) !important;
 }
 .card__img {
-  width: 220px !important;
+  width: 90% !important;
   height: auto !important;
-  padding: 3rem 0 !important;
   transition: 0.5s !important;
 }
 .card__name {

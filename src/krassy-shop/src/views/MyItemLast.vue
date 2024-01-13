@@ -352,10 +352,6 @@ export default {
       }))
     },
     getStarClasses(index, rating) {
-      console.log(`Index: ${index}, Rating: ${rating}`)
-      // if (typeof rating === 'undefined' || rating === null) {
-      //   return 'fa fa-star-o checked' // Default to an empty star if rating is undefined or null
-      // }
       let ratingValue = parseFloat(rating)
       let filledStars = Math.floor(ratingValue)
       if (index <= filledStars) {
