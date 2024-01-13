@@ -19,12 +19,12 @@ const routes = [
     component: () => import('../views/CartVueNew.vue'),
     props: () => ({ cart: store.state.cart })
   },
-  {
-    path: '/item/:itemId',
-    name: 'item',
-    component: () => import('../views/MyItemNew.vue'),
-    props: route => ({ itemId: route.params.itemId, cart: store.state.cart })
-  },
+  // {
+  //   path: '/item/:itemId',
+  //   name: 'item',
+  //   component: () => import('../views/MyItemNew.vue'),
+  //   props: route => ({ itemId: route.params.itemId, cart: store.state.cart })
+  // },
   {
     path: '/signup',
     name: 'signup',
