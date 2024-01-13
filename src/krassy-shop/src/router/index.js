@@ -14,6 +14,12 @@ const routes = [
     component: () => import('../views/LoginVue.vue')
   },
   {
+    path: '/cart',
+    name: 'ItemsInCart',
+    component: () => import('../views/CartVueNew.vue'),
+    props: () => ({ cart: store.state.cart })
+  },
+  {
     path: '/item/:itemId',
     name: 'item',
     component: () => import('../views/MyItemNew.vue'),

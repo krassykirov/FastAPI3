@@ -36,6 +36,14 @@ export default createStore({
         product.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
       }
     },
+    UPDATE_CART_ITEM_RATING(state, { productId, ratingData }) {
+      const cartItem = state.cart.find(item => item.id === productId)
+      if (cartItem) {
+        cartItem.rating = ratingData.rating
+        cartItem.reviewNumber = ratingData.review_number
+        cartItem.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
+      }
+    },
     UPDATE_SELECTED_CATEGORIES(state, selectedCategories) {
       state.selectedCategories = selectedCategories
     },
@@ -186,6 +194,10 @@ export default createStore({
         }
         const data = await response.json()
         commit('UPDATE_PRODUCT_RATING', { productId: itemId, ratingData: data })
+        commit('UPDATE_CART_ITEM_RATING', {
+          productId: itemId,
+          ratingData: data
+        })
       } catch (error) {
         console.log(error)
       }
