@@ -29,13 +29,13 @@ const routes = [
     path: '/signup',
     name: 'signup',
     component: () => import('../views/SignUp.vue')
+  },
+  {
+    path: '/item/:itemId',
+    name: 'Item',
+    component: () => import('../views/MyItemLast.vue'),
+    props: route => ({ itemId: route.params.itemId, cart: store.state.cart })
   }
-  // {
-  //   path: '/item/:itemId',
-  //   name: 'Item',
-  //   component: () => import('../views/MyItem.vue'),
-  //   props: route => ({ itemId: route.params.itemId, cart: store.state.cart })
-  // }
 ]
 
 const router = createRouter({

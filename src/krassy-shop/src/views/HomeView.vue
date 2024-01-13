@@ -172,7 +172,7 @@
               @click="toggleSortOrder"
               style="align-items: center"
             >
-              Sort by Price
+              Sort Price
               <span
                 v-if="sortOrder === 'asc'"
                 class="bi bi-sort-up-alt"
