@@ -23,7 +23,7 @@ def get_item_by_id( item_id: int, db: Session = Depends(get_session)) -> src.sch
         raise HTTPException(status_code=404, detail=f"No item with id: {item_id} found")
     item.update({'discount_price' : round((item.get('price')
                                             - item.get('price') * item.get('discount')
-                                            if item.get('discount') else item.get('price')),2)})
+                                            if item.get('discount') else item.get('price')),2)},)
     return item
 
 @items_router.get("/", status_code=status.HTTP_200_OK, response_model=list[src.schemas.ItemRead])
