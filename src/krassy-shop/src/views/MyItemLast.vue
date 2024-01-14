@@ -45,28 +45,28 @@
             <div class="row my-3 previews">
               <div class="col-md-3">
                 <img
-                  class="w-100"
+                  class="w-75"
                   src="https://cdn.pixabay.com/photo/2015/07/24/18/40/model-858754_960_720.jpg"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
-                  class="w-100"
+                  class="w-75"
                   src="https://cdn.pixabay.com/photo/2015/07/24/18/38/model-858749_960_720.jpg"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
-                  class="w-100"
+                  class="w-75"
                   src="https://cdn.pixabay.com/photo/2015/07/24/18/39/model-858751_960_720.jpg"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
-                  class="w-100"
+                  class="w-75"
                   src="https://cdn.pixabay.com/photo/2015/07/24/18/37/model-858748_960_720.jpg"
                   alt="Sale"
                 />
@@ -98,7 +98,11 @@
                 (Additional tax may apply on checkout)
               </p> -->
             </div>
-            <p style="cursor: pointer; margin-bottom: 1%" v-if="item">
+            <p
+              style="cursor: pointer; margin-bottom: 1%"
+              v-if="item"
+              @click="scrollToTarget"
+            >
               <i>
                 <span
                   v-for="i in 5"
@@ -112,11 +116,11 @@
                     font-family: Raleway;
                     margin-bottom: 2%;
                   "
-                  >{{ item.rating_float }}</span
+                  >&nbsp;{{ item.rating_float }}</span
                 >
               </i>
               <span :id="'overall-rating' + item.id">
-                ({{ item.reviewNumber }})
+                ({{ item.reviewNumber }}) review's
               </span>
             </p>
             <div class="buttons d-flex justify-content-center my-5">
@@ -190,6 +194,202 @@
         id="cartToastBody"
         style="font-weight: 900; font: 1.1em"
       ></div>
+    </div>
+    <div class="container" style="margin-top: 1%">
+      <div class="tab-container">
+        <nav class="tab-nav">
+          <div class="mobile-select">
+            <i class="bi bi-chevron-down"></i>
+          </div>
+          <ul>
+            <li>
+              <button class="btn tab-btn active" id="html">Reviews</button>
+            </li>
+            <li>
+              <button class="btn tab-btn" id="csss">Specification</button>
+            </li>
+            <li><button class="btn tab-btn" id="js">Details</button></li>
+          </ul>
+        </nav>
+        <div class="tab-content">
+          <div class="tab-item" data-id="html" id="reviewTab">
+            <nav aria-label="Review Pagination" v-if="item && item.reviews">
+              <ul class="pagination" style="margin-left: 20px">
+                <li class="page-item">
+                  <a class="page-link" @click="prevPage" aria-label="Previous">
+                    <span aria-hidden="true"></span>
+                  </a>
+                </li>
+                <li
+                  v-for="(page, index) in pages"
+                  :key="index"
+                  :class="{
+                    'page-item': true,
+                    active: page === currentPage
+                  }"
+                >
+                  <a class="page-link" @click="setCurrentPage(page)">{{
+                    page
+                  }}</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" @click="nextPage" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+            <div v-if="item">
+              <div
+                class="cardgroup1"
+                v-for="review in reviewsData"
+                :key="review.id"
+                :id="'card' + review.id"
+                style="display: block; width: 550px; margin-bottom: 2px"
+              >
+                <div class="row">
+                  <div class="col-12">
+                    <p></p>
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                      "
+                    >
+                      <img
+                        src="http://127.0.0.1:8000/static/img/img_avatar.png"
+                        class="avatar"
+                        style="padding: 5px"
+                      />
+                      <span style="text-align: center">{{
+                        review.created_by
+                      }}</span>
+                    </div>
+                    <span
+                      class="fa fa-star"
+                      :class="{ checked: star.checked }"
+                      :id="star.id"
+                      v-for="star in updateStarRatings(review)"
+                      :key="star.id"
+                    ></span>
+                    <hr />
+                    <div>
+                      <p style="text-align: left; padding: 15px">
+                        {{ review.text }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row pb-2" style="width: 700px">
+              <div
+                class="card"
+                id="RatingCard"
+                style="width: 550px; margin-left: 35px"
+              >
+                <div class="row">
+                  <div class="col-12" style="margin-bottom: 5px">
+                    <div class="comment-box ml-2">
+                      <input
+                        type="number"
+                        id="comment-item-id"
+                        required
+                        hidden
+                      />
+                      <div class="rating" style="padding: 10px">
+                        <input
+                          type="radio"
+                          name="rating"
+                          value="5"
+                          id="5"
+                        /><label for="5">☆</label>
+                        <input
+                          type="radio"
+                          name="rating"
+                          value="4"
+                          id="4"
+                        /><label for="4">☆</label>
+                        <input
+                          type="radio"
+                          name="rating"
+                          value="3"
+                          id="3"
+                        /><label for="3">☆</label>
+                        <input
+                          type="radio"
+                          name="rating"
+                          value="2"
+                          id="2"
+                        /><label for="2">☆</label>
+                        <input
+                          type="radio"
+                          name="rating"
+                          value="1"
+                          id="1"
+                        /><label for="1">☆</label>
+                      </div>
+                      <div class="comment-area">
+                        <textarea
+                          class="form-control"
+                          placeholder="Write a Review.."
+                          rows="4"
+                          id="comment-area"
+                        ></textarea>
+                      </div>
+                      <div class="comment-btns mt-2">
+                        <div class="row">
+                          <div class="col-6">
+                            <div class="pull-left">
+                              <button
+                                class="btn btn-secondary btn-sm"
+                                id="RatingCancel"
+                                @click="RatingHide"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                          <div class="col-6">
+                            <div class="pull-right">
+                              <button
+                                class="btn btn-success send btn-sm"
+                                @click="addReview"
+                              >
+                                Submit
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-item hide" data-id="csss">
+            <p v-if="item">{{ item.description }}</p>
+          </div>
+          <div class="tab-item hide" data-id="js">
+            <li>
+              Samsung UE43CU8072U - 43" Diagonal Class CU8000 Series LED-backlit
+              LCD TV
+            </li>
+            <li>Flat 2.16 m (85") LCD</li>
+            <li>
+              Crystal UHD - Smart TV - Tizen OS - 4K UHD (2160p) 3840 x 2160 -
+              HDR - black
+            </li>
+            <li>DVB-S2, DVB-T2, ISDB-C</li>
+            <li>Smart TV Internet TV</li>
+            <li>Wi-Fi Ethernet LAN Bluetooth</li>
+            <li>High Dynamic Range (HDR) supported</li>
+            <li>G 168 kWh 168 W</li>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- <div class="container similar-products my-4">
       <hr />
@@ -266,6 +466,7 @@ export default {
   },
   created() {
     this.getProduct()
+    this.setReviewsRating(this.itemId)
     this.$store.dispatch('readFromCartVue')
   },
   computed: {
@@ -277,6 +478,17 @@ export default {
     },
     accessToken() {
       return this.$store.state.accessToken || null
+    },
+    totalPages() {
+      return Math.ceil(this.item.reviews.length / this.reviewsPerPage)
+    },
+    pages() {
+      return Array.from({ length: this.totalPages }, (_, i) => i + 1)
+    },
+    displayedReviews() {
+      const startIndex = (this.currentPage - 1) * this.reviewsPerPage
+      const endIndex = startIndex + this.reviewsPerPage
+      return this.item.reviews.slice(startIndex, endIndex)
     }
   },
   methods: {
@@ -595,6 +807,121 @@ text-color {
   .previews img {
     width: 100%;
     height: auto;
+  }
+}
+.pagination {
+  margin-top: 0.5% !important;
+}
+
+.pagination .page-item {
+  display: inline-block !important;
+  margin-right: 3px !important;
+}
+
+.pagination .page-item.active a {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+ul {
+  list-style: none !important;
+  padding-left: 0 !important;
+  margin-bottom: 0 !important;
+}
+.text-center {
+  text-align: center !important;
+}
+
+.container {
+  max-width: 100% !important;
+  width: 100%;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.hide {
+  display: none !important;
+}
+
+.tab-nav {
+  max-width: 1% !important;
+  margin: 0 auto !important;
+  margin-top: 2% !important;
+  border: 1px solid gainsboro !important;
+}
+.tab-nav button {
+  width: 100% !important;
+}
+.tab-nav ul {
+  display: none !important;
+  flex-wrap: wrap !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+.tab-nav ul.show {
+  display: block !important;
+}
+@media (min-width: 992px) {
+  .tab-nav {
+    max-width: 100% !important;
+    border: 0 !important;
+  }
+  .tab-nav ul {
+    gap: 16px !important;
+    flex-direction: row !important;
+  }
+}
+.form-control {
+  margin-left: 1% !important;
+}
+.div.comment-area {
+  margin-left: 1% !important;
+  width: 30rem !important;
+  padding: 2px !important;
+}
+textarea.form-control {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+textarea#comment-area.form.control {
+  margin-left: 1% !important;
+}
+.cardgroup1 {
+  margin-top: 10px !important;
+  margin-right: 10% !important;
+  align-items: left;
+}
+.tab-content {
+  padding: 12px !important;
+  margin-top: 10px !important;
+  border: 1px solid var(--color-primary) !important;
+}
+div#RatingCard.card {
+  padding-right: 1% !important;
+  padding-bottom: 0 !important;
+  padding: 0 !important;
+}
+.card-img-top {
+  width: 90% !important;
+  height: 12vw !important;
+  object-fit: cover !important;
+}
+.card {
+  width: 32rem !important;
+  margin-bottom: auto !important;
+  margin-right: auto !important;
+  margin-top: auto !important;
+  margin-left: 5% !important;
+  /* border: 15px solid #969696; */
+  text-align: center !important;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+@media (min-width: 992px) {
+  .tab-nav ul {
+    display: flex !important;
   }
 }
 </style>
