@@ -123,7 +123,7 @@
                 ({{ item.reviewNumber }}) review's
               </span>
             </p>
-            <div class="buttons d-flex justify-content-center my-5">
+            <div class="buttons d-flex justify-content-center my-4">
               <div class="block">
                 <a href="#" class="shadow btn custom-btn">Wishlist</a>
               </div>
@@ -138,8 +138,7 @@
               </div>
             </div>
           </div>
-
-          <div class="product-details my-4" v-if="item">
+          <div class="product-details my-2" v-if="item">
             <p class="details-title text-color mb-1">Product Details</p>
             <p class="description">
               {{ item.description }}
