@@ -197,7 +197,7 @@
     </div>
     <div class="container mt-4">
       <!-- Horizontal Tabs -->
-      <ul class="nav nav-tabs">
+      <ul class="nav nav-tabs justify-content-center">
         <li class="nav-item">
           <a
             class="nav-link"
@@ -225,6 +225,7 @@
           class="tab-pane"
           :class="{ active: activeTab === 'reviews' }"
           id="reviews"
+          style="justify-content-left"
         >
           <!-- Reviews content -->
           <div v-if="item">
@@ -233,27 +234,24 @@
               v-for="review in reviewsData"
               :key="review.id"
               :id="'card' + review.id"
-              style="width: 550px; margin-bottom: 2px"
+              style="
+                width: 50%;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                padding: 10px;
+                display: flex;
+              "
             >
-              <div class="row">
-                <div class="col-12">
-                  <p></p>
-                  <div
-                    style="
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                    "
-                  >
-                    <img
-                      src="http://127.0.0.1:8000/static/img/img_avatar.png"
-                      class="avatar"
-                      style="padding: 5px"
-                    />
-                    <span style="text-align: center">{{
-                      review.created_by
-                    }}</span>
-                  </div>
+              <!-- Left Side -->
+              <div style="flex: 1; display: flex; align-items: center">
+                <img
+                  src="http://127.0.0.1:8000/static/img/img_avatar.png"
+                  class="avatar"
+                  style="padding: 5px"
+                />
+                <div style="margin-left: 10px">
+                  <span>{{ review.created_by }}</span>
+                  <br />
                   <span
                     class="fa fa-star"
                     :class="{ checked: star.checked }"
@@ -261,13 +259,18 @@
                     v-for="star in updateStarRatings(review)"
                     :key="star.id"
                   ></span>
-                  <hr />
-                  <div>
-                    <p style="text-align: left; padding: 15px">
-                      {{ review.text }}
-                    </p>
-                  </div>
                 </div>
+              </div>
+              <!-- Right Side -->
+              <div
+                style="
+                  flex: 2;
+                  text-align: left;
+                  padding: 10px;
+                  text-align: left;
+                "
+              >
+                <p>{{ review.text }}</p>
               </div>
             </div>
 
@@ -306,6 +309,7 @@
                       class="form-control"
                       placeholder="Write a Review.."
                       rows="4"
+                      maxlength="700"
                       ref="commentArea"
                     ></textarea>
                     <div class="comment-btns mt-2">
@@ -351,7 +355,9 @@
           id="specification"
         >
           <!-- Specification content -->
-          <p v-if="item">{{ item.description }}</p>
+          <p v-if="item" style="width: 300px; align-text: center">
+            {{ item.description }}
+          </p>
           <p v-else>No specification available.</p>
         </div>
       </div>
@@ -540,45 +546,6 @@ export default {
         return 'fa fa-star-o checked'
       }
     },
-    getItemRatingItem(item_id) {
-      try {
-        fetch(`http://127.0.0.1:8000/api/reviews/item/rating?id=${item_id}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(
-                `Error: ${response.status} - ${response.statusText}`
-              )
-            }
-            return response.json()
-          })
-          .then(data => {
-            for (let i = 1; i <= 5; i++) {
-              const star = document.getElementById('star' + i)
-              if (i <= data.rating) {
-                star.classList.add('checked')
-              } else {
-                star.classList.remove('checked')
-              }
-            }
-            document.getElementById('overall-rating').innerText =
-              ' ' +
-              parseFloat(data.rating_float).toFixed(2) +
-              ' based on (' +
-              data.review_number +
-              ' reviews)'
-          })
-          .catch(error => {
-            console.error('Error:', error)
-          })
-      } catch (error) {
-        console.error('Error:', error)
-      }
-    },
     addReview() {
       const review = this.$refs.commentArea.value
       console.log('commentArea', review)
@@ -613,7 +580,6 @@ export default {
           return response.json()
         })
         .then(data => {
-          // Assuming reviewsData is an array in your Vue data
           this.reviewsData.push(data)
           this.getItemRatingItem(id)
           this.setReviewsRating(id)
@@ -656,13 +622,16 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
 @import url('https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css');
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css');
 @import url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 @import url('https://fonts.googleapis.com/css?family=Raleway');
 
+.navbar {
+  padding-left: 35% !important;
+}
 .text-bold {
   font-weight: 800;
 }
