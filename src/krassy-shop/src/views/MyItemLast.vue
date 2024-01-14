@@ -195,171 +195,140 @@
         style="font-weight: 900; font: 1.1em"
       ></div>
     </div>
-    <div class="container" style="margin-top: 1%">
-      <div class="tab-container">
-        <nav class="tab-nav">
-          <div class="mobile-select">
-            <i class="bi bi-chevron-down"></i>
-          </div>
-          <ul>
-            <li>
-              <button class="btn tab-btn active" id="html">Reviews</button>
-            </li>
-            <li>
-              <button class="btn tab-btn" id="csss">Specification</button>
-            </li>
-            <li><button class="btn tab-btn" id="js">Details</button></li>
-          </ul>
-        </nav>
-        <div class="tab-content">
-          <div class="tab-item" data-id="html" id="reviewTab">
-            <nav aria-label="Review Pagination" v-if="item && item.reviews">
-              <ul class="pagination" style="margin-left: 20px">
-                <li class="page-item">
-                  <a class="page-link" @click="prevPage" aria-label="Previous">
-                    <span aria-hidden="true"></span>
-                  </a>
-                </li>
-                <li
-                  v-for="(page, index) in pages"
-                  :key="index"
-                  :class="{
-                    'page-item': true,
-                    active: page === currentPage
-                  }"
-                >
-                  <a class="page-link" @click="setCurrentPage(page)">{{
-                    page
-                  }}</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" @click="nextPage" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-            <div v-if="item">
-              <div
-                class="cardgroup1"
-                v-for="review in reviewsData"
-                :key="review.id"
-                :id="'card' + review.id"
-                style="display: block; width: 550px; margin-bottom: 2px"
-              >
-                <div class="row">
-                  <div class="col-12">
-                    <p></p>
-                    <div
-                      style="
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                      "
-                    >
-                      <img
-                        src="http://127.0.0.1:8000/static/img/img_avatar.png"
-                        class="avatar"
-                        style="padding: 5px"
-                      />
-                      <span style="text-align: center">{{
-                        review.created_by
-                      }}</span>
-                    </div>
-                    <span
-                      class="fa fa-star"
-                      :class="{ checked: star.checked }"
-                      :id="star.id"
-                      v-for="star in updateStarRatings(review)"
-                      :key="star.id"
-                    ></span>
-                    <hr />
-                    <div>
-                      <p style="text-align: left; padding: 15px">
-                        {{ review.text }}
-                      </p>
-                    </div>
+    <div class="container mt-4">
+      <!-- Horizontal Tabs -->
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            @click="switchTab('reviews')"
+            :class="{ active: activeTab === 'reviews' }"
+          >
+            Reviews ({{ reviewsData.length }})
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            @click="switchTab('specification')"
+            :class="{ active: activeTab === 'specification' }"
+          >
+            Specification
+          </a>
+        </li>
+      </ul>
+      <!-- Tab Content -->
+      <div class="tab-content mt-3">
+        <!-- Reviews Tab -->
+        <div
+          v-if="activeTab === 'reviews'"
+          class="tab-pane"
+          :class="{ active: activeTab === 'reviews' }"
+          id="reviews"
+        >
+          <!-- Reviews content -->
+          <div v-if="item">
+            <div
+              class="cardgroup1"
+              v-for="review in reviewsData"
+              :key="review.id"
+              :id="'card' + review.id"
+              style="width: 550px; margin-bottom: 2px"
+            >
+              <div class="row">
+                <div class="col-12">
+                  <p></p>
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                    "
+                  >
+                    <img
+                      src="http://127.0.0.1:8000/static/img/img_avatar.png"
+                      class="avatar"
+                      style="padding: 5px"
+                    />
+                    <span style="text-align: center">{{
+                      review.created_by
+                    }}</span>
+                  </div>
+                  <span
+                    class="fa fa-star"
+                    :class="{ checked: star.checked }"
+                    :id="star.id"
+                    v-for="star in updateStarRatings(review)"
+                    :key="star.id"
+                  ></span>
+                  <hr />
+                  <div>
+                    <p style="text-align: left; padding: 15px">
+                      {{ review.text }}
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="row pb-2" style="width: 700px">
-              <div
-                class="card"
-                id="RatingCard"
-                style="width: 550px; margin-left: 35px"
-              >
-                <div class="row">
-                  <div class="col-12" style="margin-bottom: 5px">
-                    <div class="comment-box ml-2">
-                      <input
-                        type="number"
-                        id="comment-item-id"
-                        required
-                        hidden
-                      />
-                      <div class="rating" style="padding: 10px">
-                        <input
-                          type="radio"
-                          name="rating"
-                          value="5"
-                          id="5"
-                        /><label for="5">☆</label>
-                        <input
-                          type="radio"
-                          name="rating"
-                          value="4"
-                          id="4"
-                        /><label for="4">☆</label>
-                        <input
-                          type="radio"
-                          name="rating"
-                          value="3"
-                          id="3"
-                        /><label for="3">☆</label>
-                        <input
-                          type="radio"
-                          name="rating"
-                          value="2"
-                          id="2"
-                        /><label for="2">☆</label>
-                        <input
-                          type="radio"
-                          name="rating"
-                          value="1"
-                          id="1"
-                        /><label for="1">☆</label>
-                      </div>
-                      <div class="comment-area">
-                        <textarea
-                          class="form-control"
-                          placeholder="Write a Review.."
-                          rows="4"
-                          id="comment-area"
-                        ></textarea>
-                      </div>
-                      <div class="comment-btns mt-2">
-                        <div class="row">
-                          <div class="col-6">
-                            <div class="pull-left">
-                              <button
-                                class="btn btn-secondary btn-sm"
-                                id="RatingCancel"
-                                @click="RatingHide"
-                              >
-                                Cancel
-                              </button>
-                            </div>
+
+            <!-- Add Review Textarea and Buttons -->
+            <div
+              class="cardgroup1"
+              style="width: 550px; margin-bottom: 2px"
+              v-if="!userHasWrittenReview()"
+            >
+              <div class="row">
+                <div class="col-12">
+                  <div class="rating" style="padding: 10px">
+                    <input type="radio" name="rating" value="5" id="5" /><label
+                      for="5"
+                      >☆</label
+                    >
+                    <input type="radio" name="rating" value="4" id="4" /><label
+                      for="4"
+                      >☆</label
+                    >
+                    <input type="radio" name="rating" value="3" id="3" /><label
+                      for="3"
+                      >☆</label
+                    >
+                    <input type="radio" name="rating" value="2" id="2" /><label
+                      for="2"
+                      >☆</label
+                    >
+                    <input type="radio" name="rating" value="1" id="1" /><label
+                      for="1"
+                      >☆</label
+                    >
+                  </div>
+                  <div class="comment-box ml-2">
+                    <textarea
+                      class="form-control"
+                      placeholder="Write a Review.."
+                      rows="4"
+                      ref="commentArea"
+                    ></textarea>
+                    <div class="comment-btns mt-2">
+                      <div class="row">
+                        <div class="col-6">
+                          <div class="pull-left">
+                            <button
+                              class="btn btn-secondary btn-sm"
+                              id="RatingCancel"
+                              @click="RatingHide"
+                            >
+                              Cancel
+                            </button>
                           </div>
-                          <div class="col-6">
-                            <div class="pull-right">
-                              <button
-                                class="btn btn-success send btn-sm"
-                                @click="addReview"
-                              >
-                                Submit
-                              </button>
-                            </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="pull-right">
+                            <button
+                              class="btn btn-success send btn-sm"
+                              @click="addReview"
+                            >
+                              Submit
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -369,25 +338,21 @@
               </div>
             </div>
           </div>
-          <div class="tab-item hide" data-id="csss">
-            <p v-if="item">{{ item.description }}</p>
+          <div v-else>
+            <p>No reviews available.</p>
           </div>
-          <div class="tab-item hide" data-id="js">
-            <li>
-              Samsung UE43CU8072U - 43" Diagonal Class CU8000 Series LED-backlit
-              LCD TV
-            </li>
-            <li>Flat 2.16 m (85") LCD</li>
-            <li>
-              Crystal UHD - Smart TV - Tizen OS - 4K UHD (2160p) 3840 x 2160 -
-              HDR - black
-            </li>
-            <li>DVB-S2, DVB-T2, ISDB-C</li>
-            <li>Smart TV Internet TV</li>
-            <li>Wi-Fi Ethernet LAN Bluetooth</li>
-            <li>High Dynamic Range (HDR) supported</li>
-            <li>G 168 kWh 168 W</li>
-          </div>
+        </div>
+
+        <!-- Specification Tab -->
+        <div
+          v-if="activeTab === 'specification'"
+          class="tab-pane"
+          :class="{ active: activeTab === 'specification' }"
+          id="specification"
+        >
+          <!-- Specification content -->
+          <p v-if="item">{{ item.description }}</p>
+          <p v-else>No specification available.</p>
         </div>
       </div>
     </div>
@@ -461,7 +426,8 @@ export default {
       itemId: this.itemId,
       currentPage: 1,
       reviewsPerPage: 2,
-      reviewsData: []
+      reviewsData: [],
+      activeTab: 'reviews'
     }
   },
   created() {
@@ -614,7 +580,8 @@ export default {
       }
     },
     addReview() {
-      const review = document.getElementById('comment-area').value
+      const review = this.$refs.commentArea.value
+      console.log('commentArea', review)
       const id = this.item.id
       const username = this.user
       const rating = document.querySelector(
@@ -646,40 +613,26 @@ export default {
           return response.json()
         })
         .then(data => {
-          // const reviewDiv = document.getElementsByClassName('card group1');
-          const newCard = `
-            <div class="card group1" id="card${data.id}" style="display: flex; margin-left: 25px; margin-bottom:3; width:550px">
-              <div class="row" style="margin-left:0;">
-                <div class="col-12" style="margin-bottom: 3px; margin-left:0;">
-                  <p style="margin-left:0">
-                    <div style="display: flex; align-items: center; justify-content: center;">
-                      <img src="/static/img/img_avatar.png" class="avatar" style="padding: 5px;">
-                      <span style="text-align: center;">${data.created_by}</span>
-                    </div>
-                    <span class="fa fa-star checked" id="star${data.id}1"></span>
-                    <span class="fa fa-star checked" id="star${data.id}2"></span>
-                    <span class="fa fa-star checked" id="star${data.id}3"></span>
-                    <span class="fa fa-star" id="star${data.id}4"></span>
-                    <span class="fa fa-star" id="star${data.id}5"></span>
-                    <div>  <i>${data.text} </i></div>
-                  </p>
-                </div>
-              </div>
-            </div>
-          `
+          // Assuming reviewsData is an array in your Vue data
+          this.reviewsData.push(data)
           this.getItemRatingItem(id)
           this.setReviewsRating(id)
-          $('#reviewTab').append(newCard)
         })
         .catch(error => {
           console.error('Error:', error)
         })
     },
+    userHasWrittenReview() {
+      return (
+        this.reviewsData &&
+        this.reviewsData.some(review => review.created_by === this.user)
+      )
+    },
     RatingHide() {
       document.getElementById('RatingCard').style.display = 'none'
     },
     scrollToTarget() {
-      var targetDiv = document.getElementById('reviewTab')
+      var targetDiv = document.getElementById('reviews')
       if (targetDiv) {
         targetDiv.scrollIntoView({ behavior: 'smooth' })
       }
@@ -696,6 +649,9 @@ export default {
       if (this.currentPage < this.totalPages) {
         this.currentPage++
       }
+    },
+    switchTab(tabId) {
+      this.activeTab = tabId
     }
   }
 }
@@ -923,5 +879,15 @@ div#RatingCard.card {
   .tab-nav ul {
     display: flex !important;
   }
+}
+.list-group {
+  width: 200px; /* Set your preferred width */
+}
+
+.list-group-item {
+  cursor: pointer;
+}
+.nav-tabs {
+  width: 100%;
 }
 </style>
