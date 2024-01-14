@@ -79,10 +79,12 @@
             transform: translateX(-40%);
             z-index: 1000;
             min-width: 200px;
+            max-height: 400px;
+            overflow-y: auto;
           "
         >
           <div
-            v-for="(item, index) in cart.slice(0, Math.min(7, cart.length))"
+            v-for="(item, index) in cart"
             :key="index"
             class="list-group-item d-flex justify-content-between align-items-center"
           >

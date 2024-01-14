@@ -44,7 +44,7 @@
         id="filter"
         v-on:keyup="Search()"
         type="text"
-        placeholder="Search by product name"
+        placeholder="Search for product.."
         style="
           width: 50vw;
           margin-top: 1.25%;

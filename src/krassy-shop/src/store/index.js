@@ -266,6 +266,14 @@ export default createStore({
       if (maxVal <= minVal) {
         maxVal = minVal
       }
+      const rangeInput = document.querySelector('.min-range')
+      const rangeInputMax = document.querySelector('.max-range')
+      if (rangeInput) {
+        rangeInput.value = this.min
+      }
+      if (rangeInputMax) {
+        rangeInputMax.value = this.max
+      }
       commit('SET_MIN_PRICE', minVal)
       commit('SET_MAX_PRICE', maxVal)
       commit('SET_RANGE_INPUT', { min: minVal, max: maxVal })

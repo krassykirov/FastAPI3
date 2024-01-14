@@ -81,6 +81,7 @@
               {{ item.name }}
             </div>
             <div class="price-area my-4" v-if="item">
+              <p class="new-price text-bold mb-1">${{ item.discount_price }}</p>
               <p
                 v-if="item.discount !== null"
                 class="old-price mb-1"
@@ -93,7 +94,6 @@
                   >&nbsp;(-{{ Math.floor(item.discount * 100) }})%</span
                 >
               </p>
-              <p class="new-price text-bold mb-1">${{ item.discount_price }}</p>
               <!-- <p class="text-secondary mb-1">
                 (Additional tax may apply on checkout)
               </p> -->
