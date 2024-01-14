@@ -87,7 +87,7 @@ export default createStore({
       state.filteredProducts = filteredProducts
     },
     SET_TOTAL(state, total) {
-      state.total = total.toFixed()
+      state.total = total.toFixed(2)
     },
     TOGGLE_SORT_ORDER(state) {
       state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc'
@@ -379,7 +379,9 @@ export default createStore({
       return state.products.filter(product => product.isDiscounted)
     },
     total: state => {
-      return state.cart.reduce((total, item) => total + Number(item.price), 0)
+      return state.cart
+        .reduce((total, item) => total + Number(item.price), 0)
+        .toFixed(2)
     },
     filteredProducts: state => {
       return state.products.filter(item => {

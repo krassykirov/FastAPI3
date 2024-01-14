@@ -1,7 +1,7 @@
 <template>
   <div
     class="container"
-    style="align-items: center; text-align: center; margin-left: 26%"
+    style="align-items: center; text-align: center; margin-left: 35%"
   >
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <a
@@ -42,17 +42,6 @@
           </a>
         </li>
       </ul>
-      <div v-if="user === 'krassy@mail.bg'" d-flex bd-highlight mb-3>
-        <button
-          class="btn btn-light btn-sm"
-          data-toggle="modal"
-          data-target="#addItem"
-          href="#"
-          style="font-family: inherit; margin-top: 14%"
-        >
-          Add Product
-        </button>
-      </div>
       <div
         v-if="cart && accessToken"
         @mouseleave="hideCart()"
@@ -75,7 +64,7 @@
           v-if="!displayCart"
           class="list-group position-absolute"
           style="
-            left: 50%;
+            left: 52%;
             transform: translateX(-40%);
             z-index: 1000;
             min-width: 200px;
@@ -121,7 +110,7 @@
               data-bs-placement="top"
               style="margin-top: 16px"
             >
-              x
+              <i class="bi bi-trash"></i>
             </button>
           </div>
           <button
@@ -172,6 +161,23 @@
                 @click="logout"
                 >Logout</a
               >
+              <div
+                v-if="user === 'krassy@mail.bg'"
+                d-flex
+                bd-highlight
+                mb-3
+                class="cart"
+              >
+                <a
+                  class="btn btn-light btn-sm"
+                  data-toggle="modal"
+                  data-target="#addItem"
+                  href="#"
+                  style="font-family: inherit; margin-top: 14%"
+                >
+                  Add Product
+                </a>
+              </div>
             </div>
           </div>
         </form>
@@ -359,3 +365,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.cart {
+  padding-left: 15px !important;
+}
+</style>
