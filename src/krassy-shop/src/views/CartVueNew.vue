@@ -32,9 +32,9 @@
         <div class="col-md-8">
           <h2 class="text-center mb-4">Checkout</h2>
 
-          <table class="table table-striped">
+          <table class="table table-striped table-hover">
             <thead>
-              <tr>
+              <tr style="height: auto">
                 <th scope="col">Image</th>
                 <th scope="col">Product</th>
                 <th scope="col">Price</th>
@@ -53,7 +53,7 @@
                   />
                 </td>
                 <td>
-                  <strong>{{ product.name }}</strong>
+                  {{ product.name }}
                 </td>
                 <td>
                   <b
@@ -66,7 +66,7 @@
                 <td class="align-left text-left">
                   <div
                     class="input-group"
-                    style="max-width: 120px; margin-left: 65px"
+                    style="max-width: 120px; margin: auto"
                   >
                     <button
                       class="btn btn-outline-secondary"
@@ -220,5 +220,13 @@ export default {
   color: #f64749;
   font-weight: 900 !important;
   font-size: 1.1rem !important;
+}
+.tr {
+  display: inline-block !important;
+  padding: 15px !important;
+}
+.td {
+  display: inline-block !important;
+  padding: 15px !important;
 }
 </style>
