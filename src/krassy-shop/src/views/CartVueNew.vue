@@ -27,120 +27,87 @@
         :avatar="'{{ avatar }}'"
       />
     </nav>
-    <div class="container mt-5">
-      <h2 class="text-center mb-4">Checkout</h2>
-      <div class="checkout-container">
-        <div
-          v-for="product in cart"
-          :key="product.id"
-          class="product-card mb-3"
-        >
-          <div class="card w-100">
-            <div class="row g-0">
-              <div class="col-md-4">
-                <span
-                  class="badge bg-danger position-absolute top-5 start-5"
-                  v-if="product.discount >= 0.1"
-                  style="font-size: 0.8em; margin: 1%; top: 0; start: 0"
-                  >-{{ Math.floor(product.discount * 100) }}%
-                </span>
-                <img
-                  :src="`http://127.0.0.1:8000/static/img/${product.username}/${product.name}/${product.image}`"
-                  class="card-img-top"
-                  alt="Product Image"
-                />
-              </div>
-              <div class="col-md-8">
-                <div class="card-body">
-                  <p>{{ product.name }}</p>
-                  <p
-                    v-if="product"
-                    style="cursor: pointer"
-                    @click="redirectToItemFromProduct(product.id)"
-                  >
-                    <i>
-                      <span
-                        v-for="i in 5"
-                        :key="i"
-                        :class="getStarClasses(i, product.rating_float)"
-                      ></span>
-                      <span
-                        :id="'overall-rating' + product.id + '-float'"
-                        style="
-                          font-size: 0.9em;
-                          font-family: Raleway;
-                          margin-bottom: 2%;
-                        "
-                        >{{ product.rating_float }}</span
-                      >
-                    </i>
-                    <span :id="'overall-rating' + product.id">
-                      ({{ product.reviewNumber }})
-                    </span>
-                  </p>
-                  <input type="number" :data-price="product.price" hidden />
-                </div>
-                <div class="card__precis">
-                  <div class="product-price">
-                    <p class="new-price" id="price" v-if="product">
-                      Price:
-                      <span>
-                        <b>
-                          ${{
-                            product.price -
-                            (product.price * product.discount).toFixed(2)
-                          }}
-                        </b></span
-                      >
-                    </p>
+    <div class="container-fluid mt-5" style="margin-left: 10%">
+      <div class="row">
+        <div class="col-md-8">
+          <h2 class="text-center mb-4">Checkout</h2>
 
-                    <p v-if="product && product.discount" class="last-price">
-                      Old Price:
-                      <span> ${{ product.price }} </span>
-                    </p>
-                    <h4
-                      @click="removeFromCart(product.id)"
-                      class="card__icon"
-                      style="
-                        align-items: right;
-                        text-align: right;
-                        cursor: pointer;
-                        padding: 15px;
-                      "
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Image</th>
+                <th scope="col">Product</th>
+                <th scope="col">Price</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="product in cart" :key="product.id">
+                <td>
+                  <img
+                    :src="`http://127.0.0.1:8000/static/img/${product.username}/${product.name}/${product.image}`"
+                    class="img-fluid"
+                    alt="Product Image"
+                    style="max-width: 50px; max-height: 50px"
+                  />
+                </td>
+                <td>
+                  <strong>{{ product.name }}</strong>
+                </td>
+                <td>
+                  <b
+                    >${{
+                      product.price -
+                      (product.price * product.discount).toFixed(2)
+                    }}</b
+                  >
+                </td>
+                <td class="align-left text-left">
+                  <div
+                    class="input-group"
+                    style="max-width: 120px; margin-left: 65px"
+                  >
+                    <button
+                      class="btn btn-outline-secondary"
+                      type="button"
+                      @click="updateQuantity(product.id, product.quantity - 1)"
                     >
-                      <i class="bi bi-trash"></i>
-                    </h4>
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      class="form-control text-center"
+                      :value="1"
+                      readonly
+                    />
+                    <button
+                      class="btn btn-outline-secondary"
+                      type="button"
+                      @click="updateQuantity(product.id, product.quantity + 1)"
+                    >
+                      +
+                    </button>
                   </div>
-                </div>
-              </div>
-            </div>
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    class="btn btn-outline-danger btn-sm"
+                    @click="removeFromCart(product.id)"
+                  >
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="text-end mt-4">
+            <h4>Total: ${{ calculateTotal() }}</h4>
+            <button class="btn btn-success">Proceed to Payment</button>
           </div>
         </div>
       </div>
-    </div>
-    <div class="total-section">
-      <h4 class="mb-3">Order Summary</h4>
-      <ul class="list-group">
-        <li
-          class="list-group-item d-flex justify-content-between align-items-center"
-        >
-          Subtotal:
-          <span class="badge bg-primary">${{ calculateSubtotal() }}</span>
-        </li>
-        <li
-          class="list-group-item d-flex justify-content-between align-items-center"
-        >
-          Tax (10%):
-          <span class="badge bg-primary">${{ calculateTax() }}</span>
-        </li>
-        <li
-          class="list-group-item d-flex justify-content-between align-items-center"
-        >
-          <strong>Total:</strong>
-          <span class="badge bg-success">${{ calculateTotal() }}</span>
-        </li>
-      </ul>
-      <button class="btn btn-success mt-3">Proceed to Payment</button>
     </div>
   </div>
 </template>
@@ -183,7 +150,6 @@ export default {
   },
   methods: {
     getStarClasses(index, rating) {
-      console.log(`Index: ${index}, Rating: ${rating}`)
       const filledStars = Math.floor(rating)
       if (index <= filledStars) {
         return 'fa fa-star checked'
@@ -222,21 +188,37 @@ export default {
 }
 </script>
 <style>
+.container-sm {
+  max-width: 768px !important;
+}
 .card {
   width: 52rem !important;
   margin-bottom: auto !important;
   margin-right: auto !important;
   margin-top: auto !important;
-  margin-left: 5% !important;
   height: auto !important;
   text-align: center !important;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
+.card-img,
+.card-img-top,
+.card-img-bottom {
+  height: 75% !important;
+}
 .total-section {
   width: 20%;
   background-color: #ffffff;
-  padding: 20px;
+  padding: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin-left: 5% !important;
+  margin-top: 5% !important;
+  float: right !important;
+}
+.row.g-0 {
+  max-height: 230px !important;
+}
+.new-price span {
+  color: #f64749;
+  font-weight: 900 !important;
+  font-size: 1.1rem !important;
 }
 </style>

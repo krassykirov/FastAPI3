@@ -303,10 +303,6 @@ input[type='range']::-webkit-slider-thumb {
 #cartDropdown {
   margin-top: 14px;
 }
-.last-price {
-  color: #f64749;
-  text-decoration: line-through;
-}
 .btn {
   /* border: 1px solid #ddd; */
   /* border-radius: 25px; */

@@ -305,6 +305,7 @@ input[type="range"]::-webkit-slider-thumb {
 .last-price{
     color: #f64749;
     text-decoration: line-through;
+    font-size: 0.9em;
 }
 .btn{
     /* border: 1px solid #ddd; */
