@@ -103,6 +103,7 @@
                 >
                 <input
                   v-model.number="min"
+                  style="font-size: 0.9rem"
                   type="text"
                   class="min-input form-control"
                   id="minPrice"
@@ -119,6 +120,7 @@
                 >
                 <input
                   v-model.number="max"
+                  style="font-size: 0.9rem"
                   type="text"
                   class="max-input form-control"
                   id="maxPrice"
@@ -223,7 +225,7 @@
               style="display: flex; align-items: center; font-size: 1rem"
             >
               <input
-                style="font-size: 1rem; margin-top: 7px"
+                style="font-size: 1rem; margin-top: 3px !important"
                 class="form-check-input"
                 type="checkbox"
                 :id="'rating' + rating"

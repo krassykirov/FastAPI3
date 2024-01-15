@@ -32,8 +32,9 @@ body {
 }
 
 label {
-  font-size: 14px;
-  font-weight: 400;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  /* font-size: 0.9em !important; */
 }
 
 body.modal-open {

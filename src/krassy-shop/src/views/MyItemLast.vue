@@ -46,28 +46,28 @@
               <div class="col-md-3">
                 <img
                   class="w-75"
-                  src="https://cdn.pixabay.com/photo/2015/07/24/18/40/model-858754_960_720.jpg"
+                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="w-75"
-                  src="https://cdn.pixabay.com/photo/2015/07/24/18/38/model-858749_960_720.jpg"
+                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="w-75"
-                  src="https://cdn.pixabay.com/photo/2015/07/24/18/39/model-858751_960_720.jpg"
+                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="w-75"
-                  src="https://cdn.pixabay.com/photo/2015/07/24/18/37/model-858748_960_720.jpg"
+                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
@@ -94,9 +94,6 @@
                   >&nbsp;(-{{ Math.floor(item.discount * 100) }})%</span
                 >
               </p>
-              <!-- <p class="text-secondary mb-1">
-                (Additional tax may apply on checkout)
-              </p> -->
             </div>
             <p
               style="cursor: pointer; margin-bottom: 1%"
@@ -125,7 +122,7 @@
             </p>
             <div class="buttons d-flex justify-content-center my-4">
               <div class="block">
-                <a href="#" class="shadow btn custom-btn">Wishlist</a>
+                <a @click="showModal" class="shadow btn custom-btn">Wishlist</a>
               </div>
               <div class="block">
                 <button
@@ -234,11 +231,12 @@
               :key="review.id"
               :id="'card' + review.id"
               style="
-                width: 50%;
-                margin-bottom: 10px;
+                width: 55%;
+                margin-bottom: 5px;
                 border: 1px solid #ccc;
-                padding: 10px;
+                padding: 2px;
                 display: flex;
+                justify-content: left;
               "
             >
               <!-- Left Side -->
@@ -248,7 +246,7 @@
                   class="avatar"
                   style="padding: 5px"
                 />
-                <div style="margin-left: 10px">
+                <div style="margin-left: 2px">
                   <span>{{ review.created_by }}</span>
                   <br />
                   <span
@@ -276,7 +274,7 @@
             <!-- Add Review Textarea and Buttons -->
             <div
               class="cardgroup1"
-              style="width: 550px; margin-bottom: 2px"
+              style="width: 650px; margin-bottom: 2px"
               v-if="!userHasWrittenReview()"
             >
               <div class="row">
@@ -352,66 +350,16 @@
           class="tab-pane"
           :class="{ active: activeTab === 'specification' }"
           id="specification"
+          style="align-text: left; margin-left: 20%; margin-right: 20%"
         >
           <!-- Specification content -->
-          <p v-if="item" style="width: 300px; align-text: center">
+          <p v-if="item">
             {{ item.description }}
           </p>
           <p v-else>No specification available.</p>
         </div>
       </div>
     </div>
-    <!-- <div class="container similar-products my-4">
-      <hr />
-      <p class="display-5">Similar Products</p>
-
-      <div class="row">
-        <div class="col-md-3">
-          <div class="similar-product">
-            <img
-              class="w-100"
-              src="https://source.unsplash.com/gsKdPcIyeGg"
-              alt="Preview"
-            />
-            <p class="title">Lovely black dress</p>
-            <p class="price">$100</p>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="similar-product">
-            <img
-              class="w-100"
-              src="https://source.unsplash.com/sg_gRhbYXhc"
-              alt="Preview"
-            />
-            <p class="title">Lovely Dress with patterns</p>
-            <p class="price">$85</p>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="similar-product">
-            <img
-              class="w-100"
-              src="https://source.unsplash.com/gJZQcirK8aw"
-              alt="Preview"
-            />
-            <p class="title">Lovely fashion dress</p>
-            <p class="price">$200</p>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="similar-product">
-            <img
-              class="w-100"
-              src="https://source.unsplash.com/qbB_Z2pXLEU"
-              alt="Preview"
-            />
-            <p class="title">Lovely red dress</p>
-            <p class="price">$120</p>
-          </div>
-        </div>
-      </div>
-    </div> -->
   </div>
 </template>
 
@@ -593,9 +541,6 @@ export default {
         this.reviewsData.some(review => review.created_by === this.user)
       )
     },
-    RatingHide() {
-      document.getElementById('RatingCard').style.display = 'none'
-    },
     scrollToTarget() {
       var targetDiv = document.getElementById('reviews')
       if (targetDiv) {
@@ -617,6 +562,11 @@ export default {
     },
     switchTab(tabId) {
       this.activeTab = tabId
+    },
+    showModal() {
+      $(document).ready(function () {
+        $('#global-modal').modal('show')
+      })
     }
   }
 }
@@ -814,13 +764,13 @@ textarea#comment-area.form.control {
   margin-left: 1% !important;
 }
 .cardgroup1 {
-  margin-top: 10px !important;
+  margin-top: 5px !important;
   margin-right: 10% !important;
   align-items: left;
 }
 .tab-content {
   padding: 12px !important;
-  margin-top: 10px !important;
+  margin-top: 5px !important;
   border: 1px solid var(--color-primary) !important;
 }
 div#RatingCard.card {
@@ -858,4 +808,21 @@ div#RatingCard.card {
 .nav-tabs {
   width: 100%;
 }
+.nav-tabs .nav-link {
+  color: gray;
+  border: 0;
+  border-bottom: 1px solid grey;
+}
+
+.nav-tabs .nav-link:hover {
+  border: 0;
+  border-bottom: 1px solid grey;
+}
+.nav-tabs .nav-link.active {
+  color: #000000;
+  border: 0;
+  border-radius: 0;
+  border-bottom: 2px solid blue;
+}
+/* MODAL*/
 </style>
