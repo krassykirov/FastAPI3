@@ -404,6 +404,10 @@ INPUT[type="checkbox"]:disabled {
       display: block;
       margin-bottom: 5px;
   }
+  .form-check-input[disabled] ~ .form-check-label, .form-check-input:disabled ~ .form-check-label {
+    cursor: default;
+    opacity: 1 !important;
+}
 
   .custom-button:hover {
     background-color: #e0e0e0; 

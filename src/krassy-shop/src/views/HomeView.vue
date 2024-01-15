@@ -230,6 +230,7 @@
                 type="checkbox"
                 :id="'rating' + rating"
                 :value="rating"
+                :disabled="getRatingItemCount(rating) === 0"
                 v-model="selectedRating"
               />
               <label class="form-check-label" :for="'rating' + rating">
