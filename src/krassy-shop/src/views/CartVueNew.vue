@@ -179,11 +179,10 @@ export default {
       this.$store.dispatch('redirectToItem', itemId)
     },
     updateQuantity(product_id, newQuantity) {
-      const product = this.$store.getters.cart.find(
-        item => item.id === product_id
-      )
-      newQuantity = Math.max(1, Math.min(3, newQuantity))
-      product.quantity = newQuantity
+      this.$store.dispatch('UpdateItemQuantity', {
+        product_id,
+        newQuantity
+      })
     }
   }
 }

@@ -54,15 +54,18 @@ def create_item(item: src.schemas.ItemCreate, db: Session = Depends(get_session)
     return item
 
 @items_router.put("/update_item/{item_id}", include_in_schema=True, response_model=src.schemas.ItemRead)
-async def update_item(item_id: int, item_update: src.schemas.ItemUpdate, db: Session=Depends(get_session)) -> src.schemas.ItemRead:
+async def update_item(request: Request, item_id: int, item_update: src.schemas.ItemUpdate, db: Session=Depends(get_session)) -> src.schemas.ItemRead:
+    data = await request.json()
     item = ItemActions().get_item_by_id(db=db, id=item_id)
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
-    new_data = Item(**dict(item_update), id=item).dict(exclude_unset=True, exclude_none=True)
+    new_data = Item(**dict(item_update), id=item, quantity=data.get('quantity')).dict(exclude_unset=True, exclude_none=True)
+    print('updating item bewfore', new_data)
     for key, value in new_data.items():
         setattr(item, key, value)
         db.commit()
         db.refresh(item)
+    print('updating item after', item)
     return item
 
 @items_router.delete("/delete/{item_id}", status_code=status.HTTP_204_NO_CONTENT)

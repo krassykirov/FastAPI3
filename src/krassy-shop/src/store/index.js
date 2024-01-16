@@ -94,7 +94,6 @@ export default createStore({
       const product = state.cart.find(item => item.id === product_id)
       if (product) {
         product.quantity = newQuantity
-        console.log('state.total', state.total)
       }
     },
     TOGGLE_SORT_ORDER(state) {
@@ -253,9 +252,6 @@ export default createStore({
       commit('UPDATE_USER_ID', data.user_id)
       commit('UPDATE_TOTAL', data.total)
     },
-    updateCartItemQuantity({ commit }, { product_id, newQuantity }) {
-      commit('updateCartItemQuantity', { product_id, newQuantity })
-    },
     redirectToItem({ commit }, itemId) {
       commit('UPDATE_SELECTED_ITEM', itemId)
       router.push({ name: 'Item', params: { itemId } })
@@ -345,6 +341,39 @@ export default createStore({
           })
           .then(() => {
             commit('ADD_TO_CART', product)
+          })
+          .catch(error => {
+            console.error('error', error)
+          })
+      }
+    },
+    UpdateItemQuantity({ commit, state }, { product_id, newQuantity }) {
+      const headers = new Headers({
+        Authorization: `Bearer ${state.accessToken}`,
+        Accept: 'application/json'
+      })
+      const requestOptions = {
+        method: 'PUT',
+        headers: headers,
+        redirect: 'follow',
+        body: JSON.stringify({
+          quantity: newQuantity
+        })
+      }
+      const itemInCart = state.cart.find(item => item.id === product_id)
+      if (itemInCart) {
+        fetch(
+          `http://127.0.0.1:8000/api/items/update_item/${product_id}`,
+          requestOptions
+        )
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`)
+            }
+            return response.json()
+          })
+          .then(() => {
+            commit('updateCartItemQuantity', { product_id, newQuantity })
           })
           .catch(error => {
             console.error('error', error)

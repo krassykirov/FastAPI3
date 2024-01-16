@@ -68,18 +68,22 @@ class ItemRead(BaseModel):
         }
 
 class ItemUpdate(BaseModel):
-    price: Optional[decimal.Decimal]
-    description:  Optional[str]
+    name: Optional[str]
     class Config:
         orm_mode = True
         schema_extra = {
         "example": {
-             "price": 999.99,
-             "description": "description",
-             "category": {
-                "id": 2,
-                "name": "IT"
-             }
+            "id":1,
+            "name": "Item-Name",
+            "price": 99.99,
+            "date": "2023-11-22 13:50:51",
+            "image": "image.pgn",
+            "username": "Krassy",
+            "description": "description",
+            'in_cart': "false",
+            'discount': 0.2,
+            'discount_price': '1009.11',
+            'quantity': 1
          }
      }
 class ItemCreate(BaseModel):
