@@ -100,7 +100,7 @@
                 @click="redirectToItemFromNavbar(item.id)"
               >
                 <div style="font-size: 0.9rem; width: 180px">
-                  {{ item.name }} - ${{ item.price }}
+                  x{{ item.quantity }} {{ item.name }} - ${{ item.price }}
                 </div>
               </div>
             </div>

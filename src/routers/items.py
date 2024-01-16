@@ -10,7 +10,7 @@ from src.crud.crud import ItemActions, CategoryActions
 from typing import Optional, List, Annotated, Union
 from src.auth.oauth import get_current_user
 
-PROTECTED = [Depends(get_current_user)] 
+PROTECTED = [Depends(get_current_user)]
 
 items_router = APIRouter(prefix='/api/items', tags=["items"],
                           responses={404: {"description": "Not found"}})

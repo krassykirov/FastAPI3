@@ -52,14 +52,19 @@
                     style="max-width: 50px; max-height: 50px"
                   />
                 </td>
-                <td>
+                <td
+                  @click="redirectToItemFromCart(product.id)"
+                  style="cursor: pointer"
+                >
                   {{ product.name }}
                 </td>
                 <td>
                   <b
                     >${{
-                      product.price -
-                      (product.price * product.discount).toFixed(2)
+                      (
+                        product.quantity * product.price -
+                        product.price * product.discount
+                      ).toFixed(2)
                     }}</b
                   >
                 </td>
@@ -78,7 +83,9 @@
                     <input
                       type="number"
                       class="form-control text-center"
-                      :value="1"
+                      min="1"
+                      max="3"
+                      :value="product.quantity"
                       readonly
                     />
                     <button
@@ -103,7 +110,7 @@
             </tbody>
           </table>
           <div class="text-end mt-4">
-            <h4>Total: ${{ calculateTotal() }}</h4>
+            <h4>Total: ${{ total }}</h4>
             <button class="btn btn-success">Proceed to Payment</button>
           </div>
         </div>
@@ -168,21 +175,15 @@ export default {
     removeFromCart(itemId) {
       this.$store.dispatch('removeFromCart', itemId)
     },
-    redirectToItemFromProduct(itemId) {
+    redirectToItemFromCart(itemId) {
       this.$store.dispatch('redirectToItem', itemId)
     },
-    calculateSubtotal() {
-      return this.cart
-        .reduce((total, product) => total + product.price, 0)
-        .toFixed(2)
-    },
-    calculateTax() {
-      return (this.calculateSubtotal() * 0.1).toFixed(2)
-    },
-    calculateTotal() {
-      return (
-        parseFloat(this.calculateSubtotal()) + parseFloat(this.calculateTax())
-      ).toFixed(2)
+    updateQuantity(product_id, newQuantity) {
+      const product = this.$store.getters.cart.find(
+        item => item.id === product_id
+      )
+      newQuantity = Math.max(1, Math.min(3, newQuantity))
+      product.quantity = newQuantity
     }
   }
 }

@@ -71,6 +71,7 @@ class Item(SQLModel, table=True):
     description:  Optional[str]
     in_cart:      Optional[Dict[Any,Any]] = Field(default={}, sa_column=Column(JSON))
     discount:     Optional[decimal.Decimal]
+    quantity:     Optional[int] = Field(default=1)
 
     class Config:
         arbitrary_types_allowed = True

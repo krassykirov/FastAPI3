@@ -48,6 +48,7 @@ class ItemRead(BaseModel):
     in_cart: Optional[Dict[Any,Any]]
     discount: Optional[decimal.Decimal]
     discount_price: Optional[decimal.Decimal]
+    quantity: Optional[int]
     class Config:
         orm_mode = True
         schema_extra = {
@@ -61,7 +62,8 @@ class ItemRead(BaseModel):
             "description": "description",
             'in_cart': "false",
             'discount': 0.2,
-            'discount_price': '1009.11'
+            'discount_price': '1009.11',
+            'quantity': 1
            }
         }
 

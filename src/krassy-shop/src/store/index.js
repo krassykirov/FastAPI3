@@ -6,6 +6,7 @@ export default createStore({
   state: {
     min: 1,
     max: 10000,
+    total: 0,
     products: [],
     filteredProducts: [],
     isDiscountedChecked: false,
@@ -53,6 +54,9 @@ export default createStore({
     UPDATE_CART(state, items) {
       state.cart = items
     },
+    UPDATE_TOTAL(state, total) {
+      state.total = total
+    },
     UPDATE_USER(state, user) {
       state.user = user
     },
@@ -86,8 +90,12 @@ export default createStore({
     SET_FILTERED_PRODUCTS(state, filteredProducts) {
       state.filteredProducts = filteredProducts
     },
-    SET_TOTAL(state, total) {
-      state.total = total.toFixed(2)
+    updateCartItemQuantity(state, { product_id, newQuantity }) {
+      const product = state.cart.find(item => item.id === product_id)
+      if (product) {
+        product.quantity = newQuantity
+        console.log('state.total', state.total)
+      }
     },
     TOGGLE_SORT_ORDER(state) {
       state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc'
@@ -243,6 +251,10 @@ export default createStore({
       commit('UPDATE_CART', data.items)
       commit('UPDATE_USER', data.user)
       commit('UPDATE_USER_ID', data.user_id)
+      commit('UPDATE_TOTAL', data.total)
+    },
+    updateCartItemQuantity({ commit }, { product_id, newQuantity }) {
+      commit('updateCartItemQuantity', { product_id, newQuantity })
     },
     redirectToItem({ commit }, itemId) {
       commit('UPDATE_SELECTED_ITEM', itemId)
@@ -380,7 +392,7 @@ export default createStore({
     },
     total: state => {
       return state.cart
-        .reduce((total, item) => total + Number(item.price), 0)
+        .reduce((total, item) => total + Number(item.price * item.quantity), 0)
         .toFixed(2)
     },
     filteredProducts: state => {
