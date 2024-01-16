@@ -348,6 +348,7 @@ export default createStore({
       }
     },
     UpdateItemQuantity({ commit, state }, { product_id, newQuantity }) {
+      newQuantity = Math.max(1, Math.min(5, newQuantity))
       const headers = new Headers({
         Authorization: `Bearer ${state.accessToken}`,
         Accept: 'application/json'
