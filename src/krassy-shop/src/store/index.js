@@ -1,9 +1,13 @@
 import { createStore } from 'vuex'
 import VueCookies from 'vue-cookies'
+import { jwtDecode } from 'jwt-decode'
 import router from '@/router'
 /* global bootstrap */
 export default createStore({
   state: {
+    accessToken: VueCookies.get('access_token') || null,
+    user: null,
+    user_id: null,
     min: 1,
     max: 10000,
     total: 0,
@@ -16,9 +20,6 @@ export default createStore({
     selectedCategories: [],
     selectedRating: [],
     ratings: [1, 2, 3, 4, 5],
-    user: null,
-    accessToken: VueCookies.get('access_token') || null,
-    user_id: null,
     productMin: 0,
     productMax: 10000
   },
@@ -144,7 +145,7 @@ export default createStore({
         console.error('Error fetching products:', error)
       }
     },
-    async login({ commit }, { username, password }) {
+    async login({ commit, dispatch }, { username, password }) {
       const formData = new URLSearchParams()
       formData.append('grant_type', '')
       formData.append('username', username)
@@ -164,10 +165,18 @@ export default createStore({
         const data = await response.json()
         VueCookies.set('access_token', data.access_token, '12h')
         commit('setAccessToken', data.access_token)
+        await dispatch('initializeUser')
         router.push('/')
       } catch (error) {
         console.error('error', error)
       }
+    },
+    async initializeUser({ commit, state }) {
+      const decoded = jwtDecode(state.accessToken)
+      const user = decoded.sub
+      const user_id = decoded.user_id
+      commit('UPDATE_USER', user)
+      commit('UPDATE_USER_ID', user_id)
     },
     async removeAccessToken({ commit }) {
       VueCookies.remove('access_token')
@@ -248,9 +257,9 @@ export default createStore({
       }
       const data = await response.json()
       commit('UPDATE_CART', data.items)
+      commit('UPDATE_TOTAL', data.total)
       commit('UPDATE_USER', data.user)
       commit('UPDATE_USER_ID', data.user_id)
-      commit('UPDATE_TOTAL', data.total)
     },
     redirectToItem({ commit }, itemId) {
       commit('UPDATE_SELECTED_ITEM', itemId)
@@ -445,18 +454,18 @@ export default createStore({
         )
       })
     },
+    accessToken: state => state.accessToken,
+    user: state => state.user,
+    user_id: state => state.user_id,
+    products: state => state.products,
+    cart: state => state.cart,
     min: state => state.min,
     max: state => state.max,
-    products: state => state.products,
     categories: state => state.categories,
-    cart: state => state.cart,
     sortOrder: state => state.sortOrder,
     selectedCategories: state => state.selectedCategories,
     selectedRating: state => state.selectedRating,
     ratings: state => state.ratings,
-    user: state => state.user,
-    accessToken: state => state.accessToken,
-    userId: state => state.user_id,
     productMin: state => state.productMin,
     productMax: state => state.productMax
   }

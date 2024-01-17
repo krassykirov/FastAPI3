@@ -123,9 +123,6 @@ export default {
     }
   },
   methods: {
-    async updateFilters() {
-      await this.$store.dispatch('filterProducts')
-    },
     redirectToItemFromProduct(itemId) {
       this.$store.dispatch('redirectToItem', itemId)
     },

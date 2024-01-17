@@ -347,14 +347,14 @@ export default {
     ratings() {
       return this.$store.getters.ratings
     },
-    user() {
-      return this.$store.getters.user
-    },
     accessToken() {
       return this.$store.getters.accessToken
     },
-    userId() {
-      return this.$store.getters.userId
+    user_id() {
+      return this.$store.getters.user_id
+    },
+    user() {
+      return this.$store.getters.user
     },
     categories() {
       return this.$store.getters.categories

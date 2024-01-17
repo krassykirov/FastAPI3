@@ -134,59 +134,57 @@
           </button>
         </div>
       </div>
-      <div
-        class="ml-auto"
-        style="
-          font-family: Raleway;
-          font-size: 14px;
-          margin-left: 0;
-          margin-right: 0;
-        "
-      >
-        <form class="form-inline my-2" style="margin-right: 80px">
-          <div class="dropdown" style="font-family: Raleway; font-size: 16px">
-            <img :src="avatar" class="avatar" v-if="!avatar" />
-            <img
-              src="http://127.0.0.1:8000/static/img/img_avatar.png"
-              class="avatar"
-              v-else
-            />
-            <div class="dropdown-content" style="text-align: center">
-              <a
-                class="nav-link text-uppercase"
-                href="http://127.0.0.1:8000/user/profile"
-                style="width: 100%"
-                >Profile</a
-              >
-              <a
-                class="nav-link text-uppercase"
-                style="width: 100%"
-                type="button"
-                @click="logout"
-                >Logout</a
-              >
-              <div
-                v-if="user === 'krassy@mail.bg'"
-                d-flex
-                bd-highlight
-                mb-3
-                class="cart"
-              >
-                <a
-                  class="btn btn-light btn-sm"
-                  data-toggle="modal"
-                  data-target="#addItem"
-                  href="#"
-                  style="font-family: inherit; margin-top: 14%"
-                >
-                  Add Product
-                </a>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
     </div>
+    <ul
+      class="navbar-nav ms-auto mb-2 mb-lg-0 profile-menu"
+      style="margin-right: 120px"
+    >
+      <li class="nav-item dropdown">
+        <a
+          class="nav-link dropdown-toggle"
+          href="#"
+          id="navbarDropdownMenuLink"
+          role="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+          style="cursor: pointer"
+        >
+          <img
+            src="https://s3.eu-central-1.amazonaws.com/bootstrapbaymisc/blog/24_days_bootstrap/fox.jpg"
+            width="40"
+            height="40"
+            class="rounded-circle"
+          />
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item">
+            <router-link
+              style="
+                text-decoration: none;
+                color: inherit;
+                font-family: inherit;
+              "
+              to="/Profile"
+              >Profile</router-link
+            >
+          </a>
+          <a class="dropdown-item" style="cursor: pointer" @click="logout"
+            >Logout</a
+          >
+          <a
+            class="dropdown-item"
+            v-if="user === 'krassy@mail.bg'"
+            data-toggle="modal"
+            data-target="#addItem"
+            href="#"
+            style="font-family: inherit; margin-top: 14%"
+          >
+            Add Product
+          </a>
+        </div>
+      </li>
+    </ul>
     <div
       class="modal fade"
       id="addItem"

@@ -285,6 +285,7 @@ async def create_profile(request: Request, db: Session = Depends(get_session), u
         except Exception as e:
             db.rollback()
             return HTTPException(status_code=400, detail=f"Something went wrong, error {e}")
+    return user_profile
     # json_compatible_item_data = jsonable_encoder(user_profile)
     # return JSONResponse(content=json_compatible_item_data)
     return templates.TemplateResponse("profile.html", {"request": request,

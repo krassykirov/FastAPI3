@@ -31,6 +31,11 @@ const routes = [
     component: () => import('../views/SignUp.vue')
   },
   {
+    path: '/Profile',
+    name: 'Profile',
+    component: () => import('../views/ProfileVue.vue')
+  },
+  {
     path: '/item/:itemId',
     name: 'Item',
     component: () => import('../views/MyItemLast.vue'),
