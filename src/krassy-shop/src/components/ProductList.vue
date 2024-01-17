@@ -82,9 +82,10 @@
         "
       >
         Price: ${{ product.discount_price }}
-        <span v-if="!Number.isInteger(product.price)" class="decimal-part">
-          {{ product.price.toString().split('.')[1] }}
-        </span>
+        <!-- <span v-if="Number.isInteger(product.price)" class="decimal-part">
+          {{ product.price }}
+          {{ Math.floor(product.price).toString().split('.')[1] }}
+        </span> -->
       </span>
       <span v-if="product.discount >= 0.1" class="old-price">
         Old Price: ${{ Math.floor(product.price) }}

@@ -45,28 +45,28 @@
             <div class="row my-3 previews">
               <div class="col-md-3">
                 <img
-                  class="w-75"
+                  class="img-fluid"
                   :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
-                  class="w-75"
+                  class="img-fluid"
                   :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
-                  class="w-75"
+                  class="img-fluid"
                   :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
-                  class="w-75"
+                  class="img-fluid"
                   :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
@@ -213,9 +213,7 @@
           </a>
         </li>
       </ul>
-      <!-- Tab Content -->
       <div class="tab-content mt-3">
-        <!-- Reviews Tab -->
         <div
           v-if="activeTab === 'reviews'"
           class="tab-pane"
@@ -223,7 +221,6 @@
           id="reviews"
           style="justify-content-left"
         >
-          <!-- Reviews content -->
           <div v-if="item">
             <div
               class="cardgroup1"
@@ -270,8 +267,6 @@
                 <p>{{ review.text }}</p>
               </div>
             </div>
-
-            <!-- Add Review Textarea and Buttons -->
             <div
               class="cardgroup1"
               style="width: 650px; margin-bottom: 2px"
@@ -350,7 +345,7 @@
           class="tab-pane"
           :class="{ active: activeTab === 'specification' }"
           id="specification"
-          style="align-text: left; margin-left: 20%; margin-right: 20%"
+          style="align-text: left; margin-left: 30%; margin-right: 30%"
         >
           <!-- Specification content -->
           <p v-if="item">
@@ -591,13 +586,13 @@ text-color {
 
 /* Main image - left */
 .main-img img {
-  width: 100%;
+  width: 80% !important;
 }
 
 /* Preview images */
 .previews img {
-  width: 100%;
-  height: 140px;
+  width: 90% !important;
+  height: auto !important;
 }
 
 .main-description .category {

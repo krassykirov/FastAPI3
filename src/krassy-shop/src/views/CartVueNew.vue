@@ -29,7 +29,7 @@
     </nav>
     <div class="container-fluid mt-5" style="margin-left: 10%">
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-8" style="max-width: 1200px">
           <h2 class="text-center mb-4">Checkout</h2>
 
           <table class="table table-striped table-hover">
@@ -58,7 +58,7 @@
                 >
                   {{ product.name }}
                 </td>
-                <td>
+                <td style="width: 100px">
                   <b
                     >${{
                       (
