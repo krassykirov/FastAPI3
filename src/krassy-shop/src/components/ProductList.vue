@@ -144,12 +144,6 @@ export default {
       } else {
         return 'fa fa-star-o checked'
       }
-    },
-    truncateDescription(description, maxLength) {
-      if (description.length > maxLength) {
-        return description.substring(0, maxLength) + '...'
-      }
-      return description
     }
   }
 }

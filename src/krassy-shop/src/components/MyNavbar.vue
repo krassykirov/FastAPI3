@@ -93,6 +93,7 @@
                   height: 60px;
                   object-fit: cover;
                   border-radius: 5px;
+                  font-family: Georgia, 'Times New Roman', Times, serif;
                 "
               />
               <div
@@ -100,7 +101,8 @@
                 @click="redirectToItemFromNavbar(item.id)"
               >
                 <div style="font-size: 0.9rem; width: 180px">
-                  x{{ item.quantity }} {{ item.name }} - ${{
+                  x{{ item.quantity }}
+                  {{ truncateDescription(item.name, 30) }} ${{
                     formatPrice(item.price, item.quantity)
                   }}
                 </div>
@@ -366,6 +368,12 @@ export default {
     },
     formatPrice(price, quantity) {
       return (price * quantity).toFixed(2)
+    },
+    truncateDescription(description, maxLength) {
+      if (description.length > maxLength) {
+        return description.substring(0, maxLength) + '..'
+      }
+      return description
     }
   }
 }

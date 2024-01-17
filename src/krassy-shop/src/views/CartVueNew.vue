@@ -35,7 +35,7 @@
           <table class="table table-striped table-hover">
             <thead>
               <tr style="height: auto">
-                <th scope="col">Image</th>
+                <th scope="col"></th>
                 <th scope="col">Product</th>
                 <th scope="col">Price</th>
                 <th scope="col">Quantity</th>

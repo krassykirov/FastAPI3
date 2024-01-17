@@ -14,6 +14,7 @@
         :avatar="'{{ avatar }}'"
         @addToCart="addToCart"
         @removeFromCart="removeFromCart"
+        @redirectToItemFromNavbar="redirectToItemFromNavbar"
       />
     </nav>
     <div
@@ -437,6 +438,9 @@ export default {
     },
     handleDiscountChange() {
       this.$store.dispatch('handleDiscountChange', this.isChecked)
+    },
+    redirectToItemFromNavbar(itemId) {
+      this.$store.dispatch('redirectToItem', itemId)
     }
   }
 }
