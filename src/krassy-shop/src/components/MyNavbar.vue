@@ -52,6 +52,7 @@
       >
         <button
           @click="displayCart = !displayCart"
+          @dblclick="handleDoubleClick"
           class="btn btn-light dropdown-toggle btn-sm"
           id="cartDropdown"
           aria-haspopup="true"
@@ -372,6 +373,9 @@ export default {
         return description.substring(0, maxLength) + '..'
       }
       return description
+    },
+    handleDoubleClick() {
+      this.$router.push('/cart')
     }
   }
 }
