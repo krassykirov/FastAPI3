@@ -5,7 +5,7 @@
   >
     <nav
       class="navbar navbar-expand-lg bg-white sticky-top navbar-light ms-auto shadow-lg"
-      style="height: 4em; margin-left: 0; margin-right: 0"
+      style="height: 4em"
     >
       <MyNavbar
         :cart="cart"

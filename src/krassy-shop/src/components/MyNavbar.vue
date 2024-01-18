@@ -103,7 +103,7 @@
                 <div style="font-size: 0.9rem; width: 180px">
                   x{{ item.quantity }}
                   {{ truncateDescription(item.name, 30) }} ${{
-                    formatPrice(item.price, item.quantity)
+                    formatPrice(item.price)
                   }}
                 </div>
               </div>
@@ -364,8 +364,8 @@ export default {
         })
       })
     },
-    formatPrice(price, quantity) {
-      return (price * quantity).toFixed(2)
+    formatPrice(price) {
+      return price.toFixed(2)
     },
     truncateDescription(description, maxLength) {
       if (description.length > maxLength) {

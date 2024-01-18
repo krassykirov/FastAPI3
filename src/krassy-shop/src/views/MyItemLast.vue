@@ -20,13 +20,7 @@
         text-align: center;
       "
     >
-      <NavBar
-        :cart="cart"
-        :total="total"
-        :profile="profile"
-        :user="user"
-        :avatar="'{{ avatar }}'"
-      />
+      <NavBar :cart="cart" :total="total" :profile="profile" :user="user" />
     </nav>
     <div class="container my-5">
       <div class="row">

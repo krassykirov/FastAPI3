@@ -9,7 +9,12 @@ body {
   scrollbar-gutter: stable both-edges;
   background-color: #f2f6f6;
 }
-
+.navbar {
+  padding: 0 !important;
+  margin: 0 !important;
+  margin-left: 0!important;
+  margin-right: 0 !important;
+}
 * {
   font-family: 'Raleway';
 }

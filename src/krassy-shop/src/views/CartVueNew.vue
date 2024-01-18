@@ -57,7 +57,7 @@
                   <b
                     >${{
                       (
-                        product.quantity * product.price -
+                        product.price -
                         product.price * product.discount
                       ).toFixed(2)
                     }}</b
