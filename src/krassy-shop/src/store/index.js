@@ -8,6 +8,7 @@ export default createStore({
     accessToken: VueCookies.get('access_token') || null,
     user: null,
     user_id: null,
+    profile: null,
     min: 1,
     max: 10000,
     total: 0,
@@ -63,6 +64,9 @@ export default createStore({
     },
     UPDATE_USER_ID(state, user_id) {
       state.user_id = user_id
+    },
+    UPDATE_PROFILE(state, profile) {
+      state.profile = profile
     },
     UPDATE_SELECTED_ITEM(state, itemId) {
       state.selectedItem = itemId
@@ -182,6 +186,28 @@ export default createStore({
       VueCookies.remove('access_token')
       commit('removeAccessToken')
       router.push('/login')
+    },
+    async getProfile({ commit, state }) {
+      const headers = new Headers({
+        Authorization: `Bearer ${state.accessToken}`,
+        Accept: 'application/json'
+      })
+      const requestOptions = {
+        method: 'GET',
+        headers: headers,
+        redirect: 'follow'
+      }
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/profile/${state.user_id}`,
+        requestOptions
+      )
+      if (!response.ok) {
+        console.log('response error', response)
+      } else {
+        const data = await response.json()
+        this.profile = data
+        commit('UPDATE_PROFILE', data)
+      }
     },
     async fetchCategories({ commit }) {
       try {
@@ -457,6 +483,7 @@ export default createStore({
     accessToken: state => state.accessToken,
     user: state => state.user,
     user_id: state => state.user_id,
+    profile: state => state.profile,
     products: state => state.products,
     cart: state => state.cart,
     min: state => state.min,

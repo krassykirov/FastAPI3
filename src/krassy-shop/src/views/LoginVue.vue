@@ -82,6 +82,7 @@
 </template>
 
 <script>
+import router from '@/router'
 export default {
   data() {
     return {
@@ -95,6 +96,9 @@ export default {
         username: this.username,
         password: this.password
       })
+    },
+    redirectToSignup() {
+      router.push('/signup')
     }
   }
 }

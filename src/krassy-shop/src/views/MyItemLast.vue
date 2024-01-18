@@ -23,6 +23,7 @@
       <NavBar
         :cart="cart"
         :total="total"
+        :profile="profile"
         :user="user"
         :avatar="'{{ avatar }}'"
       />
@@ -366,7 +367,7 @@ export default {
   components: {
     NavBar
   },
-  props: ['product', 'cart', 'total', 'avatar'],
+  props: ['product', 'cart', 'total', 'profile'],
   emits: ['addToCart'],
   data() {
     return {
@@ -391,7 +392,7 @@ export default {
       return this.$store.getters.user
     },
     accessToken() {
-      return this.$store.state.accessToken || null
+      return this.$store.state.accessToken
     },
     totalPages() {
       return Math.ceil(this.item.reviews.length / this.reviewsPerPage)

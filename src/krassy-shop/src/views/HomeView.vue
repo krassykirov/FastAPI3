@@ -11,7 +11,7 @@
         :cart="cart"
         :total="total"
         :user="user"
-        :avatar="'{{ avatar }}'"
+        :profile="profile"
         @addToCart="addToCart"
         @removeFromCart="removeFromCart"
         @redirectToItemFromNavbar="redirectToItemFromNavbar"
@@ -301,6 +301,7 @@ export default {
       .dispatch('getProducts')
       .then(() => this.$store.dispatch('readFromCartVue'))
       .then(() => this.$store.dispatch('fetchCategories'))
+      .then(() => this.$store.dispatch('getProfile'))
       .then(() => {
         const fetchRatingsPromises = this.$store.state.products.map(product => {
           return this.$store.dispatch('getItemRating', product.id)
@@ -355,6 +356,9 @@ export default {
     },
     user() {
       return this.$store.getters.user
+    },
+    profile() {
+      return this.$store.getters.profile
     },
     categories() {
       return this.$store.getters.categories

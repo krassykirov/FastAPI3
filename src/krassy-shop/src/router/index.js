@@ -17,7 +17,7 @@ const routes = [
     path: '/cart',
     name: 'ItemsInCart',
     component: () => import('../views/CartVueNew.vue'),
-    props: () => ({ cart: store.state.cart })
+    props: () => ({ cart: store.state.cart, profile: store.state.profile })
   },
   // {
   //   path: '/item/:itemId',
@@ -33,13 +33,18 @@ const routes = [
   {
     path: '/Profile',
     name: 'Profile',
-    component: () => import('../views/ProfileVue.vue')
+    component: () => import('../views/ProfileVue.vue'),
+    props: () => ({ cart: store.state.cart })
   },
   {
     path: '/item/:itemId',
     name: 'Item',
     component: () => import('../views/MyItemLast.vue'),
-    props: route => ({ itemId: route.params.itemId, cart: store.state.cart })
+    props: route => ({
+      itemId: route.params.itemId,
+      cart: store.state.cart,
+      profile: store.state.profile
+    })
   }
 ]
 

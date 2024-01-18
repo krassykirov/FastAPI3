@@ -151,9 +151,10 @@
           style="cursor: pointer"
         >
           <img
-            src="https://s3.eu-central-1.amazonaws.com/bootstrapbaymisc/blog/24_days_bootstrap/fox.jpg"
-            width="40"
-            height="40"
+            v-if="profile"
+            :src="`http://127.0.0.1:8000/static/img/${user}/profile/${profile.avatar}`"
+            width="50"
+            height="50"
             class="rounded-circle"
           />
         </a>
@@ -301,7 +302,7 @@
 <script>
 import $ from 'jquery'
 export default {
-  props: ['cart', 'user', 'avatar'],
+  props: ['cart', 'user', 'avatar', 'profile'],
   emits: ['removeFromCart', 'removeAccessToken'],
   data() {
     return {
@@ -353,7 +354,6 @@ export default {
           },
           data: formData,
           success: function () {
-            console.log('success')
             window.location.href = '/products'
           },
           error: function (xhr) {
