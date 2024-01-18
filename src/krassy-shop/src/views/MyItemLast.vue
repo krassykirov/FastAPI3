@@ -25,7 +25,7 @@
     <div class="container my-5">
       <div class="row">
         <div class="col-md-5">
-          <div class="main-img" v-if="item">
+          <div class="main-img" v-if="item" :id="'main-image-' + item.id">
             <span
               class="badge bg-danger position-absolute top-5 start-5"
               v-if="item.discount >= 0.1"
@@ -456,16 +456,15 @@ export default {
     async getProduct(itemId) {
       try {
         const resolvedItemId = itemId || this.$route.params.itemId
-        console.log('Fetching product for itemId:', resolvedItemId)
         const res = await fetch(
           `http://127.0.0.1:8000/api/items/item/${resolvedItemId}`
         )
         const item = await res.json()
-        console.log('Fetched item:', item)
         this.item = item
         this.$nextTick(() => {
           this.getItemRating(item.id)
         })
+        this.scrollToTop()
       } catch (error) {
         console.error('Error fetching product:', error)
       }
@@ -595,6 +594,9 @@ export default {
       if (targetDiv) {
         targetDiv.scrollIntoView({ behavior: 'smooth' })
       }
+    },
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     },
     setCurrentPage(page) {
       this.currentPage = page
