@@ -71,7 +71,9 @@
         </div>
         <div class="col-md-7">
           <div class="main-description px-2">
-            <div class="category text-bold">Category: Women</div>
+            <div class="category text-bold" v-if="item">
+              Category: {{ getCategoryNameById(item.category_id) }}
+            </div>
             <div class="product-title text-bold my-3" v-if="item">
               {{ item.name }}
             </div>
@@ -557,6 +559,16 @@ export default {
       $(document).ready(function () {
         $('#global-modal').modal('show')
       })
+    },
+    getCategoryNameById(categoryId) {
+      const categoryIdToName = {
+        1: 'Laptops',
+        2: 'Smartphones',
+        3: 'Tablets',
+        4: 'Smartwatches',
+        5: 'TV'
+      }
+      return categoryIdToName[categoryId]
     }
   }
 }
