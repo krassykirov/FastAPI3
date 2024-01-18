@@ -134,7 +134,7 @@
           </div>
           <div class="product-details my-2" v-if="item">
             <p class="details-title text-color mb-1">Product Details</p>
-            <p class="description">
+            <p class="description" style="margin-left: 20%; margin-right: 20%">
               {{ item.description }}
             </p>
           </div>
@@ -187,6 +187,40 @@
         id="cartToastBody"
         style="font-weight: 900; font: 1.1em"
       ></div>
+    </div>
+    <div class="container similar-products my-4">
+      <hr />
+      <p class="display-5">Related to your search</p>
+
+      <div class="row" v-if="item && filteredProducts.length">
+        <div
+          class="col-md-3"
+          v-for="product in getSimilarProducts"
+          :key="product.id"
+        >
+          <div
+            class="similar-product"
+            @click="redirectToItem(product.id)"
+            style="cursor: pointer"
+          >
+            <img
+              class="w-100"
+              :src="
+                'http://127.0.0.1:8000/static/img/' +
+                product.username +
+                '/' +
+                product.name +
+                '/' +
+                product.image
+              "
+              alt="Preview"
+            />
+            <p class="title">{{ product.name }}</p>
+            <p class="price">${{ product.price }}</p>
+            <p class="price">${{ product.discountPrice }}</p>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="container mt-4">
       <!-- Horizontal Tabs -->
@@ -357,6 +391,7 @@
 
 <script>
 import $ from 'jquery'
+// import router from '@/router'
 import NavBar from '../components/MyNavbar.vue'
 
 export default {
@@ -364,7 +399,7 @@ export default {
     NavBar
   },
   props: ['product', 'cart', 'total', 'profile'],
-  emits: ['addToCart'],
+  emits: ['addToCart', 'redirectToItem'],
   data() {
     return {
       item: this.item,
@@ -375,12 +410,27 @@ export default {
       activeTab: 'reviews'
     }
   },
+  beforeRouteUpdate(to, from, next) {
+    this.getProduct(to.params.itemId)
+    next()
+  },
   created() {
     this.getProduct()
+    this.$store.dispatch('getProducts')
     this.setReviewsRating(this.itemId)
     this.$store.dispatch('readFromCartVue')
   },
   computed: {
+    filteredProducts() {
+      return this.$store.getters.filteredProducts
+    },
+    getSimilarProducts() {
+      return this.filteredProducts.filter(
+        product =>
+          product.category_id === this.item.category_id &&
+          product.id !== this.item.id
+      )
+    },
     cartFromStore() {
       return this.$store.state.cart
     },
@@ -403,16 +453,19 @@ export default {
     }
   },
   methods: {
-    async getProduct() {
+    async getProduct(itemId) {
       try {
-        const itemId = this.$route.params.itemId
-        this.itemId = itemId
+        const resolvedItemId = itemId || this.$route.params.itemId
+        console.log('Fetching product for itemId:', resolvedItemId)
         const res = await fetch(
-          `http://127.0.0.1:8000/api/items/item/${itemId}`
+          `http://127.0.0.1:8000/api/items/item/${resolvedItemId}`
         )
         const item = await res.json()
+        console.log('Fetched item:', item)
         this.item = item
-        this.getItemRating(itemId)
+        this.$nextTick(() => {
+          this.getItemRating(item.id)
+        })
       } catch (error) {
         console.error('Error fetching product:', error)
       }
@@ -442,11 +495,15 @@ export default {
     addToCart(product) {
       this.$store.dispatch('addToCart', product)
     },
+    redirectToItem(itemId) {
+      this.$store.dispatch('redirectToItem', itemId)
+    },
     itemAlreadyInCart(product) {
       return this.cart.some(item => item.id === product.id)
     },
-    setReviewsRating(id) {
-      fetch(`http://127.0.0.1:8000/api/reviews?item_id=${id}`, {
+    setReviewsRating(itemId) {
+      const resolvedItemId = itemId || this.$route.params.itemId
+      fetch(`http://127.0.0.1:8000/api/reviews?item_id=${resolvedItemId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -653,13 +710,17 @@ text-color {
 }
 
 .similar-product img {
-  height: 400px;
+  max-height: 320px !important;
 }
 
 .similar-product {
-  text-align: left;
+  text-align: center;
 }
-
+.display-5 {
+  font-weight: 300;
+  line-height: 1.2;
+  font-size: 2em;
+}
 .similar-product .title {
   margin: 17px 0px 4px 0px;
 }

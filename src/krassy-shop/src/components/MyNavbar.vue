@@ -160,6 +160,9 @@
           />
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" style="color: grey; pointer-events: none">
+            {{ user }}
+          </a>
           <a class="dropdown-item">
             <router-link
               style="
