@@ -190,7 +190,9 @@
     </div>
     <div class="container similar-products my-4">
       <hr />
-      <p class="display-5">Related to your search</p>
+      <p class="display-5" v-if="item && getSimilarProducts.length">
+        You may also like
+      </p>
 
       <div class="row" v-if="item && filteredProducts.length">
         <div
@@ -203,8 +205,14 @@
             @click="redirectToItem(product.id)"
             style="cursor: pointer"
           >
+            <span
+              class="badge bg-danger position-absolute top-5 start-5"
+              v-if="product.discount >= 0.1"
+              style="font-size: 0.9em; margin: 1%; top: 5; start: 5"
+              >-{{ Math.floor(product.discount * 100) }}%
+            </span>
             <img
-              class="w-100"
+              class="img-fluid"
               :src="
                 'http://127.0.0.1:8000/static/img/' +
                 product.username +
@@ -216,8 +224,10 @@
               alt="Preview"
             />
             <p class="title">{{ product.name }}</p>
-            <p class="price">${{ product.price }}</p>
-            <p class="price">${{ product.discountPrice }}</p>
+            <p class="price">${{ product.discount_price }}</p>
+            <p class="old-price" v-if="product.discount">
+              ${{ product.price }}-{{ Math.floor(product.discount * 100) }}%
+            </p>
           </div>
         </div>
       </div>
@@ -639,6 +649,20 @@ export default {
 @import url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 @import url('https://fonts.googleapis.com/css?family=Raleway');
 
+.price {
+  font-size: 1em;
+  color: #dc3545;
+  font-weight: 900;
+  margin-bottom: 1%;
+  margin-top: 1.5%;
+}
+.old-price {
+  font-size: 1em;
+  text-decoration: line-through;
+  color: #404447;
+  margin-top: 1%;
+  margin-bottom: 2%;
+}
 .navbar {
   padding-left: 35% !important;
 }
@@ -712,19 +736,20 @@ text-color {
 }
 
 .similar-product img {
-  max-height: 320px !important;
+  height: 80% !important;
+  max-height: 330px !important;
 }
 
 .similar-product {
-  text-align: center;
+  text-align: center !important;
 }
 .display-5 {
   font-weight: 300;
-  line-height: 1.2;
-  font-size: 2em;
+  line-height: 1;
+  font-size: 1.5em;
 }
 .similar-product .title {
-  margin: 17px 0px 4px 0px;
+  margin: 0px 0px 0px 0px;
 }
 
 .similar-product .price {
