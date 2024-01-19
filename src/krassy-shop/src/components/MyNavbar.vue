@@ -158,6 +158,13 @@
             height="50"
             class="rounded-circle"
           />
+          <img
+            v-else
+            src="http://127.0.0.1:8000/static/img/img_avatar.png"
+            width="50"
+            height="50"
+            class="rounded-circle"
+          />
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
           <a class="dropdown-item" style="color: grey; pointer-events: none">
@@ -306,7 +313,7 @@
 <script>
 import $ from 'jquery'
 export default {
-  props: ['cart', 'user', 'avatar', 'profile'],
+  props: ['cart', 'avatar', 'profile'],
   emits: ['removeFromCart', 'removeAccessToken'],
   data() {
     return {
@@ -319,6 +326,9 @@ export default {
     },
     total() {
       return this.$store.getters.total
+    },
+    user() {
+      return this.$store.getters.user || null
     }
   },
   methods: {

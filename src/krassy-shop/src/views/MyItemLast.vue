@@ -257,41 +257,6 @@
       <div class="tab-content mt-3">
         <div>
           <!-- Pagination controls -->
-          <nav aria-label="Page navigation example">
-            <ul class="pagination">
-              <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                <button
-                  class="page-link"
-                  @click="prevPage"
-                  :disabled="currentPage === 1"
-                >
-                  Previous
-                </button>
-              </li>
-              <li
-                class="page-item"
-                v-for="page in pages"
-                :key="page"
-                :class="{ active: currentPage === page }"
-              >
-                <button class="page-link" @click="setCurrentPage(page)">
-                  {{ page }}
-                </button>
-              </li>
-              <li
-                class="page-item"
-                :class="{ disabled: currentPage === totalPages }"
-              >
-                <button
-                  class="page-link"
-                  @click="nextPage"
-                  :disabled="currentPage === totalPages"
-                >
-                  Next
-                </button>
-              </li>
-            </ul>
-          </nav>
           <div
             v-if="activeTab === 'reviews'"
             class="tab-pane"
@@ -300,6 +265,41 @@
             id="reviews"
             style="justify-content-center; align-text: center; align-items: center"
           >
+            <nav aria-label="Page navigation example">
+              <ul class="pagination">
+                <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                  <button
+                    class="page-link"
+                    @click="prevPage"
+                    :disabled="currentPage === 1"
+                  >
+                    Prev
+                  </button>
+                </li>
+                <li
+                  class="page-item"
+                  v-for="page in pages"
+                  :key="page"
+                  :class="{ active: currentPage === page }"
+                >
+                  <button class="page-link" @click="setCurrentPage(page)">
+                    {{ page }}
+                  </button>
+                </li>
+                <li
+                  class="page-item"
+                  :class="{ disabled: currentPage === totalPages }"
+                >
+                  <button
+                    class="page-link"
+                    @click="nextPage"
+                    :disabled="currentPage === totalPages"
+                  >
+                    Next
+                  </button>
+                </li>
+              </ul>
+            </nav>
             <div v-if="item">
               <div
                 class="cardgroup1"
