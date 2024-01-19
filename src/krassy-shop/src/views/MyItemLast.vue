@@ -388,7 +388,7 @@
                     <div class="comment-box ml-2">
                       <textarea
                         class="form-control"
-                        placeholder="Write a Review.."
+                        placeholder="Write a Review and select a rating"
                         rows="4"
                         maxlength="700"
                         ref="commentArea"
@@ -451,11 +451,35 @@
         </div>
       </div>
     </div>
+    <div
+      class="toast"
+      id="cartToast2"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+      data-bs-autohide="false"
+      style="
+        position: fixed;
+        top: 70%;
+        left: 25%;
+        transform: translate(0, -50%);
+        width: 250px;
+        z-index: 1000;
+      "
+    >
+      <div
+        class="toast-body"
+        id="cartToastBody2"
+        style="font-weight: 900; font: 1.1em"
+      ></div>
+    </div>
   </div>
 </template>
 
 <script>
+/* global bootstrap */
 import $ from 'jquery'
+
 // import router from '@/router'
 import NavBar from '../components/MyNavbar.vue'
 
@@ -608,12 +632,23 @@ export default {
     },
     addReview() {
       const review = this.$refs.commentArea.value
-      console.log('commentArea', review)
+      const rating = document.querySelector('input[name="rating"]:checked')
+      if (!review || !rating) {
+        const toastContent = 'Please Write a review and select a rating'
+        const toastElement = new bootstrap.Toast(
+          document.getElementById('cartToast2'),
+          {
+            delay: 2000
+          }
+        )
+        const toastBodyElement = document.getElementById('cartToastBody2')
+        toastBodyElement.innerText = toastContent
+        toastElement.show()
+        return
+      }
       const id = this.item.id
       const username = this.user
-      const rating = document.querySelector(
-        'input[name="rating"]:checked'
-      ).value
+      const ratingValue = rating.value || 0
       const requestOptions = {
         method: 'POST',
         headers: {
@@ -623,7 +658,7 @@ export default {
         body: JSON.stringify({
           text: review,
           item_id: id,
-          rating: rating,
+          rating: ratingValue,
           created_by: username
         })
       }
@@ -668,6 +703,9 @@ export default {
       if (this.currentPage < this.totalPages) {
         this.currentPage++
       }
+    },
+    setCurrentPage(page) {
+      this.currentPage = page
     },
     scrollToTarget() {
       var targetDiv = document.getElementById('reviews')
