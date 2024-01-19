@@ -46,7 +46,7 @@
                     >
                       <button
                         type="submit"
-                        class="btn btn-primary"
+                        class="btn btn-info"
                         style="margin: 2px"
                         @click="getToken"
                       >
@@ -54,7 +54,7 @@
                       </button>
                       <button
                         type="button"
-                        class="btn btn-info"
+                        class="btn btn-primary"
                         style="margin: 2px"
                         @click="redirectToSignup"
                       >

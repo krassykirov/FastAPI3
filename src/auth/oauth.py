@@ -135,18 +135,21 @@ async def signup(request: Request, db: Session = Depends(get_session)):
     username = form_data.get('username')
     passwd = form_data.get('password')
     passwd2 = form_data.get('password2')
-    assert passwd == passwd2
-    query = select(src.models.User).where(src.models.User.username == username)
-    user = db.exec(query).first()
-    if user:
-        logger.error(f"User with that name already exists!")
-        raise HTTPException(status_code=403,detail=f"User with that email address already exists!")
-    user = src.models.User(username=username)
-    user.set_password(passwd)
-    db.add(user)
-    db.commit()
+    # assert username and passwd and passwd2
+    if username and passwd and passwd2:
+        assert passwd == passwd2
+        query = select(src.models.User).where(src.models.User.username == username)
+        user = db.exec(query).first()
+        if user:
+            logger.error(f"User with that name already exists!")
+            raise HTTPException(status_code=403,detail=f"User with that email address already exists!")
+        user = src.models.User(username=username)
+        user.set_password(passwd)
+        db.add(user)
+        db.commit()
     # response = templates.TemplateResponse("login.html",{"request":request})
-    return True
+        return True
+    return False
 
 @oauth_router.get("/signup", include_in_schema=False)
 def login(request: Request):

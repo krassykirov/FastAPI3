@@ -8,14 +8,18 @@
               <div class="row justify-content-center">
                 <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
                   <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">
-                    Login
+                    SignUp
                   </p>
                   <p
                     ref="errorUsername"
                     id="error-username"
                     style="text-align: left"
                   ></p>
-                  <form id="signup" class="mx-1 mx-md-4">
+                  <form
+                    id="signup"
+                    class="mx-1 mx-md-4"
+                    @submit.prevent="submitForm"
+                  >
                     <div class="d-flex flex-row align-items-center mb-4">
                       <div class="form-outline flex-fill mb-0">
                         <input
@@ -63,10 +67,17 @@
                     >
                       <button
                         type="button"
+                        class="btn btn-info"
+                        style="margin: 2px"
+                        @click="redirectToLogin"
+                      >
+                        Login
+                      </button>
+                      <button
+                        type="submit"
                         id="register"
                         class="btn btn-primary"
                         style="margin: 2px"
-                        @click.prevent="submitForm"
                       >
                         Register
                       </button>
@@ -77,7 +88,7 @@
                   class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2"
                 >
                   <img
-                    src="/static/img/draw1.webp"
+                    src="http://127.0.0.1:8000/static/img/draw1.webp"
                     class="img-fluid"
                     alt="Sample image"
                   />
@@ -97,7 +108,6 @@ export default {
   methods: {
     submitForm() {
       const formData = new FormData(document.getElementById('signup'))
-      console.log('formdata', formData)
       fetch('http://127.0.0.1:8000/signup', {
         method: 'POST',
         body: formData
@@ -119,6 +129,9 @@ export default {
         .catch(error => {
           console.error('Error:', error)
         })
+    },
+    redirectToLogin() {
+      router.push('/login')
     }
   }
 }

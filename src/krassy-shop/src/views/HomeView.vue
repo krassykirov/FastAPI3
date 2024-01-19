@@ -298,7 +298,8 @@ export default {
   },
   created() {
     this.$store
-      .dispatch('getProducts')
+      .dispatch('initializeUser')
+      .then(() => this.$store.dispatch('getProducts'))
       .then(() => this.$store.dispatch('readFromCartVue'))
       .then(() => this.$store.dispatch('fetchCategories'))
       .then(() => this.$store.dispatch('getProfile'))

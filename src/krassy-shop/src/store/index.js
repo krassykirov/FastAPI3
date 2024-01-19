@@ -202,7 +202,8 @@ export default createStore({
         requestOptions
       )
       if (!response.ok) {
-        console.log('response error', response)
+        this.profile = null
+        commit('UPDATE_PROFILE', null)
       } else {
         const data = await response.json()
         this.profile = data

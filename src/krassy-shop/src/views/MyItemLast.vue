@@ -255,117 +255,166 @@
         </li>
       </ul>
       <div class="tab-content mt-3">
-        <div
-          v-if="activeTab === 'reviews'"
-          class="tab-pane"
-          :class="{ active: activeTab === 'reviews' }"
-          id="reviews"
-          style="justify-content-left"
-        >
-          <div v-if="item">
-            <div
-              class="cardgroup1"
-              v-for="review in reviewsData"
-              :key="review.id"
-              :id="'card' + review.id"
-              style="
-                width: 55%;
-                margin-bottom: 5px;
-                border: 1px solid #ccc;
-                padding: 2px;
-                display: flex;
-                justify-content: left;
-              "
-            >
-              <!-- Left Side -->
-              <div style="flex: 1; display: flex; align-items: center">
-                <img
-                  src="http://127.0.0.1:8000/static/img/img_avatar.png"
-                  class="avatar"
-                  style="padding: 5px"
-                />
-                <div style="margin-left: 2px">
-                  <span>{{ review.created_by }}</span>
-                  <br />
-                  <span
-                    class="fa fa-star"
-                    :class="{ checked: star.checked }"
-                    :id="star.id"
-                    v-for="star in updateStarRatings(review)"
-                    :key="star.id"
-                  ></span>
-                </div>
-              </div>
-              <!-- Right Side -->
+        <div>
+          <!-- Pagination controls -->
+          <nav aria-label="Page navigation example">
+            <ul class="pagination">
+              <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                <button
+                  class="page-link"
+                  @click="prevPage"
+                  :disabled="currentPage === 1"
+                >
+                  Previous
+                </button>
+              </li>
+              <li
+                class="page-item"
+                v-for="page in pages"
+                :key="page"
+                :class="{ active: currentPage === page }"
+              >
+                <button class="page-link" @click="setCurrentPage(page)">
+                  {{ page }}
+                </button>
+              </li>
+              <li
+                class="page-item"
+                :class="{ disabled: currentPage === totalPages }"
+              >
+                <button
+                  class="page-link"
+                  @click="nextPage"
+                  :disabled="currentPage === totalPages"
+                >
+                  Next
+                </button>
+              </li>
+            </ul>
+          </nav>
+          <div
+            v-if="activeTab === 'reviews'"
+            class="tab-pane"
+            :class="{ active: activeTab === 'reviews' }"
+            :key="'reviews_' + activeTab"
+            id="reviews"
+            style="justify-content-center; align-text: center; align-items: center"
+          >
+            <div v-if="item">
               <div
+                class="cardgroup1"
+                v-for="review in displayedReviews"
+                :key="review.id"
+                :id="'card' + review.id"
                 style="
-                  flex: 2;
-                  text-align: left;
-                  padding: 10px;
-                  text-align: left;
+                  width: 55%;
+                  margin-bottom: 5px;
+                  border: 1px solid #ccc;
+                  padding: 2px;
+                  display: flex;
+                  justify-content: left;
                 "
               >
-                <p>{{ review.text }}</p>
-              </div>
-            </div>
-            <div
-              class="cardgroup1"
-              style="width: 650px; margin-bottom: 2px"
-              v-if="!userHasWrittenReview()"
-            >
-              <div class="row">
-                <div class="col-12">
-                  <div class="rating" style="padding: 10px">
-                    <input type="radio" name="rating" value="5" id="5" /><label
-                      for="5"
-                      >☆</label
-                    >
-                    <input type="radio" name="rating" value="4" id="4" /><label
-                      for="4"
-                      >☆</label
-                    >
-                    <input type="radio" name="rating" value="3" id="3" /><label
-                      for="3"
-                      >☆</label
-                    >
-                    <input type="radio" name="rating" value="2" id="2" /><label
-                      for="2"
-                      >☆</label
-                    >
-                    <input type="radio" name="rating" value="1" id="1" /><label
-                      for="1"
-                      >☆</label
-                    >
+                <!-- Left Side -->
+                <div style="flex: 1; display: flex; align-items: center">
+                  <img
+                    src="http://127.0.0.1:8000/static/img/img_avatar.png"
+                    class="avatar"
+                    style="padding: 5px"
+                  />
+                  <div style="margin-left: 2px">
+                    <span>{{ review.created_by }}</span>
+                    <br />
+                    <span
+                      class="fa fa-star"
+                      :class="{ checked: star.checked }"
+                      :id="star.id"
+                      v-for="star in updateStarRatings(review)"
+                      :key="star.id"
+                    ></span>
                   </div>
-                  <div class="comment-box ml-2">
-                    <textarea
-                      class="form-control"
-                      placeholder="Write a Review.."
-                      rows="4"
-                      maxlength="700"
-                      ref="commentArea"
-                    ></textarea>
-                    <div class="comment-btns mt-2">
-                      <div class="row">
-                        <div class="col-6">
-                          <div class="pull-left">
-                            <button
-                              class="btn btn-secondary btn-sm"
-                              id="RatingCancel"
-                              @click="RatingHide"
-                            >
-                              Cancel
-                            </button>
+                </div>
+                <!-- Right Side -->
+                <div
+                  style="
+                    flex: 2;
+                    text-align: left;
+                    padding: 10px;
+                    text-align: left;
+                  "
+                >
+                  <p>{{ review.text }}</p>
+                </div>
+              </div>
+              <div
+                class="cardgroup1"
+                style="width: 650px; margin-bottom: 2px"
+                v-if="!userHasWrittenReview()"
+              >
+                <div class="row">
+                  <div class="col-12">
+                    <div class="rating" style="padding: 10px">
+                      <input
+                        type="radio"
+                        name="rating"
+                        value="5"
+                        id="5"
+                      /><label for="5">☆</label>
+                      <input
+                        type="radio"
+                        name="rating"
+                        value="4"
+                        id="4"
+                      /><label for="4">☆</label>
+                      <input
+                        type="radio"
+                        name="rating"
+                        value="3"
+                        id="3"
+                      /><label for="3">☆</label>
+                      <input
+                        type="radio"
+                        name="rating"
+                        value="2"
+                        id="2"
+                      /><label for="2">☆</label>
+                      <input
+                        type="radio"
+                        name="rating"
+                        value="1"
+                        id="1"
+                      /><label for="1">☆</label>
+                    </div>
+                    <div class="comment-box ml-2">
+                      <textarea
+                        class="form-control"
+                        placeholder="Write a Review.."
+                        rows="4"
+                        maxlength="700"
+                        ref="commentArea"
+                      ></textarea>
+                      <div class="comment-btns mt-2">
+                        <div class="row">
+                          <div class="col-6">
+                            <div class="pull-left">
+                              <button
+                                class="btn btn-secondary btn-sm"
+                                id="RatingCancel"
+                                @click="RatingHide"
+                              >
+                                Cancel
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                        <div class="col-6">
-                          <div class="pull-right">
-                            <button
-                              class="btn btn-success send btn-sm"
-                              @click="addReview"
-                            >
-                              Submit
-                            </button>
+                          <div class="col-6">
+                            <div class="pull-right">
+                              <button
+                                class="btn btn-success send btn-sm"
+                                @click="addReview"
+                              >
+                                Submit
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -374,9 +423,9 @@
                 </div>
               </div>
             </div>
-          </div>
-          <div v-else>
-            <p>No reviews available.</p>
+            <div v-else>
+              <p>No reviews available.</p>
+            </div>
           </div>
         </div>
 
@@ -385,8 +434,14 @@
           v-if="activeTab === 'specification'"
           class="tab-pane"
           :class="{ active: activeTab === 'specification' }"
+          :key="'specification_' + activeTab"
           id="specification"
-          style="align-text: left; margin-left: 30%; margin-right: 30%"
+          style="
+            align-text: center;
+            align-items: center;
+            margin-left: 30%;
+            margin-right: 30%;
+          "
         >
           <!-- Specification content -->
           <p v-if="item">
@@ -414,10 +469,10 @@ export default {
     return {
       item: this.item,
       itemId: this.itemId,
-      currentPage: 1,
-      reviewsPerPage: 2,
       reviewsData: [],
-      activeTab: 'reviews'
+      activeTab: 'reviews',
+      currentPage: 1,
+      reviewsPerPage: 2
     }
   },
   beforeRouteUpdate(to, from, next) {
@@ -451,7 +506,7 @@ export default {
       return this.$store.state.accessToken
     },
     totalPages() {
-      return Math.ceil(this.item.reviews.length / this.reviewsPerPage)
+      return Math.ceil(this.reviewsData.length / this.reviewsPerPage)
     },
     pages() {
       return Array.from({ length: this.totalPages }, (_, i) => i + 1)
@@ -459,7 +514,7 @@ export default {
     displayedReviews() {
       const startIndex = (this.currentPage - 1) * this.reviewsPerPage
       const endIndex = startIndex + this.reviewsPerPage
-      return this.item.reviews.slice(startIndex, endIndex)
+      return this.reviewsData.slice(startIndex, endIndex)
     }
   },
   methods: {
@@ -604,18 +659,6 @@ export default {
         this.reviewsData.some(review => review.created_by === this.user)
       )
     },
-    scrollToTarget() {
-      var targetDiv = document.getElementById('reviews')
-      if (targetDiv) {
-        targetDiv.scrollIntoView({ behavior: 'smooth' })
-      }
-    },
-    scrollToTop() {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    },
-    setCurrentPage(page) {
-      this.currentPage = page
-    },
     prevPage() {
       if (this.currentPage > 1) {
         this.currentPage--
@@ -626,8 +669,21 @@ export default {
         this.currentPage++
       }
     },
+    scrollToTarget() {
+      var targetDiv = document.getElementById('reviews')
+      if (targetDiv) {
+        targetDiv.scrollIntoView({ behavior: 'smooth' })
+      }
+    },
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    },
     switchTab(tabId) {
+      const scrollPosition = window.scrollY || window.pageYOffset
       this.activeTab = tabId
+      this.$nextTick(() => {
+        window.scrollTo(0, scrollPosition)
+      })
     },
     showModal() {
       $(document).ready(function () {
@@ -814,7 +870,6 @@ ul {
 .hide {
   display: none !important;
 }
-
 .tab-nav {
   max-width: 1% !important;
   margin: 0 auto !important;
@@ -867,6 +922,8 @@ textarea#comment-area.form.control {
   padding: 12px !important;
   margin-top: 5px !important;
   border: 1px solid var(--color-primary) !important;
+  overflow-y: auto; /* Enable vertical scroll */
+  height: 400px; /* Set a fixed height */
 }
 div#RatingCard.card {
   padding-right: 1% !important;
@@ -907,6 +964,7 @@ div#RatingCard.card {
   color: gray;
   border: 0;
   border-bottom: 1px solid grey;
+  cursor: pointer;
 }
 
 .nav-tabs .nav-link:hover {
@@ -919,5 +977,17 @@ div#RatingCard.card {
   border-radius: 0;
   border-bottom: 2px solid blue;
 }
-/* MODAL*/
+.pagination {
+  margin-top: 0.5% !important;
+}
+
+.pagination .page-item {
+  display: inline-block !important;
+  margin-right: 3px !important;
+}
+
+.pagination .page-item.active a {
+  background-color: #007bff;
+  color: #fff;
+}
 </style>
