@@ -594,6 +594,11 @@ export default {
         })
     },
     userHasWrittenReview() {
+      console.log('this.reviewsData', this.reviewsData)
+      console.log(
+        'this.reviewsData user',
+        this.reviewsData.some(review => review.created_by === this.user)
+      )
       return (
         this.reviewsData &&
         this.reviewsData.some(review => review.created_by === this.user)
