@@ -452,7 +452,7 @@
       </div>
     </div>
     <div
-      class="toast"
+      class="toast bg-info"
       id="cartToast2"
       role="alert"
       aria-live="assertive"
@@ -461,17 +461,19 @@
       style="
         position: fixed;
         top: 70%;
-        left: 25%;
+        left: 30%;
         transform: translate(0, -50%);
         width: 250px;
         z-index: 1000;
       "
     >
-      <div
-        class="toast-body"
-        id="cartToastBody2"
-        style="font-weight: 900; font: 1.1em"
-      ></div>
+      <div class="d-flex">
+        <div
+          class="toast-body bg-light"
+          id="cartToastBody2"
+          style="font-weight: 900; font: 1.1em"
+        ></div>
+      </div>
     </div>
   </div>
 </template>
@@ -684,11 +686,6 @@ export default {
         })
     },
     userHasWrittenReview() {
-      console.log('this.reviewsData', this.reviewsData)
-      console.log(
-        'this.reviewsData user',
-        this.reviewsData.some(review => review.created_by === this.user)
-      )
       return (
         this.reviewsData &&
         this.reviewsData.some(review => review.created_by === this.user)
