@@ -145,18 +145,3 @@ export default {
   }
 }
 </script>
-<style>
-.overall-rating {
-  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
-    'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji' !important;
-  font-size: 0.9em !important;
-  margin-bottom: 2%;
-}
-.overall-rating2 {
-  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
-    'Liberation Sans', sans-serif, 'Segoe UI Symbol', 'Noto Color Emoji' !important;
-  font-size: 0.9em !important;
-  margin-bottom: 2%;
-}
-</style>

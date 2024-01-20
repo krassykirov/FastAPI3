@@ -66,20 +66,20 @@
                       class="d-flex justify-content-center mx-4 mb-3 mb-lg-4"
                     >
                       <button
-                        type="button"
-                        class="btn btn-info"
-                        style="margin: 2px"
-                        @click="redirectToLogin"
-                      >
-                        Login
-                      </button>
-                      <button
                         type="submit"
                         id="register"
                         class="btn btn-primary"
                         style="margin: 2px"
                       >
                         Register
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-info"
+                        style="margin: 2px"
+                        @click="redirectToLogin"
+                      >
+                        Login
                       </button>
                     </div>
                   </form>
