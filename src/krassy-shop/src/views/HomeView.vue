@@ -299,10 +299,10 @@ export default {
   created() {
     this.$store
       .dispatch('initializeUser')
+      .then(() => this.$store.dispatch('getProfile'))
       .then(() => this.$store.dispatch('getProducts'))
       .then(() => this.$store.dispatch('readFromCartVue'))
       .then(() => this.$store.dispatch('fetchCategories'))
-      .then(() => this.$store.dispatch('getProfile'))
       .then(() => {
         const fetchRatingsPromises = this.$store.state.products.map(product => {
           return this.$store.dispatch('getItemRating', product.id)

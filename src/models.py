@@ -52,6 +52,7 @@ class UserProfile(BaseSQLModel, table=True):
     profile_id: int = Field(default=None, foreign_key="user.id", unique=True)
     user:    Optional['User']  = Relationship(back_populates='profile')
     email:   Optional[EmailStr]
+    primary_email: Optional[str]
     number:  Optional[str]
     address: Optional[str]
     avatar:  Optional[str]

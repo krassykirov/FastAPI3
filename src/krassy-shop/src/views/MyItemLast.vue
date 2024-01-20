@@ -104,17 +104,13 @@
                   :class="getStarClasses(i, item.rating_float)"
                 ></span>
                 <span
+                  class="overall-rating"
                   :id="'overall-rating' + item.id + '-float'"
-                  style="
-                    font-size: 0.9em;
-                    font-family: Raleway;
-                    margin-bottom: 2%;
-                  "
                   >&nbsp;{{ item.rating_float }}</span
                 >
               </i>
               <span :id="'overall-rating' + item.id">
-                ({{ item.reviewNumber }}) review's
+                ({{ item.reviewNumber }}) Review's
               </span>
             </p>
             <div class="buttons d-flex justify-content-center my-4">
@@ -318,6 +314,13 @@
                 <!-- Left Side -->
                 <div style="flex: 1; display: flex; align-items: center">
                   <img
+                    v-if="profile && review.created_by"
+                    :src="`http://127.0.0.1:8000/static/img/${review.created_by}/profile/${profile.avatar}`"
+                    class="avatar"
+                    style="padding: 5px"
+                  />
+                  <img
+                    v-else
                     src="http://127.0.0.1:8000/static/img/img_avatar.png"
                     class="avatar"
                     style="padding: 5px"
@@ -489,7 +492,7 @@ export default {
   components: {
     NavBar
   },
-  props: ['product', 'cart', 'total', 'profile'],
+  props: ['cart', 'profile'],
   emits: ['addToCart', 'redirectToItem'],
   data() {
     return {
@@ -507,9 +510,11 @@ export default {
   },
   created() {
     this.getProduct()
+    this.$store.dispatch('initializeUser')
+    this.$store.dispatch('getProfile')
     this.$store.dispatch('getProducts')
+    this.$store.dispatch('getProfiles')
     this.setReviewsRating(this.itemId)
-    this.$store.dispatch('readFromCartVue')
   },
   computed: {
     filteredProducts() {
@@ -522,11 +527,24 @@ export default {
           product.id !== this.item.id
       )
     },
-    cartFromStore() {
-      return this.$store.state.cart
-    },
+    // getAvatar() {
+    //   return this.profiles.filter(
+    //     profile =>
+    //       profile.profile_id === this.item.category_id &&
+    //       product.id !== this.item.id
+    //   )
+    // },
     user() {
       return this.$store.getters.user
+    },
+    user_id() {
+      return this.$store.getters.user_id
+    },
+    total() {
+      return this.$store.getters.total
+    },
+    profiles() {
+      return this.$store.getters.profiles
     },
     accessToken() {
       return this.$store.state.accessToken

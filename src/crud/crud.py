@@ -131,6 +131,12 @@ class ProfileActions:
     #         db.refresh(db_profile)
     #      return db_profile
 
+    def get_profiles(self, db: Session):
+        profiles = db.query(UserProfile).all()
+        if profiles:
+            return profiles
+        return None
+
     def delete_profile_by_user_id(self, db: Session, user_id: int):
         profile = db.query(UserProfile).filter(UserProfile.profile_id == user_id).first()
         if profile:

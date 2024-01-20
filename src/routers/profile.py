@@ -7,12 +7,21 @@ from src.models import UserProfile, User
 from src.auth.oauth import get_current_user
 from src.schemas import UserProfileUpdate
 from fastapi.encoders import jsonable_encoder
+from typing import List
 
 PROTECTED = [Depends(get_current_user)]
 
 profile_router = APIRouter(prefix='/api/profile', tags=["profile"], dependencies=PROTECTED,
                             responses={404: {"description": "Not found"}},)
 
+
+@profile_router.get("/", status_code=status.HTTP_200_OK, response_model=List[UserProfile], include_in_schema=True)
+def get_profiles(db: Session = Depends(get_session), user: User = Depends(get_current_user)) -> List[UserProfile]:
+    profiles = ProfileActions().get_profiles(db=db)
+    if profiles is None:
+        raise HTTPException(status_code=404, detail=f"No profiles found")
+    profiles = jsonable_encoder(profiles)
+    return profiles
 
 @profile_router.get("/{user_id}", status_code=status.HTTP_200_OK, response_model=UserProfile, include_in_schema=True)
 def get_profile(user_id: int, db: Session = Depends(get_session), user: User = Depends(get_current_user)) -> UserProfile:

@@ -59,7 +59,7 @@ def on_startup():
 
 @app.get("/", include_in_schema=False)
 async def home(request: Request, user: User = Depends(get_current_user)):
-    return templates.TemplateResponse("base.html", {"request": request, 'current_user': user.username})
+    return templates.TemplateResponse("base_old.html", {"request": request, 'current_user': user.username})
 
 @app.get("/products", include_in_schema=False, response_model=src.schemas.ItemRead)
 def get_products(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -261,6 +261,7 @@ async def create_profile(request: Request, db: Session = Depends(get_session), u
     email = form_data.get('email')
     number = form_data.get('number')
     address = form_data.get('address')
+    primary_email = form_data.get('primary_email')
     query = select(User).where(User.username == user.username)
     user_db = db.exec(query).first()
     if user_db:
@@ -276,6 +277,7 @@ async def create_profile(request: Request, db: Session = Depends(get_session), u
         user_profile = UserProfile(profile_id=user.id,
                                    email=email,
                                    number=number,
+                                   primary_email=primary_email,
                                    address=address,
                                    avatar=filename)
         try:

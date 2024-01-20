@@ -122,7 +122,7 @@ def login_access_token(*, request: Request, response: Response, form_data: OAuth
         )
         return {"access_token": access_token, "token_type": "bearer"}
     else:
-        return {'message': "Username or password are incorrect!"}
+        raise HTTPException(status_code=403,detail=f"Username or password are incorrect!")
 
 @oauth_router.get("/login", include_in_schema=False)
 def login(request: Request):

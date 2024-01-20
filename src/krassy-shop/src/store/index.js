@@ -68,6 +68,9 @@ export default createStore({
     UPDATE_PROFILE(state, profile) {
       state.profile = profile
     },
+    UPDATE_PROFILES(state, profiles) {
+      state.profiles = profiles
+    },
     UPDATE_SELECTED_ITEM(state, itemId) {
       state.selectedItem = itemId
     },
@@ -162,9 +165,9 @@ export default createStore({
           method: 'POST',
           body: formData
         })
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`)
+        if (response.status === 403) {
+          const data = await response.json()
+          throw new Error(data.detail)
         }
         const data = await response.json()
         VueCookies.set('access_token', data.access_token, '12h')
@@ -172,7 +175,7 @@ export default createStore({
         await dispatch('initializeUser')
         router.push('/')
       } catch (error) {
-        console.error('error', error)
+        throw new Error(error)
       }
     },
     async initializeUser({ commit, state }) {
@@ -186,6 +189,29 @@ export default createStore({
       VueCookies.remove('access_token')
       commit('removeAccessToken')
       router.push('/login')
+    },
+    async getProfiles({ commit, state }) {
+      const headers = new Headers({
+        Authorization: `Bearer ${state.accessToken}`,
+        Accept: 'application/json'
+      })
+      const requestOptions = {
+        method: 'GET',
+        headers: headers,
+        redirect: 'follow'
+      }
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/profile`,
+        requestOptions
+      )
+      if (!response.ok) {
+        commit('UPDATE_PROFILES', null)
+      } else {
+        const data = await response.json()
+        console.log('profiles', data)
+        this.profiles = data
+        commit('UPDATE_PROFILES', data)
+      }
     },
     async getProfile({ commit, state }) {
       const headers = new Headers({
@@ -202,7 +228,6 @@ export default createStore({
         requestOptions
       )
       if (!response.ok) {
-        this.profile = null
         commit('UPDATE_PROFILE', null)
       } else {
         const data = await response.json()
@@ -485,6 +510,7 @@ export default createStore({
     user: state => state.user,
     user_id: state => state.user_id,
     profile: state => state.profile,
+    profiles: state => state.profiles,
     products: state => state.products,
     cart: state => state.cart,
     min: state => state.min,

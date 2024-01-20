@@ -10,6 +10,9 @@
                   <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">
                     Login
                   </p>
+                  <p ref="error" id="error" style="text-align: left">
+                    {{ errorMessage }}
+                  </p>
                   <form class="mx-1 mx-md-4" @submit.prevent="getToken">
                     <div class="d-flex flex-row align-items-center mb-4">
                       <div class="form-outline flex-fill mb-0">
@@ -87,15 +90,20 @@ export default {
   data() {
     return {
       username: '',
-      password: ''
+      password: '',
+      errorMessage: ''
     }
   },
   methods: {
     async getToken() {
-      this.$store.dispatch('login', {
-        username: this.username,
-        password: this.password
-      })
+      try {
+        await this.$store.dispatch('login', {
+          username: this.username,
+          password: this.password
+        })
+      } catch (error) {
+        this.errorMessage = 'Username or password are incorrect!'
+      }
     },
     redirectToSignup() {
       router.push('/signup')

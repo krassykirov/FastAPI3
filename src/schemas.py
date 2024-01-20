@@ -103,6 +103,7 @@ class ItemCreate(BaseModel):
 
 class UserProfileUpdate(BaseModel):
     email:   Optional[str]
+    primary_email: Optional[str]
     number:  Optional[str]
     address: Optional[str]
     class Config:
