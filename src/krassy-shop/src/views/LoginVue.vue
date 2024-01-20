@@ -10,7 +10,7 @@
                   <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">
                     Login
                   </p>
-                  <p ref="error" id="error" style="text-align: left">
+                  <p ref="error" id="error" style="text-align: center">
                     {{ errorMessage }}
                   </p>
                   <form class="mx-1 mx-md-4" @submit.prevent="getToken">

@@ -314,14 +314,8 @@
                 <!-- Left Side -->
                 <div style="flex: 1; display: flex; align-items: center">
                   <img
-                    v-if="profile && review.created_by"
-                    :src="`http://127.0.0.1:8000/static/img/${review.created_by}/profile/${profile.avatar}`"
-                    class="avatar"
-                    style="padding: 5px"
-                  />
-                  <img
-                    v-else
-                    src="http://127.0.0.1:8000/static/img/img_avatar.png"
+                    v-if="profiles && review.created_by"
+                    :src="getProfileAvatar(review)"
                     class="avatar"
                     style="padding: 5px"
                   />
@@ -512,8 +506,8 @@ export default {
     this.getProduct()
     this.$store.dispatch('initializeUser')
     this.$store.dispatch('getProfile')
-    this.$store.dispatch('getProducts')
     this.$store.dispatch('getProfiles')
+    this.$store.dispatch('getProducts')
     this.setReviewsRating(this.itemId)
   },
   computed: {
@@ -527,13 +521,6 @@ export default {
           product.id !== this.item.id
       )
     },
-    // getAvatar() {
-    //   return this.profiles.filter(
-    //     profile =>
-    //       profile.profile_id === this.item.category_id &&
-    //       product.id !== this.item.id
-    //   )
-    // },
     user() {
       return this.$store.getters.user
     },
@@ -602,6 +589,16 @@ export default {
     },
     addToCart(product) {
       this.$store.dispatch('addToCart', product)
+    },
+    getProfileAvatar(review) {
+      const matchedProfile = this.profiles.find(
+        profile => profile.primary_email === review.created_by
+      )
+      if (matchedProfile) {
+        return `http://127.0.0.1:8000/static/img/${review.created_by}/profile/${matchedProfile.avatar}`
+      } else {
+        return 'http://127.0.0.1:8000/static/img/img_avatar.png'
+      }
     },
     redirectToItem(itemId) {
       this.$store.dispatch('redirectToItem', itemId)

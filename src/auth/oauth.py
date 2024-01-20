@@ -135,9 +135,7 @@ async def signup(request: Request, db: Session = Depends(get_session)):
     username = form_data.get('username')
     passwd = form_data.get('password')
     passwd2 = form_data.get('password2')
-    # assert username and passwd and passwd2
-    if username and passwd and passwd2:
-        assert passwd == passwd2
+    if (username and passwd and passwd2) and passwd == passwd2:
         query = select(src.models.User).where(src.models.User.username == username)
         user = db.exec(query).first()
         if user:
@@ -149,7 +147,7 @@ async def signup(request: Request, db: Session = Depends(get_session)):
         db.commit()
     # response = templates.TemplateResponse("login.html",{"request":request})
         return True
-    return False
+    raise HTTPException(status_code=403,detail=f"Password did not match!")
 
 @oauth_router.get("/signup", include_in_schema=False)
 def login(request: Request):

@@ -208,7 +208,6 @@ export default createStore({
         commit('UPDATE_PROFILES', null)
       } else {
         const data = await response.json()
-        console.log('profiles', data)
         this.profiles = data
         commit('UPDATE_PROFILES', data)
       }

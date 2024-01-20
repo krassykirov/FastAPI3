@@ -13,7 +13,7 @@
                   <p
                     ref="errorUsername"
                     id="error-username"
-                    style="text-align: left"
+                    style="text-align: center"
                   ></p>
                   <form
                     id="signup"
@@ -107,6 +107,12 @@ import router from '@/router'
 export default {
   methods: {
     submitForm() {
+      const password1 = document.getElementById('password').value
+      const password2 = document.getElementById('password2').value
+      if (password1 !== password2) {
+        this.$refs.errorUsername.innerText = 'Passwords do not match!'
+        return
+      }
       const formData = new FormData(document.getElementById('signup'))
       fetch('http://127.0.0.1:8000/signup', {
         method: 'POST',
