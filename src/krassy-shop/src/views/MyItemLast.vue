@@ -508,6 +508,7 @@ export default {
   },
   beforeRouteUpdate(to, from, next) {
     this.getProduct(to.params.itemId)
+    this.setReviewsRating(to.params.itemId)
     next()
   },
   created() {
