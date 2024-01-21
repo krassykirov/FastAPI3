@@ -27,7 +27,7 @@
       data-bs-autohide="false"
       style="
         position: fixed;
-        top: 10%;
+        top: 12%;
         right: 5%;
         transform: translate(0, -50%);
         width: 250px;

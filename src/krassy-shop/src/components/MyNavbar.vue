@@ -59,8 +59,9 @@
           aria-haspopup="true"
           aria-expanded="false"
         >
-          <i class="bi bi-heart" style="font-size: 1rem"></i> Favorites
-          <span class="badge badge-pill badge-primary">
+          <i class="fa fa-heart-o red-color" style="font-size: 1rem"></i>
+          FAVORITES
+          <span class="badge badge-pill badge-danger">
             {{ favorites.length }}</span
           >
         </button>
@@ -136,7 +137,7 @@
         d-flex
         bd-highlight
         mb-3
-        style="padding-left: 35%; margin-top: 7px"
+        style="padding-left: 35%; margin-top: 5px"
       >
         <button
           @click="displayCart = !displayCart"
@@ -145,15 +146,16 @@
           id="cartDropdown"
           aria-haspopup="true"
           aria-expanded="false"
+          style="margin-top: 16px"
         >
-          <i class="bi bi-cart" style="font-size: 1rem"></i> Cart
+          <i class="bi bi-cart" style="font-size: 1rem"></i> CART
           <span class="badge badge-pill badge-primary"> {{ cart.length }}</span>
         </button>
         <div
           v-if="!displayCart"
           class="list-group position-absolute"
           style="
-            left: 76%;
+            left: 77%;
             transform: translateX(-40%);
             z-index: 1000;
             min-width: 200px;
@@ -450,8 +452,10 @@ export default {
       }, 600)
     },
     showCart() {
-      this.displayLiked = true
-      this.displayCart = false
+      setTimeout(() => {
+        this.displayLiked = true
+        this.displayCart = false
+      }, 400)
     },
     hideFavorites() {
       setTimeout(() => {
@@ -459,8 +463,10 @@ export default {
       }, 600)
     },
     showFavorites() {
-      this.displayCart = true
-      this.displayLiked = false
+      setTimeout(() => {
+        this.displayCart = true
+        this.displayLiked = false
+      }, 400)
     },
     createItem() {
       $('#createItem').submit(e => {
