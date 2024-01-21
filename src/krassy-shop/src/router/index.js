@@ -6,8 +6,7 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView,
-    props: () => ({ profile: store.state.profile })
+    component: HomeView
   },
   {
     path: '/login',

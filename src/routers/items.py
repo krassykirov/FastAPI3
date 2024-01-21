@@ -82,14 +82,17 @@ def delete_item_by_id(item_id: int, db: Session = Depends(get_session), user: Us
 
 @items_router.get("/user-items-in-cart", status_code=status.HTTP_200_OK, include_in_schema=True)
 def get_user_items_in_cart(db: Session=Depends(get_session), user: User = Depends(get_current_user)):
-  items = ItemActions().get_items(db=db)
-  items_in_cart =  [item for item in items
-                    for k, v in item.in_cart.items()
-                    if k == user.username and v['in_cart'] == True]
-  total = sum([item.price for item in items_in_cart])
-  json_items = {'items':items_in_cart, 'items_in_cart': len(items_in_cart),
-          'total': total, 'user': user.username, 'user_id': user.id}
-  return json_items
+    items = ItemActions().get_items(db=db)
+    items_in_cart =  [item for item in items
+                        for k, v in item.in_cart.items()
+                        if k == user.username and v['in_cart'] == True]
+    items_liked =  [item for item in items
+                        for k, v in item.liked.items()
+                        if k == user.username and v['liked'] == True]
+    total = sum([item.price for item in items_in_cart])
+    json_items = {'items': items_in_cart, 'items_liked': items_liked, 'items_in_cart': len(items_in_cart),
+            'total': total, 'user': user.username, 'user_id': user.id}
+    return json_items
 
 @items_router.post("/update-basket", status_code=status.HTTP_200_OK,  include_in_schema=False)
 async def update_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -104,5 +107,28 @@ async def update_basket(request: Request, db: Session = Depends(get_session), us
     total = jsonable_encoder(result.get('total'))
     return total
 
+@items_router.post("/update-favorites", status_code=status.HTTP_200_OK,  include_in_schema=False)
+async def update_favorites(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+    data = await request.json()
+    item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
+    new_dict = {user.username: {"liked": True}}
+    favorites = dict(item.liked, **new_dict )
+    item.liked = favorites
+    db.commit()
+    db.refresh(item)
+    result = get_user_items_in_cart(db=db, user=user)
+    return result
+
+@items_router.post("/remove-from-favorites", status_code=status.HTTP_200_OK,  include_in_schema=True)
+async def remove_from_favorites(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+    data = await request.json()
+    print('remove-from-favorites', data)
+    item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
+    new_dict = {user.username: {"liked": False}}
+    favorites = dict(item.liked, **new_dict )
+    item.liked = favorites
+    db.commit()
+    db.refresh(item)
+    return item
 
 

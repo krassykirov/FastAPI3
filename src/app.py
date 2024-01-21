@@ -368,6 +368,21 @@ async def remove_from_basket(request: Request, db: Session = Depends(get_session
     db.refresh(item)
     return item
 
+@app.get("/user_items_in_cart", status_code=status.HTTP_200_OK, include_in_schema=True)
+def get_user_items_in_cart(db: Session=Depends(get_session), user: User = Depends(get_current_user)):
+  items = ItemActions().get_items(db=db)
+  items_in_cart =  [item for item in items
+                    for k, v in item.in_cart.items()
+                    if k == user.username and v['in_cart'] == True]
+  items_liked =  [item for item in items
+                    for k, v in item.liked.items()
+                    if k == user.username and v['liked'] == True]
+  total = sum([item.price for item in items_in_cart])
+  json_items = {'items': items_in_cart, 'items_liked': items_liked, 'items_in_cart': len(items_in_cart),
+          'total': total, 'user': user.username, 'user_id': user.id}
+  return json_items
+
+# To remove as not needed
 @app.get("/items-in-cart", status_code=status.HTTP_200_OK, include_in_schema=False)
 async def get_items_in_cart(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     items = ItemActions().get_items(db=db)
@@ -387,14 +402,3 @@ async def get_items_in_cart(request: Request, db: Session=Depends(get_session), 
                                                      'current_user': user.username,
                                                      'profile': profile,
                                                      'avatar':avatar})
-
-@app.get("/user_items_in_cart", status_code=status.HTTP_200_OK, include_in_schema=True)
-def get_user_items_in_cart(db: Session=Depends(get_session), user: User = Depends(get_current_user)):
-  items = ItemActions().get_items(db=db)
-  items_in_cart =  [item for item in items 
-                    for k, v in item.in_cart.items()
-                    if k == user.username and v['in_cart'] == True]
-  total = sum([item.price for item in items_in_cart])
-  json_items = {'items':items_in_cart, 'items_in_cart': len(items_in_cart),
-          'total': total, 'user': user.username, 'user_id': user.id}
-  return json_items

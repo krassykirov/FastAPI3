@@ -1040,4 +1040,12 @@ div#RatingCard.card {
   background-color: #007bff;
   color: #fff;
 }
+.overall-rating {
+  font-size: 1em !important;
+  margin-bottom: 2%;
+}
+.overall-rating2 {
+  font-size: 0.9em !important;
+  margin-bottom: 2%;
+}
 </style>

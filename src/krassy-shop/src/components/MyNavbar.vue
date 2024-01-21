@@ -43,12 +43,100 @@
         </li>
       </ul>
       <div
+        v-if="favorites && accessToken"
+        @mouseleave="hideFavorites()"
+        @mouseenter="showFavorites()"
+        d-flex
+        bd-highlight
+        mb-3
+        style="margin-top: 18px"
+      >
+        <button
+          @click="displayLiked = !displayLiked"
+          @dblclick="handleDoubleClick"
+          class="btn btn-light dropdown-toggle btn-sm"
+          id="likedDropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <i class="bi bi-heart" style="font-size: 1rem"></i> Favorites
+          <span class="badge badge-pill badge-primary">
+            {{ favorites.length }}</span
+          >
+        </button>
+        <div
+          v-if="!displayLiked"
+          class="list-group position-absolute"
+          style="
+            left: 52%;
+            transform: translateX(-40%);
+            z-index: 1000;
+            min-width: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+          "
+        >
+          <div
+            v-for="(item, index) in favorites"
+            :key="index"
+            class="list-group-item d-flex justify-content-between align-items-center"
+          >
+            <div class="d-flex align-items-center">
+              <img
+                :src="
+                  'http://127.0.0.1:8000/static/img/' +
+                  item.username +
+                  '/' +
+                  item.name +
+                  '/' +
+                  item.image
+                "
+                class="mr-2"
+                style="
+                  width: 60px;
+                  height: 60px;
+                  object-fit: cover;
+                  border-radius: 5px;
+                  font-family: Georgia, 'Times New Roman', Times, serif;
+                "
+              />
+              <div
+                style="cursor: pointer"
+                @click="redirectToItemFromNavbar(item.id)"
+              >
+                <div style="font-size: 0.9rem; width: 180px">
+                  {{ truncateDescription(item.name, 30) }} ${{
+                    formatPrice(item.price)
+                  }}
+                </div>
+              </div>
+            </div>
+            <button
+              @click="removeFromFavorites(item.id)"
+              class="btn btn-light btn-sm ml-2"
+              data-bs-placement="top"
+              style="margin-top: 16px"
+            >
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+          <button
+            v-if="favorites.length > 0"
+            @click="redirectToCart"
+            class="btn btn-sm btn-primary"
+          >
+            Go to Favorites
+          </button>
+        </div>
+      </div>
+      <div
         v-if="cart && accessToken"
         @mouseleave="hideCart()"
         @mouseenter="showCart()"
         d-flex
         bd-highlight
         mb-3
+        style="padding-left: 35%; margin-top: 7px"
       >
         <button
           @click="displayCart = !displayCart"
@@ -65,7 +153,7 @@
           v-if="!displayCart"
           class="list-group position-absolute"
           style="
-            left: 52%;
+            left: 76%;
             transform: translateX(-40%);
             z-index: 1000;
             min-width: 200px;
@@ -313,11 +401,12 @@
 <script>
 import $ from 'jquery'
 export default {
-  props: ['cart', 'avatar', 'profile'],
+  props: ['cart', 'avatar', 'profile', 'favorites'],
   emits: ['removeFromCart', 'removeAccessToken'],
   data() {
     return {
-      displayCart: true
+      displayCart: true,
+      displayLiked: true
     }
   },
   computed: {
@@ -342,16 +431,36 @@ export default {
     removeFromCart(itemId) {
       this.$store.dispatch('removeFromCart', itemId)
     },
+    addTofavorites(product) {
+      this.$store.dispatch('addTofavorites', product)
+    },
+    removeFromFavorites(itemId) {
+      this.$store.dispatch('removeFromFavorites', itemId)
+    },
+    redirectToFavorites() {
+      this.$router.push({ name: 'ItemsInFavorites' })
+      this.$store.dispatch('redirectToFavorites')
+    },
     logout() {
       this.$store.dispatch('removeAccessToken')
     },
     hideCart() {
       setTimeout(() => {
         this.displayCart = true
-      }, 700)
+      }, 600)
     },
     showCart() {
+      this.displayLiked = true
       this.displayCart = false
+    },
+    hideFavorites() {
+      setTimeout(() => {
+        this.displayLiked = true
+      }, 600)
+    },
+    showFavorites() {
+      this.displayCart = true
+      this.displayLiked = false
     },
     createItem() {
       $('#createItem').submit(e => {

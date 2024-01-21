@@ -46,6 +46,7 @@ class ItemRead(BaseModel):
     category:  Optional[Category]
     category_id:  Optional[int]
     in_cart: Optional[Dict[Any,Any]]
+    liked: Optional[Dict[Any,Any]]
     discount: Optional[decimal.Decimal]
     discount_price: Optional[decimal.Decimal]
     quantity: Optional[int]
@@ -61,6 +62,7 @@ class ItemRead(BaseModel):
             "username": "Krassy",
             "description": "description",
             'in_cart': "false",
+            'liked': "false",
             'discount': 0.2,
             'discount_price': '1009.11',
             'quantity': 1

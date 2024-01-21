@@ -17,6 +17,7 @@ export default createStore({
     isDiscountedChecked: false,
     categories: [],
     cart: [],
+    favorites: [],
     sortOrder: 'asc',
     selectedCategories: [],
     selectedRating: [],
@@ -52,6 +53,9 @@ export default createStore({
     },
     SET_CATEGORIES(state, categories) {
       state.categories = categories
+    },
+    UPDATE_FAVORITES(state, items) {
+      state.favorites = items
     },
     UPDATE_CART(state, items) {
       state.cart = items
@@ -92,8 +96,14 @@ export default createStore({
     REMOVE_ITEM_FROM_CART(state, index) {
       state.cart.splice(index, 1)
     },
+    REMOVE_ITEM_FROM_FAVORITES(state, index) {
+      state.favorites.splice(index, 1)
+    },
     ADD_TO_CART(state, product) {
       state.cart.push(product)
+    },
+    ADD_TO_FAVORITES(state, product) {
+      state.favorites.push(product)
     },
     SET_FILTERED_PRODUCTS(state, filteredProducts) {
       state.filteredProducts = filteredProducts
@@ -308,6 +318,7 @@ export default createStore({
       }
       const data = await response.json()
       commit('UPDATE_CART', data.items)
+      commit('UPDATE_FAVORITES', data.items_liked)
       commit('UPDATE_TOTAL', data.total)
       commit('UPDATE_USER', data.user)
       commit('UPDATE_USER_ID', data.user_id)
@@ -407,6 +418,97 @@ export default createStore({
           })
       }
     },
+    async addTofavorites({ commit, state }, product) {
+      const headers = new Headers({
+        Authorization: `Bearer ${state.accessToken}`,
+        Accept: 'application/json'
+      })
+
+      const requestOptions = {
+        method: 'POST',
+        headers: headers,
+        redirect: 'follow',
+        body: JSON.stringify({
+          item_id: product.id
+        })
+      }
+
+      const itemInfavorites = state.favorites.find(
+        item => item.id === product.id
+      )
+
+      const toastContent = itemInfavorites
+        ? `${product.name} is already in the FAVORITES`
+        : `${product.name} was ${
+            itemInfavorites ? 'removed from' : 'added to'
+          } FAVORITES`
+
+      const toastElement = new bootstrap.Toast(
+        document.getElementById('cartToast'),
+        {
+          delay: 2000
+        }
+      )
+
+      const toastBodyElement = document.getElementById('cartToastBody')
+      toastBodyElement.innerText = toastContent
+      toastElement.show()
+
+      try {
+        if (itemInfavorites) {
+          const response = await fetch(
+            'http://127.0.0.1:8000/api/items/remove-from-favorites',
+            requestOptions
+          )
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`)
+          }
+
+          const index = state.favorites.findIndex(
+            item => item.id === product.id
+          )
+
+          if (index !== -1) {
+            commit('REMOVE_ITEM_FROM_FAVORITES', index)
+            const element = document.getElementById(`heart${product.id}`)
+            element.classList.remove('red-color')
+          }
+        } else {
+          const response = await fetch(
+            'http://127.0.0.1:8000/api/items/update-favorites',
+            requestOptions
+          )
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`)
+          }
+
+          commit('ADD_TO_FAVORITES', product)
+
+          const element = document.getElementById(`heart${product.id}`)
+          element.classList.add('red-color')
+        }
+      } catch (error) {
+        console.error('Error:', error)
+      }
+    },
+
+    async checkFavoritesOnLoad({ state }) {
+      const products = state.products
+      const favorites = state.favorites
+      console.log('products', products)
+      console.log('favorites', favorites)
+      for (const product of products) {
+        const isFavorite = favorites.some(fav => fav.id === product.id)
+        const element = document.getElementById(`heart${product.id}`)
+        if (isFavorite) {
+          element.classList.add('red-color')
+        } else {
+          element.classList.remove('red-color')
+        }
+      }
+    },
     UpdateItemQuantity({ commit, state }, { product_id, newQuantity }) {
       newQuantity = Math.max(1, Math.min(5, newQuantity))
       const headers = new Headers({
@@ -440,6 +542,41 @@ export default createStore({
             console.error('error', error)
           })
       }
+    },
+    removeFromFavorites({ commit, state }, itemId) {
+      const headers = new Headers({
+        Authorization: `Bearer ${state.accessToken}`,
+        Accept: 'application/json'
+      })
+      const requestOptions = {
+        method: 'POST',
+        headers: headers,
+        redirect: 'follow',
+        body: JSON.stringify({
+          item_id: itemId
+        })
+      }
+      fetch(
+        'http://127.0.0.1:8000/api/items/remove-from-favorites',
+        requestOptions
+      )
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`)
+          }
+          return response.json()
+        })
+        .then(() => {
+          const index = state.favorites.findIndex(item => item.id === itemId)
+          if (index !== -1) {
+            commit('REMOVE_ITEM_FROM_FAVORITES', index)
+            const element = document.getElementById(`heart${itemId}`)
+            element.classList.remove('red-color')
+          }
+        })
+        .catch(error => {
+          console.error('Error removing item from cart:', error)
+        })
     },
     removeFromCart({ commit, state }, itemId) {
       const headers = new Headers({
@@ -512,6 +649,7 @@ export default createStore({
     profiles: state => state.profiles,
     products: state => state.products,
     cart: state => state.cart,
+    favorites: state => state.favorites,
     min: state => state.min,
     max: state => state.max,
     categories: state => state.categories,

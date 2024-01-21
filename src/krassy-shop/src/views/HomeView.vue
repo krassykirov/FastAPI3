@@ -9,6 +9,7 @@
     >
       <MyNavbar
         :cart="cart"
+        :favorites="favorites"
         :total="total"
         :user="user"
         :profile="profile"
@@ -261,13 +262,16 @@
             v-for="product in filteredProducts"
             :key="product.id"
             :cart="cart"
+            :favorites="favorites"
             class="row g-0 col-auto"
             :product="product"
             :min="min"
             :max="max"
             :total="total"
             @addToCart="addToCart"
+            @addTofavorites="addTofavorites"
             @removeFromCart="removeFromCart"
+            @removeFromFavorites="removeFromFavorites"
             v-on:redirectToItem="redirectToItem"
             style="justify-content: left"
           >
@@ -302,6 +306,7 @@ export default {
       .then(() => this.$store.dispatch('getProfile'))
       .then(() => this.$store.dispatch('getProducts'))
       .then(() => this.$store.dispatch('readFromCartVue'))
+      .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
       .then(() => this.$store.dispatch('fetchCategories'))
       .then(() => {
         const fetchRatingsPromises = this.$store.state.products.map(product => {
@@ -322,6 +327,9 @@ export default {
     },
     cart() {
       return this.$store.getters.cart
+    },
+    favorites() {
+      return this.$store.getters.favorites
     },
     min() {
       return this.$store.getters.min
@@ -440,6 +448,12 @@ export default {
     },
     removeFromCart(itemId) {
       this.$store.dispatch('removeFromCart', itemId)
+    },
+    addTofavorites(product) {
+      this.$store.dispatch('addTofavorites', product)
+    },
+    removeFromFavorites(itemId) {
+      this.$store.dispatch('removeFromFavorites', itemId)
     },
     handleDiscountChange() {
       this.$store.dispatch('handleDiscountChange', this.isChecked)

@@ -71,6 +71,7 @@ class Item(SQLModel, table=True):
     username:     Optional[str] = Field(default=None, foreign_key="user.username")
     description:  Optional[str]
     in_cart:      Optional[Dict[Any,Any]] = Field(default={}, sa_column=Column(JSON))
+    liked:        Optional[Dict[Any,Any]] = Field(default={}, sa_column=Column(JSON))
     discount:     Optional[decimal.Decimal]
     quantity:     Optional[int] = Field(default=1)
 

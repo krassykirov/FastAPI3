@@ -5,11 +5,7 @@
     :data-category="product.category_id"
     style="margin: 0.15%; padding: 0.15%"
   >
-    <div
-      class="card-body"
-      style="cursor: pointer; padding: 1%"
-      @click="redirectToItemFromProduct(product.id)"
-    >
+    <div class="card-body" style="padding: 1%">
       <span
         class="badge bg-danger position-absolute top-0 start-0"
         v-if="product.discount >= 0.1"
@@ -18,12 +14,15 @@
       </span>
       <span
         class="fa fa-heart-o"
+        @click="addTofavorites(product)"
+        :id="'heart' + product.id"
         style="
           position: absolute;
           top: 1%;
           right: 1%;
           font-weight: 900;
           font-size: 1.2em;
+          cursor: pointer;
         "
       ></span>
       <img
@@ -36,8 +35,11 @@
           product.image
         "
         class="card-img-top"
+        @click="redirectToItemFromProduct(product.id)"
+        style="cursor: pointer"
       />
       <h6
+        @click="redirectToItemFromProduct(product.id)"
         class="card-title"
         style="
           margin-bottom: 1%;
@@ -48,6 +50,7 @@
           -webkit-line-clamp: 3;
           -webkit-box-orient: vertical;
           line-height: 1;
+          cursor: pointer;
         "
       >
         {{ product.name }}
@@ -106,7 +109,7 @@
 <script>
 export default {
   props: ['product', 'min', 'max', 'cart'],
-  emits: ['addToCart', 'redirectToItem'],
+  emits: ['addToCart', 'redirectToItem', 'addTofavorites'],
   computed: {
     filteredProducts() {
       return this.$store.state.filteredProducts
@@ -132,6 +135,12 @@ export default {
     addToCart(product) {
       this.$store.dispatch('addToCart', product)
     },
+    addTofavorites(product) {
+      this.$store.dispatch('addTofavorites', product)
+    },
+    removeFromFavorites(itemId) {
+      this.$store.dispatch('removeFromFavorites', itemId)
+    },
     getStarClasses(index, rating) {
       const filledStars = Math.floor(rating)
       if (index <= filledStars) {
@@ -145,3 +154,16 @@ export default {
   }
 }
 </script>
+<style>
+.overall-rating {
+  font-size: 0.9em !important;
+  margin-bottom: 2%;
+}
+.overall-rating2 {
+  font-size: 0.9em !important;
+  margin-bottom: 2%;
+}
+.red-color {
+  color: red;
+}
+</style>
