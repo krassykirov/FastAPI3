@@ -43,7 +43,8 @@ const routes = [
     props: route => ({
       itemId: route.params.itemId,
       cart: store.state.cart,
-      profile: store.state.profile
+      profile: store.state.profile,
+      favorites: store.state.favorites
     })
   }
 ]

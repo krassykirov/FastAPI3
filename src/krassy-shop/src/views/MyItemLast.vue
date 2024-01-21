@@ -20,7 +20,13 @@
         text-align: center;
       "
     >
-      <NavBar :cart="cart" :total="total" :profile="profile" :user="user" />
+      <NavBar
+        :cart="cart"
+        :total="total"
+        :favorites="favorites"
+        :profile="profile"
+        :user="user"
+      />
     </nav>
     <div class="container my-5">
       <div class="row">
@@ -486,7 +492,7 @@ export default {
   components: {
     NavBar
   },
-  props: ['cart', 'profile'],
+  props: ['cart', 'profile', 'favorites'],
   emits: ['addToCart', 'redirectToItem'],
   data() {
     return {
