@@ -20,7 +20,13 @@
         text-align: center;
       "
     >
-      <NavBar :cart="cart" :total="total" :user="user" :profile="profile" />
+      <NavBar
+        :cart="cart"
+        :total="total"
+        :user="user"
+        :profile="profile"
+        :favorites="favorites"
+      />
     </nav>
     <div class="container-fluid mt-5" style="margin-left: 10%">
       <div class="row">
@@ -121,7 +127,7 @@ export default {
   components: {
     NavBar
   },
-  props: ['profile'],
+  props: ['profile', 'favorites'],
   data() {
     return {
       item: null,

@@ -17,7 +17,11 @@ const routes = [
     path: '/cart',
     name: 'ItemsInCart',
     component: () => import('../views/CartVueNew.vue'),
-    props: () => ({ cart: store.state.cart, profile: store.state.profile })
+    props: () => ({
+      cart: store.state.cart,
+      profile: store.state.profile,
+      favorites: store.state.favorites
+    })
   },
   // {
   //   path: '/item/:itemId',
