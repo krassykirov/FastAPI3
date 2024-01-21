@@ -38,7 +38,7 @@ const routes = [
     path: '/Profile',
     name: 'Profile',
     component: () => import('../views/ProfileVue.vue'),
-    props: () => ({ cart: store.state.cart })
+    props: () => ({ cart: store.state.cart, favorites: store.state.favorites })
   },
   {
     path: '/item/:itemId',
