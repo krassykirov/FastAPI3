@@ -45,13 +45,13 @@
       <div
         v-if="favorites && accessToken"
         @mouseleave="hideFavorites()"
-        @mouseenter="showFavorites()"
         d-flex
         bd-highlight
-        mb-3
+        mb-1
         style="margin-top: 18px"
       >
         <button
+          @mouseenter="showFavorites()"
           @click="displayLiked = !displayLiked"
           @dblclick="handleDoubleClick"
           class="btn btn-light dropdown-toggle btn-sm"
@@ -126,20 +126,20 @@
             @click="redirectToCart"
             class="btn btn-sm btn-primary"
           >
-            Go to Favorites
+            See Favorites
           </button>
         </div>
       </div>
       <div
         v-if="cart && accessToken"
         @mouseleave="hideCart()"
-        @mouseenter="showCart()"
         d-flex
         bd-highlight
-        mb-3
+        mb-1
         style="padding-left: 35%; margin-top: 5px"
       >
         <button
+          @mouseenter="showCart()"
           @click="displayCart = !displayCart"
           @dblclick="handleDoubleClick"
           class="btn btn-light dropdown-toggle btn-sm"
@@ -227,7 +227,7 @@
       </div>
     </div>
     <ul
-      class="navbar-nav ms-auto mb-2 mb-lg-0 profile-menu"
+      class="navbar-nav ms-auto mb-1 mb-lg-0 profile-menu"
       style="margin-right: 120px"
     >
       <li class="nav-item dropdown">

@@ -121,7 +121,9 @@
             </p>
             <div class="buttons d-flex justify-content-center my-4">
               <div class="block">
-                <a @click="showModal" class="shadow btn custom-btn">Wishlist</a>
+                <a @click="addTofavorites(item)" class="shadow btn custom-btn"
+                  >Wishlist</a
+                >
               </div>
               <div class="block">
                 <button
@@ -740,6 +742,9 @@ export default {
       this.$nextTick(() => {
         window.scrollTo(0, scrollPosition)
       })
+    },
+    addTofavorites(product) {
+      this.$store.dispatch('addTofavorites', product)
     },
     showModal() {
       $(document).ready(function () {
