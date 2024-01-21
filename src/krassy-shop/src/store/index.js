@@ -497,8 +497,6 @@ export default createStore({
     async checkFavoritesOnLoad({ state }) {
       const products = state.products
       const favorites = state.favorites
-      console.log('products', products)
-      console.log('favorites', favorites)
       for (const product of products) {
         const isFavorite = favorites.some(fav => fav.id === product.id)
         const element = document.getElementById(`heart${product.id}`)

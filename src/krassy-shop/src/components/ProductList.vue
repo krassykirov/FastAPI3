@@ -13,7 +13,7 @@
         >-{{ Math.floor(product.discount * 100) }}%
       </span>
       <span
-        class="fa fa-heart-o"
+        :class="getHeartClasses(product)"
         @click="addTofavorites(product)"
         :id="'heart' + product.id"
         style="
@@ -122,6 +122,14 @@ export default {
         ).toFixed(2)
       } else {
         return (this.product.price * 1).toFixed(2)
+      }
+    },
+    getHeartClasses() {
+      return product => {
+        const isFavorite = this.$store.state.favorites.some(
+          favProduct => favProduct.id === product.id
+        )
+        return isFavorite ? 'fa fa-heart red-color' : 'fa fa-heart-o'
       }
     }
   },
