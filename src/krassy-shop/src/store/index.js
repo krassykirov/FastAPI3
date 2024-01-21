@@ -438,10 +438,8 @@ export default createStore({
       )
 
       const toastContent = itemInfavorites
-        ? `${product.name} is already in the FAVORITES`
-        : `${product.name} was ${
-            itemInfavorites ? 'removed from' : 'added to'
-          } FAVORITES`
+        ? `${product.name} was removed from Wishlist `
+        : `${product.name} was addedd in Wishlist`
 
       const toastElement = new bootstrap.Toast(
         document.getElementById('cartToast'),
