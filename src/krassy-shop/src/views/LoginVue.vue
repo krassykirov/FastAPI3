@@ -94,6 +94,14 @@ export default {
       errorMessage: ''
     }
   },
+  created() {
+    this.$store.dispatch('initializeUser').catch(error => {
+      if (error.message !== 'Token Expired') {
+        console.error(error)
+      }
+      this.errorMessage = 'Token has expired. Please log in again.'
+    })
+  },
   methods: {
     async getToken() {
       try {

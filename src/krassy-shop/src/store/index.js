@@ -189,11 +189,19 @@ export default createStore({
       }
     },
     async initializeUser({ commit, state }) {
-      const decoded = jwtDecode(state.accessToken)
-      const user = decoded.sub
-      const user_id = decoded.user_id
-      commit('UPDATE_USER', user)
-      commit('UPDATE_USER_ID', user_id)
+      if (state.accessToken === null) {
+        router.push('/login')
+      } else {
+        const decoded = jwtDecode(state.accessToken)
+        if (Date.now() >= decoded.exp * 1000) {
+          router.push('/login')
+          throw new Error('Token Expired')
+        }
+        const user = decoded.sub
+        const user_id = decoded.user_id
+        commit('UPDATE_USER', user)
+        commit('UPDATE_USER_ID', user_id)
+      }
     },
     async removeAccessToken({ commit }) {
       VueCookies.remove('access_token')
@@ -438,8 +446,8 @@ export default createStore({
       )
 
       const toastContent = itemInfavorites
-        ? `${product.name} was removed from Wishlist `
-        : `${product.name} was addedd in Wishlist`
+        ? `${product.name} was removed from Favorites `
+        : `${product.name} was addedd in Favorites`
 
       const toastElement = new bootstrap.Toast(
         document.getElementById('cartToast'),

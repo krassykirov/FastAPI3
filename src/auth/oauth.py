@@ -26,7 +26,7 @@ oauth_router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearerCookie(tokenUrl="/api/token")
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 360
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 ALGORITHM = "HS256"
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 
@@ -86,8 +86,7 @@ def get_current_user(request: Request, token: str = Depends(oauth2_scheme), db: 
         raise credentials_exception
     converted_expires = datetime.datetime.fromtimestamp(expires)
     if datetime.datetime.utcnow() > converted_expires:
-        response = templates.TemplateResponse("login.html",{"request":request, 'message': "Session expired"})
-        return response
+        raise HTTPException(status_code=403, detail="Token Expired")
     return user
 
 

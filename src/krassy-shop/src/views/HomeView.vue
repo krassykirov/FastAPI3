@@ -315,7 +315,9 @@ export default {
         return Promise.all(fetchRatingsPromises)
       })
       .catch(error => {
-        console.error('Error during initialization:', error)
+        if (error.message !== 'Token Expired') {
+          console.error('Token Expired', error)
+        }
       })
   },
   computed: {
