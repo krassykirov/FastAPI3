@@ -44,13 +44,24 @@
                         >
                       </div>
                     </div>
+                    <div>
+                      <label class="form-check-label" for="rememberMe">
+                        Remember Me
+                      </label>
+                      <input
+                        type="checkbox"
+                        id="rememberMe"
+                        v-model="rememberMe"
+                        style="margin-left: 5px; margin-bottom: 1px"
+                      />
+                    </div>
                     <div
                       class="d-flex justify-content-center mx-4 mb-3 mb-lg-4"
                     >
                       <button
                         type="submit"
                         class="btn btn-info"
-                        style="margin: 2px"
+                        style="margin: 2px; margin-top: 15px"
                         @click="getToken"
                       >
                         Login
@@ -58,7 +69,7 @@
                       <button
                         type="button"
                         class="btn btn-primary"
-                        style="margin: 2px"
+                        style="margin: 2px; margin-top: 15px"
                         @click="redirectToSignup"
                       >
                         Signup
@@ -91,6 +102,7 @@ export default {
     return {
       username: '',
       password: '',
+      rememberMe: '',
       errorMessage: ''
     }
   },
@@ -107,7 +119,8 @@ export default {
       try {
         await this.$store.dispatch('login', {
           username: this.username,
-          password: this.password
+          password: this.password,
+          rememberMe: this.rememberMe
         })
       } catch (error) {
         this.errorMessage = 'Username or password are incorrect!'
@@ -119,3 +132,14 @@ export default {
   }
 }
 </script>
+<style>
+input[type='checkbox'] {
+  background-color: #b6c0c2 !important;
+}
+input[type='checkbox']:checked {
+  background-color: #409fd6;
+  background: #409fd6
+    url('data:image/gif;base64,R0lGODlhCwAKAIABAP////3cnSH5BAEKAAEALAAAAAALAAoAAAIUjH+AC73WHIsw0UCjglraO20PNhYAOw==')
+    3px 3px no-repeat !important;
+}
+</style>

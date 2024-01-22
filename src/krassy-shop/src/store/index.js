@@ -162,7 +162,7 @@ export default createStore({
         console.error('Error fetching products:', error)
       }
     },
-    async login({ commit, dispatch }, { username, password }) {
+    async login({ commit, dispatch }, { username, password, rememberMe }) {
       const formData = new URLSearchParams()
       formData.append('grant_type', '')
       formData.append('username', username)
@@ -170,6 +170,7 @@ export default createStore({
       formData.append('scope', '')
       formData.append('client_id', '')
       formData.append('client_secret', '')
+      formData.append('rememberMe', rememberMe ? 'true' : 'false')
       try {
         const response = await fetch('http://127.0.0.1:8000/api/token', {
           method: 'POST',
@@ -180,7 +181,14 @@ export default createStore({
           throw new Error(data.detail)
         }
         const data = await response.json()
-        VueCookies.set('access_token', data.access_token, '12h')
+        const expires_in = jwtDecode(data.access_token).exp
+        const expiresInMinutes = Math.max(
+          0,
+          Math.floor((expires_in - Math.floor(Date.now() / 1000)) / 60)
+        )
+        VueCookies.set('access_token', data.access_token, {
+          expires: new Date(Date.now() + expiresInMinutes)
+        })
         commit('setAccessToken', data.access_token)
         await dispatch('initializeUser')
         router.push('/')

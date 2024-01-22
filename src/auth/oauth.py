@@ -1,5 +1,5 @@
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Form
 from starlette.datastructures import URL
 from typing import Union
 from sqlmodel import Session, select
@@ -110,12 +110,18 @@ def login_access_token(*, request: Request, response: Response, form_data: OAuth
         return templates.TemplateResponse("login.html", context)
 
 @oauth_router.post('/api/token', include_in_schema=True)
-def login_access_token(*, request: Request, response: Response, form_data: OAuth2PasswordRequestForm=Depends(),
+async def login_access_token(*, request: Request, response: Response, form_data: OAuth2PasswordRequestForm=Depends(),
                 db: Session = Depends(get_session), background_tasks: BackgroundTasks ):
     query = select(src.models.User).where(src.models.User.username == form_data.username)
+    data = request.__dict__
+    remember_me = [v.get('rememberMe') for k,v in data.items() if k == '_form' ][0]
+    print('rememberMe', remember_me)
     user = db.exec(query).first()
     if user and user.verify_password(form_data.password):
-        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        if remember_me == 'true':
+            access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES * 24)
+        else:
+            access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(
             data={"sub": user.username, 'user_id': user.id}, expires_delta=access_token_expires
         )
