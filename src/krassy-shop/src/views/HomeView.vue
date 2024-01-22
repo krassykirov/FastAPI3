@@ -308,6 +308,7 @@ export default {
       .then(() => this.$store.dispatch('readFromCartVue'))
       .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
       .then(() => this.$store.dispatch('fetchCategories'))
+      .then(() => this.$store.dispatch('updateProductRange'))
       .then(() => {
         const fetchRatingsPromises = this.$store.state.products.map(product => {
           return this.$store.dispatch('getItemRating', product.id)

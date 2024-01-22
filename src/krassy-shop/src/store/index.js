@@ -355,23 +355,33 @@ export default createStore({
       let minVal = parseInt(document.querySelector('.min-range').value)
       let maxVal = parseInt(document.querySelector('.max-range').value)
 
+      // const overlapLimit = 5 // Adjust this value based on your preference
+
       if (minVal >= maxVal) {
         minVal = maxVal
-      }
-      if (maxVal <= minVal) {
+      } else if (maxVal <= minVal) {
         maxVal = minVal
       }
       const rangeInput = document.querySelector('.min-range')
       const rangeInputMax = document.querySelector('.max-range')
       if (rangeInput) {
-        rangeInput.value = this.min
+        console.log('rangeInput MIn', rangeInput.value)
+        rangeInput.value = minVal
       }
+
       if (rangeInputMax) {
-        rangeInputMax.value = this.max
+        console.log('rangeInput MAX', rangeInputMax.value)
+        rangeInputMax.value = maxVal
       }
+      // Commit the updated min and max values to the store
       commit('SET_MIN_PRICE', minVal)
       commit('SET_MAX_PRICE', maxVal)
       commit('SET_RANGE_INPUT', { min: minVal, max: maxVal })
+    },
+    updateProductRange() {
+      const prices = this.state.products.map(product => product.price)
+      this.state.productMin = Math.min(...prices)
+      this.state.productMax = Math.max(...prices)
     },
     Search() {
       var input, filter, cards, cardContainer, title, i
@@ -507,7 +517,6 @@ export default createStore({
         console.error('Error:', error)
       }
     },
-
     async checkFavoritesOnLoad({ state }) {
       const products = state.products
       const favorites = state.favorites
