@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block html_read %}
+{% block javascript %}
+    <script type="text/javascript">
+        {% include "js/main.js" %}
+    </script>
+{% endblock %}
+
+  <div class="container-breadcrumb" style="margin-top: 13px;">
+    <nav style="--bs-breadcrumb-divider: '';" aria-label="breadcrumb">
+     <ol class="breadcrumb">
+       <li class="test"><a href="#">Categories</a></li>
+       <li class="breadcrumb-item" data-category="Finance"><a href="#Finance">Finance</a></li>
+       <li class="breadcrumb-item" data-category="Services"><a href="#Services">Services</a></li>
+       <li class="breadcrumb-item" data-category="TV"><a href="#TV">TV</a></li>
+       <li class="breadcrumb-item" data-category="IT"><a href="#IT">IT</a></li>
+       <li class="breadcrumb-item" data-category="Miscellaneous"><a href="#">Miscellaneous</a></li>
+     </ol>
+   </nav>
+   </div>
+
+   <div class="row" id="itemsContainer" style="justify-content: center;">
+
+   </div>
+{%  if items  %}
+<div class="row" id="items-to-hide" style="justify-content: center;">
+  {% for item in items %}
+      <div class="col-lg-auto">
+          <div class="card"  id="card{{ item.id }}">
+            <div class="card-body"  style="cursor: pointer"; onclick="location.href='{{ url_for('read_item', id=item.id) }}'" >
+                       {% if  'no-image.png' == item.image %}
+                       <img class="card-img-top" src="/static/img/{{ item.image }}">
+                       {% else %}
+                       <img class="card-img-top" src="/static/img/{{ item.username }}/{{item.name}}/{{ item.image }}">
+                       {% endif %}
+                     <h5 class="card-title">{{ item.name }} </h5>
+                     <h5 class="card-text">Price: ${{ '%0.2f'|format(item.price|float)  }}</h5>
+                     <h6 class="card-subtitle mb-2 text-muted">{{ item.category.name.split('.')[-1] }}</h6>
+                     <div class="dropdown">
+                     <a href="{{ url_for('read_item', id=item.id) }}"><button class="btn btn-secondary stretched-link">Purchase Details</button></a>
+                   </div>
+                   <p>
+                   <span class="fa fa-star checked" id="star{{ item.id }}1"></span>
+                   <span class="fa fa-star checked" id="star{{ item.id }}2"></span>
+                   <span class="fa fa-star checked" id="star{{ item.id }}3"></span>
+                   <span class="fa fa-star" id="star{{ item.id }}4"></span>
+                   <span class="fa fa-star" id="star{{ item.id }}5"></span>
+                   <span id="overall-rating{{ item.id }}"> No rating Yet </span>
+                   </p>
+                     <div class="card-footer">
+                       <small class="text-muted">Created: {{ item.date.strftime('%Y-%m-%d') }} by {{ item.username }}</small>
+                     </div>
+             </div>
+       </div>
+  </div>
+ {% endfor %}
+{%  else  %}
+No Items in Category found
+{% endif  %}
+
+<script>
+
+function getItemRating(item_id){
+  $.ajax({
+        url: "/api/reviews/item/rating",
+        method: "get",
+        headers: { "Content-Type": "application/json",},
+        data:  { "id": `${item_id}`
+        },
+        success: data => {
+          for (var i=1; i<=5; i++ ){
+            var star = document.getElementById('star'+ item_id + i )
+            if ( i <= data.rating ){
+                star.classList.add('checked');
+            }
+            else { star.classList.remove('checked')}
+          }
+        document.getElementById('overall-rating'+ item_id).innerText = '  (' + data.review_number + ')'
+        },
+        error: (error) => {
+            console.log('error:', error);
+        }
+      });
+   }
+
+{% for item in items %}
+var item_id = '{{ item.id }}'
+getItemRating(item_id)
+{% endfor %}
+
+
+$(document).ready(function() {
+    const categoryIdToName = {
+      1: 'Finance',
+      2: 'IT',
+      3: 'TV',
+      4: 'Services',
+      5: 'Miscellaneous'
+    }
+    $('.breadcrumb-item').on('click', function() {
+      var category= $(this).data('category');
+    $.ajax({
+    url: "/category",
+    method: "post",
+    data:  JSON.stringify({
+          "category": `${category}`,
+        }),
+    success: data => {
+      if (data.includes("No Items in Category Found")) {
+        itemsContainer.innerText = `No Items in Category: ${category} Found`
+      }
+      else {
+      const itemsContainer = $('#itemsContainer');
+      itemsContainer.empty()
+      data.forEach(item => {
+        var categoryName = categoryIdToName[item.category_id];
+        var formattedPrice = `$${(item.price).toFixed(2)}`;
+        var itemHtml =  `
+          <div class="col-lg-auto">
+              <div class="card"  id="card${item.id}">
+            <div class="card-body"  style="cursor: pointer"; onclick="location.href='url_for('read_item', id=${item.id})'" >
+               <div class="card-body"  style="cursor: pointer"; onclick="location.href='url_for('read_item', id=${item.id})'" >
+              <img class="card-img-top" src="/static/img/${item.username}/${item.name}/${item.image}">
+            <h5 class="card-title">${item.name} </h5>
+            <h5 class="card-text">Price: ${formattedPrice}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Category: ${categoryName}</h6>
+            <div class="dropdown">
+            <a href="{{ url_for('read_item', id='${item.id}') }}"><button class="btn btn-secondary stretched-link">Purchase Details</button></a>
+          </div>
+          <p>
+          <span class="fa fa-star checked" id="star${item.id}1"></span>
+          <span class="fa fa-star checked" id="star${item.id}2"></span>
+          <span class="fa fa-star checked" id="star${item.id}3"></span>
+          <span class="fa fa-star" id="star${item.id}4"></span>
+          <span class="fa fa-star" id="star${item.id}5"></span>
+          <span id="overall-rating${item.id}"> No rating Yet </span>
+          </p>
+          <div class="card-footer">
+                       <small class="text-muted">Created: {{ '${item.date}' }} by {{ '${item.username}' }}</small>
+              </div>
+          </div>
+          </div>
+      </div>
+    `
+     getItemRating(`${item.id}`);
+     itemsContainerToHide = $('#items-to-hide');
+     itemsContainerToHide.empty()
+     document.getElementById('items-to-hide').style.display = 'none'
+     itemsContainer.append(itemHtml);
+      });
+    }
+    },
+    error: (response) => {
+      console.log('error', response)
+        }
+      });
+   }
+)});
+
+</script>
+
+{% endblock %}

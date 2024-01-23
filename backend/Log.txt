@@ -1,0 +1,66 @@
+[2024-01-23 10:25:31,194 INFO oauth - login:137]: Login required
+[2024-01-23 10:25:51,036 INFO oauth - login:137]: Login required
+[2024-01-23 11:30:58,107 INFO oauth - login:137]: Login required
+[2024-01-23 11:31:33,859 INFO oauth - login:137]: Login required
+[2024-01-23 11:31:33,941 INFO oauth - login:137]: Login required
+[2024-01-23 11:42:40,341 ERROR app - create_item:100]: Item with that name already exists!
+[2024-01-23 11:42:40,349 ERROR app - create_item:100]: Item with that name already exists!
+[2024-01-23 11:42:40,353 ERROR app - create_item:100]: Item with that name already exists!
+[2024-01-23 11:42:40,358 ERROR app - create_item:100]: Item with that name already exists!
+[2024-01-23 11:42:40,363 ERROR app - create_item:100]: Item with that name already exists!
+[2024-01-23 11:42:40,369 ERROR app - create_item:100]: Item with that name already exists!
+[2024-01-23 11:42:40,391 ERROR app - create_item:100]: Item with that name already exists!
+[2024-01-23 11:42:40,397 ERROR app - create_item:100]: Item with that name already exists!
+[2024-01-23 11:42:40,404 ERROR app - create_item:100]: Item with that name already exists!
+[2024-01-23 11:42:46,766 INFO oauth - login:137]: Login required
+[2024-01-23 11:42:47,097 INFO oauth - login:137]: Login required
+[2024-01-23 11:43:38,316 INFO oauth - login:137]: Login required
+[2024-01-23 11:43:38,370 INFO oauth - login:137]: Login required
+[2024-01-23 11:43:53,940 ERROR app - create_review_ajax:226]: review_exist []
+[2024-01-23 11:43:53,940 INFO app - create_review_ajax:230]: Creating review id=None text='qwdqw' item_id=1 rating=5 created_by='krassy@mail.bg' date=datetime.datetime(2024, 1, 23, 11, 43, 15) item=Item(in_cart={}, id=1, product_code=UUID('941b90aa-5835-451b-87a0-9a3c037185e2'), price=Decimal('12.00'), category_id=1, description='wwdfw', quantity=1, liked={}, name='Mazda', date=datetime.datetime(2024, 1, 23, 11, 42, 31), image='apple_watch_se_gps_cellular_40mm_midnight_aluminium_case_with_midnight_sport_band_regular.jpeg', username='krassy@mail.bg', discount=None, reviews=[Review(id=None, text='qwdqw', item_id=1, rating=5, created_by='krassy@mail.bg', date=datetime.datetime(2024, 1, 23, 11, 43, 15), item=Item(in_cart={}, id=1, product_code=UUID('941b90aa-5835-451b-87a0-9a3c037185e2'), price=Decimal('12.00'), category_id=1, description='wwdfw', quantity=1, liked={}, name='Mazda', date=datetime.datetime(2024, 1, 23, 11, 42, 31), image='apple_watch_se_gps_cellular_40mm_midnight_aluminium_case_with_midnight_sport_band_regular.jpeg', username='krassy@mail.bg', discount=None, reviews=[...]))])
+[2024-01-23 11:45:11,847 INFO oauth - login:137]: Login required
+[2024-01-23 11:45:11,908 INFO oauth - login:137]: Login required
+[2024-01-23 11:45:46,790 INFO oauth - login:137]: Login required
+[2024-01-23 11:45:46,846 INFO oauth - login:137]: Login required
+[2024-01-23 11:50:24,795 INFO oauth - login:137]: Login required
+[2024-01-23 11:50:24,853 INFO oauth - login:137]: Login required
+[2024-01-23 11:54:35,729 INFO oauth - login:137]: Login required
+[2024-01-23 11:54:35,773 INFO oauth - login:137]: Login required
+[2024-01-23 12:04:23,135 INFO oauth - login:137]: Login required
+[2024-01-23 12:04:23,219 INFO oauth - login:137]: Login required
+[2024-01-23 12:04:32,274 INFO oauth - login:137]: Login required
+[2024-01-23 12:04:32,300 INFO oauth - login:137]: Login required
+[2024-01-23 12:04:36,628 INFO oauth - login:137]: Login required
+[2024-01-23 12:04:36,830 INFO oauth - login:137]: Login required
+[2024-01-23 12:05:04,411 INFO oauth - login:137]: Login required
+[2024-01-23 12:05:04,523 INFO oauth - login:137]: Login required
+[2024-01-23 12:06:01,923 INFO oauth - login:137]: Login required
+[2024-01-23 12:06:02,135 INFO oauth - login:137]: Login required
+[2024-01-23 12:08:38,284 INFO oauth - login:137]: Login required
+[2024-01-23 12:08:38,587 INFO oauth - login:137]: Login required
+[2024-01-23 12:22:09,490 INFO oauth - login:137]: Login required
+[2024-01-23 12:22:09,511 INFO oauth - login:137]: Login required
+[2024-01-23 12:22:37,778 INFO oauth - login:137]: Login required
+[2024-01-23 12:22:37,912 INFO oauth - login:137]: Login required
+[2024-01-23 12:24:01,276 INFO oauth - login:137]: Login required
+[2024-01-23 12:24:01,338 INFO oauth - login:137]: Login required
+[2024-01-23 12:25:02,988 ERROR app - create_review_ajax:226]: review_exist []
+[2024-01-23 12:25:02,988 INFO app - create_review_ajax:230]: Creating review id=None text='qwdwedw' item_id=2 rating=5 created_by='krassy@mail.bg' date=datetime.datetime(2024, 1, 23, 11, 43, 15) item=Item(in_cart={}, id=2, product_code=UUID('f45253ac-0d10-4e5d-90df-e7f8d36cafbe'), price=Decimal('1212.00'), category_id=2, description='wfwef', quantity=1, liked={'krassy@mail.bg': {'liked': False}}, name='Subaru', date=datetime.datetime(2024, 1, 23, 11, 43, 15), image='huawei_watch_ultimate_colombo_b29_voyage_blue.png', username='krassy@mail.bg', discount=None, reviews=[Review(id=None, text='qwdwedw', item_id=2, rating=5, created_by='krassy@mail.bg', date=datetime.datetime(2024, 1, 23, 11, 43, 15), item=Item(in_cart={}, id=2, product_code=UUID('f45253ac-0d10-4e5d-90df-e7f8d36cafbe'), price=Decimal('1212.00'), category_id=2, description='wfwef', quantity=1, liked={'krassy@mail.bg': {'liked': False}}, name='Subaru', date=datetime.datetime(2024, 1, 23, 11, 43, 15), image='huawei_watch_ultimate_colombo_b29_voyage_blue.png', username='krassy@mail.bg', discount=None, reviews=[...]))])
+[2024-01-23 12:49:07,001 ERROR oauth - signup:150]: User with that name already exists!
+[2024-01-23 12:49:21,566 ERROR oauth - signup:150]: User with that name already exists!
+[2024-01-23 12:52:41,422 INFO oauth - login:137]: Login required
+[2024-01-23 12:52:41,602 INFO oauth - login:137]: Login required
+[2024-01-23 12:52:47,395 INFO oauth - login:137]: Login required
+[2024-01-23 12:52:47,521 INFO oauth - login:137]: Login required
+[2024-01-23 13:20:47,110 INFO oauth - login:137]: Login required
+[2024-01-23 13:20:47,191 INFO oauth - login:137]: Login required
+[2024-01-23 13:20:53,996 INFO oauth - login:137]: Login required
+[2024-01-23 13:20:54,089 INFO oauth - login:137]: Login required
+[2024-01-23 13:23:58,886 INFO oauth - login:137]: Login required
+[2024-01-23 13:23:58,945 INFO oauth - login:137]: Login required
+[2024-01-23 14:06:54,606 INFO oauth - login:138]: Login required
+[2024-01-23 14:59:11,149 INFO oauth - login:138]: Login required
+[2024-01-23 15:21:00,118 INFO oauth - login:138]: Login required
+[2024-01-23 15:21:59,096 INFO oauth - login:138]: Login required
+[2024-01-23 15:22:25,316 INFO oauth - login:138]: Login required
+[2024-01-23 15:22:27,657 INFO oauth - login:138]: Login required
