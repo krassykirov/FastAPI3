@@ -40,25 +40,20 @@
       <p id="card-email">Email: {{ profile.email }}</p>
       <p id="card-phone">Phone: {{ profile.number }}</p>
       <p id="card-address">Address: {{ profile.address }}</p>
-      <div style="margin: 24px 0">
-        <a href="#"><i class="fa fa-dribbble"></i></a>
-        <a href="#"><i class="fa fa-twitter"></i></a>
-        <a href="#"><i class="fa fa-linkedin"></i></a>
-        <a href="#"><i class="fa fa-facebook"></i></a>
-      </div>
-      <p><button>Contact</button></p>
+      <button
+        v-if="profile"
+        class="dropbtn"
+        data-toggle="modal"
+        data-target="#UpdateProfile"
+        style="float: left"
+      >
+        Update Profile
+      </button>
     </div>
-    <button
-      v-if="profile"
-      class="dropbtn"
-      data-toggle="modal"
-      data-target="#UpdateProfile"
-      style="float: left"
-    >
-      Update Profile
-    </button>
 
-    <h2 style="text-align: center">No Profile yet, create one?</h2>
+    <h2 v-if="!profile" style="text-align: center">
+      No Profile yet, create one?
+    </h2>
     <button
       v-if="!profile"
       class="dropbtn"
@@ -75,6 +70,7 @@
       role="dialog"
       aria-labelledby="addProfileLabel"
       aria-hidden="true"
+      data-backdrop="false"
     >
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -168,6 +164,7 @@
       role="dialog"
       aria-labelledby="UpdateProfileLabel"
       aria-hidden="true"
+      data-backdrop="false"
     >
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -251,9 +248,9 @@
 // import router from '@/router'
 import $ from 'jquery'
 import NavBar from '../components/MyNavbar.vue'
-
+// import router from '@/router'
 export default {
-  props: ['cart', 'profile', 'favorites'],
+  props: ['cart', 'favorites', 'profile', 'total'],
   components: {
     NavBar
   },
@@ -300,7 +297,6 @@ export default {
             $('#UpdateProfile').modal('hide')
             $('#close-button').click()
             var user = this.$store.getters.user
-            console.log('user', user)
             var img_path = `http://127.0.0.1:8000/static/img/${user}/profile/${data.avatar}`
             $('#card-email').text(`Email: ${data.email}`)
             $('#card-address').text(`Address: ${data.address}`)
@@ -332,10 +328,10 @@ export default {
           data: formData,
           success: data => {
             console.log('profile', data)
+            this.$store.dispatch('getProfile')
             $('#CreateProfile').modal('hide')
             $('#Close-Profile').click()
             var user = this.$store.getters.user
-            console.log('user', user)
             var img_path = `http://127.0.0.1:8000/static/img/${user}/profile/${data.avatar}`
             $('#card-email').text(`Email: ${data.email}`)
             $('#card-address').text(`Address: ${data.address}`)
@@ -358,11 +354,12 @@ export default {
 
 <style>
 .card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2) !important;
   /* max-width: 300px; */
-  margin: auto;
-  text-align: center;
-  font-family: arial;
+  margin-left: 40% !important;
+  margin-top: 3% !important;
+  text-align: center !important;
+  font-family: arial !important;
 }
 
 .title {
