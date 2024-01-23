@@ -28,27 +28,25 @@
         :user="user"
       />
     </nav>
-    <div>
-      <div class="card">
-        <img
-          v-if="profile"
-          :src="`http://127.0.0.1:8000/static/img/${user}/profile/${profile.avatar}`"
-          id="avatar-image"
-          style="width: 100%"
-        />
-        <h1 id="current_user"></h1>
-        <p class="title">CEO & Founder, Birds</p>
-        <p id="card-email">Email: {{ profile.email }}</p>
-        <p id="card-phone">Phone: {{ profile.number }}</p>
-        <p id="card-address">Address: {{ profile.address }}</p>
-        <div style="margin: 24px 0">
-          <a href="#"><i class="fa fa-dribbble"></i></a>
-          <a href="#"><i class="fa fa-twitter"></i></a>
-          <a href="#"><i class="fa fa-linkedin"></i></a>
-          <a href="#"><i class="fa fa-facebook"></i></a>
-        </div>
-        <p><button>Contact</button></p>
+    <div class="card" v-if="profile">
+      <img
+        v-if="profile"
+        :src="`http://127.0.0.1:8000/static/img/${user}/profile/${profile.avatar}`"
+        id="avatar-image"
+        style="width: 100%"
+      />
+      <h1 id="current_user"></h1>
+      <p class="title">CEO & Founder, Birds</p>
+      <p id="card-email">Email: {{ profile.email }}</p>
+      <p id="card-phone">Phone: {{ profile.number }}</p>
+      <p id="card-address">Address: {{ profile.address }}</p>
+      <div style="margin: 24px 0">
+        <a href="#"><i class="fa fa-dribbble"></i></a>
+        <a href="#"><i class="fa fa-twitter"></i></a>
+        <a href="#"><i class="fa fa-linkedin"></i></a>
+        <a href="#"><i class="fa fa-facebook"></i></a>
       </div>
+      <p><button>Contact</button></p>
     </div>
     <button
       v-if="profile"
@@ -70,7 +68,6 @@
     >
       Add Profile
     </button>
-
     <div
       class="modal fade"
       id="addProfile"
@@ -253,8 +250,13 @@
 <script>
 // import router from '@/router'
 import $ from 'jquery'
+import NavBar from '../components/MyNavbar.vue'
+
 export default {
-  props: ['favorites'],
+  props: ['cart', 'profile', 'favorites'],
+  components: {
+    NavBar
+  },
   data() {
     return {
       item: null,
@@ -270,9 +272,6 @@ export default {
     },
     user_id() {
       return this.$store.getters.user_id
-    },
-    profile() {
-      return this.$store.getters.profile
     },
     accessToken() {
       return this.$store.state.accessToken || null
