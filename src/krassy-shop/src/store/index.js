@@ -351,37 +351,37 @@ export default createStore({
         commit('REMOVE_RATING', index)
       }
     },
-    updateInputs({ commit }) {
+    updateInputs({ commit, state }) {
       let minVal = parseInt(document.querySelector('.min-range').value)
       let maxVal = parseInt(document.querySelector('.max-range').value)
-
-      // const overlapLimit = 5 // Adjust this value based on your preference
 
       if (minVal >= maxVal) {
         minVal = maxVal
       } else if (maxVal <= minVal) {
         maxVal = minVal
       }
+      if (minVal >= state.max - 200) {
+        minVal = Math.ceil(state.productMin)
+      }
+      if (maxVal <= state.min + 200) {
+        maxVal = Math.ceil(state.productMax)
+      }
       const rangeInput = document.querySelector('.min-range')
       const rangeInputMax = document.querySelector('.max-range')
       if (rangeInput) {
-        console.log('rangeInput MIn', rangeInput.value)
-        rangeInput.value = minVal
+        rangeInput.value = Math.ceil(minVal)
       }
-
       if (rangeInputMax) {
-        console.log('rangeInput MAX', rangeInputMax.value)
-        rangeInputMax.value = maxVal
+        rangeInputMax.value = Math.ceil(maxVal)
       }
-      // Commit the updated min and max values to the store
       commit('SET_MIN_PRICE', minVal)
       commit('SET_MAX_PRICE', maxVal)
       commit('SET_RANGE_INPUT', { min: minVal, max: maxVal })
     },
     updateProductRange() {
       const prices = this.state.products.map(product => product.price)
-      this.state.productMin = Math.min(...prices)
-      this.state.productMax = Math.max(...prices)
+      this.state.productMin = Math.ceil(Math.min(...prices))
+      this.state.productMax = Math.ceil(Math.max(...prices))
     },
     Search() {
       var input, filter, cards, cardContainer, title, i

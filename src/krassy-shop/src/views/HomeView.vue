@@ -156,7 +156,7 @@
               :min="productMin"
               :max="productMax"
               :value="min"
-              step="1"
+              step="50"
               @input="updateInputs"
             />
             <input
@@ -165,7 +165,7 @@
               :min="productMin"
               :max="productMax"
               :value="max"
-              step="1"
+              step="50"
               @input="updateInputs"
             />
           </div>
