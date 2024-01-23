@@ -470,7 +470,6 @@ export default {
     },
     createItem() {
       $('#createItem').submit(e => {
-        console.log('#createItem...', this.$store.state.accessToken)
         e.preventDefault()
         const formData = new FormData(e.target)
         $.ajax({
