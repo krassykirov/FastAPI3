@@ -162,16 +162,3 @@ export default {
   }
 }
 </script>
-<style>
-.overall-rating {
-  font-size: 0.9em !important;
-  margin-bottom: 2%;
-}
-.overall-rating2 {
-  font-size: 0.9em !important;
-  margin-bottom: 2%;
-}
-.red-color {
-  color: red;
-}
-</style>

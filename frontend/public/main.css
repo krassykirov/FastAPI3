@@ -9,6 +9,7 @@ body {
   scrollbar-gutter: stable both-edges;
   background-color: #f2f6f6;
 }
+
 .navbar {
   padding: 0 !important;
   margin: 0 !important;
@@ -435,4 +436,16 @@ INPUT[type="checkbox"]:disabled {
     }
   .fade-enter-from {
     opacity: 0;
+  }
+
+  .overall-rating {
+    font-size: 0.9em !important;
+    margin-bottom: 2%;
+  }
+  .overall-rating2 {
+    font-size: 0.9em !important;
+    margin-bottom: 2%;
+  }
+  .red-color {
+    color: red;
   }
