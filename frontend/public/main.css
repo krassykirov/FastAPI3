@@ -449,3 +449,6 @@ INPUT[type="checkbox"]:disabled {
   .red-color {
     color: red;
   }
+  input#minPrice.min-input.form-control {
+    margin-left: 10px !important;
+  }

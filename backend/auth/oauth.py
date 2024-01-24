@@ -103,6 +103,7 @@ def login_access_token(*, request: Request, response: Response, form_data: OAuth
         response = RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
         response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=False)
         response.headers["Authorization"] = f"Bearer {access_token}"
+        logger.info(f'token obtained for user {user}')
         return response
 
     else:
@@ -125,6 +126,7 @@ async def login_access_token(*, request: Request, response: Response, form_data:
         access_token = create_access_token(
             data={"sub": user.username, 'user_id': user.id}, expires_delta=access_token_expires
         )
+        logger.info(f'token obtained for user {user}')
         return {"access_token": access_token, "token_type": "bearer"}
     else:
         raise HTTPException(status_code=403,detail=f"Username or password are incorrect!")
@@ -150,13 +152,13 @@ async def signup(request: Request, db: Session = Depends(get_session)):
         user.set_password(passwd)
         db.add(user)
         db.commit()
+        logger.info(f'Signup for user: {user}')
     # response = templates.TemplateResponse("login.html",{"request":request})
         return True
     raise HTTPException(status_code=403,detail=f"Password did not match!")
 
 @oauth_router.get("/signup", include_in_schema=False)
 def login(request: Request):
-    print("entering signup get")
     response = templates.TemplateResponse("signup.html",{"request":request})
     return response
 

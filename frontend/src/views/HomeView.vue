@@ -100,7 +100,9 @@
             >
             <div class="price-input row">
               <div class="form-group col-md-6">
-                <label for="minPrice" style="font-size: 0.9rem"
+                <label
+                  for="minPrice"
+                  style="font-size: 0.9rem; margin-left: 23px"
                   >Min Price</label
                 >
                 <input
@@ -117,7 +119,9 @@
                 />
               </div>
               <div class="form-group col-md-6">
-                <label for="maxPrice" style="font-size: 0.9rem"
+                <label
+                  for="maxPrice"
+                  style="font-size: 0.9rem; margin-left: 12px"
                   >Max Price</label
                 >
                 <input
@@ -156,7 +160,7 @@
               :min="productMin"
               :max="productMax"
               :value="min"
-              step="50"
+              step="1"
               @input="updateInputs"
             />
             <input
@@ -165,7 +169,7 @@
               :min="productMin"
               :max="productMax"
               :value="max"
-              step="50"
+              step="1"
               @input="updateInputs"
             />
           </div>

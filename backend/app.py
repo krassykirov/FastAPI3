@@ -30,10 +30,9 @@ from decimal import Decimal
 
 PROJECT_ROOT = Path(__file__).parent.parent # /
 BASE_DIR = Path(__file__).resolve().parent # / src
-print('PROJECT_ROOT', PROJECT_ROOT)
-print('BASE_DIR', BASE_DIR)
+
 templates = Jinja2Templates(directory=Path(BASE_DIR, 'static/templates'))
-print('templates', templates)
+
 app = FastAPI() # docs_url=None
 app.include_router(category_router)
 app.include_router(items_router)

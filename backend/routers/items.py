@@ -60,12 +60,10 @@ async def update_item(request: Request, item_id: int, item_update: schemas.ItemU
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     new_data = Item(**dict(item_update), id=item, quantity=data.get('quantity')).dict(exclude_unset=True, exclude_none=True)
-    print('updating item bewfore', new_data)
     for key, value in new_data.items():
         setattr(item, key, value)
         db.commit()
         db.refresh(item)
-    print('updating item after', item)
     return item
 
 @items_router.delete("/delete/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
