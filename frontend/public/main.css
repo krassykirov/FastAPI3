@@ -51,7 +51,7 @@ padding-right: -17px;
   padding: 0 !important;
 }
 
-.card-img-top {
+.card-img, .card-img-top, .card-img-bottom {
   width: 100% !important;
   height: 13vw !important;
   object-fit: cover !important;

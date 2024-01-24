@@ -33,7 +33,7 @@
         <div class="col-md-8" style="max-width: 1200px">
           <h2 class="text-center mb-4">Checkout</h2>
 
-          <table class="table table-striped table-hover">
+          <table class="table table-hover">
             <thead>
               <tr style="height: auto">
                 <th scope="col"></th>
@@ -188,46 +188,3 @@ export default {
   }
 }
 </script>
-<style>
-.container-sm {
-  max-width: 768px !important;
-}
-.card {
-  width: 52rem !important;
-  margin-bottom: auto !important;
-  margin-right: auto !important;
-  margin-top: auto !important;
-  height: auto !important;
-  text-align: center !important;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-}
-.card-img,
-.card-img-top,
-.card-img-bottom {
-  height: 75% !important;
-}
-.total-section {
-  width: 20%;
-  background-color: #ffffff;
-  padding: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin-top: 5% !important;
-  float: right !important;
-}
-.row.g-0 {
-  max-height: 230px !important;
-}
-.new-price span {
-  color: #f64749;
-  font-weight: 900 !important;
-  font-size: 1.1rem !important;
-}
-.tr {
-  display: inline-block !important;
-  padding: 15px !important;
-}
-.td {
-  display: inline-block !important;
-  padding: 15px !important;
-}
-</style>
