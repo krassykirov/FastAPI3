@@ -46,6 +46,10 @@ body.modal-open {
 padding-right: -17px;
 }
 
+.card-body {
+  padding: 0 !important;
+}
+
 .card-img-top {
   width: 100% !important;
   height: 13vw !important;
