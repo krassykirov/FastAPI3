@@ -48,7 +48,6 @@
                 <th scope="col"></th>
                 <th scope="col">Product</th>
                 <th scope="col">Price</th>
-                <th scope="col">Quantity</th>
                 <th scope="col">Actions</th>
               </tr>
             </thead>
@@ -77,35 +76,6 @@
                       ).toFixed(2)
                     }}</b
                   >
-                </td>
-                <td class="align-left text-left">
-                  <div
-                    class="input-group"
-                    style="max-width: 120px; margin: auto"
-                  >
-                    <button
-                      class="btn btn-outline-secondary"
-                      type="button"
-                      @click="updateQuantity(product.id, product.quantity - 1)"
-                    >
-                      -
-                    </button>
-                    <input
-                      type="number"
-                      class="form-control text-center"
-                      min="1"
-                      max="3"
-                      :value="product.quantity"
-                      disabled
-                    />
-                    <button
-                      class="btn btn-outline-secondary"
-                      type="button"
-                      @click="updateQuantity(product.id, product.quantity + 1)"
-                    >
-                      +
-                    </button>
-                  </div>
                 </td>
                 <td>
                   <button
