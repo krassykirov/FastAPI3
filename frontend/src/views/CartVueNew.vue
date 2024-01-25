@@ -261,10 +261,14 @@
                   </div>
                 </div>
                 <div class="container">
-                  <form action="#">
+                  <form
+                    id="paymentForm"
+                    enctype="multipart/form-data"
+                    data-toggle="validator"
+                  >
                     <div class="row">
                       <div class="col-50">
-                        <h3>Billing Address</h3>
+                        <h3>Shipping Address</h3>
                         <label for="fname"
                           ><i class="fa fa-user"></i> Full Name</label
                         >
@@ -304,7 +308,7 @@
 
                         <div class="row">
                           <div class="col-50">
-                            <label for="state">State</label>
+                            <label for="state">Telephone</label>
                             <input
                               type="text"
                               id="state"
@@ -323,7 +327,6 @@
                           </div>
                         </div>
                       </div>
-
                       <div class="col-50">
                         <h3>Payment</h3>
                         <label for="fname">Accepted Cards</label>
@@ -379,12 +382,17 @@
                         </div>
                       </div>
                     </div>
-                    <label>
-                      <input type="checkbox" checked="checked" name="sameadr" />
-                      Shipping address same as billing
-                    </label>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-primary">Pay</button>
+                    <div class="modal-footer" style="padding-right: 40%">
+                      <button type="button" class="btn btn-primary">
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        class="btn btn-primary"
+                        @click="paymentCheckout"
+                      >
+                        Pay
+                      </button>
                     </div>
                   </form>
                 </div>
@@ -470,10 +478,10 @@ export default {
       return description
     },
     paymentCheckout() {
-      $('#create-profile').submit(e => {
+      $('#paymentForm').submit(e => {
         e.preventDefault()
         const formData = new FormData(e.target)
-        formData.append('primary_email', this.user)
+        // formData.append('primary_email', this.user)
         console.log('formData', formData)
         $.ajax({
           url: 'http://127.0.0.1:8000/create_profile',

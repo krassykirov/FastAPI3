@@ -85,7 +85,6 @@
             <div class="modal-body">
               <form
                 id="create-profile"
-                @click="createProfile"
                 enctype="multipart/form-data"
                 data-toggle="validator"
               >
@@ -137,7 +136,13 @@
                     required
                   />
                 </div>
-                <button id="submit-button" class="dropbtn">Submit</button>
+                <button
+                  id="submit-button"
+                  @click="createProfile"
+                  class="dropbtn"
+                >
+                  Submit
+                </button>
                 <button
                   id="Close-Profile"
                   type="button"
@@ -371,12 +376,6 @@ export default {
             $('#create-profile').modal('hide')
             $('#Close-Profile').click()
             this.getProfile()
-            // var user = this.$store.getters.user
-            // var img_path = `http://127.0.0.1:8000/static/img/${user}/profile/${data.avatar}`
-            // $('#card-email').text(`Email: ${data.email}`)
-            // $('#card-address').text(`Address: ${data.address}`)
-            // $('#card-phone').text(`Address: ${data.number}`)
-            // $('#avatar-image').attr('src', img_path)
           },
           error: function (xhr) {
             if (xhr.status === 403) {
