@@ -37,7 +37,8 @@ def home(request: Request):
     try:
         token = request.cookies.get("access_token") #or request.headers.get("access_token")
         if token:
-            access_token = token
+            access_token = token.split(' ')[-1]
+            print('access_token', access_token)
             payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
             username = payload.get("sub")
             expires = payload.get("exp")
