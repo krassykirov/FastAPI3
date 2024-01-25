@@ -355,7 +355,6 @@ export default createStore({
         commit('UPDATE_USER', data.user)
         commit('UPDATE_USER_ID', data.user_id)
       } catch (error) {
-        // Access the handleError function directly (without using `this`)
         if (error instanceof TypeError && error.message === 'Failed to fetch') {
           throw new Error(`HTTP error! Unable to connect to the server`)
         }

@@ -274,6 +274,7 @@
 <script>
 import $ from 'jquery'
 import NavBar from '../components/MyNavbar.vue'
+import errorHandlingMixin from '../errorHandlingMixin'
 
 export default {
   components: {
@@ -281,6 +282,7 @@ export default {
   },
   props: ['cart', 'total', 'avatar', 'favorites'],
   emits: ['addToCart'],
+  mixins: [errorHandlingMixin],
   data() {
     return {
       item: this.item,
@@ -302,7 +304,7 @@ export default {
     }
   },
   created() {
-    this.initUser()
+    this.initUser().catch(this.handleError)
     this.getProfile()
   },
   methods: {

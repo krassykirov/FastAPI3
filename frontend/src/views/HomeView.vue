@@ -310,7 +310,6 @@ export default {
     this.$store
       .dispatch('initializeUser')
       .catch(this.handleError)
-      .catch(this.handleError)
       .then(() => this.$store.dispatch('getProfile'))
       .then(() => this.$store.dispatch('getProducts'))
       .then(() => this.$store.dispatch('readFromCartVue'))

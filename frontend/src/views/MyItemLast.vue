@@ -486,7 +486,7 @@
 <script>
 /* global bootstrap */
 import $ from 'jquery'
-
+import errorHandlingMixin from '../errorHandlingMixin'
 // import router from '@/router'
 import NavBar from '../components/MyNavbar.vue'
 
@@ -494,6 +494,7 @@ export default {
   components: {
     NavBar
   },
+  mixins: [errorHandlingMixin],
   props: ['cart', 'profile', 'favorites'],
   emits: ['addToCart', 'redirectToItem'],
   data() {
@@ -564,14 +565,20 @@ export default {
         const res = await fetch(
           `http://127.0.0.1:8000/api/items/item/${resolvedItemId}`
         )
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`)
+        }
         const item = await res.json()
         this.item = item
+
         this.$nextTick(() => {
           this.getItemRating(item.id)
         })
+
         this.scrollToTop()
       } catch (error) {
         console.error('Error fetching product:', error)
+        this.$router.push({ name: 'NotFound' })
       }
     },
     async getItemRating(itemId) {

@@ -59,11 +59,9 @@ const routes = [
       store
         .dispatch('getProduct', itemId)
         .then(() => {
-          console.log('Product found. Proceeding to route.')
           next()
         })
         .catch(() => {
-          console.error('Product not found. Redirecting to NotFound route.')
           next({ name: 'NotFound' })
         })
     }
@@ -71,7 +69,24 @@ const routes = [
   {
     path: '/not-found',
     name: 'NotFound',
-    component: () => import('../views/NotFound.vue')
+    component: () => import('../views/NotFound.vue'),
+    props: route => ({
+      itemId: route.params.itemId,
+      cart: store.state.cart,
+      profile: store.state.profile,
+      favorites: store.state.favorites
+    })
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('../views/NotFound.vue'),
+    props: route => ({
+      itemId: route.params.itemId,
+      cart: store.state.cart,
+      profile: store.state.profile,
+      favorites: store.state.favorites
+    })
   }
 ]
 
