@@ -33,12 +33,10 @@ SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 
 @oauth_router.get("/", include_in_schema=False)
 def home(request: Request):
-    # print("headers:", request.headers.get('cookie').split("=")[1].split()[1].replace('"',""))
     try:
-        token = request.cookies.get("access_token") #or request.headers.get("access_token")
+        token = request.cookies.get("access_token")
         if token:
             access_token = token.split(' ')[-1]
-            print('access_token', access_token)
             payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
             username = payload.get("sub")
             expires = payload.get("exp")

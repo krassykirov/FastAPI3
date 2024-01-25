@@ -453,3 +453,38 @@ INPUT[type="checkbox"]:disabled {
   input#minPrice.min-input.form-control {
     margin-left: 10px !important;
   }
+
+  .col-25 {
+    -ms-flex: 25% !important;
+    flex: 25% !important;
+  }
+  
+  .col-50 {
+    -ms-flex: 50% !important;
+    flex: 50% !important;
+  }
+  
+  .col-75 {
+    -ms-flex: 75% !important;
+    flex: 75% !important;
+  }
+  
+  .col-25,
+  .col-50,
+  .col-75 {
+    padding: 0 16px !important;
+  }
+
+  .icon-container {
+    margin-bottom: 20px !important;
+    padding: 7px 0 !important;
+    font-size: 24px !important;
+  }
+
+  input[type=text] {
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }

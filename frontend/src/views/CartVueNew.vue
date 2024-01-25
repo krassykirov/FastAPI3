@@ -29,7 +29,16 @@
       />
     </nav>
     <div class="container-fluid mt-5" style="margin-left: 10%">
-      <div class="row">
+      <div
+        class="row"
+        style="
+          display: -ms-flexbox;
+          display: flex;
+          -ms-flex-wrap: wrap;
+          flex-wrap: wrap;
+          margin: 0 -16px;
+        "
+      >
         <div class="col-md-8" style="max-width: 1200px">
           <h2 class="text-center mb-4">Checkout</h2>
 
@@ -515,89 +524,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-* {
-  box-sizing: border-box;
-}
-.quantity-container {
-  display: flex;
-  align-items: center;
-}
-
-.quantity-container button {
-  flex: 0 0 auto; /* Ensures buttons don't grow */
-}
-.row {
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
-  margin: 0 -16px;
-}
-
-.col-25 {
-  -ms-flex: 25%;
-  flex: 25%;
-}
-
-.col-50 {
-  -ms-flex: 50%;
-  flex: 50%;
-}
-
-.col-75 {
-  -ms-flex: 75%;
-  flex: 75%;
-}
-
-.col-25,
-.col-50,
-.col-75 {
-  padding: 0 16px;
-}
-
-input[type='text'] {
-  width: 100%;
-  margin-bottom: 20px;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-}
-
-label {
-  margin-bottom: 10px;
-  display: block;
-}
-
-.icon-container {
-  margin-bottom: 20px;
-  padding: 7px 0;
-  font-size: 24px;
-}
-
-a {
-  color: #2196f3;
-}
-
-hr {
-  border: 1px solid lightgrey;
-}
-
-span.price {
-  float: right;
-  color: grey;
-}
-
-/* Responsive layout */
-@media (max-width: 800px) {
-  .row {
-    flex-direction: column-reverse;
-  }
-  .col-25 {
-    margin-bottom: 20px;
-  }
-}
-td {
-  padding-left: 12px;
-}
-</style>
