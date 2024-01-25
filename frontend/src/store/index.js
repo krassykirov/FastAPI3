@@ -23,7 +23,8 @@ export default createStore({
     selectedRating: [],
     ratings: [1, 2, 3, 4, 5],
     productMin: 0,
-    productMax: 10000
+    productMax: 10000,
+    errorMessage: null
   },
   mutations: {
     SET_PRODUCT(state, product) {
@@ -31,6 +32,9 @@ export default createStore({
     },
     SET_PRODUCTS(state, products) {
       state.products = products
+    },
+    setErrorMessage(state, message) {
+      state.errorMessage = message
     },
     UPDATE_PRODUCT_RATING(state, { productId, ratingData }) {
       const product = state.products.find(p => p.id === productId)
@@ -178,6 +182,10 @@ export default createStore({
         })
         if (response.status === 403) {
           const data = await response.json()
+          this.store.commit(
+            'setErrorMessage',
+            'Token has expired. Please log in again.'
+          )
           throw new Error(data.detail)
         }
         const data = await response.json()

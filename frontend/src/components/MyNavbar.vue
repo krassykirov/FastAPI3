@@ -438,11 +438,9 @@ export default {
     },
     redirectToCart() {
       this.$router.push({ name: 'ItemsInCart' })
-      // this.$store.dispatch('redirectToCart')
     },
     redirectToFavorites() {
       this.$router.push({ name: 'ItemsInFavorites' })
-      // this.$store.dispatch('redirectToCart')
     },
     removeFromCart(itemId) {
       this.$store.dispatch('removeFromCart', itemId)

@@ -111,8 +111,21 @@ export default {
       if (error.message !== 'Token Expired') {
         console.error(error)
       }
-      this.errorMessage = 'Token has expired. Please log in again.'
+      this.$store.commit(
+        'setErrorMessage',
+        'Token has expired. Please log in again.'
+      )
     })
+  },
+  computed: {
+    storeErrorMessage() {
+      return this.$store.state.errorMessage
+    }
+  },
+  watch: {
+    storeErrorMessage(newVal) {
+      this.errorMessage = newVal
+    }
   },
   methods: {
     async getToken() {

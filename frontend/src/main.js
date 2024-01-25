@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import store from '@/store/index.js'
 import App from './App.vue'
 import VueCookies from 'vue-cookies'
+import errorHandlingMixin from './errorHandlingMixin'
 import $ from 'jquery'
 window.$ = window.jQuery = $
 import 'bootstrap'
@@ -23,7 +24,7 @@ library.add(faStar, faPhone, faChevronDown)
 import router from './router'
 
 const app = createApp(App)
-
+app.mixin(errorHandlingMixin)
 app
   .use(router)
   .use(store)
