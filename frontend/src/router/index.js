@@ -53,7 +53,25 @@ const routes = [
       cart: store.state.cart,
       profile: store.state.profile,
       favorites: store.state.favorites
-    })
+    }),
+    beforeEnter: (to, from, next) => {
+      const itemId = Number(to.params.itemId)
+      store
+        .dispatch('getProduct', itemId)
+        .then(() => {
+          console.log('Product found. Proceeding to route.')
+          next()
+        })
+        .catch(() => {
+          console.error('Product not found. Redirecting to NotFound route.')
+          next({ name: 'NotFound' })
+        })
+    }
+  },
+  {
+    path: '/not-found',
+    name: 'NotFound',
+    component: () => import('../views/NotFound.vue')
   }
 ]
 

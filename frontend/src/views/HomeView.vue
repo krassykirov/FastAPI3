@@ -292,6 +292,7 @@ import 'bootstrap'
 // import VueCookies from 'vue-cookies'
 import ProductList from '@/components/ProductList.vue'
 import MyNavbar from '@/components/MyNavbar.vue'
+import errorHandlingMixin from '../errorHandlingMixin'
 
 export default {
   name: 'HomeView',
@@ -299,6 +300,7 @@ export default {
     ProductList,
     MyNavbar
   },
+  mixins: [errorHandlingMixin],
   data() {
     return {
       isChecked: this.$store.state.isDiscountedChecked
@@ -307,6 +309,7 @@ export default {
   created() {
     this.$store
       .dispatch('initializeUser')
+      .catch(this.handleError)
       .catch(this.handleError)
       .then(() => this.$store.dispatch('getProfile'))
       .then(() => this.$store.dispatch('getProducts'))

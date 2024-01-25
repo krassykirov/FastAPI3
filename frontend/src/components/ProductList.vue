@@ -107,9 +107,11 @@
 </template>
 
 <script>
+import errorHandlingMixin from '../errorHandlingMixin'
 export default {
   props: ['product', 'min', 'max', 'cart'],
   emits: ['addToCart', 'redirectToItem', 'addTofavorites'],
+  mixins: [errorHandlingMixin],
   computed: {
     filteredProducts() {
       return this.$store.state.filteredProducts

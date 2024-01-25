@@ -98,6 +98,7 @@
 <script>
 import NavBar from '../components/MyNavbar.vue'
 // import $ from 'jquery'
+import errorHandlingMixin from '../errorHandlingMixin'
 
 export default {
   components: {
@@ -110,6 +111,7 @@ export default {
       itemId: this.itemId
     }
   },
+  mixins: [errorHandlingMixin],
   created() {
     this.$store.dispatch('initializeUser').catch(this.handleError)
     this.$store.dispatch('readFromCartVue').then(() => {

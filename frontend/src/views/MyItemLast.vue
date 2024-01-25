@@ -615,29 +615,35 @@ export default {
     itemAlreadyInCart(product) {
       return this.cart.some(item => item.id === product.id)
     },
-    setReviewsRating(itemId) {
-      const resolvedItemId = itemId || this.$route.params.itemId
-      fetch(`http://127.0.0.1:8000/api/reviews?item_id=${resolvedItemId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          redirect: 'follow'
-        }
-      })
-        .then(response => {
-          if (!response.ok) {
+    async setReviewsRating(itemId) {
+      try {
+        const resolvedItemId = itemId || this.$route.params.itemId
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/reviews?item_id=${resolvedItemId}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              redirect: 'follow'
+            }
+          }
+        )
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            console.error(`Item with ID ${resolvedItemId} not found`)
+          } else {
             throw new Error(
               `Error: ${response.status} - ${response.statusText}`
             )
           }
-          return response.json()
-        })
-        .then(data => {
+        } else {
+          const data = await response.json()
           this.reviewsData = data
-        })
-        .catch(error => {
-          console.error('Error:', error)
-        })
+        }
+      } catch (error) {
+        console.error('Error:', error)
+      }
     },
     updateStarRatings(review) {
       return Array.from({ length: 5 }, (_, i) => i + 1).map(starIndex => ({

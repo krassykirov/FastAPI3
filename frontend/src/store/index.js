@@ -147,10 +147,18 @@ export default createStore({
         const res = await fetch(
           `http://127.0.0.1:8000/api/items/item/${itemId}`
         )
-        const item = await res.json()
-        commit('SET_PRODUCT', item)
+        if (res.ok) {
+          const item = await res.json()
+          commit('SET_PRODUCT', item)
+        } else if (res.status === 404) {
+          console.error(`Item with ID ${itemId} not found`)
+          throw new Error(`Item with ID ${itemId} not found`)
+        } else {
+          console.error('Error fetching product:', res.statusText)
+        }
       } catch (error) {
         console.error('Error fetching product:', error)
+        throw error // Ensure the error is re-thrown to maintain the rejected promise.
       }
     },
     async getProducts({ commit }) {
@@ -323,30 +331,37 @@ export default createStore({
       commit('SORT_PRODUCTS')
     },
     async readFromCartVue({ commit, state }) {
-      const headers = new Headers({
-        Authorization: `Bearer ${state.accessToken}`,
-        Accept: 'application/json'
-      })
-
-      const requestOptions = {
-        method: 'GET',
-        headers: headers,
-        redirect: 'follow'
+      try {
+        const headers = new Headers({
+          Authorization: `Bearer ${state.accessToken}`,
+          Accept: 'application/json'
+        })
+        const requestOptions = {
+          method: 'GET',
+          headers: headers,
+          redirect: 'follow'
+        }
+        const response = await fetch(
+          'http://127.0.0.1:8000/api/items/user-items-in-cart',
+          requestOptions
+        )
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`)
+        }
+        const data = await response.json()
+        commit('UPDATE_CART', data.items)
+        commit('UPDATE_FAVORITES', data.items_liked)
+        commit('UPDATE_TOTAL', data.total)
+        commit('UPDATE_USER', data.user)
+        commit('UPDATE_USER_ID', data.user_id)
+      } catch (error) {
+        // Access the handleError function directly (without using `this`)
+        if (error instanceof TypeError && error.message === 'Failed to fetch') {
+          throw new Error(`HTTP error! Unable to connect to the server`)
+        }
       }
-      const response = await fetch(
-        'http://127.0.0.1:8000/api/items/user-items-in-cart',
-        requestOptions
-      )
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`)
-      }
-      const data = await response.json()
-      commit('UPDATE_CART', data.items)
-      commit('UPDATE_FAVORITES', data.items_liked)
-      commit('UPDATE_TOTAL', data.total)
-      commit('UPDATE_USER', data.user)
-      commit('UPDATE_USER_ID', data.user_id)
     },
+
     redirectToItem({ commit }, itemId) {
       commit('UPDATE_SELECTED_ITEM', itemId)
       router.push({ name: 'Item', params: { itemId } })

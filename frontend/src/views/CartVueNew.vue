@@ -417,11 +417,13 @@
 <script>
 import NavBar from '../components/MyNavbar.vue'
 import $ from 'jquery'
+import errorHandlingMixin from '../errorHandlingMixin'
 
 export default {
   components: {
     NavBar
   },
+  mixins: [errorHandlingMixin],
   props: ['profile', 'favorites'],
   data() {
     return {

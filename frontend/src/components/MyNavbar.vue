@@ -412,9 +412,12 @@
 
 <script>
 import $ from 'jquery'
+import errorHandlingMixin from '../errorHandlingMixin'
+
 export default {
   props: ['cart', 'avatar', 'profile', 'favorites'],
   emits: ['removeFromCart', 'removeAccessToken'],
+  mixins: [errorHandlingMixin],
   data() {
     return {
       displayCart: true,

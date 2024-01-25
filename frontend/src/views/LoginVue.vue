@@ -97,6 +97,8 @@
 
 <script>
 import router from '@/router'
+import errorHandlingMixin from '../errorHandlingMixin'
+
 export default {
   data() {
     return {
@@ -106,6 +108,7 @@ export default {
       errorMessage: ''
     }
   },
+  mixins: [errorHandlingMixin],
   created() {
     this.$store.dispatch('initializeUser').catch(error => {
       if (error.message !== 'Token Expired') {
