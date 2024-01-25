@@ -494,7 +494,7 @@ export default {
         // formData.append('primary_email', this.user)
         console.log('formData', formData)
         $.ajax({
-          url: 'http://127.0.0.1:8000/create_profile',
+          url: 'http://127.0.0.1:8000/checkout',
           type: 'POST',
           processData: false,
           contentType: false,

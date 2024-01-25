@@ -63,7 +63,7 @@
         <button
           @mouseenter="showFavorites()"
           @click="displayLiked = !displayLiked"
-          @dblclick="handleDoubleClick"
+          @dblclick="handleDoubleClickFavorites"
           class="btn btn-light dropdown-toggle btn-sm"
           id="likedDropdown"
           aria-haspopup="true"
@@ -133,7 +133,7 @@
           </div>
           <button
             v-if="favorites.length > 0"
-            @click="redirectToCart"
+            @click="redirectToFavorites"
             class="btn btn-sm btn-primary"
           >
             See Favorites
@@ -438,7 +438,11 @@ export default {
     },
     redirectToCart() {
       this.$router.push({ name: 'ItemsInCart' })
-      this.$store.dispatch('redirectToCart')
+      // this.$store.dispatch('redirectToCart')
+    },
+    redirectToFavorites() {
+      this.$router.push({ name: 'ItemsInFavorites' })
+      // this.$store.dispatch('redirectToCart')
     },
     removeFromCart(itemId) {
       this.$store.dispatch('removeFromCart', itemId)
@@ -448,10 +452,6 @@ export default {
     },
     removeFromFavorites(itemId) {
       this.$store.dispatch('removeFromFavorites', itemId)
-    },
-    redirectToFavorites() {
-      this.$router.push({ name: 'ItemsInFavorites' })
-      this.$store.dispatch('redirectToFavorites')
     },
     logout() {
       this.$store.dispatch('removeAccessToken')
@@ -514,6 +514,9 @@ export default {
     },
     handleDoubleClick() {
       this.$router.push('/cart')
+    },
+    handleDoubleClickFavorites() {
+      this.$router.push('/favorites')
     }
   }
 }

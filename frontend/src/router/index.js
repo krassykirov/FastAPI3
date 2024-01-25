@@ -23,12 +23,16 @@ const routes = [
       favorites: store.state.favorites
     })
   },
-  // {
-  //   path: '/item/:itemId',
-  //   name: 'item',
-  //   component: () => import('../views/MyItemNew.vue'),
-  //   props: route => ({ itemId: route.params.itemId, cart: store.state.cart })
-  // },
+  {
+    path: '/favorites',
+    name: 'ItemsInFavorites',
+    component: () => import('../views/FavoritesVue.vue'),
+    props: () => ({
+      cart: store.state.cart,
+      profile: store.state.profile,
+      favorites: store.state.favorites
+    })
+  },
   {
     path: '/signup',
     name: 'signup',
