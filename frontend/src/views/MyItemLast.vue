@@ -760,11 +760,6 @@ export default {
     addTofavorites(product) {
       this.$store.dispatch('addTofavorites', product)
     },
-    showModal() {
-      $(document).ready(function () {
-        $('#global-modal').modal('show')
-      })
-    },
     getCategoryNameById(categoryId) {
       const categoryIdToName = {
         1: 'Laptops',

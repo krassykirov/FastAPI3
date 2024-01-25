@@ -151,6 +151,7 @@
             <button
               type="button"
               class="close"
+              id="close-modal"
               data-dismiss="modal"
               aria-label="Close"
             >
@@ -392,7 +393,11 @@
                       </div>
                     </div>
                     <div class="modal-footer" style="padding-right: 40%">
-                      <button type="button" class="btn btn-primary">
+                      <button
+                        type="button"
+                        class="btn btn-primary"
+                        @click="hideModal"
+                      >
                         Cancel
                       </button>
                       <button
@@ -417,13 +422,11 @@
 <script>
 import NavBar from '../components/MyNavbar.vue'
 import $ from 'jquery'
-import errorHandlingMixin from '../errorHandlingMixin'
 
 export default {
   components: {
     NavBar
   },
-  mixins: [errorHandlingMixin],
   props: ['profile', 'favorites'],
   data() {
     return {
@@ -488,6 +491,11 @@ export default {
         return description.substring(0, maxLength) + '..'
       }
       return description
+    },
+    hideModal() {
+      $(document).ready(function () {
+        $('#close-modal').click()
+      })
     },
     paymentCheckout() {
       $('#paymentForm').submit(e => {

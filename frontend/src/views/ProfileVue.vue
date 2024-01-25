@@ -304,7 +304,7 @@ export default {
     }
   },
   created() {
-    this.initUser().catch(this.handleError)
+    this.$store.dispatch('initializeUser').catch(this.handleError)
     this.getProfile()
   },
   methods: {
@@ -313,9 +313,6 @@ export default {
     },
     addToCart(product) {
       this.$store.dispatch('addToCart', product)
-    },
-    initUser() {
-      this.$store.dispatch('initializeUser')
     },
     itemAlreadyInCart(product) {
       return this.cart.some(item => item.id === product.id)
