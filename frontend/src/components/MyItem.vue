@@ -5,16 +5,16 @@
         <div class="img-display">
           <div class="img-showcase">
             <img
-              :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+              :src="`/static/img/${item.username}/${item.name}/${item.image}`"
             />
             <img
-              :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+              :src="`/static/img/${item.username}/${item.name}/${item.image}`"
             />
             <img
-              :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+              :src="`/static/img/${item.username}/${item.name}/${item.image}`"
             />
             <img
-              :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+              :src="`/static/img/${item.username}/${item.name}/${item.image}`"
             />
           </div>
         </div>
@@ -22,28 +22,28 @@
           <div class="img-item">
             <a href="#" data-id="1">
               <img
-                :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                :src="`/static/img/${item.username}/${item.name}/${item.image}`"
               />
             </a>
           </div>
           <div class="img-item">
             <a href="#" data-id="2">
               <img
-                :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                :src="`/static/img/${item.username}/${item.name}/${item.image}`"
               />
             </a>
           </div>
           <div class="img-item">
             <a href="#" data-id="3">
               <img
-                :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                :src="`/static/img/${item.username}/${item.name}/${item.image}`"
               />
             </a>
           </div>
           <div class="img-item">
             <a href="#" data-id="4">
               <img
-                :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                :src="`/static/img/${item.username}/${item.name}/${item.image}`"
               />
             </a>
           </div>
@@ -181,7 +181,7 @@
                         "
                       >
                         <img
-                          src="http://127.0.0.1:8000/static/img/img_avatar.png"
+                          src="/static/img/img_avatar.png"
                           class="avatar"
                           style="padding: 5px"
                         />
@@ -373,9 +373,7 @@ export default {
     async getProduct() {
       try {
         const itemId = this.$route.params.itemId
-        const res = await fetch(
-          `http://127.0.0.1:8000/api/items/item/${itemId}`
-        )
+        const res = await fetch(`/api/items/item/${itemId}`)
         const item = await res.json()
         this.item = item
         this.getItemRatingItem(this.item.id)
@@ -391,7 +389,7 @@ export default {
       this.$emit('addToCart', product)
     },
     setReviewsRating(id) {
-      fetch(`http://127.0.0.1:8000/api/reviews?item_id=${id}`, {
+      fetch(`/api/reviews?item_id=${id}`, {
         method: 'GET',
         redirect: 'follow',
         headers: {
@@ -421,7 +419,7 @@ export default {
     },
     getItemRatingItem(item_id) {
       try {
-        fetch(`http://127.0.0.1:8000/api/reviews/item/rating?id=${item_id}`, {
+        fetch(`/api/reviews/item/rating?id=${item_id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
@@ -479,7 +477,7 @@ export default {
           created_by: username
         })
       }
-      fetch('http://127.0.0.1:8000/create_review_ajax', requestOptions)
+      fetch('/create_review_ajax', requestOptions)
         .then(response => {
           if (!response.ok) {
             if (response.status === 403) {

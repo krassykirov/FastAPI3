@@ -59,7 +59,7 @@
               <tr v-for="product in cart" :key="product.id">
                 <td>
                   <img
-                    :src="`http://127.0.0.1:8000/static/img/${product.username}/${product.name}/${product.image}`"
+                    :src="`/static/img/${product.username}/${product.name}/${product.image}`"
                     class="img-fluid"
                     alt="Product Image"
                     style="max-width: 50px; max-height: 50px"
@@ -184,7 +184,7 @@
                       <tr v-for="product in cart" :key="product.id">
                         <td>
                           <img
-                            :src="`http://127.0.0.1:8000/static/img/${product.username}/${product.name}/${product.image}`"
+                            :src="`/static/img/${product.username}/${product.name}/${product.image}`"
                             class="img-fluid"
                             alt="Product Image"
                             style="
@@ -520,7 +520,7 @@ export default {
         // formData.append('primary_email', this.user)
         console.log('formData', formData)
         $.ajax({
-          url: 'http://127.0.0.1:8000/checkout',
+          url: '/checkout',
           type: 'POST',
           processData: false,
           contentType: false,
@@ -533,7 +533,7 @@ export default {
             $('#Close-Profile').click()
             this.getProfile()
             // var user = this.$store.getters.user
-            // var img_path = `http://127.0.0.1:8000/static/img/${user}/profile/${data.avatar}`
+            // var img_path = `/static/img/${user}/profile/${data.avatar}`
             // $('#card-email').text(`Email: ${data.email}`)
             // $('#card-address').text(`Address: ${data.address}`)
             // $('#card-phone').text(`Address: ${data.number}`)

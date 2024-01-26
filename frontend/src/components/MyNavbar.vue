@@ -95,7 +95,7 @@
             <div class="d-flex align-items-center">
               <img
                 :src="
-                  'http://127.0.0.1:8000/static/img/' +
+                  '/static/img/' +
                   item.username +
                   '/' +
                   item.name +
@@ -181,7 +181,7 @@
             <div class="d-flex align-items-center">
               <img
                 :src="
-                  'http://127.0.0.1:8000/static/img/' +
+                  '/static/img/' +
                   item.username +
                   '/' +
                   item.name +
@@ -253,14 +253,14 @@
         >
           <img
             v-if="profile"
-            :src="`http://127.0.0.1:8000/static/img/${user}/profile/${profile.avatar}`"
+            :src="`/static/img/${user}/profile/${profile.avatar}`"
             width="50"
             height="50"
             class="rounded-circle"
           />
           <img
             v-else
-            src="http://127.0.0.1:8000/static/img/img_avatar.png"
+            src="/static/img/img_avatar.png"
             width="50"
             height="50"
             class="rounded-circle"
@@ -485,7 +485,7 @@ export default {
         e.preventDefault()
         const formData = new FormData(e.target)
         $.ajax({
-          url: 'http://127.0.0.1:8000/products/create_item',
+          url: '/products/create_item',
           type: 'POST',
           processData: false,
           contentType: false,

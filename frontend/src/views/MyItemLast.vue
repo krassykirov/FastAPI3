@@ -40,35 +40,35 @@
             </span>
             <img
               class="img-fluid"
-              :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+              :src="`/static/img/${item.username}/${item.name}/${item.image}`"
               alt="ProductS"
             />
             <div class="row my-3 previews">
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
@@ -211,7 +211,7 @@
             <img
               class="img-fluid"
               :src="
-                'http://127.0.0.1:8000/static/img/' +
+                '/static/img/' +
                 product.username +
                 '/' +
                 product.name +
@@ -555,9 +555,7 @@ export default {
     async getProduct(itemId) {
       try {
         const resolvedItemId = itemId || this.$route.params.itemId
-        const res = await fetch(
-          `http://127.0.0.1:8000/api/items/item/${resolvedItemId}`
-        )
+        const res = await fetch(`/api/items/item/${resolvedItemId}`)
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`)
         }
@@ -576,15 +574,12 @@ export default {
     },
     async getItemRating(itemId) {
       try {
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/reviews/item/rating?id=${itemId}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json'
-            }
+        const response = await fetch(`/api/reviews/item/rating?id=${itemId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
           }
-        )
+        })
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`)
         }
@@ -604,9 +599,9 @@ export default {
         profile => profile.primary_email === review.created_by
       )
       if (matchedProfile) {
-        return `http://127.0.0.1:8000/static/img/${review.created_by}/profile/${matchedProfile.avatar}`
+        return `/static/img/${review.created_by}/profile/${matchedProfile.avatar}`
       } else {
-        return 'http://127.0.0.1:8000/static/img/img_avatar.png'
+        return '/static/img/img_avatar.png'
       }
     },
     redirectToItem(itemId) {
@@ -618,16 +613,13 @@ export default {
     async setReviewsRating(itemId) {
       try {
         const resolvedItemId = itemId || this.$route.params.itemId
-        const response = await fetch(
-          `http://127.0.0.1:8000/api/reviews?item_id=${resolvedItemId}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              redirect: 'follow'
-            }
+        const response = await fetch(`/api/reviews?item_id=${resolvedItemId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            redirect: 'follow'
           }
-        )
+        })
 
         if (!response.ok) {
           if (response.status === 404) {
@@ -694,7 +686,7 @@ export default {
           created_by: username
         })
       }
-      fetch('http://127.0.0.1:8000/create_review_ajax', requestOptions)
+      fetch('/create_review_ajax', requestOptions)
         .then(response => {
           if (!response.ok) {
             if (response.status === 403) {

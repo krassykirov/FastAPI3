@@ -88,7 +88,7 @@
                   class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2"
                 >
                   <img
-                    src="http://127.0.0.1:8000/static/img/draw1.webp"
+                    src="/static/img/draw1.webp"
                     class="img-fluid"
                     alt="Sample image"
                   />
@@ -114,7 +114,7 @@ export default {
         return
       }
       const formData = new FormData(document.getElementById('signup'))
-      fetch('http://127.0.0.1:8000/signup', {
+      fetch('/signup', {
         method: 'POST',
         body: formData
       })

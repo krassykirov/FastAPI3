@@ -27,7 +27,7 @@
       ></span>
       <img
         :src="
-          'http://127.0.0.1:8000/static/img/' +
+          '/static/img/' +
           product.username +
           '/' +
           product.name +
