@@ -40,7 +40,10 @@
         "
       >
         <div class="col-md-8" style="max-width: 1200px">
-          <h2 class="text-center mb-4">Checkout</h2>
+          <h3 class="text-center mb-4" style="margin-left: 5%">
+            <i class="bi bi-cart-fill" style="font-size: 1.6rem"> </i>
+            Shopping Cart
+          </h3>
 
           <table class="table table-hover">
             <thead>
@@ -130,6 +133,13 @@
               Proceed to Payment
             </button>
           </div>
+          <div class="delivery my-4">
+            <p class="font-weight-bold mb-0">
+              <span><i class="fa-solid fa-truck"></i></span>
+              <b> Delivery done in 3 days from date of purchase</b>
+            </p>
+            <p class="text-secondary">Order now to get this product delivery</p>
+          </div>
         </div>
       </div>
     </div>
@@ -177,7 +187,11 @@
                             :src="`http://127.0.0.1:8000/static/img/${product.username}/${product.name}/${product.image}`"
                             class="img-fluid"
                             alt="Product Image"
-                            style="max-width: 50px; max-height: 50px"
+                            style="
+                              max-width: 50px;
+                              max-height: 35px;
+                              margin: 5px;
+                            "
                           />
                         </td>
                         <td class="align-left text-left">
@@ -221,7 +235,9 @@
                           @click="redirectToItemFromCart(product.id)"
                           style="cursor: pointer"
                         >
-                          <b>{{ truncateName(product.name, 20) }}</b>
+                          <b style="cursor: pointer; margin: 15px">
+                            {{ truncateName(product.name, 20) }}
+                          </b>
                         </td>
                         <td style="width: 100px">
                           <b

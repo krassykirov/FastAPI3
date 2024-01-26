@@ -116,7 +116,7 @@ export default {
       }
       this.$store.commit(
         'setErrorMessage',
-        'Token has expired. Please log in again.'
+        'Session has expired. Please log in again.'
       )
     })
   },

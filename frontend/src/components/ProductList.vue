@@ -73,35 +73,35 @@
         </span>
       </p>
       <input type="number" :data-price="product.price" hidden />
-    </div>
-    <div style="margin: 0; padding: 0; display: flex; flex-direction: column">
-      <span
-        style="
-          font-size: 1em;
-          color: #dc3545;
-          font-weight: 900;
-          margin-bottom: 1%;
-          margin-top: 1.5%;
-        "
-      >
-        Price: ${{ product.discount_price }}
-        <!-- <span v-if="Number.isInteger(product.price)" class="decimal-part">
-          {{ product.price }}
-          {{ Math.floor(product.price).toString().split('.')[1] }}
-        </span> -->
-      </span>
-      <span v-if="product.discount >= 0.1" class="old-price">
-        Old Price: ${{ Math.floor(product.price) }}
-      </span>
-      <div v-else style="font-size: 0.9em; margin-top: 1%">&nbsp;</div>
-      <button
-        ref="addToCartButton"
-        @click="addToCart(product)"
-        class="btn btn-secondary btn-sm"
-        style="margin-top: 1px; margin-bottom: 0; padding: 1.2%; width: 100%"
-      >
-        Add to Cart <i class="bi bi-cart-fill" style="font-size: 1rem"> </i>
-      </button>
+      <div style="margin: 0; padding: 0; display: flex; flex-direction: column">
+        <span
+          style="
+            font-size: 1em;
+            color: #dc3545;
+            font-weight: 900;
+            margin-bottom: 1%;
+            margin-top: 1.5%;
+          "
+        >
+          Price: ${{ product.discount_price }}
+          <!-- <span v-if="Number.isInteger(product.price)" class="decimal-part">
+            {{ product.price }}
+            {{ Math.floor(product.price).toString().split('.')[1] }}
+          </span> -->
+        </span>
+        <span v-if="product.discount >= 0.1" class="old-price">
+          Old Price: ${{ Math.floor(product.price) }}
+        </span>
+        <div v-else style="font-size: 0.9em; margin-top: 1%">&nbsp;</div>
+        <button
+          ref="addToCartButton"
+          @click="addToCart(product)"
+          class="btn btn-secondary btn-sm"
+          style="margin-top: 1px; margin-bottom: 0; padding: 1.2%; width: 100%"
+        >
+          Add to Cart <i class="bi bi-cart-fill" style="font-size: 1rem"> </i>
+        </button>
+      </div>
     </div>
   </div>
 </template>

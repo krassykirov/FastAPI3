@@ -55,18 +55,18 @@ padding-right: -17px;
   width: 100% !important;
   height: 13vw !important;
   object-fit: cover !important;
-  padding-left: 15px !important;
-  padding-right: 15px !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
   padding-bottom: 5px !important;
-  margin-top: 15px !important;
+  margin-top: 10px !important;
 }
 
 .card{
   margin-bottom: 1px !important;
   margin-left: 1px !important;
   margin-right: 1px !important;
-  width: 16vw !important;
-  height: 25vw !important;
+  width: 17vw !important;
+  height: 24vw !important;
   justify-content: left !important;
   /* border: 2px solid #969696; */
   text-align: center !important;
@@ -92,7 +92,7 @@ padding-right: -17px;
   text-decoration: line-through;
   color: #404447;
   margin-top: 1%;
-  margin-bottom: 2%;
+  margin-bottom: 1%;
 }
 
 
@@ -458,17 +458,16 @@ INPUT[type="checkbox"]:disabled {
     -ms-flex: 25% !important;
     flex: 25% !important;
   }
-  
+
   .col-50 {
     -ms-flex: 50% !important;
     flex: 50% !important;
   }
-  
+
   .col-75 {
     -ms-flex: 75% !important;
     flex: 75% !important;
   }
-  
   .col-25,
   .col-50,
   .col-75 {

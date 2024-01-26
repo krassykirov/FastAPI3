@@ -48,7 +48,7 @@
               class="dropbtn"
               data-toggle="modal"
               data-target="#UpdateProfile"
-              style="margin-top: 15%; padding: 15px"
+              style="padding: 15px"
             >
               Update Profile
             </button>
@@ -204,7 +204,7 @@
                     >Address:&nbsp;</label
                   >
                   <input
-                    type="text"
+                    type="address"
                     name="address"
                     id="address"
                     placeholder="Address"
@@ -401,8 +401,8 @@ export default {
   margin: auto !important;
   text-align: center !important;
   font-family: arial !important;
-  width: 18rem !important;
-  height: 44rem !important;
+  width: 20rem !important;
+  height: 41rem !important;
 }
 .title {
   color: grey !important;

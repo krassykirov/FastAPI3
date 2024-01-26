@@ -52,6 +52,16 @@ export default createStore({
         cartItem.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
       }
     },
+    UPDATE_FAVORITES_ITEM_RATING(state, { productId, ratingData }) {
+      const favoritesItem = state.favorites.find(item => item.id === productId)
+      if (favoritesItem) {
+        favoritesItem.rating = ratingData.rating
+        favoritesItem.reviewNumber = ratingData.review_number
+        favoritesItem.rating_float = parseFloat(
+          ratingData.rating_float
+        ).toFixed(2)
+      }
+    },
     UPDATE_SELECTED_CATEGORIES(state, selectedCategories) {
       state.selectedCategories = selectedCategories
     },
@@ -151,7 +161,6 @@ export default createStore({
           const item = await res.json()
           commit('SET_PRODUCT', item)
         } else if (res.status === 404) {
-          console.error(`Item with ID ${itemId} not found`)
           throw new Error(`Item with ID ${itemId} not found`)
         } else {
           console.error('Error fetching product:', res.statusText)
@@ -192,7 +201,7 @@ export default createStore({
           const data = await response.json()
           this.store.commit(
             'setErrorMessage',
-            'Token has expired. Please log in again.'
+            'Session has expired. Please log in again.'
           )
           throw new Error(data.detail)
         }
@@ -304,6 +313,10 @@ export default createStore({
         const data = await response.json()
         commit('UPDATE_PRODUCT_RATING', { productId: itemId, ratingData: data })
         commit('UPDATE_CART_ITEM_RATING', {
+          productId: itemId,
+          ratingData: data
+        })
+        commit('UPDATE_FAVORITES_ITEM_RATING', {
           productId: itemId,
           ratingData: data
         })

@@ -39,35 +39,60 @@
           margin: 0 -16px;
         "
       >
-        <div class="col-md-8" style="max-width: 1200px">
-          <h2 class="text-center mb-4">Favorites</h2>
-
+        <div class="col-md-8" style="max-width: 1200px; margin-left: 3%">
+          <h3 class="text-center mb-4" style="margin-left: 12%">
+            <i class="fa fa-heart red-color" style="font-size: 1.6rem"> </i>
+            Favorite Products
+          </h3>
           <table class="table table-hover">
-            <thead>
-              <tr style="height: auto">
-                <th scope="col"></th>
-                <th scope="col">Product</th>
-                <th scope="col">Price</th>
-                <th scope="col">Actions</th>
-              </tr>
-            </thead>
             <tbody>
               <tr v-for="product in favorites" :key="product.id">
-                <td>
+                <td style="padding-top: 1%">
                   <img
                     :src="`http://127.0.0.1:8000/static/img/${product.username}/${product.name}/${product.image}`"
                     class="img-fluid"
                     alt="Product Image"
-                    style="max-width: 50px; max-height: 50px"
+                    style="max-width: 270px; height: 200px; object-fit: cover"
                   />
                 </td>
                 <td
+                  style="cursor: pointer; padding-top: 1%"
                   @click="redirectToItemFromCart(product.id)"
-                  style="cursor: pointer"
                 >
-                  {{ product.name }}
+                  <h6>{{ truncateName(product.name, 45) }}</h6>
+                  <p
+                    style="
+                      font-size: 0.95em;
+                      padding-top: 3%;
+                      padding-right: 10%;
+                      padding-left: 10%;
+                      padding-bottom: 0;
+                    "
+                  >
+                    {{ truncateName(product.description, 200) }}
+                  </p>
+                  <p style="cursor: pointer">
+                    <i>
+                      <span
+                        v-for="i in 5"
+                        :key="i"
+                        :class="getStarClasses(i, product.rating_float)"
+                      ></span>
+                      <span
+                        :id="'overall-rating' + product.id + '-float'"
+                        class="overall-rating"
+                        >&nbsp;{{ product.rating_float }}</span
+                      >
+                    </i>
+                    <span
+                      :id="'overall-rating' + product.id"
+                      class="overall-rating2"
+                    >
+                      ({{ product.reviewNumber }})
+                    </span>
+                  </p>
                 </td>
-                <td style="width: 100px">
+                <td style="padding-top: 5.3%; padding-right: 10px">
                   <b
                     >${{
                       (
@@ -77,10 +102,20 @@
                     }}</b
                   >
                 </td>
-                <td>
+                <td style="padding: 0; padding-top: 5%">
                   <button
                     type="button"
-                    class="btn btn-outline-danger btn-sm"
+                    ref="addToCartButton"
+                    @click="addToCart(product)"
+                    class="btn btn-outline-primary btn-sm m-0"
+                  >
+                    <i class="bi bi-cart-fill"></i>
+                  </button>
+                </td>
+                <td style="padding: 0.15em; padding-top: 5%">
+                  <button
+                    type="button"
+                    class="btn btn-outline-danger btn-sm m-0"
                     @click="removeFromFavorites(product.id)"
                   >
                     <i class="bi bi-trash"></i>
@@ -91,6 +126,28 @@
           </table>
         </div>
       </div>
+    </div>
+    <div
+      class="toast"
+      id="cartToast"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+      data-bs-autohide="false"
+      style="
+        position: fixed;
+        top: 12%;
+        right: 5%;
+        transform: translate(0, -50%);
+        width: 250px;
+        z-index: 1000;
+      "
+    >
+      <div
+        class="toast-body"
+        id="cartToastBody"
+        style="font-weight: 900; font: 1.1em"
+      ></div>
     </div>
   </div>
 </template>
@@ -104,7 +161,7 @@ export default {
   components: {
     NavBar
   },
-  props: ['profile', 'favorites'],
+  props: ['profile'],
   data() {
     return {
       item: null,
@@ -115,7 +172,7 @@ export default {
   created() {
     this.$store.dispatch('initializeUser').catch(this.handleError)
     this.$store.dispatch('readFromCartVue').then(() => {
-      const fetchRatingsPromises = this.$store.state.cart.map(product => {
+      const fetchRatingsPromises = this.$store.state.favorites.map(product => {
         return this.$store.dispatch('getItemRating', product.id)
       })
       return Promise.all(fetchRatingsPromises)
@@ -133,6 +190,9 @@ export default {
     },
     cart() {
       return this.$store.state.cart
+    },
+    favorites() {
+      return this.$store.state.favorites
     }
   },
   methods: {
@@ -145,6 +205,18 @@ export default {
       } else {
         return 'fa fa-star-o checked'
       }
+    },
+    getRatingItemCount(rating) {
+      const items = this.$store.state.products // Assuming products are stored in the store
+      const count = items.reduce((accumulator, item) => {
+        const floatRating = parseFloat(item.rating_float)
+        const roundedRating = Math.floor(floatRating + 0.5) // Round to the nearest integer
+        if (roundedRating === rating) {
+          return accumulator + 1
+        }
+        return accumulator
+      }, 0)
+      return count
     },
     itemAlreadyInCart(product) {
       return this.cart.some(item => item.id === product.id)

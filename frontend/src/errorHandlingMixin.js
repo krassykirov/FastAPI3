@@ -2,7 +2,7 @@ export default {
   methods: {
     handleError(error) {
       if (error.message === 'Token Expired') {
-        this.errorMessage = 'Token has expired. Please log in.'
+        this.errorMessage = 'Session has expired. Please log in.'
       } else {
         console.error(error)
         this.errorMessage = 'Something went wrong, please try again'

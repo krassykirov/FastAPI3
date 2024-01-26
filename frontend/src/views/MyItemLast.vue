@@ -160,13 +160,6 @@
             </p>
             <p class="text-secondary">Order now to get this product delivery</p>
           </div>
-          <div class="delivery-options my-4">
-            <p class="font-weight-bold mb-0">
-              <span><i class="fa-solid fa-filter"></i></span>
-              <b> Delivery options</b>
-            </p>
-            <p class="text-secondary">View delivery options here</p>
-          </div>
         </div>
       </div>
     </div>
@@ -822,7 +815,7 @@ text-color {
 }
 
 .main-description .product-title {
-  font-size: 2rem;
+  font-size: 1.8rem;
 }
 
 .old-price-discount {
@@ -868,7 +861,7 @@ text-color {
 
 .similar-product img {
   height: 80% !important;
-  max-height: 330px !important;
+  height: 330px !important;
 }
 
 .similar-product {
