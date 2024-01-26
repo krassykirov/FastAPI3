@@ -40,28 +40,28 @@
             </span>
             <img
               class="img-fluid"
-              :src="`/static/img/${item.username}/${item.name}/${item.image}`"
+              :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
               alt="ProductS"
             />
             <div class="row my-3 previews">
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
@@ -211,7 +211,7 @@
             <img
               class="img-fluid"
               :src="
-                '/static/img/' +
+                'http://127.0.0.1:8000/static/img/' +
                 product.username +
                 '/' +
                 product.name +
@@ -555,7 +555,9 @@ export default {
     async getProduct(itemId) {
       try {
         const resolvedItemId = itemId || this.$route.params.itemId
-        const res = await fetch(`/api/items/item/${resolvedItemId}`)
+        const res = await fetch(
+          `http://127.0.0.1:8000/api/items/item/${resolvedItemId}`
+        )
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`)
         }
@@ -599,9 +601,9 @@ export default {
         profile => profile.primary_email === review.created_by
       )
       if (matchedProfile) {
-        return `/static/img/${review.created_by}/profile/${matchedProfile.avatar}`
+        return `http://127.0.0.1:8000/static/img/${review.created_by}/profile/${matchedProfile.avatar}`
       } else {
-        return '/static/img/img_avatar.png'
+        return 'http://127.0.0.1:8000/static/img/img_avatar.png'
       }
     },
     redirectToItem(itemId) {

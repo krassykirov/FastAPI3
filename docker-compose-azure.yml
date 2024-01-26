@@ -1,0 +1,15 @@
+version: "3"
+services:
+  backend:
+    image: krassy19/fast3-backend
+    container_name: backend
+    ports:
+      - "8000:8000"
+
+
+  frontend:
+    image: krassy19/fast3-frontend
+    restart: always
+    container_name: frontend
+    ports:
+      - "8081:8081"

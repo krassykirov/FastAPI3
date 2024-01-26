@@ -95,7 +95,7 @@
             <div class="d-flex align-items-center">
               <img
                 :src="
-                  '/static/img/' +
+                  'http://127.0.0.1:8000/static/img/' +
                   item.username +
                   '/' +
                   item.name +
@@ -181,7 +181,7 @@
             <div class="d-flex align-items-center">
               <img
                 :src="
-                  '/static/img/' +
+                  'http://127.0.0.1:8000/static/img/' +
                   item.username +
                   '/' +
                   item.name +
@@ -253,14 +253,14 @@
         >
           <img
             v-if="profile"
-            :src="`/static/img/${user}/profile/${profile.avatar}`"
+            :src="`http://127.0.0.1:8000/static/img/${user}/profile/${profile.avatar}`"
             width="50"
             height="50"
             class="rounded-circle"
           />
           <img
             v-else
-            src="/static/img/img_avatar.png"
+            src="http://127.0.0.1:8000/static/img/img_avatar.png"
             width="50"
             height="50"
             class="rounded-circle"

@@ -144,7 +144,7 @@ const App = Vue.createApp({
       });
     },
     async getProfile() {
-        const response = await fetch(`/api/profile/${this.user_id}`, {
+        const response = await fetch(`http://127.0.0.1:8000/api/profile/${this.user_id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -155,7 +155,7 @@ const App = Vue.createApp({
         } else {
           const data = await response.json();
           console.log('response', response)
-          this.profile = `/static/img/${this.user}/profile/${data.avatar}`;
+          this.profile = `http://127.0.0.1:8000/static/img/${this.user}/profile/${data.avatar}`;
         }
       },
     redirectToItem(itemId) {
@@ -772,7 +772,7 @@ App.component('item-component', {
             <div class="col-12">
               <p>
                 <div style="display: flex; align-items: center; justify-content: center;">
-                  <img src="/static/img/img_avatar.png" class="avatar" style="padding: 5px;">
+                  <img src="http://127.0.0.1:8000/static/img/img_avatar.png" class="avatar" style="padding: 5px;">
                   <span style="text-align: center;">[[ review.created_by ]]</span>
                 </div>
                 <span class="fa fa-star" :class="{ checked: star.checked }" :id="star.id" v-for="star in updateStarRatings(review)"></span>
@@ -971,7 +971,7 @@ App.component('item-component', {
                 <div class="col-12" style="margin-bottom: 3px; margin-left:0;">
                   <p style="margin-left:0">
                     <div style="display: flex; align-items: center; justify-content: center;">
-                      <img src="/static/img/img_avatar.png" class="avatar" style="padding: 5px;">
+                      <img src="http://127.0.0.1:8000/static/img/img_avatar.png" class="avatar" style="padding: 5px;">
                       <span style="text-align: center;">${data.created_by}</span>
                     </div>
                     <span class="fa fa-star checked" id="star${data.id}1"></span>

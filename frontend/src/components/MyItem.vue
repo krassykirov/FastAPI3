@@ -181,7 +181,7 @@
                         "
                       >
                         <img
-                          src="/static/img/img_avatar.png"
+                          src="http://127.0.0.1:8000/static/img/img_avatar.png"
                           class="avatar"
                           style="padding: 5px"
                         />
@@ -373,7 +373,9 @@ export default {
     async getProduct() {
       try {
         const itemId = this.$route.params.itemId
-        const res = await fetch(`/api/items/item/${itemId}`)
+        const res = await fetch(
+          `http://127.0.0.1:8000/api/items/item/${itemId}`
+        )
         const item = await res.json()
         this.item = item
         this.getItemRatingItem(this.item.id)
@@ -497,7 +499,7 @@ export default {
                 <div class="col-12" style="margin-bottom: 3px; margin-left:0;">
                   <p style="margin-left:0">
                     <div style="display: flex; align-items: center; justify-content: center;">
-                      <img src="/static/img/img_avatar.png" class="avatar" style="padding: 5px;">
+                      <img src="http://127.0.0.1:8000/static/img/img_avatar.png" class="avatar" style="padding: 5px;">
                       <span style="text-align: center;">${data.created_by}</span>
                     </div>
                     <span class="fa fa-star checked" id="star${data.id}1"></span>

@@ -154,7 +154,9 @@ export default createStore({
   actions: {
     async getProduct({ commit }, itemId) {
       try {
-        const res = await fetch(`/api/items/item/${itemId}`)
+        const res = await fetch(
+          `http://127.0.0.1:8000/api/items/item/${itemId}`
+        )
         if (res.ok) {
           const item = await res.json()
           commit('SET_PRODUCT', item)
@@ -170,7 +172,7 @@ export default createStore({
     },
     async getProducts({ commit }) {
       try {
-        const res = await fetch('api/items')
+        const res = await fetch('http://127.0.0.1:8000/api/items')
         const products = await res.json()
         commit('SET_PRODUCTS', products)
         const maxPrice = Math.max(...products.map(product => product.price))
@@ -191,7 +193,7 @@ export default createStore({
       formData.append('client_secret', '')
       formData.append('rememberMe', rememberMe ? 'true' : 'false')
       try {
-        const response = await fetch('api/token', {
+        const response = await fetch('http://127.0.0.1:8000/api/token', {
           method: 'POST',
           body: formData
         })
@@ -269,7 +271,7 @@ export default createStore({
         redirect: 'follow'
       }
       const response = await fetch(
-        `api/profile/${state.user_id}`,
+        `http://127.0.0.1:8000/api/profile/${state.user_id}`,
         requestOptions
       )
       if (!response.ok) {
@@ -291,12 +293,15 @@ export default createStore({
     },
     async getItemRating({ commit }, itemId) {
       try {
-        const response = await fetch(`api/reviews/item/rating?id=${itemId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/reviews/item/rating?id=${itemId}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
           }
-        })
+        )
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`)
         }
@@ -345,7 +350,7 @@ export default createStore({
           redirect: 'follow'
         }
         const response = await fetch(
-          'api/items/user-items-in-cart',
+          'http://127.0.0.1:8000/api/items/user-items-in-cart',
           requestOptions
         )
         if (!response.ok) {
@@ -454,7 +459,7 @@ export default createStore({
       toastBodyElement.innerText = toastContent
       toastElement.show()
       if (!itemInCart) {
-        fetch('api/items/update-basket', requestOptions)
+        fetch('http://127.0.0.1:8000/api/items/update-basket', requestOptions)
           .then(response => {
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`)
@@ -506,7 +511,7 @@ export default createStore({
       try {
         if (itemInfavorites) {
           const response = await fetch(
-            'api/items/remove-from-favorites',
+            'http://127.0.0.1:8000/api/items/remove-from-favorites',
             requestOptions
           )
 
@@ -525,7 +530,7 @@ export default createStore({
           }
         } else {
           const response = await fetch(
-            'api/items/update-favorites',
+            'http://127.0.0.1:8000/api/items/update-favorites',
             requestOptions
           )
 
@@ -571,7 +576,10 @@ export default createStore({
       }
       const itemInCart = state.cart.find(item => item.id === product_id)
       if (itemInCart) {
-        fetch(`api/items/update_item/${product_id}`, requestOptions)
+        fetch(
+          `http://127.0.0.1:8000/api/items/update_item/${product_id}`,
+          requestOptions
+        )
           .then(response => {
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`)
@@ -632,7 +640,7 @@ export default createStore({
         })
       }
 
-      fetch('user/remove-from-basket', requestOptions)
+      fetch('http://127.0.0.1:8000/user/remove-from-basket', requestOptions)
         .then(response => {
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`)

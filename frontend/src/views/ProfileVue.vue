@@ -31,7 +31,7 @@
     <div class="container" style="margin-top: 2%">
       <div class="card" v-if="profile">
         <img
-          :src="`/static/img/${user}/profile/${profile.avatar}`"
+          :src="`http://127.0.0.1:8000/static/img/${user}/profile/${profile.avatar}`"
           id="avatar-image"
           style="width: 100%"
           class="img-top"
@@ -340,7 +340,7 @@ export default {
             $('#UpdateProfile').modal('hide')
             $('#close-button').click()
             var user = this.$store.getters.user
-            var img_path = `/static/img/${user}/profile/${data.avatar}`
+            var img_path = `http://127.0.0.1:8000/static/img/${user}/profile/${data.avatar}`
             $('#card-email').text(`Email: ${data.email}`)
             $('#card-address').text(`Address: ${data.address}`)
             $('#card-phone').text(`Address: ${data.number}`)
