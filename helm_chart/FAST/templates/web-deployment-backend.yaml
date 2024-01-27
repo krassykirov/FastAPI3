@@ -15,9 +15,10 @@ spec:
         io.kompose.service: backend
     spec:
       containers:
-        - image: backend
+        - image: krassy19/frontend
           imagePullPolicy: IfNotPresent
           name: backend
           ports:
             - containerPort: 8000
+    type: LoadBalancer
 

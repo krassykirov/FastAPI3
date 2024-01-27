@@ -2,6 +2,7 @@ import { createStore } from 'vuex'
 import VueCookies from 'vue-cookies'
 import { jwtDecode } from 'jwt-decode'
 import router from '@/router'
+import config from '@/config'
 /* global bootstrap */
 export default createStore({
   state: {
@@ -155,7 +156,7 @@ export default createStore({
     async getProduct({ commit }, itemId) {
       try {
         const res = await fetch(
-          `http://127.0.0.1:8000/api/items/item/${itemId}`
+          `${config.backendEndpoint}/api/items/item/${itemId}`
         )
         if (res.ok) {
           const item = await res.json()
@@ -172,7 +173,7 @@ export default createStore({
     },
     async getProducts({ commit }) {
       try {
-        const res = await fetch('http://127.0.0.1:8000/api/items')
+        const res = await fetch(`${config.backendEndpoint}/api/items`)
         const products = await res.json()
         commit('SET_PRODUCTS', products)
         const maxPrice = Math.max(...products.map(product => product.price))
@@ -193,7 +194,7 @@ export default createStore({
       formData.append('client_secret', '')
       formData.append('rememberMe', rememberMe ? 'true' : 'false')
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/token', {
+        const response = await fetch(`${config.backendEndpoint}/api/token`, {
           method: 'POST',
           body: formData
         })
@@ -251,7 +252,10 @@ export default createStore({
         headers: headers,
         redirect: 'follow'
       }
-      const response = await fetch(`api/profile`, requestOptions)
+      const response = await fetch(
+        `${config.backendEndpoint}/api/profile`,
+        requestOptions
+      )
       if (!response.ok) {
         commit('UPDATE_PROFILES', null)
       } else {
@@ -271,7 +275,7 @@ export default createStore({
         redirect: 'follow'
       }
       const response = await fetch(
-        `http://127.0.0.1:8000/api/profile/${state.user_id}`,
+        `${config.backendEndpoint}/api/profile/${state.user_id}`,
         requestOptions
       )
       if (!response.ok) {
@@ -284,7 +288,9 @@ export default createStore({
     },
     async fetchCategories({ commit }) {
       try {
-        const res = await fetch('api/categories/category_items_len/')
+        const res = await fetch(
+          `${config.backendEndpoint}/api/categories/category_items_len/`
+        )
         const categories = await res.json()
         commit('SET_CATEGORIES', categories)
       } catch (error) {
@@ -294,7 +300,7 @@ export default createStore({
     async getItemRating({ commit }, itemId) {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/reviews/item/rating?id=${itemId}`,
+          `${config.backendEndpoint}/api/reviews/item/rating?id=${itemId}`,
           {
             method: 'GET',
             headers: {
@@ -350,7 +356,7 @@ export default createStore({
           redirect: 'follow'
         }
         const response = await fetch(
-          'http://127.0.0.1:8000/api/items/user-items-in-cart',
+          `${config.backendEndpoint}/api/items/user-items-in-cart`,
           requestOptions
         )
         if (!response.ok) {
@@ -459,7 +465,10 @@ export default createStore({
       toastBodyElement.innerText = toastContent
       toastElement.show()
       if (!itemInCart) {
-        fetch('http://127.0.0.1:8000/api/items/update-basket', requestOptions)
+        fetch(
+          `${config.backendEndpoint}/api/items/update-basket`,
+          requestOptions
+        )
           .then(response => {
             if (!response.ok) {
               throw new Error(`HTTP error! Status: ${response.status}`)
@@ -511,7 +520,7 @@ export default createStore({
       try {
         if (itemInfavorites) {
           const response = await fetch(
-            'http://127.0.0.1:8000/api/items/remove-from-favorites',
+            `${config.backendEndpoint}/api/items/remove-from-favorites`,
             requestOptions
           )
 
@@ -530,7 +539,7 @@ export default createStore({
           }
         } else {
           const response = await fetch(
-            'http://127.0.0.1:8000/api/items/update-favorites',
+            `${config.backendEndpoint}/api/items/update-favorites`,
             requestOptions
           )
 
@@ -577,7 +586,7 @@ export default createStore({
       const itemInCart = state.cart.find(item => item.id === product_id)
       if (itemInCart) {
         fetch(
-          `http://127.0.0.1:8000/api/items/update_item/${product_id}`,
+          `${config.backendEndpoint}/api/items/update_item/${product_id}`,
           requestOptions
         )
           .then(response => {
@@ -607,7 +616,10 @@ export default createStore({
           item_id: itemId
         })
       }
-      fetch('api/items/remove-from-favorites', requestOptions)
+      fetch(
+        `${config.backendEndpoint}/api/items/remove-from-favorites`,
+        requestOptions
+      )
         .then(response => {
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`)
@@ -640,7 +652,7 @@ export default createStore({
         })
       }
 
-      fetch('http://127.0.0.1:8000/user/remove-from-basket', requestOptions)
+      fetch(`${config.backendEndpoint}/user/remove-from-basket`, requestOptions)
         .then(response => {
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`)

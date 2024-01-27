@@ -324,7 +324,7 @@ export default {
       })
       .catch(error => {
         if (error.message !== 'Token Expired') {
-          console.error('Token Expired', error)
+          console.error('error', error)
         }
       })
   },

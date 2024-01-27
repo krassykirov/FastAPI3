@@ -15,7 +15,7 @@ spec:
         io.kompose.service: frontend
     spec:
       containers:
-        - image: frontend
+        - image: krassy19/frontend
           imagePullPolicy: IfNotPresent
           name: frontend
           ports:
@@ -34,3 +34,4 @@ spec:
       targetPort: 8080
   selector:
     io.kompose.service: frontend
+type: LoadBalancer

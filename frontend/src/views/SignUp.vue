@@ -88,7 +88,7 @@
                   class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2"
                 >
                   <img
-                    src="http://127.0.0.1:8000/static/img/draw1.webp"
+                    :src="`${backendEndpoint}/static/img/draw1.webp`"
                     class="img-fluid"
                     alt="Sample image"
                   />
@@ -104,7 +104,13 @@
 
 <script>
 import router from '@/router'
+import config from '@/config'
 export default {
+  data() {
+    return {
+      backendEndpoint: 'https://fast3-backend.azurewebsites.net'
+    }
+  },
   methods: {
     submitForm() {
       const password1 = document.getElementById('password').value
@@ -114,7 +120,7 @@ export default {
         return
       }
       const formData = new FormData(document.getElementById('signup'))
-      fetch('/signup', {
+      fetch(`${config.backendEndpoint}/signup`, {
         method: 'POST',
         body: formData
       })

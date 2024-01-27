@@ -59,7 +59,7 @@
               <tr v-for="product in cart" :key="product.id">
                 <td>
                   <img
-                    :src="`http://127.0.0.1:8000/static/img/${product.username}/${product.name}/${product.image}`"
+                    :src="`${backendEndpoint}/static/img/${product.username}/${product.name}/${product.image}`"
                     class="img-fluid"
                     alt="Product Image"
                     style="max-width: 50px; max-height: 50px"
@@ -184,7 +184,7 @@
                       <tr v-for="product in cart" :key="product.id">
                         <td>
                           <img
-                            :src="`http://127.0.0.1:8000/static/img/${product.username}/${product.name}/${product.image}`"
+                            :src="`${backendEndpoint}/static/img/${product.username}/${product.name}/${product.image}`"
                             class="img-fluid"
                             alt="Product Image"
                             style="
@@ -447,7 +447,8 @@ export default {
   data() {
     return {
       item: null,
-      itemId: this.itemId
+      itemId: this.itemId,
+      backendEndpoint: 'https://fast3-backend.azurewebsites.net'
     }
   },
   created() {

@@ -40,35 +40,35 @@
             </span>
             <img
               class="img-fluid"
-              :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+              :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
               alt="ProductS"
             />
             <div class="row my-3 previews">
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
@@ -115,7 +115,7 @@
                   >&nbsp;{{ item.rating_float }}</span
                 >
               </i>
-              <span :id="'overall-rating' + item.id">
+              <span :id="'overall-rating' + item.id" v-if="item.reviewNumber">
                 ({{ item.reviewNumber }}) Review's
               </span>
             </p>
@@ -211,7 +211,7 @@
             <img
               class="img-fluid"
               :src="
-                'http://127.0.0.1:8000/static/img/' +
+                `${backendEndpoint}/static/img/` +
                 product.username +
                 '/' +
                 product.name +
@@ -482,6 +482,7 @@ import $ from 'jquery'
 import errorHandlingMixin from '../errorHandlingMixin'
 // import router from '@/router'
 import NavBar from '../components/MyNavbar.vue'
+import config from '@/config'
 
 export default {
   components: {
@@ -497,7 +498,8 @@ export default {
       reviewsData: [],
       activeTab: 'reviews',
       currentPage: 1,
-      reviewsPerPage: 2
+      reviewsPerPage: 2,
+      backendEndpoint: 'https://fast3-backend.azurewebsites.net'
     }
   },
   beforeRouteUpdate(to, from, next) {
@@ -556,7 +558,7 @@ export default {
       try {
         const resolvedItemId = itemId || this.$route.params.itemId
         const res = await fetch(
-          `http://127.0.0.1:8000/api/items/item/${resolvedItemId}`
+          `${config.backendEndpoint}/api/items/item/${resolvedItemId}`
         )
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`)
@@ -576,12 +578,15 @@ export default {
     },
     async getItemRating(itemId) {
       try {
-        const response = await fetch(`/api/reviews/item/rating?id=${itemId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
+        const response = await fetch(
+          `${config.backendEndpoint}/api/reviews/item/rating?id=${itemId}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
           }
-        })
+        )
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`)
         }
@@ -601,9 +606,9 @@ export default {
         profile => profile.primary_email === review.created_by
       )
       if (matchedProfile) {
-        return `http://127.0.0.1:8000/static/img/${review.created_by}/profile/${matchedProfile.avatar}`
+        return `${config.backendEndpoint}/static/img/${review.created_by}/profile/${matchedProfile.avatar}`
       } else {
-        return 'http://127.0.0.1:8000/static/img/img_avatar.png'
+        return `${config.backendEndpoint}/static/img/img_avatar.png`
       }
     },
     redirectToItem(itemId) {
@@ -615,13 +620,16 @@ export default {
     async setReviewsRating(itemId) {
       try {
         const resolvedItemId = itemId || this.$route.params.itemId
-        const response = await fetch(`/api/reviews?item_id=${resolvedItemId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            redirect: 'follow'
+        const response = await fetch(
+          `${config.backendEndpoint}/api/reviews?item_id=${resolvedItemId}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              redirect: 'follow'
+            }
           }
-        })
+        )
 
         if (!response.ok) {
           if (response.status === 404) {

@@ -120,7 +120,6 @@ async def update_favorites(request: Request, db: Session = Depends(get_session),
 @items_router.post("/remove-from-favorites", status_code=status.HTTP_200_OK,  include_in_schema=True)
 async def remove_from_favorites(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     data = await request.json()
-    print('remove-from-favorites', data)
     item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
     new_dict = {user.username: {"liked": False}}
     favorites = dict(item.liked, **new_dict )

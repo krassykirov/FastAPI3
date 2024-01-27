@@ -27,7 +27,7 @@
       ></span>
       <img
         :src="
-          'http://127.0.0.1:8000/static/img/' +
+          `${backendEndpoint}/static/img/` +
           product.username +
           '/' +
           product.name +
@@ -55,7 +55,10 @@
       >
         {{ product.name }}
       </h6>
-      <p style="cursor: pointer; margin-bottom: 1%">
+      <p
+        style="cursor: pointer; margin-bottom: 1%"
+        @click="redirectToItemFromProduct(product.id)"
+      >
         <i>
           <span
             v-for="i in 5"
@@ -108,9 +111,15 @@
 
 <script>
 import errorHandlingMixin from '../errorHandlingMixin'
+
 export default {
   props: ['product', 'min', 'max', 'cart'],
   emits: ['addToCart', 'redirectToItem', 'addTofavorites'],
+  data() {
+    return {
+      backendEndpoint: 'https://fast3-backend.azurewebsites.net'
+    }
+  },
   mixins: [errorHandlingMixin],
   computed: {
     filteredProducts() {
