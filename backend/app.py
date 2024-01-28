@@ -41,9 +41,17 @@ app.include_router(oauth_router)
 app.include_router(profile_router)
 # app.include_router(cart_router)
 
+origins = [
+    "http://localhost:8081",
+    "http://localhost:8080",
+    "http://localhost:8000",
+    "https://fast3-frontend.azurewebsites.net",
+    "https://fast3-backend.azurewebsites.net"
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins="*",
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
