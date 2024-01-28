@@ -556,7 +556,7 @@ export default {
       try {
         const resolvedItemId = itemId || this.$route.params.itemId
         const res = await fetch(
-          `${config.backendEndpoint}/item/${resolvedItemId}`
+          `${config.backendEndpoint}/api/items/item/${resolvedItemId}`
         )
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`)
