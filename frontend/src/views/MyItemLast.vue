@@ -40,35 +40,35 @@
             </span>
             <img
               class="img-fluid"
-              :src="`${config.backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
+              :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
               alt="ProductS"
             />
             <div class="row my-3 previews">
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`${config.backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`${config.backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`${config.backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`${config.backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
@@ -211,7 +211,7 @@
             <img
               class="img-fluid"
               :src="
-                `${config.backendEndpoint}/static/img/` +
+                `${backendEndpoint}/static/img/` +
                 product.username +
                 '/' +
                 product.name +
@@ -497,7 +497,8 @@ export default {
       reviewsData: [],
       activeTab: 'reviews',
       currentPage: 1,
-      reviewsPerPage: 2
+      reviewsPerPage: 2,
+      backendEndpoint: 'https://fast3-backend.azurewebsites.net'
     }
   },
   beforeRouteUpdate(to, from, next) {
