@@ -40,35 +40,35 @@
             </span>
             <img
               class="img-fluid"
-              :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+              :src="`${config.backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
               alt="ProductS"
             />
             <div class="row my-3 previews">
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${config.backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${config.backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${config.backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${config.backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
@@ -211,7 +211,7 @@
             <img
               class="img-fluid"
               :src="
-                'http://127.0.0.1:8000/static/img/' +
+                `${config.backendEndpoint}/static/img/` +
                 product.username +
                 '/' +
                 product.name +
@@ -556,7 +556,7 @@ export default {
       try {
         const resolvedItemId = itemId || this.$route.params.itemId
         const res = await fetch(
-          `http://127.0.0.1:8000/api/items/item/${resolvedItemId}`
+          `${config.backendEndpoint}/item/${resolvedItemId}`
         )
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`)
@@ -577,7 +577,7 @@ export default {
     async getItemRating(itemId) {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/reviews/item/rating?id=${itemId}`,
+          `${config.backendEndpoint}/api/reviews/item/rating?id=${itemId}`,
           {
             method: 'GET',
             headers: {
@@ -604,9 +604,9 @@ export default {
         profile => profile.primary_email === review.created_by
       )
       if (matchedProfile) {
-        return `http://127.0.0.1:8000/static/img/${review.created_by}/profile/${matchedProfile.avatar}`
+        return `${config.backendEndpoint}/static/img/${review.created_by}/profile/${matchedProfile.avatar}`
       } else {
-        return 'http://127.0.0.1:8000/static/img/img_avatar.png'
+        return `${config.backendEndpoint}/static/img/img_avatar.png`
       }
     },
     redirectToItem(itemId) {
@@ -619,7 +619,7 @@ export default {
       try {
         const resolvedItemId = itemId || this.$route.params.itemId
         const response = await fetch(
-          `http://127.0.0.1:8000/api/reviews?item_id=${resolvedItemId}`,
+          `${config.backendEndpoint}/api/reviews?item_id=${resolvedItemId}`,
           {
             method: 'GET',
             headers: {
