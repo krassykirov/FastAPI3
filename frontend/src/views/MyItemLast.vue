@@ -694,7 +694,7 @@ export default {
           created_by: username
         })
       }
-      fetch('/create_review_ajax', requestOptions)
+      fetch('http://127.0.0.1:8000/create_review_ajax', requestOptions)
         .then(response => {
           if (!response.ok) {
             if (response.status === 403) {
@@ -708,7 +708,7 @@ export default {
         })
         .then(data => {
           this.reviewsData.push(data)
-          this.getItemRatingItem(id)
+          this.getItemRating(id)
           this.setReviewsRating(id)
         })
         .catch(error => {
