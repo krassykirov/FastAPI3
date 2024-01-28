@@ -68,7 +68,7 @@
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
@@ -576,12 +576,15 @@ export default {
     },
     async getItemRating(itemId) {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/reviews/item/rating?id=${itemId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/reviews/item/rating?id=${itemId}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
           }
-        })
+        )
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`)
         }
@@ -615,13 +618,16 @@ export default {
     async setReviewsRating(itemId) {
       try {
         const resolvedItemId = itemId || this.$route.params.itemId
-        const response = await fetch(`/api/reviews?item_id=${resolvedItemId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            redirect: 'follow'
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/reviews?item_id=${resolvedItemId}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              redirect: 'follow'
+            }
           }
-        })
+        )
 
         if (!response.ok) {
           if (response.status === 404) {

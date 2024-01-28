@@ -41,12 +41,11 @@ app.include_router(oauth_router)
 app.include_router(profile_router)
 # app.include_router(cart_router)
 origins = [
-    "http://localhost:8081/",
+    "https://fast3.azurewebsites.net",
     "http://127.0.0.1:8081",
     "http://127.0.0.1:8000",
-    "http://localhost:8000/",
-    "https://fast3-frontend.azurewebsites.net",
-    "https://fast3-backend.azurewebsites.net"
+    "http://localhost:8000",
+    "http://localhost:8081"
 ]
 
 app.add_middleware(

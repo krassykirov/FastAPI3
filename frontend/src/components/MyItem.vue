@@ -391,7 +391,7 @@ export default {
       this.$emit('addToCart', product)
     },
     setReviewsRating(id) {
-      fetch(`/api/reviews?item_id=${id}`, {
+      fetch(`http://127.0.0.1:8000/api/reviews?item_id=${id}`, {
         method: 'GET',
         redirect: 'follow',
         headers: {

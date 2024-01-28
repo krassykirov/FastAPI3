@@ -222,18 +222,23 @@ export default createStore({
       }
     },
     async initializeUser({ commit, state }) {
-      if (state.accessToken === null) {
-        router.push('/login')
-      } else {
-        const decoded = jwtDecode(state.accessToken)
-        if (Date.now() >= decoded.exp * 1000) {
+      try {
+        if (state.accessToken === null) {
           router.push('/login')
-          throw new Error('Token Expired')
+        } else {
+          const decoded = jwtDecode(state.accessToken)
+          if (Date.now() >= decoded.exp * 1000) {
+            router.push('/login')
+            throw new Error('Token Expired')
+          }
+          const user = decoded.sub
+          const user_id = decoded.user_id
+          commit('UPDATE_USER', user)
+          commit('UPDATE_USER_ID', user_id)
         }
-        const user = decoded.sub
-        const user_id = decoded.user_id
-        commit('UPDATE_USER', user)
-        commit('UPDATE_USER_ID', user_id)
+      } catch (error) {
+        console.error('Error in initializeUser:', error.message)
+        throw error
       }
     },
     async removeAccessToken({ commit }) {
@@ -287,7 +292,9 @@ export default createStore({
     },
     async fetchCategories({ commit }) {
       try {
-        const res = await fetch('api/categories/category_items_len/')
+        const res = await fetch(
+          'http://127.0.0.1:8000/api/categories/category_items_len/'
+        )
         const categories = await res.json()
         commit('SET_CATEGORIES', categories)
       } catch (error) {
