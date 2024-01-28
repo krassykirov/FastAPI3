@@ -576,7 +576,7 @@ export default {
     },
     async getItemRating(itemId) {
       try {
-        const response = await fetch(`/api/reviews/item/rating?id=${itemId}`, {
+        const response = await fetch(`http://127.0.0.1:8000/api/reviews/item/rating?id=${itemId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'

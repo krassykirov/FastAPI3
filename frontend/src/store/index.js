@@ -251,7 +251,10 @@ export default createStore({
         headers: headers,
         redirect: 'follow'
       }
-      const response = await fetch(`http://127.0.0.1:8000/api/profile`, requestOptions)
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/profile`,
+        requestOptions
+      )
       if (!response.ok) {
         commit('UPDATE_PROFILES', null)
       } else {

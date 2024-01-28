@@ -421,7 +421,7 @@ export default {
     },
     getItemRatingItem(item_id) {
       try {
-        fetch(`/api/reviews/item/rating?id=${item_id}`, {
+        fetch(`http://127.0.0.1:8000/api/reviews/item/rating?id=${item_id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
