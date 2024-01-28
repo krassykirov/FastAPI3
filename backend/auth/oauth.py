@@ -102,7 +102,6 @@ def login_access_token(*, request: Request, response: Response, form_data: OAuth
         response = RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
         response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=False)
         response.headers["Authorization"] = f"Bearer {access_token}"
-        logger.info(f'token obtained for user {user}')
         return response
 
     else:
