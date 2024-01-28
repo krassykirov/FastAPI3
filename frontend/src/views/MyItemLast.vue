@@ -480,7 +480,7 @@
 /* global bootstrap */
 import $ from 'jquery'
 import errorHandlingMixin from '../errorHandlingMixin'
-// import router from '@/router'
+import config from '@/config'
 import NavBar from '../components/MyNavbar.vue'
 
 export default {
