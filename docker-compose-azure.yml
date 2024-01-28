@@ -12,4 +12,4 @@ services:
     restart: always
     container_name: frontend
     ports:
-      - "8081:8081"
+      - "8081:8080"
