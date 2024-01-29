@@ -26,7 +26,7 @@ oauth_router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearerCookie(tokenUrl="/api/token")
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_MINUTES = 1
 ALGORITHM = "HS256"
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 
@@ -124,7 +124,6 @@ async def login_access_token(*, request: Request, response: Response, form_data:
         access_token = create_access_token(
             data={"sub": user.username, 'user_id': user.id}, expires_delta=access_token_expires
         )
-        logger.info(f'token obtained for user {user}')
         return {"access_token": access_token, "token_type": "bearer"}
     else:
         raise HTTPException(status_code=403,detail=f"Username or password are incorrect!")

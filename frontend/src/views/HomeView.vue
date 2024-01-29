@@ -310,12 +310,20 @@ export default {
     this.$store
       .dispatch('initializeUser')
       .catch(this.handleError)
-      .then(() => this.$store.dispatch('getProfile'))
-      .then(() => this.$store.dispatch('getProducts'))
-      .then(() => this.$store.dispatch('readFromCartVue'))
-      .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
-      .then(() => this.$store.dispatch('fetchCategories'))
-      .then(() => this.$store.dispatch('updateProductRange'))
+      .then(() => this.$store.dispatch('getProfile').catch(this.handleError))
+      .then(() => this.$store.dispatch('getProducts').catch(this.handleError))
+      .then(() =>
+        this.$store.dispatch('readFromCartVue').catch(this.handleError)
+      )
+      .then(() =>
+        this.$store.dispatch('checkFavoritesOnLoad').catch(this.handleError)
+      )
+      .then(() =>
+        this.$store.dispatch('fetchCategories').catch(this.handleError)
+      )
+      .then(() =>
+        this.$store.dispatch('updateProductRange').catch(this.handleError)
+      )
       .then(() => {
         const fetchRatingsPromises = this.$store.state.products.map(product => {
           return this.$store.dispatch('getItemRating', product.id)
