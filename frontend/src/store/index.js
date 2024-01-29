@@ -223,7 +223,10 @@ export default createStore({
     },
     async initializeUser({ commit, state }) {
       try {
-        if (state.accessToken === null) {
+        if (
+          state.accessToken === null &&
+          VueCookies.get('access_token') === null
+        ) {
           router.push('/login')
         } else {
           const decoded = jwtDecode(state.accessToken)
@@ -237,9 +240,7 @@ export default createStore({
           commit('UPDATE_USER_ID', user_id)
         }
       } catch (error) {
-        if (error.message === 'Token Expired') {
-          commit('setErrorMessage', 'Session has expired. Please log in again.')
-        }
+        throw new Error('Token Expired')
       }
     },
     async removeAccessToken({ commit }) {
