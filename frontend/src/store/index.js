@@ -617,7 +617,10 @@ export default createStore({
           item_id: itemId
         })
       }
-      fetch('api/items/remove-from-favorites', requestOptions)
+      fetch(
+        'http://127.0.0.1:8000/api/items/remove-from-favorites',
+        requestOptions
+      )
         .then(response => {
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`)
