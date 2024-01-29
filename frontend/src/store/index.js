@@ -237,8 +237,9 @@ export default createStore({
           commit('UPDATE_USER_ID', user_id)
         }
       } catch (error) {
-        console.error('Error in initializeUser:', error.message)
-        throw error
+        if (error.message === 'Token Expired') {
+          commit('setErrorMessage', 'Session has expired. Please log in again.')
+        }
       }
     },
     async removeAccessToken({ commit }) {
