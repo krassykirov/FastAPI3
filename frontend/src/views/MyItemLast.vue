@@ -40,35 +40,35 @@
             </span>
             <img
               class="img-fluid"
-              :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+              :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
               alt="ProductS"
             />
             <div class="row my-3 previews">
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`http://127.0.0.1:8000/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
@@ -211,7 +211,7 @@
             <img
               class="img-fluid"
               :src="
-                'http://127.0.0.1:8000/static/img/' +
+                `${backendEndpoint}/static/img/` +
                 product.username +
                 '/' +
                 product.name +
@@ -480,7 +480,7 @@
 /* global bootstrap */
 import $ from 'jquery'
 import errorHandlingMixin from '../errorHandlingMixin'
-import router from '@/router'
+import config from '@/config'
 import NavBar from '../components/MyNavbar.vue'
 
 export default {
@@ -497,7 +497,8 @@ export default {
       reviewsData: [],
       activeTab: 'reviews',
       currentPage: 1,
-      reviewsPerPage: 2
+      reviewsPerPage: 2,
+      backendEndpoint: `${config.backendEndpoint}`
     }
   },
   beforeRouteUpdate(to, from, next) {
@@ -506,8 +507,8 @@ export default {
     next()
   },
   created() {
-    this.getProduct()
     this.$store.dispatch('initializeUser').catch(this.handleError)
+    this.getProduct()
     this.$store.dispatch('getProfile')
     this.$store.dispatch('getProfiles')
     this.$store.dispatch('getProducts')
@@ -556,7 +557,7 @@ export default {
       try {
         const resolvedItemId = itemId || this.$route.params.itemId
         const res = await fetch(
-          `http://127.0.0.1:8000/api/items/item/${resolvedItemId}`
+          `${config.backendEndpoint}/api/items/item/${resolvedItemId}`
         )
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`)
@@ -577,7 +578,7 @@ export default {
     async getItemRating(itemId) {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/reviews/item/rating?id=${itemId}`,
+          `${config.backendEndpoint}/api/reviews/item/rating?id=${itemId}`,
           {
             method: 'GET',
             headers: {
@@ -604,13 +605,13 @@ export default {
         profile => profile.primary_email === review.created_by
       )
       if (matchedProfile) {
-        return `http://127.0.0.1:8000/static/img/${review.created_by}/profile/${matchedProfile.avatar}`
+        return `${config.backendEndpoint}/static/img/${review.created_by}/profile/${matchedProfile.avatar}`
       } else {
-        return 'http://127.0.0.1:8000/static/img/img_avatar.png'
+        return `${config.backendEndpoint}/static/img/img_avatar.png`
       }
     },
     redirectToItem(itemId) {
-      router.push({ name: 'Item', params: { itemId } })
+      this.$store.dispatch('redirectToItem', itemId)
     },
     itemAlreadyInCart(product) {
       return this.cart.some(item => item.id === product.id)
@@ -619,7 +620,7 @@ export default {
       try {
         const resolvedItemId = itemId || this.$route.params.itemId
         const response = await fetch(
-          `http://127.0.0.1:8000/api/reviews?item_id=${resolvedItemId}`,
+          `${config.backendEndpoint}/api/reviews?item_id=${resolvedItemId}`,
           {
             method: 'GET',
             headers: {
@@ -694,7 +695,7 @@ export default {
           created_by: username
         })
       }
-      fetch('http://127.0.0.1:8000/create_review_ajax', requestOptions)
+      fetch(`${config.backendEndpoint}/create_review_ajax`, requestOptions)
         .then(response => {
           if (!response.ok) {
             if (response.status === 403) {

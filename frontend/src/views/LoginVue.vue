@@ -81,7 +81,7 @@
                   class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2"
                 >
                   <img
-                    src="http://127.0.0.1:8000/static/img/draw1.webp"
+                    :src="`${backendEndpoint}/static/img/draw1.webp`"
                     class="img-fluid"
                     alt="Sample image"
                   />
@@ -98,6 +98,7 @@
 <script>
 import router from '@/router'
 import errorHandlingMixin from '../errorHandlingMixin'
+import config from '@/config'
 
 export default {
   data() {
@@ -105,18 +106,19 @@ export default {
       username: '',
       password: '',
       rememberMe: '',
-      errorMessage: ''
+      errorMessage: '',
+      backendEndpoint: `${config.backendEndpoint}`
     }
   },
   mixins: [errorHandlingMixin],
   created() {
     this.$store.dispatch('initializeUser').catch(error => {
       if (error.message !== 'Token Expired') {
-        console.error('LoginVue error', error)
+        console.error(error)
       }
       this.$store.commit(
         'setErrorMessage',
-        'Session has expired. Please log in.'
+        'Session has expired. Please log in again.'
       )
     })
   },

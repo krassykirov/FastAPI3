@@ -59,7 +59,7 @@
               <tr v-for="product in cart" :key="product.id">
                 <td>
                   <img
-                    :src="`http://127.0.0.1:8000/static/img/${product.username}/${product.name}/${product.image}`"
+                    :src="`${backendEndpoint}/static/img/${product.username}/${product.name}/${product.image}`"
                     class="img-fluid"
                     alt="Product Image"
                     style="max-width: 50px; max-height: 50px"
@@ -184,7 +184,7 @@
                       <tr v-for="product in cart" :key="product.id">
                         <td>
                           <img
-                            :src="`http://127.0.0.1:8000/static/img/${product.username}/${product.name}/${product.image}`"
+                            :src="`${backendEndpoint}/static/img/${product.username}/${product.name}/${product.image}`"
                             class="img-fluid"
                             alt="Product Image"
                             style="
@@ -438,6 +438,7 @@
 <script>
 import NavBar from '../components/MyNavbar.vue'
 import $ from 'jquery'
+import config from '@/config'
 
 export default {
   components: {
@@ -447,7 +448,8 @@ export default {
   data() {
     return {
       item: null,
-      itemId: this.itemId
+      itemId: this.itemId,
+      backendEndpoint: `${config.backendEndpoint}`
     }
   },
   created() {
@@ -520,7 +522,7 @@ export default {
         // formData.append('primary_email', this.user)
         console.log('formData', formData)
         $.ajax({
-          url: '/checkout',
+          url: `${config.backendEndpoint}/checkout`,
           type: 'POST',
           processData: false,
           contentType: false,
@@ -528,10 +530,8 @@ export default {
             Authorization: `Bearer ${this.$store.state.accessToken}`
           },
           data: formData,
-          success: () => {
-            $('#create-profile').modal('hide')
-            $('#Close-Profile').click()
-            this.getProfile()
+          success: data => {
+            console.log('data', data)
             // var user = this.$store.getters.user
             // var img_path = `/static/img/${user}/profile/${data.avatar}`
             // $('#card-email').text(`Email: ${data.email}`)
