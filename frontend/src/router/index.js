@@ -70,17 +70,6 @@ const routes = [
     }
   },
   {
-    path: '/not-found',
-    name: 'NotFound',
-    component: () => import('../views/NotFound.vue'),
-    props: route => ({
-      itemId: route.params.itemId,
-      cart: store.state.cart,
-      profile: store.state.profile,
-      favorites: store.state.favorites
-    })
-  },
-  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('../views/NotFound.vue'),
@@ -91,12 +80,24 @@ const routes = [
       favorites: store.state.favorites
     })
   }
+  // {
+  //   path: '/not-found',
+  //   name: 'NotFound',
+  //   component: () => import('../views/NotFound.vue'),
+  //   props: route => ({
+  //     itemId: route.params.itemId,
+  //     cart: store.state.cart,
+  //     profile: store.state.profile,
+  //     favorites: store.state.favorites
+  //   })
+  // }
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!store.state.accessToken) {
