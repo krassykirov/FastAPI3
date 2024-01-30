@@ -59,16 +59,14 @@ const routes = [
       favorites: store.state.favorites
     }),
     meta: { requiresAuth: true },
-    beforeEnter: (to, from, next) => {
-      const itemId = Number(to.params.itemId)
-      store
-        .dispatch('getProduct', itemId)
-        .then(() => {
-          next()
-        })
-        .catch(() => {
-          next({ name: 'NotFound' })
-        })
+    beforeEnter: async (to, from, next) => {
+      try {
+        const itemId = Number(to.params.itemId)
+        await store.dispatch('getProduct', itemId)
+        next()
+      } catch (error) {
+        next({ name: 'NotFound' })
+      }
     }
   },
   {
@@ -84,7 +82,7 @@ const routes = [
   },
   {
     path: '/:pathMatch(.*)*',
-    name: 'NotFound',
+    name: 'NotFoundWildCard',
     component: () => import('../views/NotFound.vue'),
     props: route => ({
       itemId: route.params.itemId,

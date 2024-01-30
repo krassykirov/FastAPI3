@@ -29,7 +29,10 @@
       />
     </nav>
     <div>
-      <img src="../assets/404.jpg" style="width: 100%; height: 80%" />
+      <img
+        :src="require('@/assets/404.jpg')"
+        style="width: 100%; height: 80%"
+      />
     </div>
   </div>
 </template>
