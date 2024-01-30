@@ -27,7 +27,7 @@
       ></span>
       <img
         :src="
-          'http://127.0.0.1:8000/static/img/' +
+          `${backendEndpoint}/static/img/` +
           product.username +
           '/' +
           product.name +
@@ -108,10 +108,17 @@
 
 <script>
 import errorHandlingMixin from '../errorHandlingMixin'
+import config from '@/config'
+
 export default {
   props: ['product', 'min', 'max', 'cart'],
   emits: ['addToCart', 'redirectToItem', 'addTofavorites'],
   mixins: [errorHandlingMixin],
+  data() {
+    return {
+      backendEndpoint: `${config.backendEndpoint}`
+    }
+  },
   computed: {
     filteredProducts() {
       return this.$store.state.filteredProducts

@@ -201,7 +201,7 @@ export default createStore({
           const data = await response.json()
           this.store.commit(
             'setErrorMessage',
-            'Session has expired. Please log in again.'
+            'Session has expired. Please log in'
           )
           throw new Error(data.detail)
         }

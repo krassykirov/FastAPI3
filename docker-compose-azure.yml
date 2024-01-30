@@ -1,14 +1,14 @@
 version: "3"
 services:
   backend:
-    image: krassy19/backend
+    image: krassy19/backend-localhost
     container_name: backend
     ports:
       - "8000:8000"
 
 
   frontend:
-    image: krassy19/frontend
+    image: krassy19/frontend-localhost
     restart: always
     container_name: frontend
     ports:

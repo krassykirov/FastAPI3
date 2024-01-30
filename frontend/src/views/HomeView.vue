@@ -293,6 +293,7 @@ import 'bootstrap'
 import ProductList from '@/components/ProductList.vue'
 import MyNavbar from '@/components/MyNavbar.vue'
 import errorHandlingMixin from '../errorHandlingMixin'
+import config from '@/config'
 
 export default {
   name: 'HomeView',
@@ -303,7 +304,8 @@ export default {
   mixins: [errorHandlingMixin],
   data() {
     return {
-      isChecked: this.$store.state.isDiscountedChecked
+      isChecked: this.$store.state.isDiscountedChecked,
+      backendEndpoint: `${config.backendEndpoint}`
     }
   },
   created() {

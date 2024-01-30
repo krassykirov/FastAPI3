@@ -82,7 +82,7 @@ const routes = [
   },
   {
     path: '/:pathMatch(.*)*',
-    name: 'NotFoundWildCard',
+    name: 'NotFound',
     component: () => import('../views/NotFound.vue'),
     props: route => ({
       itemId: route.params.itemId,
@@ -94,10 +94,9 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(process.env.BASE_URL),
   routes
 })
-
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!store.state.accessToken) {
