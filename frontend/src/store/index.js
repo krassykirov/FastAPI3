@@ -167,8 +167,7 @@ export default createStore({
           console.error('Error fetching product:', res.statusText)
         }
       } catch (error) {
-        console.error('Error fetching product:', error)
-        throw error // Ensure the error is re-thrown to maintain the rejected promise.
+        throw new Error(`Item with ID ${itemId} not found`)
       }
     },
     async getProducts({ commit }) {

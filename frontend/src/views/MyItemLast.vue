@@ -122,7 +122,7 @@
             <div class="buttons d-flex justify-content-center my-4">
               <div class="block">
                 <a @click="addTofavorites(item)" class="shadow btn custom-btn"
-                  >Wishlist</a
+                  >Favorites</a
                 >
               </div>
               <div class="block">
