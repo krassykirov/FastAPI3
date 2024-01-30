@@ -153,10 +153,20 @@ export default createStore({
     }
   },
   actions: {
-    async getProduct({ commit }, itemId) {
+    async getProduct({ commit, state }, itemId) {
       try {
+        const headers = new Headers({
+          Authorization: `Bearer ${state.accessToken}`,
+          Accept: 'application/json'
+        })
+        const requestOptions = {
+          method: 'GET',
+          headers: headers,
+          redirect: 'follow'
+        }
         const res = await fetch(
-          `${config.backendEndpoint}/api/items/item/${itemId}`
+          `${config.backendEndpoint}/api/items/item/${itemId}`,
+          requestOptions
         )
         if (res.ok) {
           const item = await res.json()
@@ -170,9 +180,21 @@ export default createStore({
         throw new Error(`Item with ID ${itemId} not found`)
       }
     },
-    async getProducts({ commit }) {
+    async getProducts({ commit, state }) {
       try {
-        const res = await fetch(`${config.backendEndpoint}/api/items`)
+        const headers = new Headers({
+          Authorization: `Bearer ${state.accessToken}`,
+          Accept: 'application/json'
+        })
+        const requestOptions = {
+          method: 'GET',
+          headers: headers,
+          redirect: 'follow'
+        }
+        const res = await fetch(
+          `${config.backendEndpoint}/api/items`,
+          requestOptions
+        )
         const products = await res.json()
         commit('SET_PRODUCTS', products)
         const maxPrice = Math.max(...products.map(product => product.price))
@@ -293,10 +315,20 @@ export default createStore({
         commit('UPDATE_PROFILE', data)
       }
     },
-    async fetchCategories({ commit }) {
+    async fetchCategories({ commit, state }) {
       try {
+        const headers = new Headers({
+          Authorization: `Bearer ${state.accessToken}`,
+          Accept: 'application/json'
+        })
+        const requestOptions = {
+          method: 'GET',
+          headers: headers,
+          redirect: 'follow'
+        }
         const res = await fetch(
-          `${config.backendEndpoint}/api/categories/category_items_len/`
+          `${config.backendEndpoint}/api/categories/category_items_len/`,
+          requestOptions
         )
         const categories = await res.json()
         commit('SET_CATEGORIES', categories)
@@ -304,15 +336,17 @@ export default createStore({
         console.error('Error fetching categories:', error)
       }
     },
-    async getItemRating({ commit }, itemId) {
+    async getItemRating({ commit, state }, itemId) {
       try {
+        const headers = new Headers({
+          Authorization: `Bearer ${state.accessToken}`,
+          Accept: 'application/json'
+        })
         const response = await fetch(
           `${config.backendEndpoint}/api/reviews/item/rating?id=${itemId}`,
           {
             method: 'GET',
-            headers: {
-              'Content-Type': 'application/json'
-            }
+            headers: headers
           }
         )
         if (!response.ok) {
