@@ -437,7 +437,7 @@ export default {
   },
   methods: {
     redirectToItemFromNavbar(itemId) {
-      this.$store.dispatch('redirectToItem', itemId)
+      this.router.push({ name: 'Item', params: { itemId } })
     },
     redirectToCart() {
       this.$router.push({ name: 'ItemsInCart' })

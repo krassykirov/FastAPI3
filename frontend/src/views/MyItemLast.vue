@@ -480,7 +480,7 @@
 /* global bootstrap */
 import $ from 'jquery'
 import errorHandlingMixin from '../errorHandlingMixin'
-// import router from '@/router'
+import router from '@/router'
 import NavBar from '../components/MyNavbar.vue'
 
 export default {
@@ -507,7 +507,7 @@ export default {
   },
   created() {
     this.getProduct()
-    this.$store.dispatch('initializeUser')
+    this.$store.dispatch('initializeUser').catch(this.handleError)
     this.$store.dispatch('getProfile')
     this.$store.dispatch('getProfiles')
     this.$store.dispatch('getProducts')
@@ -610,7 +610,7 @@ export default {
       }
     },
     redirectToItem(itemId) {
-      this.$store.dispatch('redirectToItem', itemId)
+      router.push({ name: 'Item', params: { itemId } })
     },
     itemAlreadyInCart(product) {
       return this.cart.some(item => item.id === product.id)

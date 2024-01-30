@@ -289,6 +289,7 @@
 <script>
 // import $ from 'jquery'
 import 'bootstrap'
+// import router from '@/router'
 // import VueCookies from 'vue-cookies'
 import ProductList from '@/components/ProductList.vue'
 import MyNavbar from '@/components/MyNavbar.vue'
@@ -309,23 +310,20 @@ export default {
   created() {
     this.$store
       .dispatch('initializeUser')
+      .catch(this.handleError)
       .then(() => this.$store.dispatch('getProfile'))
       .then(() => this.$store.dispatch('getProducts'))
       .then(() => this.$store.dispatch('readFromCartVue'))
-      .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
       .then(() => this.$store.dispatch('fetchCategories'))
       .then(() => this.$store.dispatch('updateProductRange'))
+      .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
       .then(() => {
         const fetchRatingsPromises = this.$store.state.products.map(product => {
           return this.$store.dispatch('getItemRating', product.id)
         })
         return Promise.all(fetchRatingsPromises)
       })
-      .catch(error => {
-        if (error.message !== 'Token Expired') {
-          console.error('error', error)
-        }
-      })
+      .catch(this.handleError)
   },
   computed: {
     total() {
@@ -468,7 +466,7 @@ export default {
       this.$store.dispatch('handleDiscountChange', this.isChecked)
     },
     redirectToItemFromNavbar(itemId) {
-      this.$store.dispatch('redirectToItem', itemId)
+      this.router.push({ name: 'Item', params: { itemId } })
     }
   }
 }

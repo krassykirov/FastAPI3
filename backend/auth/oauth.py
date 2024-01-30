@@ -67,7 +67,7 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
     return encoded_jwt
 
 def get_current_user(request: Request, token: str = Depends(oauth2_scheme), db: Session = Depends(get_session)):
-    credentials_exception = HTTPException(status_code=302, detail="Not authorized", headers = {"Location": "/login"} )
+    credentials_exception = HTTPException(status_code=403, detail="Not authorized") # , headers = {"Location": "/login"}
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")

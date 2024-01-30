@@ -6,7 +6,8 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: HomeView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/login',
@@ -21,7 +22,8 @@ const routes = [
       cart: store.state.cart,
       profile: store.state.profile,
       favorites: store.state.favorites
-    })
+    }),
+    meta: { requiresAuth: true }
   },
   {
     path: '/favorites',
@@ -31,7 +33,8 @@ const routes = [
       cart: store.state.cart,
       profile: store.state.profile,
       favorites: store.state.favorites
-    })
+    }),
+    meta: { requiresAuth: true }
   },
   {
     path: '/signup',
@@ -42,7 +45,8 @@ const routes = [
     path: '/Profile',
     name: 'Profile',
     component: () => import('../views/ProfileVue.vue'),
-    props: () => ({ cart: store.state.cart, favorites: store.state.favorites })
+    props: () => ({ cart: store.state.cart, favorites: store.state.favorites }),
+    meta: { requiresAuth: true }
   },
   {
     path: '/item/:itemId',
@@ -54,6 +58,7 @@ const routes = [
       profile: store.state.profile,
       favorites: store.state.favorites
     }),
+    meta: { requiresAuth: true },
     beforeEnter: (to, from, next) => {
       const itemId = Number(to.params.itemId)
       store
@@ -93,6 +98,19 @@ const routes = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!store.state.accessToken) {
+      next('/login')
+      throw new Error('Token Expired')
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
 })
 
 export default router

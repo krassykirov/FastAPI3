@@ -2,6 +2,7 @@ import { createStore } from 'vuex'
 import VueCookies from 'vue-cookies'
 import { jwtDecode } from 'jwt-decode'
 import router from '@/router'
+// import { fetchWithAuth } from '@/utils/api';
 /* global bootstrap */
 export default createStore({
   state: {
@@ -240,6 +241,7 @@ export default createStore({
           commit('UPDATE_USER_ID', user_id)
         }
       } catch (error) {
+        router.push('/login')
         throw new Error('Token Expired')
       }
     },

@@ -112,11 +112,11 @@ export default {
   created() {
     this.$store.dispatch('initializeUser').catch(error => {
       if (error.message !== 'Token Expired') {
-        console.error(error)
+        console.error('LoginVue error', error)
       }
       this.$store.commit(
         'setErrorMessage',
-        'Session has expired. Please log in again.'
+        'Session has expired. Please log in.'
       )
     })
   },

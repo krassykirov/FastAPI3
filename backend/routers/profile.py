@@ -16,7 +16,7 @@ profile_router = APIRouter(prefix='/api/profile', tags=["profile"], dependencies
 
 
 @profile_router.get("/", status_code=status.HTTP_200_OK, response_model=List[UserProfile], include_in_schema=True)
-def get_profiles(db: Session = Depends(get_session), user: User = Depends(get_current_user)) -> List[UserProfile]:
+def get_profiles(db: Session = Depends(get_session)) -> List[UserProfile]:
     profiles = ProfileActions().get_profiles(db=db)
     if profiles is None:
         raise HTTPException(status_code=404, detail=f"No profiles found")
@@ -24,7 +24,7 @@ def get_profiles(db: Session = Depends(get_session), user: User = Depends(get_cu
     return profiles
 
 @profile_router.get("/{user_id}", status_code=status.HTTP_200_OK, response_model=UserProfile, include_in_schema=True)
-def get_profile(user_id: int, db: Session = Depends(get_session), user: User = Depends(get_current_user)) -> UserProfile:
+def get_profile(user_id: int, db: Session = Depends(get_session)) -> UserProfile:
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user_id)
     if profile is None:
         raise HTTPException(status_code=404, detail=f"No profile with user_id: {id} found")
