@@ -3,6 +3,7 @@ from sqlalchemy import desc
 from sqlmodel import select
 from models import Item, Category, Review, UserProfile, User
 import schemas
+from fastapi import HTTPException
 
 # Events
 class ItemActions:
@@ -117,6 +118,8 @@ class ProfileActions:
 
     def get_profile_by_user_id(self, db: Session, user_id: int):
         profile = db.query(UserProfile).filter(UserProfile.profile_id == user_id).first()
+        if profile is None:
+            raise HTTPException(status_code=404, detail=f"No profile with user_id: {id} found")
         return profile
 
     # def update_profile_by_user_id(self, db: Session, user_id: int, profile: UserProfile, user: User = Depends(get_current_user)):
@@ -135,7 +138,7 @@ class ProfileActions:
         profiles = db.query(UserProfile).all()
         if profiles:
             return profiles
-        return None
+        raise HTTPException(status_code=404, detail=f"No profiles found")
 
     def delete_profile_by_user_id(self, db: Session, user_id: int):
         profile = db.query(UserProfile).filter(UserProfile.profile_id == user_id).first()
