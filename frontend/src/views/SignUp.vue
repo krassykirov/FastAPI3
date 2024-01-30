@@ -120,7 +120,7 @@ export default {
         return
       }
       const formData = new FormData(document.getElementById('signup'))
-      fetch('/signup', {
+      fetch(`${config.backendEndpoint}/signup`, {
         method: 'POST',
         body: formData
       })
