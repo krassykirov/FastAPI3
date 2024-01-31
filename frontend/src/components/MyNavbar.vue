@@ -136,7 +136,7 @@
             @click="redirectToFavorites"
             class="btn btn-sm btn-primary"
           >
-            See Favorites
+            Go to Favorites
           </button>
         </div>
       </div>

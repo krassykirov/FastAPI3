@@ -67,7 +67,7 @@ def on_startup():
 async def home(request: Request, user: User = Depends(get_current_user)):
     return templates.TemplateResponse("base_old.html", {"request": request, 'current_user': user.username})
 
-@app.get("/products", include_in_schema=False, response_model=schemas.ItemRead)
+@app.get("/products", include_in_schema=False, status_code=status.HTTP_200_OK, response_model=schemas.ItemRead)
 def get_products(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     """ Return all Items """
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
@@ -125,7 +125,7 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         # response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
         # return response
 
-@app.post("/delete_item/", include_in_schema=False)
+@app.post("/delete_item/", status_code=status.HTTP_204_NO_CONTENT, include_in_schema=False)
 @app.post("/items/{id}", include_in_schema=False)
 async def delete_item(request: Request, background_tasks: BackgroundTasks, id: int, db: Session=Depends(get_session),
                       user: User = Depends(get_current_user))-> None:
@@ -148,7 +148,7 @@ async def delete_item(request: Request, background_tasks: BackgroundTasks, id: i
             logger.error(f"Something went wrong, error: {e}")
             return HTTPException(status_code=400, detail=f"Something went wrong, error {e}")
      else:
-        raise HTTPException(status_code=403,detail=f"User is not allowed to delete this item")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"User is not allowed to delete this item")
 
 @app.get("/items/{id}", status_code=status.HTTP_200_OK, response_model=schemas.ItemRead, include_in_schema=False) # http://127.0.0.1:8000/api/items?name=12
 async def read_item(request: Request, id: int, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
@@ -186,13 +186,13 @@ async def update_item_api(request: Request, db: Session=Depends(get_session), us
     item = ItemActions().get_item_by_id(db=db, id=data.get('id'))
     if not item:
         logger.error("Item not found")
-        raise HTTPException(status_code=404, detail="Item not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
     if not new_category:
         logger.error("Category not found")
-        raise HTTPException(status_code=404, detail="Category not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Category not found")
     if user.username != item.username:
         logger.info('You cannot update this item')
-        raise HTTPException(status_code=403, detail=f"User cannot update this item")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"User cannot update this item")
     try:
         if new_category:
             item.category=new_category
@@ -204,7 +204,7 @@ async def update_item_api(request: Request, db: Session=Depends(get_session), us
         db.refresh(item)
     except Exception as e:
         db.rollback()
-        return HTTPException(status_code=400, detail=f"Something went wrong, error {e}")
+        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Something went wrong, error {e}")
     return item
 
 @app.post("/update_description_ajax", status_code=status.HTTP_200_OK, response_model=schemas.ItemRead, include_in_schema=False)
@@ -246,7 +246,7 @@ async def create_review_ajax(request: Request, db: Session=Depends(get_session),
                         detail=f"You can write only one review for this item.",
                         headers={"X-Error": "You can write only one review for this item"},)
 
-@app.get("/user/profile", response_model=UserRead, include_in_schema=False)
+@app.get("/user/profile", response_model=UserRead,status_code= status.HTTP_200_OK, include_in_schema=False)
 async def get_user_profile( request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user.id)
     if not profile:
@@ -293,7 +293,7 @@ async def create_profile(request: Request, db: Session = Depends(get_session), u
             db.refresh(user_profile)
         except Exception as e:
             db.rollback()
-            return HTTPException(status_code=400, detail=f"Something went wrong, error {e}")
+            return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Something went wrong, error {e}")
     return user_profile
 
 @app.post("/update_profile", status_code=status.HTTP_200_OK, include_in_schema=False)
@@ -372,17 +372,21 @@ async def remove_from_basket(request: Request, db: Session = Depends(get_session
 
 @app.get("/user_items_in_cart", status_code=status.HTTP_200_OK, include_in_schema=True)
 def get_user_items_in_cart(db: Session=Depends(get_session), user: User = Depends(get_current_user)):
-  items = ItemActions().get_items(db=db)
-  items_in_cart =  [item for item in items
-                    for k, v in item.in_cart.items()
-                    if k == user.username and v['in_cart'] == True]
-  items_liked =  [item for item in items
-                    for k, v in item.liked.items()
-                    if k == user.username and v['liked'] == True]
-  total = sum([item.price for item in items_in_cart])
-  json_items = {'items': items_in_cart, 'items_liked': items_liked, 'items_in_cart': len(items_in_cart),
-          'total': total, 'user': user.username, 'user_id': user.id}
-  return json_items
+  try:
+    items = ItemActions().get_items(db=db)
+    items_in_cart =  [item for item in items
+                        for k, v in item.in_cart.items()
+                        if k == user.username and v['in_cart'] == True]
+    items_liked =  [item for item in items
+                        for k, v in item.liked.items()
+                        if k == user.username and v['liked'] == True]
+    total = sum([item.price for item in items_in_cart])
+    json_items = {'items': items_in_cart, 'items_liked': items_liked, 'items_in_cart': len(items_in_cart),
+            'total': total, 'user': user.username, 'user_id': user.id}
+    return json_items
+  except Exception as e:
+        logger.error(f"Error getting items in cart, error message: {e}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error getting items in cart")
 
 # To remove as not needed
 @app.get("/items-in-cart", status_code=status.HTTP_200_OK, include_in_schema=False)

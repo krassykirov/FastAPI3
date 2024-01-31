@@ -49,7 +49,7 @@ def get_categories_items_len(request: Request, db: Session = Depends(get_session
     """ Return all items in a category """
     categories = CategoryActions().get_categories_len(db=db)
     if categories is None:
-        raise HTTPException(status_code=404, detail=f"No categories found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No categories found")
     return JSONResponse(content=jsonable_encoder(categories))
 
 
@@ -76,6 +76,6 @@ def delete_category(request: Request, category_id: int, db: Session = Depends(ge
     category = CategoryActions().get_category_by_id(db=db, id=category_id)
     if category is None:
        logger.error(f"No category with id {category_id} found")
-       raise HTTPException(status_code=404, detail=f"No category with id {category_id} found")
+       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No category with id {category_id} found")
     CategoryActions().delete_category(db=db, id=category_id)
 

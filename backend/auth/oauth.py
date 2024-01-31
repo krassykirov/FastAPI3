@@ -85,7 +85,7 @@ def get_current_user(request: Request, token: str = Depends(oauth2_scheme), db: 
         raise credentials_exception
     converted_expires = datetime.datetime.fromtimestamp(expires)
     if datetime.datetime.utcnow() > converted_expires:
-        raise HTTPException(status_code=403, detail="Token Expired")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token Expired")
     return user
 
 
@@ -109,7 +109,7 @@ def login_access_token(*, request: Request, response: Response, form_data: OAuth
         return templates.TemplateResponse("login.html", context)
 
 @oauth_router.post('/api/token', include_in_schema=True)
-async def login_access_token(*, request: Request, response: Response, form_data: OAuth2PasswordRequestForm=Depends(),
+async def login_access_token(*, request: Request, form_data: OAuth2PasswordRequestForm=Depends(),
                 db: Session = Depends(get_session), background_tasks: BackgroundTasks ):
     query = select(models.User).where(models.User.username == form_data.username)
     data = request.__dict__
@@ -126,14 +126,14 @@ async def login_access_token(*, request: Request, response: Response, form_data:
         )
         return {"access_token": access_token, "token_type": "bearer"}
     else:
-        raise HTTPException(status_code=403,detail=f"Username or password are incorrect!")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Username or password are incorrect!")
 
 @oauth_router.get("/login", include_in_schema=False)
 def login(request: Request):
     response = templates.TemplateResponse("login.html",{"request":request})
     return response
 
-@oauth_router.post("/signup", include_in_schema=False)
+@oauth_router.post("/signup", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 async def signup(request: Request, db: Session = Depends(get_session)):
     form_data = await request.form()
     username = form_data.get('username')
@@ -144,15 +144,14 @@ async def signup(request: Request, db: Session = Depends(get_session)):
         user = db.exec(query).first()
         if user:
             logger.error(f"User with that name already exists!")
-            raise HTTPException(status_code=403,detail=f"User with that email address already exists!")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail=f"User with that email address already exists!")
         user = models.User(username=username)
         user.set_password(passwd)
         db.add(user)
         db.commit()
-        logger.info(f'Signup for user: {user}')
     # response = templates.TemplateResponse("login.html",{"request":request})
         return True
-    raise HTTPException(status_code=403,detail=f"Password did not match!")
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail=f"Password did not match!")
 
 @oauth_router.get("/signup", include_in_schema=False)
 def login(request: Request):
@@ -161,7 +160,7 @@ def login(request: Request):
 
 @oauth_router.get("/logout", include_in_schema=False)
 def logout(request: Request):
-    response = RedirectResponse("login.html", status_code=302)
+    response = RedirectResponse("login.html", status_code=status.HTTP_302_FOUND)
     response = templates.TemplateResponse("login.html",{"request":request, 'current_user': None})
     response.delete_cookie(key="access_token")
     return response

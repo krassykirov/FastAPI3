@@ -9,8 +9,11 @@ import schemas
 from crud.crud import ItemActions, CategoryActions
 from typing import Optional, List, Annotated, Union
 from auth.oauth import get_current_user
+from my_logger import detailed_logger
 
 PROTECTED = [Depends(get_current_user)]
+
+logger = detailed_logger()
 
 items_router = APIRouter(prefix='/api/items', tags=["items"],
                           responses={404: {"description": "Not found"}})
@@ -29,15 +32,19 @@ def get_item_by_id( item_id: int, db: Session = Depends(get_session)) -> schemas
 @items_router.get("/", status_code=status.HTTP_200_OK, response_model=list[schemas.ItemRead])
 def get_items(skip: int = 0, limit: int = 100,
               db: Session = Depends(get_session), user=None) -> List[schemas.ItemRead]:
-    items = ItemActions().get_items(db=db, skip=skip, limit=limit, user=user)
-    items = jsonable_encoder(items)
-    for item in items:
-        item.update({'discount_price' : round((item.get('price')
-                                             - item.get('price') * item.get('discount')
-                                               if item.get('discount') else item.get('price')),2)})
-    if items is None:
-        raise HTTPException(status_code=404, detail=f"No items found")
-    return items
+    try:
+        items = ItemActions().get_items(db=db, skip=skip, limit=limit, user=user)
+        items = jsonable_encoder(items)
+        for item in items:
+            item.update({'discount_price' : round((item.get('price')
+                                                - item.get('price') * item.get('discount')
+                                                if item.get('discount') else item.get('price')),2)})
+        if items is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No items found")
+        return items
+    except Exception as e:
+        logger.error(f"Error fetching items, error message: {e}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error fetching items")
 
 @items_router.get("/by-category", status_code=status.HTTP_200_OK, response_model=list[schemas.ItemRead])
 async def get_items_by_category( request: Request, category_id: int, db: Session=Depends(get_session)):
@@ -80,17 +87,21 @@ def delete_item_by_id(item_id: int, db: Session = Depends(get_session), user: Us
 
 @items_router.get("/user-items-in-cart", status_code=status.HTTP_200_OK, include_in_schema=True)
 def get_user_items_in_cart(db: Session=Depends(get_session), user: User = Depends(get_current_user)):
-    items = ItemActions().get_items(db=db)
-    items_in_cart =  [item for item in items
-                        for k, v in item.in_cart.items()
-                        if k == user.username and v['in_cart'] == True]
-    items_liked =  [item for item in items
-                        for k, v in item.liked.items()
-                        if k == user.username and v['liked'] == True]
-    total = sum([item.price for item in items_in_cart])
-    json_items = {'items': items_in_cart, 'items_liked': items_liked, 'items_in_cart': len(items_in_cart),
-            'total': total, 'user': user.username, 'user_id': user.id}
-    return json_items
+    try: 
+        items = ItemActions().get_items(db=db)
+        items_in_cart =  [item for item in items
+                            for k, v in item.in_cart.items()
+                            if k == user.username and v['in_cart'] == True]
+        items_liked =  [item for item in items
+                            for k, v in item.liked.items()
+                            if k == user.username and v['liked'] == True]
+        total = sum([item.price for item in items_in_cart])
+        json_items = {'items': items_in_cart, 'items_liked': items_liked, 'items_in_cart': len(items_in_cart),
+                'total': total, 'user': user.username, 'user_id': user.id}
+        return json_items
+    except Exception as e:
+            logger.error(f"Error getting items in cart, error message: {e}")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error getting items in cart")
 
 @items_router.post("/update-basket", status_code=status.HTTP_200_OK,  include_in_schema=False)
 async def update_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):

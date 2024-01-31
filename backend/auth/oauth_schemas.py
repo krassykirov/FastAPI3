@@ -6,6 +6,7 @@ from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from starlette.requests import Request
+from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN
 from typing import Optional
 from fastapi import HTTPException
 import datetime
@@ -63,7 +64,7 @@ class OAuth2PasswordBearerCookie(OAuth2): # https://nilsdebruin.medium.com/fasta
                 # raise HTTPException(
                 #     status_code=HTTP_403_FORBIDDEN, detail="Not authenticated"
                 # )
-                raise HTTPException(status_code=302, detail="Not authorized", headers = {"Location": "/login"} )
+                raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Not authorized") #, headers = {"Location": "/login"}
             else:
                 return None
         return param
