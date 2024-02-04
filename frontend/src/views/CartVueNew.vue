@@ -437,6 +437,7 @@
 
 <script>
 import NavBar from '../components/MyNavbar.vue'
+import errorHandlingMixin from '../errorHandlingMixin'
 import $ from 'jquery'
 import config from '@/config'
 
@@ -444,6 +445,7 @@ export default {
   components: {
     NavBar
   },
+  mixins: [errorHandlingMixin],
   props: ['profile', 'favorites'],
   data() {
     return {
@@ -460,6 +462,9 @@ export default {
       })
       return Promise.all(fetchRatingsPromises)
     })
+  },
+  errorMessage() {
+    return this.$store.state.errorMessage
   },
   computed: {
     total() {

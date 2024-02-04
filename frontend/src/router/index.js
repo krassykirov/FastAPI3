@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import store from '@/store/index.js'
+// import { jwtDecode } from 'jwt-decode'
 
 const routes = [
   {
@@ -80,17 +81,6 @@ const routes = [
       favorites: store.state.favorites
     })
   }
-  // {
-  //   path: '/not-found',
-  //   name: 'NotFound',
-  //   component: () => import('../views/NotFound.vue'),
-  //   props: route => ({
-  //     itemId: route.params.itemId,
-  //     cart: store.state.cart,
-  //     profile: store.state.profile,
-  //     favorites: store.state.favorites
-  //   })
-  // }
 ]
 
 const router = createRouter({
@@ -98,17 +88,19 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (!store.state.accessToken) {
+    try {
+      await store.dispatch('initializeUser')
+      if (!store.state.accessToken) {
+        throw new Error('Token Expired')
+      }
+    } catch (error) {
+      console.log('Catch Path Route error')
       next('/login')
       throw new Error('Token Expired')
-    } else {
-      next()
     }
-  } else {
-    next()
   }
+  next()
 })
-
 export default router

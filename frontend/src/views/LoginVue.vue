@@ -106,24 +106,26 @@ export default {
       username: '',
       password: '',
       rememberMe: '',
-      errorMessage: '',
       backendEndpoint: `${config.backendEndpoint}`
     }
   },
   mixins: [errorHandlingMixin],
   created() {
+    const message = this.$route.query.message
+    if (message) {
+      this.errorMessage = message
+    }
     this.$store.dispatch('initializeUser').catch(error => {
       if (error.message !== 'Token Expired') {
+        console.error('error.message !== Token Expired')
         console.error(error)
       }
-      this.$store.commit(
-        'setErrorMessage',
-        'Session has expired. Please log in.'
-      )
+      this.errorMessage = 'Session has expired. Please log in.'
+      router.push('/login')
     })
   },
   computed: {
-    storeErrorMessage() {
+    errorMessage() {
       return this.$store.state.errorMessage
     }
   },
@@ -141,7 +143,9 @@ export default {
           rememberMe: this.rememberMe
         })
       } catch (error) {
+        console.log('error login', error)
         this.errorMessage = 'Username or password are incorrect!'
+        this.handleError(error)
       }
     },
     redirectToSignup() {

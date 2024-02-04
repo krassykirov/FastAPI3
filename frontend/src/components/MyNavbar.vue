@@ -457,7 +457,7 @@ export default {
       this.$store.dispatch('removeFromFavorites', itemId)
     },
     logout() {
-      this.$store.dispatch('removeAccessToken')
+      this.$store.commit('removeAccessToken')
     },
     hideCart() {
       setTimeout(() => {

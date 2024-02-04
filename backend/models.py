@@ -30,6 +30,9 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: Union[str, None] = None
     expires: Optional[datetime.datetime]
+class RefreshToken(BaseModel):
+    username: Union[str, None] = None
+    expires: Optional[datetime.datetime]
 
 class User(SQLModel, table=True):
     id: int = Field(primary_key=True, default=None)

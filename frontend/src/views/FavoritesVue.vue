@@ -180,6 +180,9 @@ export default {
     })
   },
   computed: {
+    errorMessage() {
+      return this.$store.state.errorMessage
+    },
     total() {
       return this.$store.getters.total
     },

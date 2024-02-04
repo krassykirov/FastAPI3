@@ -27,7 +27,7 @@ def get_profiles(db: Session = Depends(get_session)) -> List[UserProfile]:
     return profiles
 
 @profile_router.get("/{user_id}", status_code=status.HTTP_200_OK, response_model=UserProfile, include_in_schema=True)
-def get_profile(user_id: int, db: Session = Depends(get_session)) -> UserProfile:
+def get_profile(user_id: int, db: Session = Depends(get_session), user: User = Depends(get_current_user)) -> UserProfile:
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user_id)
     if profile is None:
         logger.info(f"No profile with user_id: {id} found")

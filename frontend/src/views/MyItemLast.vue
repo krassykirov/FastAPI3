@@ -515,6 +515,9 @@ export default {
     this.setReviewsRating(this.itemId)
   },
   computed: {
+    errorMessage() {
+      return this.$store.state.errorMessage
+    },
     filteredProducts() {
       return this.$store.getters.filteredProducts
     },

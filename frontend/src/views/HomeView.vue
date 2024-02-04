@@ -18,6 +18,7 @@
         @redirectToItemFromNavbar="redirectToItemFromNavbar"
       />
     </nav>
+
     <div
       class="toast"
       id="cartToast"
@@ -331,6 +332,9 @@ export default {
       })
   },
   computed: {
+    errorMessage() {
+      return this.$store.state.errorMessage
+    },
     total() {
       return this.$store.getters.total
     },

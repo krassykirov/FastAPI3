@@ -3,10 +3,16 @@ import VueCookies from 'vue-cookies'
 import { jwtDecode } from 'jwt-decode'
 import router from '@/router'
 import config from '@/config'
+import axios from 'axios'
+
+const MINUTES_BEFORE_EXPIRATION_TO_LOGOUT = 5
 /* global bootstrap */
 export default createStore({
   state: {
     accessToken: VueCookies.get('access_token') || null,
+    refreshToken: VueCookies.get('refresh_token') || null,
+    accessTokenExpiration: null,
+    expirationCheckInterval: null,
     user: null,
     user_id: null,
     profile: null,
@@ -34,7 +40,7 @@ export default createStore({
     SET_PRODUCTS(state, products) {
       state.products = products
     },
-    setErrorMessage(state, message) {
+    SET_ERROR_MESSAGE(state, message) {
       state.errorMessage = message
     },
     UPDATE_PRODUCT_RATING(state, { productId, ratingData }) {
@@ -141,9 +147,27 @@ export default createStore({
     },
     setAccessToken(state, accessToken) {
       state.accessToken = accessToken
+      const decodedToken = jwtDecode(accessToken)
+      if (decodedToken && decodedToken.exp) {
+        state.accessTokenExpiration = decodedToken.exp * 1000 // Convert seconds to milliseconds
+      }
+    },
+    setExpirationCheckInterval(state, intervalId) {
+      state.expirationCheckInterval = intervalId
+    },
+    setRefreshToken(state, refreshToken) {
+      state.refreshToken = refreshToken
     },
     removeAccessToken(state) {
+      if (state.expirationCheckInterval) {
+        clearInterval(state.expirationCheckInterval)
+      }
+      state.accessTokenExpiration = null
       state.accessToken = null
+      state.refreshToken = null
+      VueCookies.remove('access_token')
+      VueCookies.remove('refresh_token')
+      router.push('/login')
     },
     SET_SELECTED_RATING(state, value) {
       state.selectedRating = value
@@ -153,56 +177,100 @@ export default createStore({
     }
   },
   actions: {
-    async getProduct({ commit, state }, itemId) {
-      try {
-        const headers = new Headers({
-          Authorization: `Bearer ${state.accessToken}`,
-          Accept: 'application/json'
-        })
-        const requestOptions = {
-          method: 'GET',
-          headers: headers,
-          redirect: 'follow'
+    setErrorMessage({ commit }, message) {
+      commit('SET_ERROR_MESSAGE', message)
+    },
+    logout({ commit }) {
+      commit('removeAccessToken')
+    },
+    startExpirationCheckTimer({ commit, dispatch, state }) {
+      // Start token expiration check timer only if the user is logged in
+      if (state.accessToken) {
+        console.log('start startExpirationCheckTimer')
+        // Clear the existing interval if it's set
+        if (state.expirationCheckInterval) {
+          clearInterval(state.expirationCheckInterval)
         }
-        const res = await fetch(
-          `${config.backendEndpoint}/api/items/item/${itemId}`,
-          requestOptions
-        )
-        if (res.ok) {
-          const item = await res.json()
-          commit('SET_PRODUCT', item)
-        } else if (res.status === 404) {
-          throw new Error(`Item with ID ${itemId} not found`)
-        } else {
-          console.error('Error fetching product:', res.statusText)
-        }
-      } catch (error) {
-        throw new Error(`Item with ID ${itemId} not found`)
+        const expirationCheckInterval = setInterval(() => {
+          dispatch('checkTokenExpiration')
+        }, 10 * 1000) // Check every 10 seconds for testing purposes, adjust as needed
+        commit('setExpirationCheckInterval', expirationCheckInterval)
       }
     },
-    async getProducts({ commit, state }) {
-      try {
-        const headers = new Headers({
-          Authorization: `Bearer ${state.accessToken}`,
-          Accept: 'application/json'
-        })
-        const requestOptions = {
-          method: 'GET',
-          headers: headers,
-          redirect: 'follow'
-        }
-        const res = await fetch(
-          `${config.backendEndpoint}/api/items`,
-          requestOptions
+    checkTokenExpiration({ dispatch, state }) {
+      console.log('start checkTokenExpiration')
+      if (state.accessTokenExpiration) {
+        const currentTime = Date.now()
+        const minutesUntilExpiration = Math.floor(
+          (state.accessTokenExpiration - currentTime) / (60 * 1000)
         )
-        const products = await res.json()
-        commit('SET_PRODUCTS', products)
-        const maxPrice = Math.max(...products.map(product => product.price))
-        const minPrice = Math.min(...products.map(product => product.price))
-        commit('SET_MIN_PRICE', minPrice)
-        commit('SET_MAX_PRICE', maxPrice)
+        console.log('in if minutesUntilExpiration', minutesUntilExpiration)
+        if (minutesUntilExpiration <= 0) {
+          dispatch('setErrorMessage', 'Session has expired. Please log in')
+          dispatch('logout')
+        } else if (
+          minutesUntilExpiration <= MINUTES_BEFORE_EXPIRATION_TO_LOGOUT
+        ) {
+          // Optional: Notify the user or take some action before expiration
+          console.warn(`Token will expire in ${minutesUntilExpiration} minutes`)
+        }
+      }
+    },
+    async handleTokenExpiration({ dispatch }) {
+      console.log('Handling token expiration...')
+      dispatch('setErrorMessage', 'Session has expired. Please log in')
+      dispatch('logout')
+      throw new Error('Token Expired')
+    },
+    async refreshAccessToken({ commit, dispatch, state }) {
+      try {
+        if (!state.refreshToken) {
+          commit('removeAccessToken')
+          router.push({
+            path: '/login',
+            query: { message: 'Session has expired. Please log in.' }
+          })
+          return null
+        }
+        const response = await axios.post(
+          `${config.backendEndpoint}/api/token/refresh`,
+          {
+            refresh_token: state.refreshToken
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${state.refreshToken}`
+            }
+          }
+        )
+        if (response.status !== 200) {
+          dispatch('setErrorMessage', 'Session has expired. Please log in')
+          router.push('/login')
+          commit('removeAccessToken')
+          throw new Error('Token Expired')
+        }
+        const data = response.data
+        const expires_in = jwtDecode(data.access_token).exp
+        const expiresInMinutes = Math.max(
+          0,
+          Math.floor((expires_in - Math.floor(Date.now() / 1000)) / 60)
+        )
+        console.log('Refresh expiresInMinutes', expiresInMinutes)
+        VueCookies.set('access_token', data.access_token, {
+          expires: new Date(Date.now() + expiresInMinutes),
+          httponly: true,
+          samesite: 'Lax'
+          //secure: true
+        })
+        commit('setAccessToken', data.access_token)
+        commit('SET_ACCESS_TOKEN_EXPIRATION', expiresInMinutes)
+        return data.access_token
       } catch (error) {
-        console.error('Error fetching products:', error)
+        dispatch('setErrorMessage', 'Session has expired. Please log in')
+        commit('removeAccessToken')
+        router.push('/login')
+        throw new Error('Token Expired')
       }
     },
     async login({ commit, dispatch }, { username, password, rememberMe }) {
@@ -214,36 +282,60 @@ export default createStore({
       formData.append('client_id', '')
       formData.append('client_secret', '')
       formData.append('rememberMe', rememberMe ? 'true' : 'false')
+
       try {
         const response = await fetch(`${config.backendEndpoint}/api/token`, {
           method: 'POST',
           body: formData
         })
+
         if (response.status === 403) {
           const data = await response.json()
-          this.store.commit(
-            'setErrorMessage',
-            'Session has expired. Please log in'
-          )
+          commit('setErrorMessage', 'Session has expired. Please log in')
           throw new Error(data.detail)
         }
+
         const data = await response.json()
         const expires_in = jwtDecode(data.access_token).exp
         const expiresInMinutes = Math.max(
           0,
           Math.floor((expires_in - Math.floor(Date.now() / 1000)) / 60)
         )
+
         VueCookies.set('access_token', data.access_token, {
-          expires: new Date(Date.now() + expiresInMinutes)
+          expires: new Date(Date.now() + expiresInMinutes * 60 * 1000)
         })
+
         commit('setAccessToken', data.access_token)
+
+        if (data.refresh_token) {
+          const refresh_token_expires_in = jwtDecode(data.refresh_token).exp
+          const expiresInMinutesrefreshToken = Math.max(
+            0,
+            Math.floor(
+              (refresh_token_expires_in - Math.floor(Date.now() / 1000)) / 60
+            )
+          )
+
+          VueCookies.set('refresh_token', data.refresh_token, {
+            expires: new Date(
+              Date.now() + expiresInMinutesrefreshToken * 60 * 1000
+            )
+          })
+
+          commit('setRefreshToken', data.refresh_token)
+        }
+
         await dispatch('initializeUser')
+
+        dispatch('startExpirationCheckTimer')
+
         router.push('/')
       } catch (error) {
         throw new Error(error)
       }
     },
-    async initializeUser({ commit, state }) {
+    async initializeUser({ commit, dispatch, state }) {
       try {
         if (
           state.accessToken === null &&
@@ -252,9 +344,46 @@ export default createStore({
           router.push('/login')
         } else {
           const decoded = jwtDecode(state.accessToken)
-          if (Date.now() >= decoded.exp * 1000) {
-            router.push('/login')
-            throw new Error('Token Expired')
+          if (Date.now() >= decoded.exp * 1000 && state.refreshToken) {
+            try {
+              const response = await fetch(
+                `${config.backendEndpoint}/api/token/refresh`,
+                {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${state.refreshToken}`
+                  },
+                  body: JSON.stringify({
+                    refresh_token: state.refreshToken
+                  })
+                }
+              )
+              if (!response.ok) {
+                commit('removeAccessToken')
+                dispatch(
+                  'setErrorMessage',
+                  'Session has expired. Please log in'
+                )
+                router.push('/login')
+                throw new Error('Token Expired')
+              }
+              const data = await response.json()
+              const expires_in = jwtDecode(data.access_token).exp
+              const expiresInMinutes = Math.max(
+                0,
+                Math.floor((expires_in - Math.floor(Date.now() / 1000)) / 60)
+              )
+              VueCookies.set('access_token', data.access_token, {
+                expires: new Date(Date.now() + expiresInMinutes)
+              })
+              commit('setAccessToken', data.access_token)
+              router.push('/')
+            } catch (refreshError) {
+              dispatch('setErrorMessage', 'Session has expired. Please log in')
+              router.push('/login')
+              throw new Error('Token Expired')
+            }
           }
           const user = decoded.sub
           const user_id = decoded.user_id
@@ -263,56 +392,108 @@ export default createStore({
         }
       } catch (error) {
         router.push('/login')
-        throw new Error('Token Expired')
+        throw error
       }
     },
     async removeAccessToken({ commit }) {
       VueCookies.remove('access_token')
+      VueCookies.remove('refresh_token')
       commit('removeAccessToken')
       router.push('/login')
     },
-    async getProfiles({ commit, state }) {
-      const headers = new Headers({
-        Authorization: `Bearer ${state.accessToken}`,
-        Accept: 'application/json'
-      })
-      const requestOptions = {
-        method: 'GET',
-        headers: headers,
-        redirect: 'follow'
+    async getProduct({ commit, state }, itemId) {
+      try {
+        const headers = {
+          Authorization: `Bearer ${state.accessToken}`,
+          Accept: 'application/json'
+        }
+        const response = await axios.get(
+          `${config.backendEndpoint}/api/items/item/${itemId}`,
+          { headers }
+        )
+        if (response.status === 200) {
+          const item = response.data
+          commit('SET_PRODUCT', item)
+        } else if (response.status === 404) {
+          throw new Error(`Item with ID ${itemId} not found`)
+        } else {
+          console.error('Error fetching product:', response)
+        }
+      } catch (error) {
+        console.error('Error fetching product:', error)
       }
-      const response = await fetch(
-        `${config.backendEndpoint}/api/profile`,
-        requestOptions
-      )
-      if (!response.ok) {
+    },
+    async getProducts({ commit, state }) {
+      try {
+        const headers = {
+          Authorization: `Bearer ${state.accessToken}`,
+          Accept: 'application/json'
+        }
+        const response = await axios.get(
+          `${config.backendEndpoint}/api/items`,
+          { headers }
+        )
+        const products = response.data
+        commit('SET_PRODUCTS', products)
+        const maxPrice = Math.max(...products.map(product => product.price))
+        const minPrice = Math.min(...products.map(product => product.price))
+        commit('SET_MIN_PRICE', minPrice)
+        commit('SET_MAX_PRICE', maxPrice)
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        // Re-throw the error for the component to handle if needed
+        throw error
+      }
+    },
+    async getProfiles({ commit, state }) {
+      try {
+        const response = await axios.get(
+          `${config.backendEndpoint}/api/profile`,
+          {
+            headers: {
+              Authorization: `Bearer ${state.accessToken}`,
+              Accept: 'application/json'
+            }
+          }
+        )
+        if (response.status !== 200) {
+          commit('UPDATE_PROFILES', null)
+        } else {
+          const data = response.data
+          this.profiles = data
+          commit('UPDATE_PROFILES', data)
+        }
+      } catch (error) {
         commit('UPDATE_PROFILES', null)
-      } else {
-        const data = await response.json()
-        this.profiles = data
-        commit('UPDATE_PROFILES', data)
       }
     },
     async getProfile({ commit, state }) {
-      const headers = new Headers({
+      const headers = {
         Authorization: `Bearer ${state.accessToken}`,
         Accept: 'application/json'
-      })
-      const requestOptions = {
-        method: 'GET',
-        headers: headers,
-        redirect: 'follow'
       }
-      const response = await fetch(
-        `${config.backendEndpoint}/api/profile/${state.user_id}`,
-        requestOptions
-      )
-      if (!response.ok) {
-        commit('UPDATE_PROFILE', null)
-      } else {
-        const data = await response.json()
-        this.profile = data
-        commit('UPDATE_PROFILE', data)
+      try {
+        const response = await axios.get(
+          `${config.backendEndpoint}/api/profile/${state.user_id}`,
+          { headers }
+        )
+
+        if (response.status === 200) {
+          // Profile retrieved successfully
+          commit('UPDATE_PROFILE', response.data)
+        } else {
+          commit('UPDATE_PROFILE', null)
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          // Unauthorized (token expired or invalid)
+          console.log('Profile 401 trying to handle')
+          router.push('/login')
+          commit('UPDATE_PROFILE', null)
+          throw new Error('Token Expired')
+        } else {
+          commit('UPDATE_PROFILE', null)
+        }
       }
     },
     async fetchCategories({ commit, state }) {
@@ -321,14 +502,9 @@ export default createStore({
           Authorization: `Bearer ${state.accessToken}`,
           Accept: 'application/json'
         })
-        const requestOptions = {
-          method: 'GET',
-          headers: headers,
-          redirect: 'follow'
-        }
         const res = await fetch(
           `${config.backendEndpoint}/api/categories/category_items_len/`,
-          requestOptions
+          { headers }
         )
         const categories = await res.json()
         commit('SET_CATEGORIES', categories)
@@ -385,37 +561,36 @@ export default createStore({
       commit('TOGGLE_SORT_ORDER')
       commit('SORT_PRODUCTS')
     },
-    async readFromCartVue({ commit, state }) {
+    async readFromCartVue({ commit, dispatch, state }) {
       try {
-        const headers = new Headers({
-          Authorization: `Bearer ${state.accessToken}`,
-          Accept: 'application/json'
-        })
-        const requestOptions = {
-          method: 'GET',
-          headers: headers,
-          redirect: 'follow'
-        }
-        const response = await fetch(
+        const response = await axios.get(
           `${config.backendEndpoint}/api/items/user-items-in-cart`,
-          requestOptions
+          {
+            headers: {
+              Authorization: `Bearer ${state.accessToken}`,
+              Accept: 'application/json'
+            }
+          }
         )
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`)
-        }
-        const data = await response.json()
+        const data = response.data
         commit('UPDATE_CART', data.items)
         commit('UPDATE_FAVORITES', data.items_liked)
         commit('UPDATE_TOTAL', data.total)
         commit('UPDATE_USER', data.user)
         commit('UPDATE_USER_ID', data.user_id)
       } catch (error) {
-        if (error instanceof TypeError && error.message === 'Failed to fetch') {
-          throw new Error(`HTTP error! Unable to connect to the server`)
+        if (error.response && error.response.status === 401) {
+          // Unauthorized (token expired or invalid)
+          console.log(
+            'Token Expired in readFromCartVue. Redirecting to login...'
+          )
+          dispatch('handleTokenExpiration')
+        } else {
+          // Handle other errors if needed
+          console.error('Error in readFromCartVue:', error)
         }
       }
     },
-
     redirectToItem({ commit }, itemId) {
       commit('UPDATE_SELECTED_ITEM', itemId)
       router.push({ name: 'Item', params: { itemId } })
