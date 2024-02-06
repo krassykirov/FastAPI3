@@ -455,7 +455,7 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('initializeUser').catch(this.handleError)
+    // this.$store.dispatch('initializeUser').catch(this.handleError)
     this.$store.dispatch('readFromCartVue').then(() => {
       const fetchRatingsPromises = this.$store.state.cart.map(product => {
         return this.$store.dispatch('getItemRating', product.id)

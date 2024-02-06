@@ -413,11 +413,13 @@
 <script>
 import $ from 'jquery'
 import errorHandlingMixin from '../errorHandlingMixin'
+import VueCookies from 'vue-cookies'
 import config from '@/config'
+import router from '@/router'
 
 export default {
   props: ['cart', 'avatar', 'profile', 'favorites'],
-  emits: ['removeFromCart', 'removeAccessToken'],
+  emits: ['removeFromCart'],
   mixins: [errorHandlingMixin],
   data() {
     return {
@@ -426,15 +428,25 @@ export default {
       backendEndpoint: `${config.backendEndpoint}`
     }
   },
+  created() {
+    this.$store.dispatch('getProfile').catch(error => {
+      if (error.message !== 'Token Expired') {
+        console.error('error', error)
+      }
+    })
+  },
   computed: {
     accessToken() {
       return this.$store.state.accessToken || null
     },
     total() {
-      return this.$store.getters.total
+      return this.$store.state.total
     },
     user() {
-      return this.$store.getters.user || null
+      return this.$store.state.user
+    },
+    user_id() {
+      return this.$store.state.user_id
     }
   },
   methods: {
@@ -457,7 +469,12 @@ export default {
       this.$store.dispatch('removeFromFavorites', itemId)
     },
     logout() {
-      this.$store.commit('removeAccessToken')
+      this.$store.state.accessToken = null
+      this.$store.state.refreshToken = null
+      VueCookies.remove('access_token')
+      VueCookies.remove('refresh_token')
+      this.$store.dispatch('setErrorMessage', 'You have been logged out')
+      router.push('/login')
     },
     hideCart() {
       setTimeout(() => {

@@ -5,7 +5,7 @@ import router from '@/router'
 import config from '@/config'
 import axios from 'axios'
 
-const MINUTES_BEFORE_EXPIRATION_TO_LOGOUT = 5
+// const MINUTES_BEFORE_EXPIRATION_TO_LOGOUT = 5
 /* global bootstrap */
 export default createStore({
   state: {
@@ -149,7 +149,7 @@ export default createStore({
       state.accessToken = accessToken
       const decodedToken = jwtDecode(accessToken)
       if (decodedToken && decodedToken.exp) {
-        state.accessTokenExpiration = decodedToken.exp * 1000 // Convert seconds to milliseconds
+        state.accessTokenExpiration = decodedToken.exp * 1000
       }
     },
     setExpirationCheckInterval(state, intervalId) {
@@ -159,9 +159,9 @@ export default createStore({
       state.refreshToken = refreshToken
     },
     removeAccessToken(state) {
-      if (state.expirationCheckInterval) {
-        clearInterval(state.expirationCheckInterval)
-      }
+      // if (state.expirationCheckInterval) {
+      //   clearInterval(state.expirationCheckInterval)
+      // }
       state.accessTokenExpiration = null
       state.accessToken = null
       state.refreshToken = null
@@ -183,71 +183,52 @@ export default createStore({
     logout({ commit }) {
       commit('removeAccessToken')
     },
-    startExpirationCheckTimer({ commit, dispatch, state }) {
-      // Start token expiration check timer only if the user is logged in
-      if (state.accessToken) {
-        console.log('start startExpirationCheckTimer')
-        // Clear the existing interval if it's set
-        if (state.expirationCheckInterval) {
-          clearInterval(state.expirationCheckInterval)
-        }
-        const expirationCheckInterval = setInterval(() => {
-          dispatch('checkTokenExpiration')
-        }, 10 * 1000) // Check every 10 seconds for testing purposes, adjust as needed
-        commit('setExpirationCheckInterval', expirationCheckInterval)
-      }
-    },
-    checkTokenExpiration({ dispatch, state }) {
-      console.log('start checkTokenExpiration')
-      if (state.accessTokenExpiration) {
-        const currentTime = Date.now()
-        const minutesUntilExpiration = Math.floor(
-          (state.accessTokenExpiration - currentTime) / (60 * 1000)
-        )
-        console.log('in if minutesUntilExpiration', minutesUntilExpiration)
-        if (minutesUntilExpiration <= 0) {
-          dispatch('setErrorMessage', 'Session has expired. Please log in')
-          dispatch('logout')
-        } else if (
-          minutesUntilExpiration <= MINUTES_BEFORE_EXPIRATION_TO_LOGOUT
-        ) {
-          // Optional: Notify the user or take some action before expiration
-          console.warn(`Token will expire in ${minutesUntilExpiration} minutes`)
-        }
-      }
-    },
-    async handleTokenExpiration({ dispatch }) {
-      console.log('Handling token expiration...')
-      dispatch('setErrorMessage', 'Session has expired. Please log in')
-      dispatch('logout')
-      throw new Error('Token Expired')
-    },
+    // startExpirationCheckTimer({ commit, dispatch, state }) {
+    //   if (state.accessToken) {
+    //     console.log('start startExpirationCheckTimer')
+    //     if (state.expirationCheckInterval) {
+    //       clearInterval(state.expirationCheckInterval)
+    //     }
+    //     const expirationCheckInterval = setInterval(() => {
+    //       dispatch('checkTokenExpiration')
+    //     }, 10 * 1000) // Check every 10 seconds for testing purposes, adjust as needed
+    //     commit('setExpirationCheckInterval', expirationCheckInterval)
+    //   }
+    // },
+    // checkTokenExpiration({ dispatch, state }) {
+    //   console.log('start checkTokenExpiration')
+    //   if (state.accessTokenExpiration) {
+    //     const currentTime = Date.now()
+    //     const minutesUntilExpiration = Math.floor(
+    //       (state.accessTokenExpiration - currentTime) / (60 * 1000)
+    //     )
+    //     console.log('minutesUntilExpiration', minutesUntilExpiration)
+    //     if (minutesUntilExpiration <= 0) {
+    //       if (state.refreshToken) {
+    //         console.log('Token has expired, but a refresh token is available.')
+    //         dispatch('refreshAccessToken')
+    //       } else {
+    //         console.log('Access token has expired. Logging out...')
+    //         dispatch('logout')
+    //       }
+    //     } else if (
+    //       minutesUntilExpiration <= MINUTES_BEFORE_EXPIRATION_TO_LOGOUT
+    //     ) {
+    //       console.warn(`Token will expire in ${minutesUntilExpiration} minutes`)
+    //     }
+    //   }
+    // },
     async refreshAccessToken({ commit, dispatch, state }) {
       try {
-        if (!state.refreshToken) {
-          commit('removeAccessToken')
-          router.push({
-            path: '/login',
-            query: { message: 'Session has expired. Please log in.' }
-          })
-          return null
-        }
         const response = await axios.post(
           `${config.backendEndpoint}/api/token/refresh`,
           {
             refresh_token: state.refreshToken
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${state.refreshToken}`
-            }
           }
         )
         if (response.status !== 200) {
           dispatch('setErrorMessage', 'Session has expired. Please log in')
-          router.push('/login')
-          commit('removeAccessToken')
+          dispatch('logout')
           throw new Error('Token Expired')
         }
         const data = response.data
@@ -256,7 +237,7 @@ export default createStore({
           0,
           Math.floor((expires_in - Math.floor(Date.now() / 1000)) / 60)
         )
-        console.log('Refresh expiresInMinutes', expiresInMinutes)
+        console.log('Access Token expiresInMinutes', expiresInMinutes)
         VueCookies.set('access_token', data.access_token, {
           expires: new Date(Date.now() + expiresInMinutes),
           httponly: true,
@@ -264,16 +245,14 @@ export default createStore({
           //secure: true
         })
         commit('setAccessToken', data.access_token)
-        commit('SET_ACCESS_TOKEN_EXPIRATION', expiresInMinutes)
+        // dispatch('startExpirationCheckTimer')
         return data.access_token
       } catch (error) {
         dispatch('setErrorMessage', 'Session has expired. Please log in')
-        commit('removeAccessToken')
-        router.push('/login')
-        throw new Error('Token Expired')
+        dispatch('logout')
       }
     },
-    async login({ commit, dispatch }, { username, password, rememberMe }) {
+    async login({ commit }, { username, password, rememberMe }) {
       const formData = new URLSearchParams()
       formData.append('grant_type', '')
       formData.append('username', username)
@@ -291,7 +270,7 @@ export default createStore({
 
         if (response.status === 403) {
           const data = await response.json()
-          commit('setErrorMessage', 'Session has expired. Please log in')
+          commit('setErrorMessage', 'Forbidden!')
           throw new Error(data.detail)
         }
 
@@ -305,31 +284,30 @@ export default createStore({
         VueCookies.set('access_token', data.access_token, {
           expires: new Date(Date.now() + expiresInMinutes * 60 * 1000)
         })
-
-        commit('setAccessToken', data.access_token)
-
-        if (data.refresh_token) {
-          const refresh_token_expires_in = jwtDecode(data.refresh_token).exp
-          const expiresInMinutesrefreshToken = Math.max(
-            0,
-            Math.floor(
-              (refresh_token_expires_in - Math.floor(Date.now() / 1000)) / 60
-            )
+        const refresh_token_expires_in = jwtDecode(data.refresh_token).exp
+        const expiresInMinutesrefreshToken = Math.max(
+          0,
+          Math.floor(
+            (refresh_token_expires_in - Math.floor(Date.now() / 1000)) / 60
           )
-
-          VueCookies.set('refresh_token', data.refresh_token, {
-            expires: new Date(
-              Date.now() + expiresInMinutesrefreshToken * 60 * 1000
-            )
-          })
-
-          commit('setRefreshToken', data.refresh_token)
-        }
-
-        await dispatch('initializeUser')
-
-        dispatch('startExpirationCheckTimer')
-
+        )
+        console.log(
+          'RefreshToken, AccessToken expires in minutes',
+          expiresInMinutesrefreshToken,
+          expiresInMinutes
+        )
+        VueCookies.set('refresh_token', data.refresh_token, {
+          expires: new Date(
+            Date.now() + expiresInMinutesrefreshToken * 60 * 1000
+          )
+        })
+        commit('setAccessToken', data.access_token)
+        commit('setRefreshToken', data.refresh_token)
+        // await dispatch('initializeUser')
+        const user = jwtDecode(data.access_token).user
+        const user_id = jwtDecode(data.access_token).user_id
+        commit('UPDATE_USER', user)
+        commit('UPDATE_USER_ID', user_id)
         router.push('/')
       } catch (error) {
         throw new Error(error)
@@ -360,12 +338,12 @@ export default createStore({
                 }
               )
               if (!response.ok) {
-                commit('removeAccessToken')
+                console.log('!response.ok Init User', response)
                 dispatch(
                   'setErrorMessage',
                   'Session has expired. Please log in'
                 )
-                router.push('/login')
+                dispatch('logout')
                 throw new Error('Token Expired')
               }
               const data = await response.json()
@@ -377,39 +355,29 @@ export default createStore({
               VueCookies.set('access_token', data.access_token, {
                 expires: new Date(Date.now() + expiresInMinutes)
               })
+              const user = jwtDecode(data.access_token).user
+              const user_id = jwtDecode(data.access_token).user_id
               commit('setAccessToken', data.access_token)
+              commit('UPDATE_USER', user)
+              commit('UPDATE_USER_ID', user_id)
               router.push('/')
             } catch (refreshError) {
+              console.log('refreshError: ', refreshError)
               dispatch('setErrorMessage', 'Session has expired. Please log in')
-              router.push('/login')
+              dispatch('logout')
               throw new Error('Token Expired')
             }
           }
-          const user = decoded.sub
-          const user_id = decoded.user_id
-          commit('UPDATE_USER', user)
-          commit('UPDATE_USER_ID', user_id)
         }
       } catch (error) {
         router.push('/login')
         throw error
       }
     },
-    async removeAccessToken({ commit }) {
-      VueCookies.remove('access_token')
-      VueCookies.remove('refresh_token')
-      commit('removeAccessToken')
-      router.push('/login')
-    },
-    async getProduct({ commit, state }, itemId) {
+    async getProduct({ commit }, itemId) {
       try {
-        const headers = {
-          Authorization: `Bearer ${state.accessToken}`,
-          Accept: 'application/json'
-        }
         const response = await axios.get(
-          `${config.backendEndpoint}/api/items/item/${itemId}`,
-          { headers }
+          `${config.backendEndpoint}/api/items/item/${itemId}`
         )
         if (response.status === 200) {
           const item = response.data
@@ -423,16 +391,9 @@ export default createStore({
         console.error('Error fetching product:', error)
       }
     },
-    async getProducts({ commit, state }) {
+    async getProducts({ commit }) {
       try {
-        const headers = {
-          Authorization: `Bearer ${state.accessToken}`,
-          Accept: 'application/json'
-        }
-        const response = await axios.get(
-          `${config.backendEndpoint}/api/items`,
-          { headers }
-        )
+        const response = await axios.get(`${config.backendEndpoint}/api/items`)
         const products = response.data
         commit('SET_PRODUCTS', products)
         const maxPrice = Math.max(...products.map(product => product.price))
@@ -467,17 +428,15 @@ export default createStore({
         commit('UPDATE_PROFILES', null)
       }
     },
-    async getProfile({ commit, state }) {
-      const headers = {
-        Authorization: `Bearer ${state.accessToken}`,
-        Accept: 'application/json'
-      }
+    async getProfile({ commit, dispatch, state }) {
+      // if (!state.user_id) {
+      //   // If user_id is not set, do nothing or handle accordingly
+      //   return
+      // }
       try {
         const response = await axios.get(
-          `${config.backendEndpoint}/api/profile/${state.user_id}`,
-          { headers }
+          `${config.backendEndpoint}/api/profile/${state.user_id}`
         )
-
         if (response.status === 200) {
           // Profile retrieved successfully
           commit('UPDATE_PROFILE', response.data)
@@ -486,49 +445,36 @@ export default createStore({
         }
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          // Unauthorized (token expired or invalid)
-          console.log('Profile 401 trying to handle')
-          router.push('/login')
-          commit('UPDATE_PROFILE', null)
+          console.log('Profile 401 trying to handle:', error.response)
+          dispatch('setErrorMessage', 'Session has expired. Please log in')
+          dispatch('logout')
+          // commit('UPDATE_PROFILE', null)
           throw new Error('Token Expired')
         } else {
-          commit('UPDATE_PROFILE', null)
+          console.log('Profile Other erro occured trying to handle', error)
+          dispatch('setErrorMessage', 'Session has expired. Please log in')
+          dispatch('logout')
+          // commit('UPDATE_PROFILE', null)
         }
       }
     },
-    async fetchCategories({ commit, state }) {
+    async fetchCategories({ commit }) {
       try {
-        const headers = new Headers({
-          Authorization: `Bearer ${state.accessToken}`,
-          Accept: 'application/json'
-        })
-        const res = await fetch(
-          `${config.backendEndpoint}/api/categories/category_items_len/`,
-          { headers }
+        const response = await axios.get(
+          `${config.backendEndpoint}/api/categories/category_items_len/`
         )
-        const categories = await res.json()
+        const categories = await response.data
         commit('SET_CATEGORIES', categories)
       } catch (error) {
         console.error('Error fetching categories:', error)
       }
     },
-    async getItemRating({ commit, state }, itemId) {
+    async getItemRating({ commit }, itemId) {
       try {
-        const headers = new Headers({
-          Authorization: `Bearer ${state.accessToken}`,
-          Accept: 'application/json'
-        })
-        const response = await fetch(
-          `${config.backendEndpoint}/api/reviews/item/rating?id=${itemId}`,
-          {
-            method: 'GET',
-            headers: headers
-          }
+        const response = await axios.get(
+          `${config.backendEndpoint}/api/reviews/item/rating?id=${itemId}`
         )
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`)
-        }
-        const data = await response.json()
+        const data = await response.data
         commit('UPDATE_PRODUCT_RATING', { productId: itemId, ratingData: data })
         commit('UPDATE_CART_ITEM_RATING', {
           productId: itemId,
@@ -537,6 +483,35 @@ export default createStore({
         commit('UPDATE_FAVORITES_ITEM_RATING', {
           productId: itemId,
           ratingData: data
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async getItemRatings({ commit, state }) {
+      try {
+        // Collect an array of promises for each API call
+        const ratingPromises = state.products.map(async product => {
+          const response = await axios.get(
+            `${config.backendEndpoint}/api/reviews/item/rating?id=${product.id}`
+          )
+          const ratingData = response.data
+
+          // Use Promise.resolve to keep the promise chain intact
+          return Promise.resolve({
+            productId: product.id,
+            ratingData: ratingData
+          })
+        })
+
+        // Wait for all promises to resolve
+        const ratings = await Promise.all(ratingPromises)
+
+        // Update the state or commit mutations as needed
+        ratings.forEach(rating => {
+          commit('UPDATE_PRODUCT_RATING', rating)
+          commit('UPDATE_CART_ITEM_RATING', rating)
+          commit('UPDATE_FAVORITES_ITEM_RATING', rating)
         })
       } catch (error) {
         console.log(error)
@@ -561,16 +536,10 @@ export default createStore({
       commit('TOGGLE_SORT_ORDER')
       commit('SORT_PRODUCTS')
     },
-    async readFromCartVue({ commit, dispatch, state }) {
+    async readFromCartVue({ commit, dispatch }) {
       try {
         const response = await axios.get(
-          `${config.backendEndpoint}/api/items/user-items-in-cart`,
-          {
-            headers: {
-              Authorization: `Bearer ${state.accessToken}`,
-              Accept: 'application/json'
-            }
-          }
+          `${config.backendEndpoint}/api/items/user-items-in-cart`
         )
         const data = response.data
         commit('UPDATE_CART', data.items)
@@ -580,14 +549,17 @@ export default createStore({
         commit('UPDATE_USER_ID', data.user_id)
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          // Unauthorized (token expired or invalid)
           console.log(
-            'Token Expired in readFromCartVue. Redirecting to login...'
+            'Handling error in readFromCartVue.response.status === 401...'
           )
-          dispatch('handleTokenExpiration')
+          dispatch('setErrorMessage', 'Session has expired. Please log in')
+          dispatch('logout')
         } else {
           // Handle other errors if needed
           console.error('Error in readFromCartVue:', error)
+          dispatch('setErrorMessage', 'Session has expired. Please log in')
+          dispatch('logout')
+          // dispatch('logout')
         }
       }
     },

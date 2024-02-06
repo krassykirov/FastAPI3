@@ -26,7 +26,7 @@ oauth_router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearerCookie(tokenUrl="/api/token")
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 2
+ACCESS_TOKEN_EXPIRE_MINUTES = 1
 ALGORITHM = "HS256"
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 
@@ -131,17 +131,17 @@ async def login_access_token(*, request: Request, form_data: OAuth2PasswordReque
     remember_me = [v.get('rememberMe') for k,v in data.items() if k == '_form' ][0]
     user = db.exec(query).first()
     if user and user.verify_password(form_data.password):
+        token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         if remember_me == 'true':
-            access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES * 5)
             access_token = create_access_token(
-                data={"sub": user.username, 'user_id': user.id}, expires_delta=access_token_expires)
-            refresh_token = create_refresh_token(user.id, user.username, minutes=ACCESS_TOKEN_EXPIRE_MINUTES * 12)
+                data={"sub": user.username, 'user_id': user.id}, expires_delta=token_expires)
+            refresh_token = create_refresh_token(user.id, user.username, minutes=ACCESS_TOKEN_EXPIRE_MINUTES * 5)
             return {"access_token": access_token, "token_type": "bearer", "refresh_token": refresh_token}
         else:
-            access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
             access_token = create_access_token(
-            data={"sub": user.username, 'user_id': user.id}, expires_delta=access_token_expires)
-            return {"access_token": access_token, "token_type": "bearer"}
+            data={"sub": user.username, 'user_id': user.id}, expires_delta=token_expires)
+            refresh_token = create_refresh_token(user.id, user.username, minutes=ACCESS_TOKEN_EXPIRE_MINUTES * 2)
+            return {"access_token": access_token, "token_type": "bearer", "refresh_token": refresh_token}
     else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Username or password are incorrect!")
 

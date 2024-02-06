@@ -7,8 +7,8 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView,
-    meta: { requiresAuth: true }
+    component: HomeView
+    // meta: { requiresAuth: true }
   },
   {
     path: '/login',
@@ -23,8 +23,8 @@ const routes = [
       cart: store.state.cart,
       profile: store.state.profile,
       favorites: store.state.favorites
-    }),
-    meta: { requiresAuth: true }
+    })
+    // meta: { requiresAuth: true }
   },
   {
     path: '/favorites',
@@ -34,8 +34,8 @@ const routes = [
       cart: store.state.cart,
       profile: store.state.profile,
       favorites: store.state.favorites
-    }),
-    meta: { requiresAuth: true }
+    })
+    // meta: { requiresAuth: true }
   },
   {
     path: '/signup',
@@ -46,8 +46,12 @@ const routes = [
     path: '/Profile',
     name: 'Profile',
     component: () => import('../views/ProfileVue.vue'),
-    props: () => ({ cart: store.state.cart, favorites: store.state.favorites }),
-    meta: { requiresAuth: true }
+    props: () => ({
+      cart: store.state.cart,
+      favorites: store.state.favorites,
+      profile: store.state.profile
+    })
+    // meta: { requiresAuth: true }
   },
   {
     path: '/item/:itemId',
@@ -88,19 +92,18 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach(async (to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    try {
-      await store.dispatch('initializeUser')
-      if (!store.state.accessToken) {
-        throw new Error('Token Expired')
-      }
-    } catch (error) {
-      console.log('Catch Path Route error')
-      next('/login')
-      throw new Error('Token Expired')
-    }
-  }
-  next()
-})
+// router.beforeEach(async (to, from, next) => {
+//   if (to.matched.some(record => record.meta.requiresAuth)) {
+//     try {
+//       await store.dispatch('initializeUser')
+//       if (!store.state.accessToken) {
+//         throw new Error('Token Expired')
+//       }
+//     } catch (error) {
+//       next('/login')
+//       throw new Error('Token Expired')
+//     }
+//   }
+//   next()
+// })
 export default router

@@ -171,7 +171,7 @@ export default {
   },
   mixins: [errorHandlingMixin],
   created() {
-    this.$store.dispatch('initializeUser').catch(this.handleError)
+    // this.$store.dispatch('initializeUser').catch(this.handleError)
     this.$store.dispatch('readFromCartVue').then(() => {
       const fetchRatingsPromises = this.$store.state.favorites.map(product => {
         return this.$store.dispatch('getItemRating', product.id)

@@ -110,20 +110,20 @@ export default {
     }
   },
   mixins: [errorHandlingMixin],
-  created() {
-    const message = this.$route.query.message
-    if (message) {
-      this.errorMessage = message
-    }
-    this.$store.dispatch('initializeUser').catch(error => {
-      if (error.message !== 'Token Expired') {
-        console.error('error.message !== Token Expired')
-        console.error(error)
-      }
-      this.errorMessage = 'Session has expired. Please log in.'
-      router.push('/login')
-    })
-  },
+  // created() {
+  //   const message = this.$route.query.message
+  //   if (message) {
+  //     this.errorMessage = message
+  //   }
+  //   this.$store.dispatch('initializeUser').catch(error => {
+  //     if (error.message !== 'Token Expired') {
+  //       console.error('error.message !== Token Expired')
+  //       console.error(error)
+  //     }
+  //     this.errorMessage = 'Session has expired. Please log in.'
+  //     router.push('/login')
+  //   })
+  // },
   computed: {
     errorMessage() {
       return this.$store.state.errorMessage

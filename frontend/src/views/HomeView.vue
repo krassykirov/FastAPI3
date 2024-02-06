@@ -12,6 +12,7 @@
         :favorites="favorites"
         :total="total"
         :user="user"
+        :user_id="user_id"
         :profile="profile"
         @addToCart="addToCart"
         @removeFromCart="removeFromCart"
@@ -311,20 +312,13 @@ export default {
   },
   created() {
     this.$store
-      .dispatch('initializeUser')
-      .catch(this.handleError)
-      .then(() => this.$store.dispatch('getProfile'))
+      .dispatch('getProfile')
       .then(() => this.$store.dispatch('getProducts'))
       .then(() => this.$store.dispatch('readFromCartVue'))
       .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
       .then(() => this.$store.dispatch('fetchCategories'))
       .then(() => this.$store.dispatch('updateProductRange'))
-      .then(() => {
-        const fetchRatingsPromises = this.$store.state.products.map(product => {
-          return this.$store.dispatch('getItemRating', product.id)
-        })
-        return Promise.all(fetchRatingsPromises)
-      })
+      .then(() => this.$store.dispatch('getItemRatings'))
       .catch(error => {
         if (error.message !== 'Token Expired') {
           console.error('error', error)

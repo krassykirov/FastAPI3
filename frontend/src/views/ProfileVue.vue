@@ -306,7 +306,7 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('initializeUser').catch(this.handleError)
+    // this.$store.dispatch('initializeUser').catch(this.handleError)
     this.getProfile()
   },
   methods: {
