@@ -7,7 +7,12 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: HomeView,
+    props: route => ({
+      isIdle: route.params.isIdle,
+      lastActiveDate: route.params.lastActiveDate,
+      inactiveTime: route.params.inactiveTime
+    })
     // meta: { requiresAuth: true }
   },
   {

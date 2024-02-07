@@ -77,6 +77,7 @@ axios.interceptors.request.use(
 const app = createApp(App)
 app.mixin(errorHandlingMixin)
 app.config.globalProperties.emitter = emitter
+
 // Listen for the session expired pop-up event
 // emitter.on('sessionExpiredPopup', () => {
 //   console.log('sessionExpiredPopup event received')

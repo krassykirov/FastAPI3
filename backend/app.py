@@ -120,7 +120,7 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
             db.refresh(item)
         except:
             db.rollback()
-        return True
+        return item
         # redirect_url = request.url_for('get_products')
         # response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
         # return response

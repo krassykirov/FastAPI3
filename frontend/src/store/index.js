@@ -12,7 +12,10 @@ export default createStore({
     accessToken: VueCookies.get('access_token') || null,
     refreshToken: VueCookies.get('refresh_token') || null,
     accessTokenExpiration: null,
-    expirationCheckInterval: null,
+    refreshTokenExpiration: null,
+    isIdle: false,
+    lastActiveDate: null,
+    inactiveTime: 0,
     user: null,
     user_id: null,
     profile: null,
@@ -147,26 +150,40 @@ export default createStore({
     },
     setAccessToken(state, accessToken) {
       state.accessToken = accessToken
-      const decodedToken = jwtDecode(accessToken)
-      if (decodedToken && decodedToken.exp) {
-        state.accessTokenExpiration = decodedToken.exp * 1000
-      }
+      const expires_in = jwtDecode(accessToken).exp
+      const expiresInMinutes = Math.max(
+        0,
+        Math.floor((expires_in - Math.floor(Date.now() / 1000)) / 60)
+      )
+      state.accessTokenExpiration = expiresInMinutes
     },
-    setExpirationCheckInterval(state, intervalId) {
-      state.expirationCheckInterval = intervalId
-    },
+    // setIsIdle(state, value) {
+    //   state.isIdle = value
+    // },
+    // setLastActiveDate(state, value) {
+    //   state.lastActiveDate = value
+    // },
+    // setInactiveTime(state, value) {
+    //   state.inactiveTime = value
+    // },
     setRefreshToken(state, refreshToken) {
       state.refreshToken = refreshToken
+      const expires_in = jwtDecode(refreshToken).exp
+      const expiresInMinutes = Math.max(
+        0,
+        Math.floor((expires_in - Math.floor(Date.now() / 1000)) / 60)
+      )
+      state.refreshTokenExpiration = expiresInMinutes
     },
     removeAccessToken(state) {
-      // if (state.expirationCheckInterval) {
-      //   clearInterval(state.expirationCheckInterval)
-      // }
-      state.accessTokenExpiration = null
-      state.accessToken = null
-      state.refreshToken = null
+      this.lastActiveDate = new Date()
+      this.inactiveTime = 0
       VueCookies.remove('access_token')
       VueCookies.remove('refresh_token')
+      state.accessToken = null
+      state.refreshToken = null
+      state.accessTokenExpiration = null
+      state.refreshTokenExpiration = null
       router.push('/login')
     },
     SET_SELECTED_RATING(state, value) {
@@ -183,40 +200,10 @@ export default createStore({
     logout({ commit }) {
       commit('removeAccessToken')
     },
-    // startExpirationCheckTimer({ commit, dispatch, state }) {
-    //   if (state.accessToken) {
-    //     console.log('start startExpirationCheckTimer')
-    //     if (state.expirationCheckInterval) {
-    //       clearInterval(state.expirationCheckInterval)
-    //     }
-    //     const expirationCheckInterval = setInterval(() => {
-    //       dispatch('checkTokenExpiration')
-    //     }, 10 * 1000) // Check every 10 seconds for testing purposes, adjust as needed
-    //     commit('setExpirationCheckInterval', expirationCheckInterval)
-    //   }
-    // },
-    // checkTokenExpiration({ dispatch, state }) {
-    //   console.log('start checkTokenExpiration')
-    //   if (state.accessTokenExpiration) {
-    //     const currentTime = Date.now()
-    //     const minutesUntilExpiration = Math.floor(
-    //       (state.accessTokenExpiration - currentTime) / (60 * 1000)
-    //     )
-    //     console.log('minutesUntilExpiration', minutesUntilExpiration)
-    //     if (minutesUntilExpiration <= 0) {
-    //       if (state.refreshToken) {
-    //         console.log('Token has expired, but a refresh token is available.')
-    //         dispatch('refreshAccessToken')
-    //       } else {
-    //         console.log('Access token has expired. Logging out...')
-    //         dispatch('logout')
-    //       }
-    //     } else if (
-    //       minutesUntilExpiration <= MINUTES_BEFORE_EXPIRATION_TO_LOGOUT
-    //     ) {
-    //       console.warn(`Token will expire in ${minutesUntilExpiration} minutes`)
-    //     }
-    //   }
+    // updateIdleStatus({ commit }, { isIdle, lastActiveDate, inactiveTime }) {
+    //   commit('setIsIdle', isIdle)
+    //   commit('setLastActiveDate', lastActiveDate)
+    //   commit('setInactiveTime', inactiveTime)
     // },
     async refreshAccessToken({ commit, dispatch, state }) {
       try {
@@ -237,7 +224,6 @@ export default createStore({
           0,
           Math.floor((expires_in - Math.floor(Date.now() / 1000)) / 60)
         )
-        console.log('Access Token expiresInMinutes', expiresInMinutes)
         VueCookies.set('access_token', data.access_token, {
           expires: new Date(Date.now() + expiresInMinutes),
           httponly: true,
@@ -252,7 +238,7 @@ export default createStore({
         dispatch('logout')
       }
     },
-    async login({ commit }, { username, password, rememberMe }) {
+    async login({ commit, dispatch }, { username, password, rememberMe }) {
       const formData = new URLSearchParams()
       formData.append('grant_type', '')
       formData.append('username', username)
@@ -276,6 +262,17 @@ export default createStore({
 
         const data = await response.json()
         const expires_in = jwtDecode(data.access_token).exp
+        const user = jwtDecode(data.access_token).user
+        const user_id = jwtDecode(data.access_token).user_id
+        commit('UPDATE_USER', user)
+        commit('UPDATE_USER_ID', user_id)
+        this.lastActiveDate = new Date()
+        this.inactiveTime = 0
+        console.log(
+          'lastActiveDate, inactiveTime',
+          this.lastActiveDate,
+          this.inactiveTime
+        )
         const expiresInMinutes = Math.max(
           0,
           Math.floor((expires_in - Math.floor(Date.now() / 1000)) / 60)
@@ -303,11 +300,7 @@ export default createStore({
         })
         commit('setAccessToken', data.access_token)
         commit('setRefreshToken', data.refresh_token)
-        // await dispatch('initializeUser')
-        const user = jwtDecode(data.access_token).user
-        const user_id = jwtDecode(data.access_token).user_id
-        commit('UPDATE_USER', user)
-        commit('UPDATE_USER_ID', user_id)
+        await dispatch('getProfile')
         router.push('/')
       } catch (error) {
         throw new Error(error)
@@ -428,9 +421,9 @@ export default createStore({
         commit('UPDATE_PROFILES', null)
       }
     },
-    async getProfile({ commit, dispatch, state }) {
+    async getProfile({ commit, state }) {
       // if (!state.user_id) {
-      //   // If user_id is not set, do nothing or handle accordingly
+      //   console.log('state.user_id??', state.user_id)
       //   return
       // }
       try {
@@ -446,14 +439,15 @@ export default createStore({
       } catch (error) {
         if (error.response && error.response.status === 401) {
           console.log('Profile 401 trying to handle:', error.response)
-          dispatch('setErrorMessage', 'Session has expired. Please log in')
-          dispatch('logout')
+          // dispatch('setErrorMessage', 'Session has expired. Please log in')
+          // dispatch('logout')
           // commit('UPDATE_PROFILE', null)
-          throw new Error('Token Expired')
+          throw error
         } else {
-          console.log('Profile Other erro occured trying to handle', error)
-          dispatch('setErrorMessage', 'Session has expired. Please log in')
-          dispatch('logout')
+          console.log('Profile Other error occured trying to handle', error)
+          throw error
+          // dispatch('setErrorMessage', 'Session has expired. Please log in')
+          // dispatch('logout')
           // commit('UPDATE_PROFILE', null)
         }
       }
@@ -536,7 +530,7 @@ export default createStore({
       commit('TOGGLE_SORT_ORDER')
       commit('SORT_PRODUCTS')
     },
-    async readFromCartVue({ commit, dispatch }) {
+    async readFromCartVue({ commit }) {
       try {
         const response = await axios.get(
           `${config.backendEndpoint}/api/items/user-items-in-cart`
@@ -552,13 +546,13 @@ export default createStore({
           console.log(
             'Handling error in readFromCartVue.response.status === 401...'
           )
-          dispatch('setErrorMessage', 'Session has expired. Please log in')
-          dispatch('logout')
+          // dispatch('setErrorMessage', 'Session has expired. Please log in')
+          // dispatch('logout')
         } else {
           // Handle other errors if needed
           console.error('Error in readFromCartVue:', error)
-          dispatch('setErrorMessage', 'Session has expired. Please log in')
-          dispatch('logout')
+          // dispatch('setErrorMessage', 'Session has expired. Please log in')
+          // dispatch('logout')
           // dispatch('logout')
         }
       }
@@ -906,6 +900,9 @@ export default createStore({
     selectedRating: state => state.selectedRating,
     ratings: state => state.ratings,
     productMin: state => state.productMin,
-    productMax: state => state.productMax
+    productMax: state => state.productMax,
+    isIdle: state => state.isIdle,
+    lastActiveDate: state => state.lastActiveDate,
+    inactiveTime: state => state.inactiveTime
   }
 })

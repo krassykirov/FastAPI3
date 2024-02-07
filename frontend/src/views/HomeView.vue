@@ -57,6 +57,12 @@
         "
       />
     </form>
+    <div>
+      <p v-if="isIdle">User is currently idle.</p>
+      <p v-else>User is active.</p>
+      <p>Last Active: {{ formattedLastActive }}</p>
+      <p>Inactive Time: {{ formattedInactiveTime }}</p>
+    </div>
     <div class="product-container">
       <div class="filter-products-container row col-2">
         <div class="filter-card">
@@ -291,17 +297,25 @@
 <script>
 // import $ from 'jquery'
 import 'bootstrap'
-// import VueCookies from 'vue-cookies'
+import router from '@/router'
+import VueCookies from 'vue-cookies'
+import { jwtDecode } from 'jwt-decode'
 import ProductList from '@/components/ProductList.vue'
 import MyNavbar from '@/components/MyNavbar.vue'
 import errorHandlingMixin from '../errorHandlingMixin'
 import config from '@/config'
+// import { handleError } from 'vue'
 
 export default {
   name: 'HomeView',
   components: {
     ProductList,
     MyNavbar
+  },
+  props: {
+    isIdle: Boolean,
+    lastActiveDate: Date,
+    inactiveTime: Number
   },
   mixins: [errorHandlingMixin],
   data() {
@@ -311,6 +325,16 @@ export default {
     }
   },
   created() {
+    const accessToken = VueCookies.get('access_token')
+    if (accessToken) {
+      // Decode access token to extract user information
+      const user = jwtDecode(accessToken).user
+      const user_id = jwtDecode(accessToken).user_id
+      this.$store.commit('UPDATE_USER', user)
+      this.$store.commit('UPDATE_USER_ID', user_id)
+    } else {
+      router.push('/login')
+    }
     this.$store
       .dispatch('getProfile')
       .then(() => this.$store.dispatch('getProducts'))
@@ -326,6 +350,13 @@ export default {
       })
   },
   computed: {
+    formattedLastActive() {
+      if (!this.lastActiveDate) return ''
+      return new Date(this.lastActiveDate).toLocaleString()
+    },
+    formattedInactiveTime() {
+      return this.inactiveTime >= 0 ? `${this.inactiveTime} min` : ''
+    },
     errorMessage() {
       return this.$store.state.errorMessage
     },
@@ -370,14 +401,20 @@ export default {
     accessToken() {
       return this.$store.getters.accessToken
     },
+    accessTokenExpiration() {
+      return this.$store.state.accessTokenExpiration
+    },
+    refreshTokenExpiration() {
+      return this.$store.state.refreshTokenExpiration
+    },
     user_id() {
-      return this.$store.getters.user_id
+      return this.$store.state.user_id
     },
     user() {
-      return this.$store.getters.user
+      return this.$store.state.user
     },
     profile() {
-      return this.$store.getters.profile
+      return this.$store.state.profile
     },
     categories() {
       return this.$store.getters.categories
