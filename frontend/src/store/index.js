@@ -200,6 +200,18 @@ export default createStore({
     logout({ commit }) {
       commit('removeAccessToken')
     },
+    inactiveLogout({ state, dispatch }) {
+      this.lastActiveDate = new Date()
+      this.inactiveTime = 0
+      VueCookies.remove('access_token')
+      VueCookies.remove('refresh_token')
+      state.accessToken = null
+      state.refreshToken = null
+      state.accessTokenExpiration = null
+      state.refreshTokenExpiration = null
+      dispatch('setErrorMessage', "You've been logged out due to inactivity")
+      router.push('/login')
+    },
     // updateIdleStatus({ commit }, { isIdle, lastActiveDate, inactiveTime }) {
     //   commit('setIsIdle', isIdle)
     //   commit('setLastActiveDate', lastActiveDate)
@@ -220,6 +232,8 @@ export default createStore({
         }
         const data = response.data
         const expires_in = jwtDecode(data.access_token).exp
+        const user = jwtDecode(data.access_token).user
+        const user_id = jwtDecode(data.access_token).user_id
         const expiresInMinutes = Math.max(
           0,
           Math.floor((expires_in - Math.floor(Date.now() / 1000)) / 60)
@@ -231,11 +245,14 @@ export default createStore({
           //secure: true
         })
         commit('setAccessToken', data.access_token)
+        commit('UPDATE_USER', user)
+        commit('UPDATE_USER_ID', user_id)
         // dispatch('startExpirationCheckTimer')
         return data.access_token
       } catch (error) {
         dispatch('setErrorMessage', 'Session has expired. Please log in')
         dispatch('logout')
+        throw new Error('Token Expired')
       }
     },
     async login({ commit, dispatch }, { username, password, rememberMe }) {
@@ -264,8 +281,6 @@ export default createStore({
         const expires_in = jwtDecode(data.access_token).exp
         const user = jwtDecode(data.access_token).user
         const user_id = jwtDecode(data.access_token).user_id
-        commit('UPDATE_USER', user)
-        commit('UPDATE_USER_ID', user_id)
         this.lastActiveDate = new Date()
         this.inactiveTime = 0
         console.log(
@@ -300,6 +315,8 @@ export default createStore({
         })
         commit('setAccessToken', data.access_token)
         commit('setRefreshToken', data.refresh_token)
+        commit('UPDATE_USER', user)
+        commit('UPDATE_USER_ID', user_id)
         await dispatch('getProfile')
         router.push('/')
       } catch (error) {
@@ -421,7 +438,7 @@ export default createStore({
         commit('UPDATE_PROFILES', null)
       }
     },
-    async getProfile({ commit, state }) {
+    async getProfile({ commit, dispatch, state }) {
       // if (!state.user_id) {
       //   console.log('state.user_id??', state.user_id)
       //   return
@@ -443,11 +460,10 @@ export default createStore({
           // dispatch('logout')
           // commit('UPDATE_PROFILE', null)
           throw error
-        } else {
+        } else if (error === 'Token Expired') {
           console.log('Profile Other error occured trying to handle', error)
-          throw error
-          // dispatch('setErrorMessage', 'Session has expired. Please log in')
-          // dispatch('logout')
+          dispatch('setErrorMessage', 'Session has expired. Please log in')
+          dispatch('logout')
           // commit('UPDATE_PROFILE', null)
         }
       }
@@ -530,7 +546,7 @@ export default createStore({
       commit('TOGGLE_SORT_ORDER')
       commit('SORT_PRODUCTS')
     },
-    async readFromCartVue({ commit }) {
+    async readFromCartVue({ commit, dispatch }) {
       try {
         const response = await axios.get(
           `${config.backendEndpoint}/api/items/user-items-in-cart`
@@ -546,14 +562,13 @@ export default createStore({
           console.log(
             'Handling error in readFromCartVue.response.status === 401...'
           )
-          // dispatch('setErrorMessage', 'Session has expired. Please log in')
-          // dispatch('logout')
+          dispatch('setErrorMessage', 'Session has expired. Please log in')
+          dispatch('logout')
         } else {
           // Handle other errors if needed
           console.error('Error in readFromCartVue:', error)
-          // dispatch('setErrorMessage', 'Session has expired. Please log in')
-          // dispatch('logout')
-          // dispatch('logout')
+          dispatch('setErrorMessage', 'Session has expired. Please log in')
+          dispatch('logout')
         }
       }
     },

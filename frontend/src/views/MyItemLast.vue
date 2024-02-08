@@ -864,7 +864,6 @@ text-color {
 }
 
 .similar-product img {
-  height: 80% !important;
   height: 330px !important;
 }
 

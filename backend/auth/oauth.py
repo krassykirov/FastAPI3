@@ -135,7 +135,7 @@ async def login_access_token(*, request: Request, form_data: OAuth2PasswordReque
         if remember_me == 'true':
             access_token = create_access_token(
                 data={"sub": user.username, 'user_id': user.id}, expires_delta=token_expires)
-            refresh_token = create_refresh_token(user.id, user.username, minutes=ACCESS_TOKEN_EXPIRE_MINUTES * 5)
+            refresh_token = create_refresh_token(user.id, user.username, minutes=ACCESS_TOKEN_EXPIRE_MINUTES * 12)
             return {"access_token": access_token, "token_type": "bearer", "refresh_token": refresh_token}
         else:
             access_token = create_access_token(
