@@ -281,13 +281,12 @@ export default createStore({
         const expires_in = jwtDecode(data.access_token).exp
         const user = jwtDecode(data.access_token).user
         const user_id = jwtDecode(data.access_token).user_id
+        commit('setAccessToken', data.access_token)
+        commit('setRefreshToken', data.refresh_token)
+        commit('UPDATE_USER', user)
+        commit('UPDATE_USER_ID', user_id)
         this.lastActiveDate = new Date()
         this.inactiveTime = 0
-        console.log(
-          'lastActiveDate, inactiveTime',
-          this.lastActiveDate,
-          this.inactiveTime
-        )
         const expiresInMinutes = Math.max(
           0,
           Math.floor((expires_in - Math.floor(Date.now() / 1000)) / 60)
@@ -313,10 +312,6 @@ export default createStore({
             Date.now() + expiresInMinutesrefreshToken * 60 * 1000
           )
         })
-        commit('setAccessToken', data.access_token)
-        commit('setRefreshToken', data.refresh_token)
-        commit('UPDATE_USER', user)
-        commit('UPDATE_USER_ID', user_id)
         await dispatch('getProfile')
         router.push('/')
       } catch (error) {
@@ -450,9 +445,10 @@ export default createStore({
         if (response.status === 200) {
           // Profile retrieved successfully
           commit('UPDATE_PROFILE', response.data)
-        } else {
-          commit('UPDATE_PROFILE', null)
         }
+        //  else {
+        //   commit('UPDATE_PROFILE', null)
+        // }
       } catch (error) {
         if (error.response && error.response.status === 401) {
           console.log('Profile 401 trying to handle:', error.response)

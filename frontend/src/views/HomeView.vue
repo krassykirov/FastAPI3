@@ -57,12 +57,12 @@
         "
       />
     </form>
-    <div>
+    <!-- <div>
       <p v-if="isIdle">User is currently idle.</p>
       <p v-else>User is active.</p>
       <p>Last Active: {{ formattedLastActive }}</p>
       <p>Inactive Time: {{ formattedInactiveTime }}</p>
-    </div>
+    </div> -->
     <div class="product-container">
       <div class="filter-products-container row col-2">
         <div class="filter-card">

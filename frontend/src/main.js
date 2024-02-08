@@ -53,7 +53,7 @@ axios.interceptors.response.use(
         }
       } else {
         // No refresh token available, handle the scenario (e.g., redirect to login page)
-        console.log('No refresh token available')
+        console.log('No refresh token available, error is:', error)
         store.dispatch('setErrorMessage', 'Session has expired. Please log in.')
         store.dispatch('logout')
         throw new Error('Token Expired')
