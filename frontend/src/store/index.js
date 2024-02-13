@@ -22,8 +22,11 @@ export default createStore({
     min: 1,
     max: 10000,
     total: 0,
+    message: '',
     products: [],
     filteredProducts: [],
+    searchResults: [],
+    hasFilteredProducts: false,
     isDiscountedChecked: false,
     categories: [],
     cart: [],
@@ -37,6 +40,12 @@ export default createStore({
     errorMessage: null
   },
   mutations: {
+    setMessage(state, payload) {
+      state.message = payload
+    },
+    SET_SEARCH_RESULTS(state, results) {
+      state.searchResults = results
+    },
     SET_PRODUCT(state, product) {
       state.product = product
     },
@@ -60,6 +69,14 @@ export default createStore({
         cartItem.rating = ratingData.rating
         cartItem.reviewNumber = ratingData.review_number
         cartItem.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
+      }
+    },
+    UPDATE_SEARCH_ITEM_RATING(state, { productId, ratingData }) {
+      const searchRes = state.searchResults.find(item => item.id === productId)
+      if (searchRes) {
+        searchRes.rating = ratingData.rating
+        searchRes.reviewNumber = ratingData.review_number
+        searchRes.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
       }
     },
     UPDATE_FAVORITES_ITEM_RATING(state, { productId, ratingData }) {
@@ -129,9 +146,6 @@ export default createStore({
     ADD_TO_FAVORITES(state, product) {
       state.favorites.push(product)
     },
-    SET_FILTERED_PRODUCTS(state, filteredProducts) {
-      state.filteredProducts = filteredProducts
-    },
     updateCartItemQuantity(state, { product_id, newQuantity }) {
       const product = state.cart.find(item => item.id === product_id)
       if (product) {
@@ -194,6 +208,9 @@ export default createStore({
     }
   },
   actions: {
+    updateMessage({ commit }, message) {
+      commit('setMessage', message)
+    },
     setErrorMessage({ commit }, message) {
       commit('SET_ERROR_MESSAGE', message)
     },
@@ -396,19 +413,23 @@ export default createStore({
         console.error('Error fetching product:', error)
       }
     },
-    async getProducts({ commit }) {
-      try {
-        const response = await axios.get(`${config.backendEndpoint}/api/items`)
-        const products = response.data
-        commit('SET_PRODUCTS', products)
-        const maxPrice = Math.max(...products.map(product => product.price))
-        const minPrice = Math.min(...products.map(product => product.price))
-        commit('SET_MIN_PRICE', minPrice)
-        commit('SET_MAX_PRICE', maxPrice)
-      } catch (error) {
-        console.error('Error fetching products:', error)
-        // Re-throw the error for the component to handle if needed
-        throw error
+    async getProducts({ commit, state }) {
+      if (state.products.length === 0) {
+        try {
+          const response = await axios.get(
+            `${config.backendEndpoint}/api/items`
+          )
+          const products = response.data
+          commit('SET_PRODUCTS', products)
+          const maxPrice = Math.max(...products.map(product => product.price))
+          const minPrice = Math.min(...products.map(product => product.price))
+          commit('SET_MIN_PRICE', minPrice)
+          commit('SET_MAX_PRICE', maxPrice)
+          commit('setMessage', `Found ${products.length} products`)
+        } catch (error) {
+          console.error('Error fetching products:', error)
+          throw error
+        }
       }
     },
     async getProfiles({ commit, state }) {
@@ -434,21 +455,13 @@ export default createStore({
       }
     },
     async getProfile({ commit, dispatch, state }) {
-      // if (!state.user_id) {
-      //   console.log('state.user_id??', state.user_id)
-      //   return
-      // }
       try {
         const response = await axios.get(
           `${config.backendEndpoint}/api/profile/${state.user_id}`
         )
         if (response.status === 200) {
-          // Profile retrieved successfully
           commit('UPDATE_PROFILE', response.data)
         }
-        //  else {
-        //   commit('UPDATE_PROFILE', null)
-        // }
       } catch (error) {
         if (error.response && error.response.status === 401) {
           console.log('Profile 401 trying to handle:', error.response)
@@ -490,6 +503,10 @@ export default createStore({
           productId: itemId,
           ratingData: data
         })
+        commit('UPDATE_SEARCH_ITEM_RATING', {
+          productId: itemId,
+          ratingData: data
+        })
       } catch (error) {
         console.log(error)
       }
@@ -502,22 +519,17 @@ export default createStore({
             `${config.backendEndpoint}/api/reviews/item/rating?id=${product.id}`
           )
           const ratingData = response.data
-
-          // Use Promise.resolve to keep the promise chain intact
           return Promise.resolve({
             productId: product.id,
             ratingData: ratingData
           })
         })
-
-        // Wait for all promises to resolve
         const ratings = await Promise.all(ratingPromises)
-
-        // Update the state or commit mutations as needed
         ratings.forEach(rating => {
           commit('UPDATE_PRODUCT_RATING', rating)
           commit('UPDATE_CART_ITEM_RATING', rating)
           commit('UPDATE_FAVORITES_ITEM_RATING', rating)
+          commit('UPDATE_SEARCH_ITEM_RATING', rating)
         })
       } catch (error) {
         console.log(error)
@@ -903,6 +915,7 @@ export default createStore({
     products: state => state.products,
     cart: state => state.cart,
     favorites: state => state.favorites,
+    searchResults: state => state.searchResults,
     min: state => state.min,
     max: state => state.max,
     categories: state => state.categories,

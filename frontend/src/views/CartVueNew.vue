@@ -28,6 +28,7 @@
         :favorites="favorites"
       />
     </nav>
+    <!-- <MessageArea /> -->
     <div class="container-fluid mt-5" style="margin-left: 10%">
       <div
         class="row"
@@ -84,7 +85,7 @@
                 <td class="align-left text-left">
                   <div
                     class="input-group"
-                    style="max-width: 120px; margin: auto"
+                    style="max-width: 110px; margin-left: 55px; padding: 0"
                   >
                     <button
                       class="btn btn-outline-secondary"
@@ -95,11 +96,12 @@
                     </button>
                     <input
                       type="number"
-                      class="form-control text-center"
+                      class="form-control text-center align-middle"
                       min="1"
                       max="3"
                       :value="product.quantity"
                       disabled
+                      style="text-align: center"
                     />
                     <button
                       class="btn btn-outline-secondary"
@@ -437,6 +439,7 @@
 
 <script>
 import NavBar from '../components/MyNavbar.vue'
+// import MessageArea from '@/views/MessageAreaVue.vue'
 import errorHandlingMixin from '../errorHandlingMixin'
 import $ from 'jquery'
 import config from '@/config'
@@ -444,6 +447,7 @@ import config from '@/config'
 export default {
   components: {
     NavBar
+    // MessageArea
   },
   mixins: [errorHandlingMixin],
   props: ['profile', 'favorites'],
@@ -555,3 +559,15 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+input[type='number']::-webkit-inner-spin-button {
+  position: absolute;
+  width: 12.5%;
+  height: 100%;
+  top: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+}
+</style>

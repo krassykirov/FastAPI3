@@ -1,15 +1,18 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi import Request, Depends, HTTPException, status
 from db import get_session
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from models import Item, User
 import schemas
 from crud.crud import ItemActions, CategoryActions
 from typing import Optional, List, Annotated, Union
 from auth.oauth import get_current_user
 from my_logger import detailed_logger
+from routers.categories import get_category_items
+import re
 
 PROTECTED = [Depends(get_current_user)]
 
@@ -45,6 +48,30 @@ def get_items(skip: int = 0, limit: int = 100,
     except Exception as e:
         logger.error(f"Error fetching items, error message: {e}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error fetching items")
+
+@items_router.get("/search/")
+async def read_items(q: List[str] = Query(None), db: Session = Depends(get_session)):
+    query_filters = []
+    categories_user_input = ["Laptops", "Smartphones", "Tablets", "Smartwatches", "TV"]
+    print('q', q)
+    if q:
+        for category_name in categories_user_input:
+            if category_name.lower().startswith(q[0].lower()):
+                items_in_category = get_category_items(db=db, name=category_name)
+                return items_in_category.items
+    if q:
+        for param in q:
+            print('param', param)
+            # query_filters.append(Item.name.contains(param.lower()))
+            query_filters.append(Item.name.ilike(f"%{param}%"))
+
+    query = db.query(Item)
+    if query_filters:
+        query = query.filter(or_(*query_filters))
+
+    results = query.all()
+    print('results', results)
+    return results
 
 @items_router.get("/by-category", status_code=status.HTTP_200_OK, response_model=list[schemas.ItemRead])
 async def get_items_by_category( request: Request, category_id: int, db: Session=Depends(get_session)):

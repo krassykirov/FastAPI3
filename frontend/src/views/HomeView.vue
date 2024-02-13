@@ -3,10 +3,7 @@
     class="container-fluid"
     style="width: 100vw; position: sticky; margin: 0; padding: 0"
   >
-    <nav
-      class="navbar navbar-expand-lg bg-white sticky-top navbar-light ms-auto shadow-lg"
-      style="height: 4em"
-    >
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" style="height: 4em">
       <MyNavbar
         :cart="cart"
         :favorites="favorites"
@@ -19,7 +16,7 @@
         @redirectToItemFromNavbar="redirectToItemFromNavbar"
       />
     </nav>
-
+    <!-- <MessageArea /> -->
     <div
       class="toast"
       id="cartToast"
@@ -42,7 +39,7 @@
         style="font-weight: 900; font: 1.1em"
       ></div>
     </div>
-    <form class="d-flex">
+    <!-- <form class="d-flex">
       <input
         class="form-control mr-sm-2"
         id="filter"
@@ -56,7 +53,7 @@
           margin-right: 5%;
         "
       />
-    </form>
+    </form> -->
     <!-- <div>
       <p v-if="isIdle">User is currently idle.</p>
       <p v-else>User is active.</p>
@@ -268,28 +265,35 @@
           </div>
         </div>
       </div>
-      <div class="product-list" id="mycard">
-        <transition-group name="product-fade">
-          <ProductList
-            v-for="product in filteredProducts"
-            :key="product.id"
-            :cart="cart"
-            :favorites="favorites"
-            class="row g-0 col-auto"
-            :product="product"
-            :min="min"
-            :max="max"
-            :total="total"
-            @addToCart="addToCart"
-            @addTofavorites="addTofavorites"
-            @removeFromCart="removeFromCart"
-            @removeFromFavorites="removeFromFavorites"
-            v-on:redirectToItem="redirectToItem"
-            style="justify-content: left"
-          >
-          </ProductList>
-        </transition-group>
-      </div>
+      <template v-if="filteredProducts && filteredProducts.length > 0">
+        <div class="product-list" id="mycard">
+          <transition-group name="product-fade">
+            <!-- Render ProductList if there are filteredProducts -->
+            <ProductList
+              v-for="product in filteredProducts"
+              :key="product.id"
+              :cart="cart"
+              :favorites="favorites"
+              class="row g-0 col-auto"
+              :product="product"
+              :min="min"
+              :max="max"
+              :total="total"
+              @addToCart="addToCart"
+              @addTofavorites="addTofavorites"
+              @removeFromCart="removeFromCart"
+              @removeFromFavorites="removeFromFavorites"
+              v-on:redirectToItem="redirectToItem"
+              style="justify-content: left"
+            ></ProductList>
+          </transition-group>
+        </div>
+      </template>
+      <template v-else>
+        <div style="align-items: center; margin-left: 10%">
+          <img :src="require('@/assets/no_result.gif')" />
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -302,6 +306,7 @@ import VueCookies from 'vue-cookies'
 import { jwtDecode } from 'jwt-decode'
 import ProductList from '@/components/ProductList.vue'
 import MyNavbar from '@/components/MyNavbar.vue'
+// import MessageArea from '@/views/MessageAreaVue.vue'
 import errorHandlingMixin from '../errorHandlingMixin'
 import config from '@/config'
 // import { handleError } from 'vue'
@@ -311,6 +316,7 @@ export default {
   components: {
     ProductList,
     MyNavbar
+    // MessageArea
   },
   props: {
     isIdle: Boolean,
@@ -327,7 +333,6 @@ export default {
   created() {
     const accessToken = VueCookies.get('access_token')
     if (accessToken) {
-      // Decode access token to extract user information
       const user = jwtDecode(accessToken).user
       const user_id = jwtDecode(accessToken).user_id
       this.$store.commit('UPDATE_USER', user)
@@ -472,21 +477,21 @@ export default {
     updateInputs() {
       this.$store.dispatch('updateInputs')
     },
-    Search() {
-      var input, filter, cards, cardContainer, title, i
-      input = document.getElementById('filter')
-      filter = input.value.toUpperCase()
-      cardContainer = document.getElementById('mycard')
-      cards = cardContainer.getElementsByClassName('card')
-      for (i = 0; i < cards.length; i++) {
-        title = cards[i].querySelector('.card-body h6.card-title')
-        if (title.innerText.toUpperCase().indexOf(filter) > -1) {
-          cards[i].style.display = ''
-        } else {
-          cards[i].style.display = 'none'
-        }
-      }
-    },
+    // Search() {
+    //   var input, filter, cards, cardContainer, title, i
+    //   input = document.getElementById('filter')
+    //   filter = input.value.toUpperCase()
+    //   cardContainer = document.getElementById('mycard')
+    //   cards = cardContainer.getElementsByClassName('card')
+    //   for (i = 0; i < cards.length; i++) {
+    //     title = cards[i].querySelector('.card-body h6.card-title')
+    //     if (title.innerText.toUpperCase().indexOf(filter) > -1) {
+    //       cards[i].style.display = ''
+    //     } else {
+    //       cards[i].style.display = 'none'
+    //     }
+    //   }
+    // },
     scrollToTop() {
       document.body.scrollIntoView({ behavior: 'smooth' })
     },

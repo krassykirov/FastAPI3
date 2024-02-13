@@ -28,10 +28,11 @@
         :favorites="favorites"
       />
     </nav>
+    <!-- <MessageArea /> -->
     <div class="container" style="margin-top: 2%">
       <div class="card" v-if="profile">
         <img
-          :src="`${backendEndpoint}/static/img/${user}/profile/${profile.avatar}`"
+          :src="`${backendEndpoint}/static/img/${profile.primary_email}/profile/${profile.avatar}`"
           id="avatar-image"
           style="width: 100%"
           class="img-top"
@@ -274,12 +275,17 @@
 <script>
 import $ from 'jquery'
 import NavBar from '../components/MyNavbar.vue'
+// import MessageArea from '@/views/MessageAreaVue.vue'
 import errorHandlingMixin from '../errorHandlingMixin'
 import config from '@/config'
+import VueCookies from 'vue-cookies'
+import { jwtDecode } from 'jwt-decode'
+import router from '@/router'
 
 export default {
   components: {
     NavBar
+    // MessageArea
   },
   props: ['cart', 'total', 'avatar', 'favorites'],
   emits: ['addToCart'],
@@ -293,26 +299,32 @@ export default {
   },
   computed: {
     user() {
-      return this.$store.getters.user || null
+      return this.$store.state.user
     },
     user_id() {
-      return this.$store.getters.user_id || null
+      return this.$store.state.user_id
     },
     profile() {
-      return this.$store.getters.profile || null
+      return this.$store.state.profile
     },
     accessToken() {
-      return this.$store.state.accessToken || null
+      return this.$store.state.accessToken
     }
   },
   created() {
-    // this.$store.dispatch('initializeUser').catch(this.handleError)
-    this.getProfile()
+    const accessToken = VueCookies.get('access_token')
+    if (accessToken) {
+      // Decode access token to extract user information
+      const user = jwtDecode(accessToken).user
+      const user_id = jwtDecode(accessToken).user_id
+      this.$store.commit('UPDATE_USER', user)
+      this.$store.commit('UPDATE_USER_ID', user_id)
+    } else {
+      router.push('/login')
+    }
+    this.$store.dispatch('getProfile')
   },
   methods: {
-    async getProfile() {
-      this.$store.dispatch('getProfile')
-    },
     addToCart(product) {
       this.$store.dispatch('addToCart', product)
     },
@@ -422,5 +434,9 @@ button {
   cursor: pointer !important;
   width: 100% !important;
   font-size: 18px !important;
+}
+
+.navbar {
+  padding-left: 0 !important;
 }
 </style>

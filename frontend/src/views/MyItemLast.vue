@@ -22,12 +22,13 @@
     >
       <NavBar
         :cart="cart"
+        :user="user"
         :total="total"
         :favorites="favorites"
         :profile="profile"
-        :user="user"
       />
     </nav>
+    <!-- <MessageArea /> -->
     <div class="container my-5">
       <div class="row">
         <div class="col-md-5">
@@ -185,7 +186,7 @@
         style="font-weight: 900; font: 1.1em"
       ></div>
     </div>
-    <div class="container similar-products my-4">
+    <div class="similar-products my-4">
       <hr />
       <p class="display-5" v-if="item && getSimilarProducts.length">
         You may also like
@@ -315,10 +316,18 @@
                 <!-- Left Side -->
                 <div style="flex: 1; display: flex; align-items: center">
                   <img
-                    v-if="profiles && review.created_by"
-                    :src="getProfileAvatar(review)"
-                    class="avatar"
-                    style="padding: 5px"
+                    v-if="profile"
+                    :src="`${backendEndpoint}/static/img/${user}/profile/${profile.avatar}`"
+                    width="50"
+                    height="50"
+                    class="rounded-circle"
+                  />
+                  <img
+                    v-else
+                    :src="`${backendEndpoint}/static/img/img_avatar.png`"
+                    width="50"
+                    height="50"
+                    class="rounded-circle"
                   />
                   <div style="margin-left: 2px">
                     <span>{{ review.created_by }}</span>
@@ -479,6 +488,7 @@
 <script>
 /* global bootstrap */
 import $ from 'jquery'
+// import MessageArea from '@/views/MessageAreaVue.vue'
 import errorHandlingMixin from '../errorHandlingMixin'
 import config from '@/config'
 import NavBar from '../components/MyNavbar.vue'
@@ -486,6 +496,7 @@ import NavBar from '../components/MyNavbar.vue'
 export default {
   components: {
     NavBar
+    // MessageArea
   },
   mixins: [errorHandlingMixin],
   props: ['cart', 'profile', 'favorites'],
@@ -507,7 +518,16 @@ export default {
     next()
   },
   created() {
-    // this.$store.dispatch('initializeUser').catch(this.handleError)
+    // const accessToken = VueCookies.get('access_token')
+    // if (accessToken) {
+    //   // Decode access token to extract user information
+    //   const user_access_token = jwtDecode(accessToken).user
+    //   const user_id_access_token = jwtDecode(accessToken).user_id
+    //   this.$store.commit('UPDATE_USER', user_access_token)
+    //   this.$store.commit('UPDATE_USER_ID', user_id_access_token)
+    // } else {
+    //   router.push('/login')
+    // }
     this.getProduct()
     this.$store.dispatch('getProfile')
     this.$store.dispatch('getProfiles')
@@ -529,16 +549,16 @@ export default {
       )
     },
     user() {
-      return this.$store.getters.user
+      return this.$store.state.user
     },
     user_id() {
-      return this.$store.getters.user_id
+      return this.$store.state.user_id
     },
     total() {
       return this.$store.getters.total
     },
     profiles() {
-      return this.$store.getters.profiles
+      return this.$store.state.profiles
     },
     accessToken() {
       return this.$store.state.accessToken
@@ -683,7 +703,9 @@ export default {
         return
       }
       const id = this.item.id
-      const username = this.user
+      const username = this.$store.state.user
+      console.log('username', username)
+      console.log('user', this.user)
       const ratingValue = rating.value || 0
       const requestOptions = {
         method: 'POST',
@@ -791,9 +813,6 @@ export default {
   margin-top: 1%;
   margin-bottom: 2%;
 }
-.navbar {
-  padding-left: 35% !important;
-}
 .text-bold {
   font-weight: 800;
 }
@@ -839,7 +858,7 @@ text-color {
   color: #757575;
 }
 
-.buttons .block {
+.block {
   margin-right: 5px;
 }
 
@@ -863,11 +882,10 @@ text-color {
   color: white !important;
 }
 
-.similar-product img {
+.similar-products img {
   height: 330px !important;
 }
-
-.similar-product {
+.similar-products {
   text-align: center !important;
 }
 .display-5 {
@@ -875,11 +893,11 @@ text-color {
   line-height: 1;
   font-size: 1.5em;
 }
-.similar-product .title {
+.similar-products .title {
   margin: 0px 0px 0px 0px;
 }
 
-.similar-product .price {
+.similar-products .price {
   font-weight: bold;
 }
 
@@ -892,14 +910,6 @@ text-color {
   color: #0093c4;
 }
 
-/* Small devices (landscape phones, less than 768px) */
-@media (max-width: 767.98px) {
-  /* Make preview images responsive  */
-  .previews img {
-    width: 100%;
-    height: auto;
-  }
-}
 .pagination {
   margin-top: 0.5% !important;
 }
@@ -914,23 +924,22 @@ text-color {
   color: #fff;
   border-color: #007bff;
 }
-
-ul {
-  list-style: none !important;
-  padding-left: 0 !important;
-  margin-bottom: 0 !important;
-}
 .text-center {
   text-align: center !important;
 }
 
-.container {
+.container.my-5 {
   max-width: 100% !important;
   width: 100%;
   padding-left: 15px !important;
   padding-right: 15px !important;
   margin-left: auto !important;
   margin-right: auto !important;
+}
+
+.nav-item.dropdown {
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .hide {
@@ -953,16 +962,6 @@ ul {
 }
 .tab-nav ul.show {
   display: block !important;
-}
-@media (min-width: 992px) {
-  .tab-nav {
-    max-width: 100% !important;
-    border: 0 !important;
-  }
-  .tab-nav ul {
-    gap: 16px !important;
-    flex-direction: row !important;
-  }
 }
 .form-control {
   margin-left: 1% !important;
@@ -990,7 +989,9 @@ textarea#comment-area.form.control {
   border: 1px solid var(--color-primary) !important;
   overflow-y: auto; /* Enable vertical scroll */
   height: 400px; /* Set a fixed height */
+  width: 100%;
 }
+
 div#RatingCard.card {
   padding-right: 1% !important;
   padding-bottom: 0 !important;
@@ -1010,11 +1011,6 @@ div#RatingCard.card {
   /* border: 15px solid #969696; */
   text-align: center !important;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-}
-@media (min-width: 992px) {
-  .tab-nav ul {
-    display: flex !important;
-  }
 }
 .list-group {
   width: 200px; /* Set your preferred width */

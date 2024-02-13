@@ -30,7 +30,7 @@ export default {
       const diff = currentTime - lastActiveTime
       inactiveTime.value = Math.floor(diff / 60000) // Convert milliseconds to minutes
       isIdle.value = diff >= 1 * 10 * 1000 // Check if the user is idle for more than 5 minutes
-      if (inactiveTime.value >= 10) {
+      if (inactiveTime.value >= 30) {
         store.dispatch('inactiveLogout')
       }
     }
@@ -38,7 +38,7 @@ export default {
     // Update idle status and last active time when idle changes
     onMounted(() => {
       idle.value = false
-      intervalId = setInterval(updateValues, 1000) // Check every second
+      intervalId = setInterval(updateValues, 60000) // 1m, Check every second 1000
     })
 
     onUnmounted(() => {

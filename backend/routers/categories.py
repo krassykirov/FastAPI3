@@ -35,7 +35,7 @@ def get_categories(request: Request, skip: int = 0, limit: int = 100, db: Sessio
     return categories # JSONResponse(content= categories)
 
 @category_router.get("/category_items/", status_code=status.HTTP_200_OK, response_model=CategoryItems)
-def get_category_items(request: Request, name: str, db: Session = Depends(get_session)):
+def get_category_items(name: str, db: Session = Depends(get_session)):
     """ Return all items in a category """
     category = CategoryActions().get_category_by_name(db=db, name=name)
     logger.info(f'category: {category}')

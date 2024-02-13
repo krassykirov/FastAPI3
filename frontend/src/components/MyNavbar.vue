@@ -1,18 +1,19 @@
 <template>
   <div
     class="container"
-    style="align-items: center; text-align: center; margin-left: 35%"
+    style="align-items: center; text-align: center; margin-left: 0"
   >
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
-      <a
-        class="navbar-brand"
-        href="#"
-        style="font-size: 14px; margin-left: 1%; font-family: inherit"
-      >
-        <i class="fa fa-home"></i> <strong>KRASSY SHOP</strong>
-      </a>
       <ul class="navbar-nav">
-        <li class="nav-item">
+        <a class="navbar-brand" href="#">
+          <img
+            :src="require('@/assets/logo-house.png')"
+            alt=""
+            width="40"
+            height="40"
+          />
+        </a>
+        <li class="nav-item" style="padding-left: 200px">
           <a class="nav-link mx-2 text-uppercase"
             ><router-link
               style="
@@ -21,47 +22,51 @@
                 font-family: inherit;
               "
               to="/"
-              >Offers</router-link
             >
-          </a>
-        </li>
-        <li class="nav-item" v-if="!accessToken">
-          <a class="nav-link mx-2 text-uppercase"
-            ><router-link
-              style="
-                text-decoration: none;
-                color: inherit;
-                font-family: inherit;
-              "
-              to="/login"
-              >Login</router-link
-            >
-          </a>
-        </li>
-        <li class="nav-item" v-if="!accessToken">
-          <a class="nav-link mx-2 text-uppercase"
-            ><router-link
-              style="
-                text-decoration: none;
-                color: inherit;
-                font-family: inherit;
-              "
-              to="/signup"
-              >SignUp</router-link
-            >
+              <img
+                :src="require('@/assets/logo-house.png')"
+                style="width: 40px; height: 40px"
+              />
+            </router-link>
           </a>
         </li>
       </ul>
-      <div
+      <form
+        class="form-inline"
+        @submit.prevent="search"
+        style="padding-left: 10%"
+      >
+        <div class="input-group" style="width: 700px; margin-top: 20px">
+          <input
+            class="form-control"
+            type="search"
+            id="filter"
+            v-on:keyup="Search()"
+            placeholder="Search"
+            aria-label="Search"
+            v-model="searchQuery"
+          />
+          <div class="input-group-append">
+            <button type="submit" class="btn btn-outline-success">
+              <i class="fas fa-search"></i>
+            </button>
+            <!-- <button class="btn btn-outline-danger" @submit.prevent="clearSearch">
+              <i class="fas fa-times"></i>
+            </button> -->
+          </div>
+        </div>
+      </form>
+      <ul
         v-if="favorites && accessToken"
-        @mouseleave="hideFavorites()"
+        class="navbar-nav mb-1 mb-lg-0 profile-menu"
         d-flex
         bd-highlight
         mb-1
-        style="margin-top: 18px"
+        style="margin-top: 18px; padding-left: 2%; position: relative"
+        @mouseleave="handleMouseLFavLeave"
       >
         <button
-          @mouseenter="showFavorites()"
+          @mouseenter="showFavorites"
           @click="displayLiked = !displayLiked"
           @dblclick="handleDoubleClickFavorites"
           class="btn btn-light dropdown-toggle btn-sm"
@@ -71,21 +76,26 @@
         >
           <i class="fa fa-heart-o red-color" style="font-size: 1rem"></i>
           FAVORITES
-          <span class="badge badge-pill badge-danger">
-            {{ favorites.length }}</span
-          >
+          <span class="badge badge-pill badge-danger">{{
+            favorites.length
+          }}</span>
         </button>
         <div
-          v-if="!displayLiked"
+          v-if="!displayLiked && favorites.length > 0"
           class="list-group position-absolute"
           style="
-            left: 52%;
-            transform: translateX(-40%);
+            top: 100%;
+            left: -55px;
             z-index: 1000;
             min-width: 200px;
             max-height: 400px;
             overflow-y: auto;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
           "
+          @mouseleave="handleMouseLFavLeave"
         >
           <div
             v-for="(item, index) in favorites"
@@ -94,14 +104,7 @@
           >
             <div class="d-flex align-items-center">
               <img
-                :src="
-                  `${backendEndpoint}/static/img/` +
-                  item.username +
-                  '/' +
-                  item.name +
-                  '/' +
-                  item.image
-                "
+                :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                 class="mr-2"
                 style="
                   width: 60px;
@@ -115,7 +118,7 @@
                 style="cursor: pointer"
                 @click="redirectToItemFromNavbar(item.id)"
               >
-                <div style="font-size: 0.9rem; width: 180px">
+                <div style="font-size: 0.9rem; width: 150px">
                   {{ truncateDescription(item.name, 30) }} ${{
                     formatPrice(item.price)
                   }}
@@ -126,7 +129,7 @@
               @click="removeFromFavorites(item.id)"
               class="btn btn-light btn-sm ml-2"
               data-bs-placement="top"
-              style="margin-top: 16px"
+              style="margin-top: 18px"
             >
               <i class="bi bi-trash"></i>
             </button>
@@ -139,39 +142,44 @@
             Go to Favorites
           </button>
         </div>
-      </div>
-      <div
+      </ul>
+      <ul
+        class="navbar-nav mb-1 mb-lg-0 profile-menu"
         v-if="cart && accessToken"
-        @mouseleave="hideCart()"
         d-flex
         bd-highlight
         mb-1
-        style="padding-left: 35%; margin-top: 5px"
+        style="padding-left: 3%; margin-top: 0; position: relative"
+        @mouseleave="handleMouseLeave"
       >
         <button
-          @mouseenter="showCart()"
+          @mouseenter="showCart"
           @click="displayCart = !displayCart"
           @dblclick="handleDoubleClick"
           class="btn btn-light dropdown-toggle btn-sm"
           id="cartDropdown"
           aria-haspopup="true"
           aria-expanded="false"
-          style="margin-top: 16px"
         >
           <i class="bi bi-cart" style="font-size: 1rem"></i> CART
           <span class="badge badge-pill badge-primary"> {{ cart.length }}</span>
         </button>
         <div
-          v-if="!displayCart"
+          v-if="!displayCart && cart.length > 0"
           class="list-group position-absolute"
           style="
-            left: 77%;
-            transform: translateX(-40%);
+            top: 100%;
+            left: -55px;
             z-index: 1000;
             min-width: 200px;
             max-height: 400px;
             overflow-y: auto;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
           "
+          @mouseleave="handleMouseLeave"
         >
           <div
             v-for="(item, index) in cart"
@@ -180,14 +188,7 @@
           >
             <div class="d-flex align-items-center">
               <img
-                :src="
-                  `${backendEndpoint}/static/img/` +
-                  item.username +
-                  '/' +
-                  item.name +
-                  '/' +
-                  item.image
-                "
+                :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                 class="mr-2"
                 style="
                   width: 60px;
@@ -201,7 +202,7 @@
                 style="cursor: pointer"
                 @click="redirectToItemFromNavbar(item.id)"
               >
-                <div style="font-size: 0.9rem; width: 180px">
+                <div style="font-size: 0.9rem; width: 150px">
                   x{{ item.quantity }}
                   {{ truncateDescription(item.name, 30) }} ${{
                     formatPrice(item.price)
@@ -223,8 +224,7 @@
             class="btn btn-sm btn-light"
             style="pointer-events: none; opacity: 1; margin-bottom: 1px"
           >
-            Total: {{ cart.length }} products -
-            <b> ${{ total }} </b>
+            Total: {{ cart.length }} products - <b> ${{ total }} </b>
           </button>
           <button
             v-if="cart.length > 0"
@@ -234,69 +234,74 @@
             Go to Cart
           </button>
         </div>
-      </div>
-    </div>
-    <ul
-      class="navbar-nav ms-auto mb-1 mb-lg-0 profile-menu"
-      style="margin-right: 120px"
-    >
-      <li class="nav-item dropdown">
-        <a
-          class="nav-link dropdown-toggle"
-          href="#"
-          id="navbarDropdownMenuLink"
-          role="button"
-          data-toggle="dropdown"
-          aria-haspopup="true"
-          aria-expanded="false"
-          style="cursor: pointer"
-        >
-          <img
-            v-if="profile"
-            :src="`${backendEndpoint}/static/img/${user}/profile/${profile.avatar}`"
-            width="50"
-            height="50"
-            class="rounded-circle"
-          />
-          <img
-            v-else
-            :src="`${backendEndpoint}/static/img/img_avatar.png`"
-            width="50"
-            height="50"
-            class="rounded-circle"
-          />
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item" style="color: grey; pointer-events: none">
-            {{ user }}
-          </a>
-          <a class="dropdown-item">
-            <router-link
-              style="
-                text-decoration: none;
-                color: inherit;
-                font-family: inherit;
-              "
-              to="/Profile"
-              >Profile</router-link
-            >
-          </a>
-          <a class="dropdown-item" style="cursor: pointer" @click="logout"
-            >Logout</a
-          >
+      </ul>
+      <ul class="navbar-nav mb-1 mb-lg-0 profile-menu" style="padding-left: 3%">
+        <li class="nav-item dropdown" @mouseleave="hideDropdown">
           <a
-            class="dropdown-item"
-            v-if="user === 'krassy@mail.bg'"
-            data-toggle="modal"
-            data-target="#addItem"
+            class="nav-link dropdown-toggle"
             href="#"
-            style="font-family: inherit; margin-top: 14%"
+            id="navbarDropdownMenuLink"
+            role="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            style="cursor: pointer"
+            @mouseenter="showDropdown"
           >
-            Add Product
+            <img
+              v-if="profile"
+              :src="`${backendEndpoint}/static/img/${profile.primary_email}/profile/${profile.avatar}`"
+              width="50"
+              height="50"
+              class="rounded-circle"
+              @mouseenter="showDropdown"
+            />
+            <img
+              v-else
+              :src="`${backendEndpoint}/static/img/img_avatar.png`"
+              width="50"
+              height="50"
+              class="rounded-circle"
+              @mouseenter="showDropdown"
+            />
           </a>
-        </div>
-      </li>
-    </ul>
+          <div
+            v-show="isDropdownVisible"
+            class="dropdown-menu"
+            aria-labelledby="navbarDropdownMenuLink"
+            @mouseleave="hideDropdown"
+          >
+            <a class="dropdown-item" style="color: grey; pointer-events: none">
+              {{ user }}
+            </a>
+            <a class="dropdown-item">
+              <router-link
+                style="
+                  text-decoration: none;
+                  color: inherit;
+                  font-family: inherit;
+                "
+                to="/Profile"
+                >Profile</router-link
+              >
+            </a>
+            <a class="dropdown-item" style="cursor: pointer" @click="logout">
+              Logout
+            </a>
+            <a
+              class="dropdown-item"
+              v-if="user === 'krassy@mail.bg'"
+              data-toggle="modal"
+              data-target="#addItem"
+              href="#"
+              style="font-family: inherit; margin-top: 14%"
+            >
+              Add Product
+            </a>
+          </div>
+        </li>
+      </ul>
+    </div>
     <div
       class="modal fade"
       id="addItem"
@@ -412,6 +417,7 @@
 
 <script>
 import $ from 'jquery'
+import axios from 'axios'
 import errorHandlingMixin from '../errorHandlingMixin'
 import VueCookies from 'vue-cookies'
 import config from '@/config'
@@ -425,7 +431,9 @@ export default {
     return {
       displayCart: true,
       displayLiked: true,
-      backendEndpoint: `${config.backendEndpoint}`
+      isDropdownVisible: false,
+      backendEndpoint: `${config.backendEndpoint}`,
+      searchQuery: ''
     }
   },
   created() {
@@ -434,22 +442,80 @@ export default {
         console.error('error', error)
       }
     })
+    this.$store.dispatch('readFromCartVue')
   },
   computed: {
     accessToken() {
-      return this.$store.state.accessToken || null
+      return this.$store.getters.accessToken || null
     },
     total() {
-      return this.$store.state.total
+      return this.$store.getters.total
     },
     user() {
-      return this.$store.state.user
+      return this.$store.getters.user
     },
     user_id() {
-      return this.$store.state.user_id
+      return this.$store.getters.user_id
     }
   },
   methods: {
+    Search() {
+      if (this.$route.path == '/') {
+        var input, filter, cards, cardContainer, title, i
+        input = document.getElementById('filter')
+        filter = input.value.toUpperCase()
+        cardContainer = document.getElementById('mycard')
+        cards = cardContainer.getElementsByClassName('card')
+        for (i = 0; i < cards.length; i++) {
+          title = cards[i].querySelector('.card-body h6.card-title')
+          if (title.innerText.toUpperCase().indexOf(filter) > -1) {
+            cards[i].style.display = ''
+          } else {
+            cards[i].style.display = 'none'
+          }
+        }
+      }
+    },
+    async search() {
+      if (
+        this.searchQuery.trim() === '' ||
+        !this.searchQuery ||
+        this.$route.path === '/'
+      ) {
+        return
+      }
+      try {
+        const response = await axios.get(
+          `${config.backendEndpoint}/api/items/search/`,
+          {
+            params: {
+              q: this.searchQuery
+            }
+          }
+        )
+        const products = response.data
+        if (products.length > 0) {
+          this.$store.commit('SET_SEARCH_RESULTS', products)
+          this.$store.state.searchResults.map(product => {
+            return this.$store.dispatch('getItemRating', product.id)
+          })
+          this.$store.dispatch(
+            'updateMessage',
+            `Found ${products.length} results for '${this.searchQuery}'`
+          )
+          if (this.$route.path !== '/') {
+            this.$router.push('/search')
+          }
+        } else {
+          this.$store.dispatch(
+            'updateMessage',
+            `Found ${products.length} results for '${this.searchQuery}'`
+          )
+        }
+      } catch (error) {
+        console.error('Error fetching items:', error)
+      }
+    },
     redirectToItemFromNavbar(itemId) {
       this.$router.push({ name: 'Item', params: { itemId } })
     },
@@ -476,6 +542,18 @@ export default {
       this.$store.dispatch('setErrorMessage', 'You have been logged out')
       router.push('/login')
     },
+    showDropdown() {
+      this.isDropdownVisible = true
+    },
+    hideDropdown() {
+      this.isDropdownVisible = false
+    },
+    handleMouseLeave() {
+      this.hideCart()
+    },
+    handleMouseLFavLeave() {
+      this.hideFavorites()
+    },
     hideCart() {
       setTimeout(() => {
         this.displayCart = true
@@ -483,8 +561,8 @@ export default {
     },
     showCart() {
       setTimeout(() => {
-        this.displayLiked = true
         this.displayCart = false
+        this.displayLiked = true
       }, 400)
     },
     hideFavorites() {
@@ -494,8 +572,8 @@ export default {
     },
     showFavorites() {
       setTimeout(() => {
-        this.displayCart = true
         this.displayLiked = false
+        this.displayCart = true
       }, 400)
     },
     createItem() {
@@ -541,9 +619,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.cart {
-  padding-left: 15px !important;
-}
-</style>

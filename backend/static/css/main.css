@@ -220,9 +220,6 @@ input::-webkit-inner-spin-button {
 
 .slider-container {
     width: 100%;
-}
-
-.slider-container {
     height: 6px;
     position: relative;
     background: #e4e4e4;
@@ -231,8 +228,8 @@ input::-webkit-inner-spin-button {
 
 .slider-container .price-slider {
     height: 100%;
-    left: 0%; 
-    right: 0%; 
+    left: 0%;
+    right: 0%;
     position: absolute;
     border-radius: 5px;
     background: #5e95e2;
@@ -340,6 +337,10 @@ INPUT[type="checkbox"]:disabled {
   flex-wrap: wrap;
   align-items: flex-start;
 }
+
+/* .navbar-nav {
+  padding-left: 30% !important;
+} */
 
 .filter-card {
     margin-bottom: 5px;

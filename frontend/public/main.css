@@ -15,6 +15,7 @@ body {
   margin: 0 !important;
   margin-left: 0!important;
   margin-right: 0 !important;
+  padding-left: 0 !important;
 }
 * {
   font-family: 'Raleway';
@@ -249,18 +250,8 @@ display: block;
     color: #555;
 }
 
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
 .slider-container {
-    width: 100%;
-}
-
-.slider-container {
+    width: 100% !important;
     height: 6px !important;
     position: relative !important;
     background: #e4e4e4 !important;
@@ -270,15 +261,17 @@ input::-webkit-inner-spin-button {
 
 .slider-container .price-slider {
     height: 100% !important;
+    /* margin-left: -5px; */
     left: 0%;
     right: 0%;
     position: absolute !important;
     border-radius: 5px !important;
     background: #5e95e2 !important;
+    max-width: 100% !important;
 }
 
 .range-input {
-    position: relative;
+    position: relative !important;
 }
 
 .range-input input {
@@ -295,7 +288,7 @@ input::-webkit-inner-spin-button {
 /* Styles for the range thumb in WebKit browsers */
 input[type="range"]::-webkit-slider-thumb {
     height: 14px !important;
-    width: 14px !important;
+    width: 16px !important;
     border-radius: 70% !important;
     background: #1261b5 !important;
     pointer-events: auto !important;
@@ -312,7 +305,7 @@ input[type="range"]::-webkit-slider-thumb {
 /* From Base_OLD */
 
 #cartDropdown {
-  margin-top: 14px;
+  margin-top: 18px;
 }
 .last-price{
     color: #f64749;
@@ -362,6 +355,7 @@ INPUT[type="checkbox"]:disabled {
 
 .product-container {
   display: flex !important;
+  margin-top: 3%;
 }
 
 .filter-content{
@@ -372,14 +366,14 @@ INPUT[type="checkbox"]:disabled {
   display: flex !important;
   flex-direction: column !important;
   margin-left: 4% !important;
-  /* margin-top: 0.2% !important; */
+  margin-top: 3% !important;
 }
 
 .product-list {
   flex-grow: 1;
   padding-right: 1%;
   padding-left: 0.03%;
-  /* margin-top: 0.2%; */
+  margin-top: 3%;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
@@ -487,3 +481,6 @@ INPUT[type="checkbox"]:disabled {
     border: 1px solid #ccc;
     border-radius: 3px;
   }
+
+  /*  HOME VUE CSS
+  } */

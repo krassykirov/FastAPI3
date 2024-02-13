@@ -40,28 +40,44 @@
           margin: 0 -16px;
         "
       >
-        <div class="col-md-8" style="max-width: 1200px; margin-left: 3%">
-          <h3 class="text-center mb-4" style="margin-left: 12%">
-            <i class="fa fa-heart red-color" style="font-size: 1.6rem"> </i>
-            Favorite Products
+        <div>
+          <h3 class="text-center mb-4">
+            <h6 v-if="message" style="margin-right: 19%; margin-bottom: 3%">
+              <i class="fa fa-search" style="font-size: 1.2rem"> </i>&nbsp;{{
+                message
+              }}
+            </h6>
+            <div v-else style="align-items: center; margin-right: 23%">
+              <img :src="require('@/assets/no_result.gif')" />
+            </div>
           </h3>
+        </div>
+        <div class="col-md-8" style="max-width: 1200px; margin-left: 3%">
           <table class="table table-hover">
             <tbody>
-              <tr v-for="product in favorites" :key="product.id">
+              <tr v-for="product in searchResults" :key="product.id">
                 <td style="padding-top: 1%">
                   <img
                     :src="`${backendEndpoint}/static/img/${product.username}/${product.name}/${product.image}`"
                     class="img-fluid"
                     alt="Product Image"
-                    style="max-width: 270px; height: 200px; object-fit: cover"
+                    style="
+                      max-width: 270px;
+                      height: 200px;
+                      object-fit: cover;
+                      cursor: pointer;
+                    "
+                    @click="redirectToItemFromCart(product.id)"
                   />
                 </td>
                 <td
-                  style="cursor: pointer; padding-top: 1%"
-                  @click="redirectToItemFromCart(product.id)"
+                  style="cursor: pointer; padding-top: 1%; text-align: center"
                 >
-                  <h6>{{ truncateName(product.name, 45) }}</h6>
+                  <h6 @click="redirectToItemFromCart(product.id)">
+                    {{ truncateName(product.name, 45) }}
+                  </h6>
                   <p
+                    @click="redirectToItemFromCart(product.id)"
                     style="
                       font-size: 0.95em;
                       padding-top: 3%;
@@ -92,6 +108,15 @@
                       ({{ product.reviewNumber }})
                     </span>
                   </p>
+                  <button
+                    class="btn btn-secondary"
+                    ref="addToCartButton"
+                    @click="addToCart(product)"
+                    style="margin-top: 10px"
+                  >
+                    Add to Cart
+                    <i class="bi bi-cart-fill" style="font-size: 1rem"> </i>
+                  </button>
                 </td>
                 <td style="padding-top: 5.3%; padding-right: 10px">
                   <b
@@ -102,25 +127,6 @@
                       ).toFixed(2)
                     }}</b
                   >
-                </td>
-                <td style="padding: 0; padding-top: 5%">
-                  <button
-                    type="button"
-                    ref="addToCartButton"
-                    @click="addToCart(product)"
-                    class="btn btn-outline-primary btn-sm m-0"
-                  >
-                    <i class="bi bi-cart-fill"></i>
-                  </button>
-                </td>
-                <td style="padding: 0.15em; padding-top: 5%">
-                  <button
-                    type="button"
-                    class="btn btn-outline-danger btn-sm m-0"
-                    @click="removeFromFavorites(product.id)"
-                  >
-                    <i class="bi bi-trash"></i>
-                  </button>
                 </td>
               </tr>
             </tbody>
@@ -172,15 +178,12 @@ export default {
   },
   mixins: [errorHandlingMixin],
   created() {
-    // this.$store.dispatch('initializeUser').catch(this.handleError)
-    this.$store.dispatch('readFromCartVue').then(() => {
-      const fetchRatingsPromises = this.$store.state.favorites.map(product => {
-        return this.$store.dispatch('getItemRating', product.id)
-      })
-      return Promise.all(fetchRatingsPromises)
-    })
+    this.$store.dispatch('readFromCartVue')
   },
   computed: {
+    message() {
+      return this.$store.state.message
+    },
     errorMessage() {
       return this.$store.state.errorMessage
     },
@@ -191,13 +194,16 @@ export default {
       return this.$store.getters.user
     },
     accessToken() {
-      return this.$store.state.accessToken
+      return this.$store.getters.accessToken
     },
     cart() {
-      return this.$store.state.cart
+      return this.$store.getters.cart
+    },
+    searchResults() {
+      return this.$store.state.searchResults
     },
     favorites() {
-      return this.$store.state.favorites
+      return this.$store.getters.favorites
     }
   },
   methods: {
@@ -211,35 +217,17 @@ export default {
         return 'fa fa-star-o checked'
       }
     },
-    getRatingItemCount(rating) {
-      const items = this.$store.state.products // Assuming products are stored in the store
-      const count = items.reduce((accumulator, item) => {
-        const floatRating = parseFloat(item.rating_float)
-        const roundedRating = Math.floor(floatRating + 0.5) // Round to the nearest integer
-        if (roundedRating === rating) {
-          return accumulator + 1
-        }
-        return accumulator
-      }, 0)
-      return count
-    },
     itemAlreadyInCart(product) {
       return this.cart.some(item => item.id === product.id)
     },
     addToCart(product) {
       this.$store.dispatch('addToCart', product)
     },
-    removeFromFavorites(itemId) {
-      this.$store.dispatch('removeFromFavorites', itemId)
+    removeFromCart(itemId) {
+      this.$store.dispatch('removeFromCart', itemId)
     },
     redirectToItemFromCart(itemId) {
       this.$store.dispatch('redirectToItem', itemId)
-    },
-    updateQuantity(product_id, newQuantity) {
-      this.$store.dispatch('UpdateItemQuantity', {
-        product_id,
-        newQuantity
-      })
     },
     truncateName(description, maxLength) {
       if (description.length > maxLength) {
