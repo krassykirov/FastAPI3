@@ -230,7 +230,7 @@
         </div>
       </div>
     </div>
-    <div class="container mt-4">
+    <div class="container" style="padding-left: 10%; margin: 0; width: 100%">
       <!-- Horizontal Tabs -->
       <ul class="nav nav-tabs justify-content-center">
         <li class="nav-item">

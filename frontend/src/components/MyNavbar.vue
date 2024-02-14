@@ -235,7 +235,7 @@
           </button>
         </div>
       </ul>
-      <ul class="navbar-nav mb-1 mb-lg-0 profile-menu" style="padding-left: 3%">
+      <ul class="navbar-nav mb-1 mb-lg-0 profile-menu" style="padding-left: 4%">
         <li class="nav-item dropdown" @mouseleave="hideDropdown">
           <a
             class="nav-link dropdown-toggle"

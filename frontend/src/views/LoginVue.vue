@@ -106,15 +106,11 @@ export default {
       username: '',
       password: '',
       rememberMe: '',
-      backendEndpoint: `${config.backendEndpoint}`
+      backendEndpoint: `${config.backendEndpoint}`,
+      errorMessage: ''
     }
   },
   mixins: [errorHandlingMixin],
-  computed: {
-    errorMessage() {
-      return this.$store.state.errorMessage
-    }
-  },
   watch: {
     storeErrorMessage(newVal) {
       this.errorMessage = newVal

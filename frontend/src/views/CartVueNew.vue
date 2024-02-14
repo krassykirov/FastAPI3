@@ -29,7 +29,7 @@
       />
     </nav>
     <!-- <MessageArea /> -->
-    <div class="container-fluid mt-5" style="margin-left: 10%">
+    <div class="container-fluid mt-5" style="margin-left: 15%">
       <div
         class="row"
         style="
@@ -41,7 +41,7 @@
         "
       >
         <div class="col-md-8" style="max-width: 1200px">
-          <h3 class="text-center mb-4" style="margin-left: 5%">
+          <h3 class="text-center mb-4">
             <i class="bi bi-cart-fill" style="font-size: 1.6rem"> </i>
             Shopping Cart
           </h3>
@@ -124,7 +124,7 @@
               </tr>
             </tbody>
           </table>
-          <div class="text-end mt-4">
+          <div>
             <h4>Total: ${{ total }}</h4>
             <button
               type="button"

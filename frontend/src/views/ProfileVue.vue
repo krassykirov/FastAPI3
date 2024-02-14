@@ -388,7 +388,7 @@ export default {
           success: () => {
             $('#create-profile').modal('hide')
             $('#Close-Profile').click()
-            this.getProfile()
+            this.$store.dispatch('getProfile')
           },
           error: function (xhr) {
             if (xhr.status === 403) {
@@ -416,7 +416,7 @@ export default {
   text-align: center !important;
   font-family: arial !important;
   width: 20rem !important;
-  height: 41rem !important;
+  height: auto !important;
 }
 .title {
   color: grey !important;

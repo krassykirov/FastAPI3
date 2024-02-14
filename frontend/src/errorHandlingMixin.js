@@ -4,8 +4,10 @@ export default {
   methods: {
     handleError(error) {
       console.log('Handling error:', error.message)
-
-      if (error.message === 'Token Expired') {
+      if (error.message.startsWith('Invalid')) {
+        this.errorMessage = 'Username or password are incorrect!'
+        console.log('Username or password are incorrect!..')
+      } else if (error.message === 'Token Expired') {
         console.log('Handling error Mixin: Token Expired, logging out..')
         this.errorMessage = 'Session has expired. Please log in.'
         store.dispatch('logout')
