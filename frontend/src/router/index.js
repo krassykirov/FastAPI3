@@ -30,6 +30,17 @@ const routes = [
     component: () => import('../views/LoginVue.vue')
   },
   {
+    path: '/car',
+    name: 'car',
+    component: () => import('../views/CarouselVue2.vue'),
+    props: () => ({
+      cart: store.state.cart,
+      profile: store.state.profile,
+      favorites: store.state.favorites,
+      products: store.getters.filteredProducts
+    })
+  },
+  {
     path: '/test',
     name: 'test',
     component: () => import('../views/MessageAreaVue.vue'),

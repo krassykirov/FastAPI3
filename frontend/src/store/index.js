@@ -713,11 +713,16 @@ export default createStore({
       const favorites = state.favorites
       for (const product of products) {
         const isFavorite = favorites.some(fav => fav.id === product.id)
-        const element = document.getElementById(`heart${product.id}`)
         if (isFavorite) {
-          element.classList.add('red-color')
+          const element = document.getElementById(`heart${product.id}`)
+          if (element) {
+            element.classList.add('red-color')
+          }
         } else {
-          element.classList.remove('red-color')
+          const element = document.getElementById(`heart${product.id}`)
+          if (element) {
+            element.classList.remove('red-color')
+          }
         }
       }
     },
@@ -817,6 +822,18 @@ export default createStore({
     },
     filteredLaptops: state => {
       return state.products.filter(product => product.category_id === 1)
+    },
+    filteredTablets: state => {
+      return state.products.filter(product => product.category_id === 3)
+    },
+    filteredSmartphones: state => {
+      return state.products.filter(product => product.category_id === 2)
+    },
+    filteredSmartwatches: state => {
+      return state.products.filter(product => product.category_id === 4)
+    },
+    filteredTV: state => {
+      return state.products.filter(product => product.category_id === 5)
     },
     accessToken: state => state.accessToken,
     user: state => state.user,

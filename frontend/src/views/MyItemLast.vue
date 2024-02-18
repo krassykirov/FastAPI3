@@ -217,10 +217,10 @@
               "
               alt="Preview"
             />
-            <p class="title">{{ product.name }}</p>
+            <p class="title">{{ truncateName(product.name, 30) }}</p>
             <p class="price">${{ product.discount_price }}</p>
             <p class="old-price" v-if="product.discount">
-              ${{ product.price }}-{{ Math.floor(product.discount * 100) }}%
+              ${{ product.price }}
             </p>
           </div>
         </div>
@@ -604,6 +604,13 @@ export default {
       } catch (error) {
         console.log(error)
       }
+    },
+    truncateName(description, maxLength) {
+      if (!description) return '' // Add this guard clause
+      if (description.length > maxLength) {
+        return description.substring(0, maxLength) + '..'
+      }
+      return description
     },
     addToCart(product) {
       this.$store.dispatch('addToCart', product)
