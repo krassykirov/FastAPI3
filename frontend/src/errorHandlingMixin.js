@@ -4,7 +4,10 @@ export default {
   methods: {
     handleError(error) {
       console.log('Handling error:', error.message)
-      if (error.message.startsWith('Invalid')) {
+      if (
+        error.message.startsWith('Invalid') ||
+        error.message.startsWith('Username')
+      ) {
         this.errorMessage = 'Username or password are incorrect!'
         console.log('Username or password are incorrect!..')
       } else if (error.message === 'Token Expired') {

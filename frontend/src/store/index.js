@@ -23,8 +23,10 @@ export default createStore({
     max: 10000,
     total: 0,
     message: '',
+    errorMessage: '',
     products: [],
     filteredProducts: [],
+    filteredLaptops: [],
     searchResults: [],
     hasFilteredProducts: false,
     isDiscountedChecked: false,
@@ -36,8 +38,7 @@ export default createStore({
     selectedRating: [],
     ratings: [1, 2, 3, 4, 5],
     productMin: 0,
-    productMax: 10000,
-    errorMessage: null
+    productMax: 10000
   },
   mutations: {
     setMessage(state, payload) {
@@ -77,6 +78,14 @@ export default createStore({
         searchRes.rating = ratingData.rating
         searchRes.reviewNumber = ratingData.review_number
         searchRes.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
+      }
+    },
+    UPDATE_FILTERED_LAPTOPS_RATING(state, { productId, ratingData }) {
+      const filtered = state.filteredLaptops.find(item => item.id === productId)
+      if (filtered) {
+        filtered.rating = ratingData.rating
+        filtered.reviewNumber = ratingData.review_number
+        filtered.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
       }
     },
     UPDATE_FAVORITES_ITEM_RATING(state, { productId, ratingData }) {
@@ -226,6 +235,7 @@ export default createStore({
       state.refreshToken = null
       state.accessTokenExpiration = null
       state.refreshTokenExpiration = null
+      console.log('Youve been logged out due to inactivity')
       dispatch('setErrorMessage', "You've been logged out due to inactivity")
       router.push('/login')
     },
@@ -243,6 +253,7 @@ export default createStore({
           }
         )
         if (response.status !== 200) {
+          console.log('response.status !== 200', response)
           dispatch('setErrorMessage', 'Session has expired. Please log in')
           dispatch('logout')
           throw new Error('Token Expired')
@@ -267,6 +278,7 @@ export default createStore({
         // dispatch('startExpirationCheckTimer')
         return data.access_token
       } catch (error) {
+        console.log('Refresh Token Error', error)
         dispatch('setErrorMessage', 'Session has expired. Please log in')
         dispatch('logout')
         throw new Error('Token Expired')
@@ -283,18 +295,21 @@ export default createStore({
       formData.append('rememberMe', rememberMe ? 'true' : 'false')
 
       try {
-        const response = await fetch(`${config.backendEndpoint}/api/token`, {
-          method: 'POST',
-          body: formData
-        })
+        const response = await axios.post(
+          `${config.backendEndpoint}/api/token`,
+          formData
+        )
 
         if (response.status === 403) {
-          const data = await response.json()
+          const data = response.data
           commit('setErrorMessage', 'Forbidden!')
           throw new Error(data.detail)
+        } else if (response.status === 401) {
+          commit('setErrorMessage', 'Username or password are incorrect!')
+          throw new Error('Username or password are incorrect!')
         }
 
-        const data = await response.json()
+        const data = response.data
         const expires_in = jwtDecode(data.access_token).exp
         const user = jwtDecode(data.access_token).user
         const user_id = jwtDecode(data.access_token).user_id
@@ -332,68 +347,8 @@ export default createStore({
         await dispatch('getProfile')
         router.push('/')
       } catch (error) {
+        console.error('ErrorLogin:', error)
         throw new Error(error)
-      }
-    },
-    async initializeUser({ commit, dispatch, state }) {
-      try {
-        if (
-          state.accessToken === null &&
-          VueCookies.get('access_token') === null
-        ) {
-          router.push('/login')
-        } else {
-          const decoded = jwtDecode(state.accessToken)
-          if (Date.now() >= decoded.exp * 1000 && state.refreshToken) {
-            try {
-              const response = await fetch(
-                `${config.backendEndpoint}/api/token/refresh`,
-                {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${state.refreshToken}`
-                  },
-                  body: JSON.stringify({
-                    refresh_token: state.refreshToken
-                  })
-                }
-              )
-              if (!response.ok) {
-                console.log('!response.ok Init User', response)
-                dispatch(
-                  'setErrorMessage',
-                  'Session has expired. Please log in'
-                )
-                dispatch('logout')
-                throw new Error('Token Expired')
-              }
-              const data = await response.json()
-              const expires_in = jwtDecode(data.access_token).exp
-              const expiresInMinutes = Math.max(
-                0,
-                Math.floor((expires_in - Math.floor(Date.now() / 1000)) / 60)
-              )
-              VueCookies.set('access_token', data.access_token, {
-                expires: new Date(Date.now() + expiresInMinutes)
-              })
-              const user = jwtDecode(data.access_token).user
-              const user_id = jwtDecode(data.access_token).user_id
-              commit('setAccessToken', data.access_token)
-              commit('UPDATE_USER', user)
-              commit('UPDATE_USER_ID', user_id)
-              router.push('/')
-            } catch (refreshError) {
-              console.log('refreshError: ', refreshError)
-              dispatch('setErrorMessage', 'Session has expired. Please log in')
-              dispatch('logout')
-              throw new Error('Token Expired')
-            }
-          }
-        }
-      } catch (error) {
-        router.push('/login')
-        throw error
       }
     },
     async getProduct({ commit }, itemId) {
@@ -432,7 +387,7 @@ export default createStore({
         }
       }
     },
-    async getProfiles({ commit, state }) {
+    async getProfiles({ commit, dispatch, state }) {
       try {
         const response = await axios.get(
           `${config.backendEndpoint}/api/profile`,
@@ -452,6 +407,9 @@ export default createStore({
         }
       } catch (error) {
         commit('UPDATE_PROFILES', null)
+        dispatch('setErrorMessage', 'Session has expired. Please log in')
+        dispatch('logout')
+        throw new Error('Token Expired')
       }
     },
     async getProfile({ commit, dispatch, state }) {
@@ -468,11 +426,11 @@ export default createStore({
           // dispatch('setErrorMessage', 'Session has expired. Please log in')
           // dispatch('logout')
           // commit('UPDATE_PROFILE', null)
-          throw error
         } else if (error === 'Token Expired') {
           console.log('Profile Other error occured trying to handle', error)
           dispatch('setErrorMessage', 'Session has expired. Please log in')
           dispatch('logout')
+          throw new Error('Token Expired')
           // commit('UPDATE_PROFILE', null)
         }
       }
@@ -507,8 +465,13 @@ export default createStore({
           productId: itemId,
           ratingData: data
         })
+        commit('UPDATE_FILTERED_LAPTOPS_RATING', {
+          productId: itemId,
+          ratingData: data
+        })
       } catch (error) {
-        console.log(error)
+        console.log('error', error)
+        throw new Error(error)
       }
     },
     async getItemRatings({ commit, state }) {
@@ -525,14 +488,17 @@ export default createStore({
           })
         })
         const ratings = await Promise.all(ratingPromises)
+        console.log('ratings', ratings)
         ratings.forEach(rating => {
           commit('UPDATE_PRODUCT_RATING', rating)
           commit('UPDATE_CART_ITEM_RATING', rating)
           commit('UPDATE_FAVORITES_ITEM_RATING', rating)
           commit('UPDATE_SEARCH_ITEM_RATING', rating)
+          commit('UPDATE_FILTERED_LAPTOPS_RATING', rating)
         })
       } catch (error) {
         console.log(error)
+        throw new Error(error)
       }
     },
     async handleCategoryChange({ commit, dispatch }) {
@@ -573,10 +539,11 @@ export default createStore({
           dispatch('setErrorMessage', 'Session has expired. Please log in')
           dispatch('logout')
         } else {
-          // Handle other errors if needed
-          console.error('Error in readFromCartVue:', error)
+          console.log(
+            'Handling error in readFromCartVue.response.status === 401...'
+          )
           dispatch('setErrorMessage', 'Session has expired. Please log in')
-          dispatch('logout')
+          throw new Error(error)
         }
       }
     },
@@ -642,19 +609,7 @@ export default createStore({
     scrollToTop() {
       document.body.scrollIntoView({ behavior: 'smooth' })
     },
-    addToCart({ commit, state }, product) {
-      const headers = new Headers({
-        Authorization: `Bearer ${state.accessToken}`,
-        Accept: 'application/json'
-      })
-      const requestOptions = {
-        method: 'POST',
-        headers: headers,
-        redirect: 'follow',
-        body: JSON.stringify({
-          item_id: product.id
-        })
-      }
+    async addToCart({ commit, state }, product) {
       const itemInCart = state.cart.find(item => item.id === product.id)
       const toastContent = itemInCart
         ? `${product.name} is already in the cart`
@@ -669,40 +624,29 @@ export default createStore({
       const toastBodyElement = document.getElementById('cartToastBody')
       toastBodyElement.innerText = toastContent
       toastElement.show()
+
       if (!itemInCart) {
-        fetch(
-          `${config.backendEndpoint}/api/items/update-basket`,
-          requestOptions
-        )
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`)
+        try {
+          const response = await axios.post(
+            `${config.backendEndpoint}/api/items/update-basket`,
+            {
+              item_id: product.id
             }
-            return response.json()
-          })
-          .then(() => {
-            commit('ADD_TO_CART', product)
-          })
-          .catch(error => {
-            console.error('error', error)
-          })
+          )
+
+          if (response.status !== 200) {
+            throw new Error(`HTTP error! Status: ${response.status}`)
+          }
+
+          commit('ADD_TO_CART', product)
+        } catch (error) {
+          console.error('Error adding item to cart:', error)
+          throw new Error(error)
+        }
       }
     },
+
     async addTofavorites({ commit, state }, product) {
-      const headers = new Headers({
-        Authorization: `Bearer ${state.accessToken}`,
-        Accept: 'application/json'
-      })
-
-      const requestOptions = {
-        method: 'POST',
-        headers: headers,
-        redirect: 'follow',
-        body: JSON.stringify({
-          item_id: product.id
-        })
-      }
-
       const itemInfavorites = state.favorites.find(
         item => item.id === product.id
       )
@@ -717,19 +661,17 @@ export default createStore({
           delay: 2000
         }
       )
-
       const toastBodyElement = document.getElementById('cartToastBody')
       toastBodyElement.innerText = toastContent
       toastElement.show()
-
       try {
         if (itemInfavorites) {
-          const response = await fetch(
+          const response = await axios.post(
             `${config.backendEndpoint}/api/items/remove-from-favorites`,
-            requestOptions
+            { item_id: product.id }
           )
 
-          if (!response.ok) {
+          if (response.status !== 200) {
             throw new Error(`HTTP error! Status: ${response.status}`)
           }
 
@@ -740,25 +682,30 @@ export default createStore({
           if (index !== -1) {
             commit('REMOVE_ITEM_FROM_FAVORITES', index)
             const element = document.getElementById(`heart${product.id}`)
-            element.classList.remove('red-color')
+            if (element) {
+              element.classList.remove('red-color')
+            }
           }
         } else {
-          const response = await fetch(
+          const response = await axios.post(
             `${config.backendEndpoint}/api/items/update-favorites`,
-            requestOptions
+            { item_id: product.id }
           )
 
-          if (!response.ok) {
+          if (response.status !== 200) {
             throw new Error(`HTTP error! Status: ${response.status}`)
           }
 
           commit('ADD_TO_FAVORITES', product)
 
           const element = document.getElementById(`heart${product.id}`)
-          element.classList.add('red-color')
+          if (element) {
+            element.classList.add('red-color')
+          }
         }
       } catch (error) {
         console.error('Error:', error)
+        throw new Error(error)
       }
     },
     async checkFavoritesOnLoad({ state }) {
@@ -774,105 +721,66 @@ export default createStore({
         }
       }
     },
-    UpdateItemQuantity({ commit, state }, { product_id, newQuantity }) {
+    async UpdateItemQuantity({ commit, state }, { product_id, newQuantity }) {
       newQuantity = Math.max(1, Math.min(5, newQuantity))
-      const headers = new Headers({
-        Authorization: `Bearer ${state.accessToken}`,
-        Accept: 'application/json'
-      })
-      const requestOptions = {
-        method: 'PUT',
-        headers: headers,
-        redirect: 'follow',
-        body: JSON.stringify({
-          quantity: newQuantity
-        })
-      }
       const itemInCart = state.cart.find(item => item.id === product_id)
       if (itemInCart) {
-        fetch(
-          `${config.backendEndpoint}/api/items/update_item/${product_id}`,
-          requestOptions
+        try {
+          const response = await axios.put(
+            `${config.backendEndpoint}/api/items/update_item/${product_id}`,
+            { quantity: newQuantity }
+          )
+          if (response && response.status && response.status !== 200) {
+            throw new Error(`HTTP error! Status: ${response.status}`)
+          }
+          commit('updateCartItemQuantity', { product_id, newQuantity })
+        } catch (error) {
+          console.error('Error:', error)
+          throw new Error(error)
+        }
+      }
+    },
+    async removeFromFavorites({ commit, state }, itemId) {
+      try {
+        const response = await axios.post(
+          `${config.backendEndpoint}/api/items/remove-from-favorites`,
+          {
+            item_id: itemId
+          }
         )
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`)
-            }
-            return response.json()
-          })
-          .then(() => {
-            commit('updateCartItemQuantity', { product_id, newQuantity })
-          })
-          .catch(error => {
-            console.error('error', error)
-          })
+        if (response.status !== 200) {
+          throw new Error(`HTTP error! Status: ${response.status}`)
+        }
+        const index = state.favorites.findIndex(item => item.id === itemId)
+        if (index !== -1) {
+          commit('REMOVE_ITEM_FROM_FAVORITES', index)
+          const element = document.getElementById(`heart${itemId}`)
+          element.classList.remove('red-color')
+        }
+      } catch (error) {
+        console.error('Error removing item from favorites:', error)
+        throw new Error(error)
       }
     },
-    removeFromFavorites({ commit, state }, itemId) {
-      const headers = new Headers({
-        Authorization: `Bearer ${state.accessToken}`,
-        Accept: 'application/json'
-      })
-      const requestOptions = {
-        method: 'POST',
-        headers: headers,
-        redirect: 'follow',
-        body: JSON.stringify({
-          item_id: itemId
-        })
+    async removeFromCart({ commit, state }, itemId) {
+      try {
+        const response = await axios.post(
+          `${config.backendEndpoint}/user/remove-from-basket`,
+          {
+            item_id: itemId
+          }
+        )
+        if (response && response.status !== 200) {
+          throw new Error(`HTTP error! Status: ${response.status}`)
+        }
+        const index = state.cart.findIndex(item => item.id === itemId)
+        if (index !== -1) {
+          commit('REMOVE_ITEM_FROM_CART', index)
+        }
+      } catch (error) {
+        console.error('Error removing item from cart:', error)
+        throw new Error(error)
       }
-      fetch(
-        `${config.backendEndpoint}/api/items/remove-from-favorites`,
-        requestOptions
-      )
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`)
-          }
-          return response.json()
-        })
-        .then(() => {
-          const index = state.favorites.findIndex(item => item.id === itemId)
-          if (index !== -1) {
-            commit('REMOVE_ITEM_FROM_FAVORITES', index)
-            const element = document.getElementById(`heart${itemId}`)
-            element.classList.remove('red-color')
-          }
-        })
-        .catch(error => {
-          console.error('Error removing item from cart:', error)
-        })
-    },
-    removeFromCart({ commit, state }, itemId) {
-      const headers = new Headers({
-        Authorization: `Bearer ${state.accessToken}`,
-        Accept: 'application/json'
-      })
-      const requestOptions = {
-        method: 'POST',
-        headers: headers,
-        redirect: 'follow',
-        body: JSON.stringify({
-          item_id: itemId
-        })
-      }
-
-      fetch(`${config.backendEndpoint}/user/remove-from-basket`, requestOptions)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`)
-          }
-          return response.json()
-        })
-        .then(() => {
-          const index = state.cart.findIndex(item => item.id === itemId)
-          if (index !== -1) {
-            commit('REMOVE_ITEM_FROM_CART', index)
-          }
-        })
-        .catch(error => {
-          console.error('Error removing item from cart:', error)
-        })
     },
     handleDiscountChange({ commit }, isChecked) {
       commit('UPDATE_DISCOUNT_CHECKED', isChecked)
@@ -907,6 +815,9 @@ export default createStore({
         )
       })
     },
+    filteredLaptops: state => {
+      return state.products.filter(product => product.category_id === 1)
+    },
     accessToken: state => state.accessToken,
     user: state => state.user,
     user_id: state => state.user_id,
@@ -927,6 +838,7 @@ export default createStore({
     productMax: state => state.productMax,
     isIdle: state => state.isIdle,
     lastActiveDate: state => state.lastActiveDate,
-    inactiveTime: state => state.inactiveTime
+    inactiveTime: state => state.inactiveTime,
+    errorMessage: state => state.errorMessage
   }
 })

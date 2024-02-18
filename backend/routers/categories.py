@@ -38,7 +38,6 @@ def get_categories(request: Request, skip: int = 0, limit: int = 100, db: Sessio
 def get_category_items(name: str, db: Session = Depends(get_session)):
     """ Return all items in a category """
     category = CategoryActions().get_category_by_name(db=db, name=name)
-    logger.info(f'category: {category}')
     if category is None:
         raise HTTPException(status_code=404, detail=f"No category  found for {name}")
     print('category', len(category.items))

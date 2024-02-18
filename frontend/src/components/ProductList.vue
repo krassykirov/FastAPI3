@@ -123,6 +123,9 @@ export default {
     filteredProducts() {
       return this.$store.state.filteredProducts
     },
+    errorMessage() {
+      return this.$store.getters.errorMessage
+    },
     discountedPrice() {
       if (this.product.discount) {
         return (

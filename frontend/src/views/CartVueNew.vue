@@ -459,13 +459,7 @@ export default {
     }
   },
   created() {
-    // this.$store.dispatch('initializeUser').catch(this.handleError)
-    this.$store.dispatch('readFromCartVue').then(() => {
-      const fetchRatingsPromises = this.$store.state.cart.map(product => {
-        return this.$store.dispatch('getItemRating', product.id)
-      })
-      return Promise.all(fetchRatingsPromises)
-    })
+    this.$store.dispatch('readFromCartVue')
   },
   errorMessage() {
     return this.$store.state.errorMessage
@@ -485,16 +479,6 @@ export default {
     }
   },
   methods: {
-    getStarClasses(index, rating) {
-      const filledStars = Math.floor(rating)
-      if (index <= filledStars) {
-        return 'fa fa-star checked'
-      } else if (index === filledStars + 1 && rating % 1 !== 0) {
-        return 'fa fa-star-half-full checked'
-      } else {
-        return 'fa fa-star-o checked'
-      }
-    },
     itemAlreadyInCart(product) {
       return this.cart.some(item => item.id === product.id)
     },

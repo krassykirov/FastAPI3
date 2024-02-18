@@ -31,7 +31,7 @@
     <!-- <MessageArea /> -->
     <div class="container my-5">
       <div class="row">
-        <div class="col-md-5">
+        <div class="col-md-5" style="min-height: 550px; max-height: 550px">
           <div class="main-img" v-if="item" :id="'main-image-' + item.id">
             <span
               class="badge bg-danger position-absolute top-5 start-5"
@@ -76,7 +76,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-7">
+        <div class="col-md-7" style="min-height: 550px; max-height: 550px">
           <div class="main-description px-2">
             <div class="category text-bold" v-if="item">
               Category: {{ getCategoryNameById(item.category_id) }}
@@ -153,7 +153,6 @@
               contact our representatives via live chat or email.
             </div>
           </div>
-
           <div class="delivery my-4">
             <p class="font-weight-bold mb-0">
               <span><i class="fa-solid fa-truck"></i></span>
@@ -186,7 +185,7 @@
         style="font-weight: 900; font: 1.1em"
       ></div>
     </div>
-    <div class="similar-products my-4">
+    <div class="container">
       <hr />
       <p class="display-5" v-if="item && getSimilarProducts.length">
         You may also like
@@ -194,15 +193,12 @@
 
       <div class="row" v-if="item && filteredProducts.length">
         <div
-          class="col-md-3"
+          class="col-md-2"
           v-for="product in getSimilarProducts"
           :key="product.id"
+          style="cursor: pointer"
         >
-          <div
-            class="similar-product"
-            @click="redirectToItem(product.id)"
-            style="cursor: pointer"
-          >
+          <div class="similar-product" @click="redirectToItem(product.id)">
             <span
               class="badge bg-danger position-absolute top-5 start-5"
               v-if="product.discount >= 0.1"
@@ -232,7 +228,7 @@
     </div>
     <div class="container" style="padding-left: 10%; margin: 0; width: 100%">
       <!-- Horizontal Tabs -->
-      <ul class="nav nav-tabs justify-content-center">
+      <ul class="nav nav-tabs justify-content-center" style="margin-left: 20%">
         <li class="nav-item">
           <a
             class="nav-link"
@@ -252,176 +248,166 @@
           </a>
         </li>
       </ul>
-      <div class="tab-content mt-3">
-        <div>
-          <!-- Pagination controls -->
-          <div
-            v-if="activeTab === 'reviews'"
-            class="tab-pane"
-            :class="{ active: activeTab === 'reviews' }"
-            :key="'reviews_' + activeTab"
-            id="reviews"
-            style="justify-content-center; align-text: center; align-items: center"
-          >
-            <nav aria-label="Page navigation example">
-              <ul class="pagination">
-                <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                  <button
-                    class="page-link"
-                    @click="prevPage"
-                    :disabled="currentPage === 1"
-                  >
-                    Prev
-                  </button>
-                </li>
-                <li
-                  class="page-item"
-                  v-for="page in pages"
-                  :key="page"
-                  :class="{ active: currentPage === page }"
+    </div>
+    <div class="tab-content mt-3">
+      <div>
+        <!-- Pagination controls -->
+        <div
+          v-if="activeTab === 'reviews'"
+          class="tab-pane"
+          :class="{ active: activeTab === 'reviews' }"
+          :key="'reviews_' + activeTab"
+          id="reviews"
+          style="justify-content-center; align-text: center; align-items: center;"
+        >
+          <nav aria-label="Page navigation example">
+            <ul class="pagination" style="margin-left: 20%">
+              <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                <button
+                  class="page-link"
+                  @click="prevPage"
+                  :disabled="currentPage === 1"
                 >
-                  <button class="page-link" @click="setCurrentPage(page)">
-                    {{ page }}
-                  </button>
-                </li>
-                <li
-                  class="page-item"
-                  :class="{ disabled: currentPage === totalPages }"
-                >
-                  <button
-                    class="page-link"
-                    @click="nextPage"
-                    :disabled="currentPage === totalPages"
-                  >
-                    Next
-                  </button>
-                </li>
-              </ul>
-            </nav>
-            <div v-if="item">
-              <div
-                class="cardgroup1"
-                v-for="review in displayedReviews"
-                :key="review.id"
-                :id="'card' + review.id"
-                style="
-                  width: 55%;
-                  margin-bottom: 5px;
-                  border: 1px solid #ccc;
-                  padding: 2px;
-                  display: flex;
-                  justify-content: left;
-                "
+                  Prev
+                </button>
+              </li>
+              <li
+                class="page-item"
+                v-for="page in pages"
+                :key="page"
+                :class="{ active: currentPage === page }"
               >
-                <!-- Left Side -->
-                <div style="flex: 1; display: flex; align-items: center">
-                  <img
-                    v-if="profile"
-                    :src="`${backendEndpoint}/static/img/${user}/profile/${profile.avatar}`"
-                    width="50"
-                    height="50"
-                    class="rounded-circle"
-                  />
-                  <img
-                    v-else
-                    :src="`${backendEndpoint}/static/img/img_avatar.png`"
-                    width="50"
-                    height="50"
-                    class="rounded-circle"
-                  />
-                  <div style="margin-left: 2px">
-                    <span>{{ review.created_by }}</span>
-                    <br />
-                    <span
-                      class="fa fa-star"
-                      :class="{ checked: star.checked }"
-                      :id="star.id"
-                      v-for="star in updateStarRatings(review)"
-                      :key="star.id"
-                    ></span>
-                  </div>
-                </div>
-                <!-- Right Side -->
-                <div
-                  style="
-                    flex: 2;
-                    text-align: left;
-                    padding: 10px;
-                    text-align: left;
-                  "
+                <button class="page-link" @click="setCurrentPage(page)">
+                  {{ page }}
+                </button>
+              </li>
+              <li
+                class="page-item"
+                :class="{ disabled: currentPage === totalPages }"
+              >
+                <button
+                  class="page-link"
+                  @click="nextPage"
+                  :disabled="currentPage === totalPages"
                 >
-                  <p>{{ review.text }}</p>
+                  Next
+                </button>
+              </li>
+            </ul>
+          </nav>
+          <div v-if="item" style="margin-left: 20%">
+            <div
+              class="cardgroup1"
+              v-for="review in displayedReviews"
+              :key="review.id"
+              :id="'card' + review.id"
+              style="
+                width: 55%;
+                margin-bottom: 5px;
+                border: 1px solid #ccc;
+                padding: 2px;
+                display: flex;
+                justify-content: left;
+              "
+            >
+              <!-- Left Side -->
+              <div style="flex: 1; display: flex; align-items: center">
+                <img
+                  v-if="profile"
+                  :src="`${backendEndpoint}/static/img/${user}/profile/${profile.avatar}`"
+                  width="50"
+                  height="50"
+                  class="rounded-circle"
+                />
+                <img
+                  v-else
+                  :src="`${backendEndpoint}/static/img/img_avatar.png`"
+                  width="50"
+                  height="50"
+                  class="rounded-circle"
+                />
+                <div style="margin-left: 2px">
+                  <span>{{ review.created_by }}</span>
+                  <br />
+                  <span
+                    class="fa fa-star"
+                    :class="{ checked: star.checked }"
+                    :id="star.id"
+                    v-for="star in updateStarRatings(review)"
+                    :key="star.id"
+                  ></span>
                 </div>
               </div>
+              <!-- Right Side -->
               <div
-                class="cardgroup1"
-                style="width: 650px; margin-bottom: 2px"
-                v-if="!userHasWrittenReview()"
+                style="
+                  flex: 2;
+                  text-align: left;
+                  padding: 10px;
+                  text-align: left;
+                "
               >
-                <div class="row">
-                  <div class="col-12">
-                    <div class="rating" style="padding: 10px">
-                      <input
-                        type="radio"
-                        name="rating"
-                        value="5"
-                        id="5"
-                      /><label for="5">☆</label>
-                      <input
-                        type="radio"
-                        name="rating"
-                        value="4"
-                        id="4"
-                      /><label for="4">☆</label>
-                      <input
-                        type="radio"
-                        name="rating"
-                        value="3"
-                        id="3"
-                      /><label for="3">☆</label>
-                      <input
-                        type="radio"
-                        name="rating"
-                        value="2"
-                        id="2"
-                      /><label for="2">☆</label>
-                      <input
-                        type="radio"
-                        name="rating"
-                        value="1"
-                        id="1"
-                      /><label for="1">☆</label>
-                    </div>
-                    <div class="comment-box ml-2">
-                      <textarea
-                        class="form-control"
-                        placeholder="Write a Review and select a rating"
-                        rows="4"
-                        maxlength="700"
-                        ref="commentArea"
-                      ></textarea>
-                      <div class="comment-btns mt-2">
-                        <div class="row">
-                          <div class="col-6">
-                            <div class="pull-left">
-                              <button
-                                class="btn btn-secondary btn-sm"
-                                id="RatingCancel"
-                                @click="RatingHide"
-                              >
-                                Cancel
-                              </button>
-                            </div>
+                <p>{{ review.text }}</p>
+              </div>
+            </div>
+            <div
+              class="cardgroup1"
+              style="width: 650px; margin-bottom: 2px"
+              v-if="!userHasWrittenReview()"
+            >
+              <div class="row">
+                <div class="col-12">
+                  <div class="rating" style="padding: 10px">
+                    <input type="radio" name="rating" value="5" id="5" /><label
+                      for="5"
+                      >☆</label
+                    >
+                    <input type="radio" name="rating" value="4" id="4" /><label
+                      for="4"
+                      >☆</label
+                    >
+                    <input type="radio" name="rating" value="3" id="3" /><label
+                      for="3"
+                      >☆</label
+                    >
+                    <input type="radio" name="rating" value="2" id="2" /><label
+                      for="2"
+                      >☆</label
+                    >
+                    <input type="radio" name="rating" value="1" id="1" /><label
+                      for="1"
+                      >☆</label
+                    >
+                  </div>
+                  <div class="comment-box ml-2">
+                    <textarea
+                      class="form-control"
+                      placeholder="Write a Review and select a rating"
+                      rows="4"
+                      maxlength="700"
+                      ref="commentArea"
+                    ></textarea>
+                    <div class="comment-btns mt-2">
+                      <div class="row">
+                        <div class="col-6">
+                          <div class="pull-left">
+                            <button
+                              class="btn btn-secondary btn-sm"
+                              id="RatingCancel"
+                              @click="RatingHide"
+                            >
+                              Cancel
+                            </button>
                           </div>
-                          <div class="col-6">
-                            <div class="pull-right">
-                              <button
-                                class="btn btn-success send btn-sm"
-                                @click="addReview"
-                              >
-                                Submit
-                              </button>
-                            </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="pull-right">
+                            <button
+                              class="btn btn-success send btn-sm"
+                              @click="addReview"
+                            >
+                              Submit
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -430,32 +416,31 @@
                 </div>
               </div>
             </div>
-            <div v-else>
-              <p>No reviews available.</p>
-            </div>
+          </div>
+          <div v-else>
+            <p>No reviews available.</p>
           </div>
         </div>
-
-        <!-- Specification Tab -->
-        <div
-          v-if="activeTab === 'specification'"
-          class="tab-pane"
-          :class="{ active: activeTab === 'specification' }"
-          :key="'specification_' + activeTab"
-          id="specification"
-          style="
-            align-text: center;
-            align-items: center;
-            margin-left: 30%;
-            margin-right: 30%;
-          "
-        >
-          <!-- Specification content -->
-          <p v-if="item">
-            {{ item.description }}
-          </p>
-          <p v-else>No specification available.</p>
-        </div>
+      </div>
+      <!-- Specification Tab -->
+      <div
+        v-if="activeTab === 'specification'"
+        class="tab-pane"
+        :class="{ active: activeTab === 'specification' }"
+        :key="'specification_' + activeTab"
+        id="specification"
+        style="
+          align-text: center;
+          align-items: center;
+          margin-left: 30%;
+          margin-right: 30%;
+        "
+      >
+        <!-- Specification content -->
+        <p v-if="item">
+          {{ item.description }}
+        </p>
+        <p v-else>No specification available.</p>
       </div>
     </div>
     <div
@@ -822,16 +807,21 @@ text-color {
 }
 
 /* Main image - left */
+.main-img {
+  width: 100% !important;
+  max-height: 550px !important;
+}
 .main-img img {
-  width: 80% !important;
+  width: 70% !important;
+  max-height: 400px !important;
 }
 
 /* Preview images */
 .previews img {
   width: 90% !important;
   height: auto !important;
+  max-height: 200px !important;
 }
-
 .main-description .category {
   text-transform: uppercase;
   color: #0093c4;
@@ -884,9 +874,12 @@ text-color {
 
 .similar-products img {
   height: 330px !important;
+  cursor: pointer;
 }
 .similar-products {
   text-align: center !important;
+  cursor: pointer;
+  max-height: 500px !important;
 }
 .display-5 {
   font-weight: 300;
@@ -930,6 +923,7 @@ text-color {
 
 .container.my-5 {
   max-width: 100% !important;
+  height: 550px !important;
   width: 100%;
   padding-left: 15px !important;
   padding-right: 15px !important;
@@ -989,7 +983,7 @@ textarea#comment-area.form.control {
   border: 1px solid var(--color-primary) !important;
   overflow-y: auto; /* Enable vertical scroll */
   height: 400px; /* Set a fixed height */
-  width: 100%;
+  width: 100% !important;
 }
 
 div#RatingCard.card {

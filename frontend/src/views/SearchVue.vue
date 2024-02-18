@@ -47,7 +47,7 @@
                 message
               }}
             </h6>
-            <div v-else style="align-items: center; margin-right: 23%">
+            <div v-else style="align-items: center; margin-right: 12%">
               <img :src="require('@/assets/no_result.gif')" />
             </div>
           </h3>

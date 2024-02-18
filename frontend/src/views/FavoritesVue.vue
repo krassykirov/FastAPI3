@@ -172,7 +172,6 @@ export default {
   },
   mixins: [errorHandlingMixin],
   created() {
-    // this.$store.dispatch('initializeUser').catch(this.handleError)
     this.$store.dispatch('readFromCartVue').then(() => {
       const fetchRatingsPromises = this.$store.state.favorites.map(product => {
         return this.$store.dispatch('getItemRating', product.id)
@@ -211,18 +210,6 @@ export default {
         return 'fa fa-star-o checked'
       }
     },
-    getRatingItemCount(rating) {
-      const items = this.$store.state.products // Assuming products are stored in the store
-      const count = items.reduce((accumulator, item) => {
-        const floatRating = parseFloat(item.rating_float)
-        const roundedRating = Math.floor(floatRating + 0.5) // Round to the nearest integer
-        if (roundedRating === rating) {
-          return accumulator + 1
-        }
-        return accumulator
-      }, 0)
-      return count
-    },
     itemAlreadyInCart(product) {
       return this.cart.some(item => item.id === product.id)
     },
@@ -234,12 +221,6 @@ export default {
     },
     redirectToItemFromCart(itemId) {
       this.$store.dispatch('redirectToItem', itemId)
-    },
-    updateQuantity(product_id, newQuantity) {
-      this.$store.dispatch('UpdateItemQuantity', {
-        product_id,
-        newQuantity
-      })
     },
     truncateName(description, maxLength) {
       if (description.length > maxLength) {

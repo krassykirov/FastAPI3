@@ -5,7 +5,7 @@
   >
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="/test">
           <img
             :src="require('@/assets/logo-house.png')"
             alt=""

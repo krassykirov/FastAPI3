@@ -125,9 +125,8 @@ export default {
           rememberMe: this.rememberMe
         })
       } catch (error) {
-        console.log('error login', error)
+        console.log('getToken error:', error)
         this.errorMessage = 'Username or password are incorrect!'
-        this.handleError(error)
       }
     },
     redirectToSignup() {

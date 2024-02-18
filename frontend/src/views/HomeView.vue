@@ -16,7 +16,6 @@
         @redirectToItemFromNavbar="redirectToItemFromNavbar"
       />
     </nav>
-    <!-- <MessageArea /> -->
     <div
       class="toast"
       id="cartToast"
@@ -363,7 +362,7 @@ export default {
       return this.inactiveTime >= 0 ? `${this.inactiveTime} min` : ''
     },
     errorMessage() {
-      return this.$store.state.errorMessage
+      return this.$store.getters.errorMessage
     },
     total() {
       return this.$store.getters.total

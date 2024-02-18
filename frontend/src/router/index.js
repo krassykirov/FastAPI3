@@ -30,6 +30,19 @@ const routes = [
     component: () => import('../views/LoginVue.vue')
   },
   {
+    path: '/test',
+    name: 'test',
+    component: () => import('../views/MessageAreaVue.vue'),
+    props: () => ({
+      cart: store.state.cart,
+      profile: store.state.profile,
+      favorites: store.state.favorites,
+      filteredLaptops: store.getters.filteredLaptops,
+      filteredProducts: store.getters.filteredProducts
+    }),
+    meta: { requiresProfile: true }
+  },
+  {
     path: '/search',
     name: 'search',
     component: () => import('../views/SearchVue.vue'),
@@ -39,14 +52,7 @@ const routes = [
       favorites: store.state.favorites,
       searchResults: store.state.searchResults
     }),
-    beforeEnter: async (to, from, next) => {
-      try {
-        await store.dispatch('getProfile')
-        next()
-      } catch (error) {
-        console.log('error', error)
-      }
-    }
+    meta: { requiresProfile: true }
   },
   {
     path: '/cart',
@@ -57,15 +63,7 @@ const routes = [
       profile: store.state.profile,
       favorites: store.state.favorites
     }),
-    beforeEnter: async (to, from, next) => {
-      try {
-        await store.dispatch('getProfile')
-        next()
-      } catch (error) {
-        console.log('error', error)
-      }
-    }
-    // meta: { requiresAuth: true }
+    meta: { requiresProfile: true }
   },
   {
     path: '/favorites',
@@ -76,15 +74,7 @@ const routes = [
       profile: store.state.profile,
       favorites: store.state.favorites
     }),
-    beforeEnter: async (to, from, next) => {
-      try {
-        await store.dispatch('getProfile')
-        next()
-      } catch (error) {
-        console.log('error', error)
-      }
-    }
-    // meta: { requiresAuth: true }
+    meta: { requiresProfile: true }
   },
   {
     path: '/signup',
@@ -100,15 +90,7 @@ const routes = [
       favorites: store.state.favorites,
       profile: store.state.profile
     }),
-    beforeEnter: async (to, from, next) => {
-      try {
-        await store.dispatch('getProfile')
-        next()
-      } catch (error) {
-        console.log('error', error)
-      }
-    }
-    // meta: { requiresAuth: true }
+    meta: { requiresProfile: true }
   },
   {
     path: '/item/:itemId',
@@ -121,17 +103,7 @@ const routes = [
       favorites: store.state.favorites,
       user: store.state.user
     }),
-    meta: { requiresAuth: true },
-    beforeEnter: async (to, from, next) => {
-      try {
-        const itemId = Number(to.params.itemId)
-        await store.dispatch('getProduct', itemId)
-        await store.dispatch('getProfile')
-        next()
-      } catch (error) {
-        next({ name: 'NotFound' })
-      }
-    }
+    meta: { requiresProfile: true }
   },
   {
     path: '/:pathMatch(.*)*',
@@ -151,6 +123,20 @@ const router = createRouter({
   routes
 })
 
+router.beforeEach(async (to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresProfile)) {
+    try {
+      await store.dispatch('getProfile')
+      if (!store.state.accessToken) {
+        throw new Error('Token Expired')
+      }
+    } catch (error) {
+      next('/login')
+      throw new Error('Token Expired')
+    }
+  }
+  next()
+})
 // router.beforeEach(async (to, from, next) => {
 //   if (to.matched.some(record => record.meta.requiresAuth)) {
 //     try {

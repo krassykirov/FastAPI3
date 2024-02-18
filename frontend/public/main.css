@@ -482,5 +482,8 @@ INPUT[type="checkbox"]:disabled {
     border-radius: 3px;
   }
 
-  /*  HOME VUE CSS
-  } */
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    color: rgb(127, 147, 213) !important;
+    background-color: rgb(127, 147, 213) !important;
+  }
