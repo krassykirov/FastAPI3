@@ -145,12 +145,12 @@ export default {
       const itemsPerSlide = 6
       const products = this.discountedProducts
       const grouped = []
-
-      // Loop through the products, dynamically adjusting the groups
+      if (products.length <= itemsPerSlide) {
+        grouped.push(products)
+        return grouped
+      }
       for (let i = 0; i < products.length; i += itemsPerSlide) {
         const group = products.slice(i, i + itemsPerSlide)
-
-        // Check if this is the last group and it's not full
         if (
           i + itemsPerSlide >= products.length &&
           group.length < itemsPerSlide
@@ -159,20 +159,20 @@ export default {
           const nextGroup = products.slice(0, remainingItems)
           group.push(...nextGroup)
         }
-
         grouped.push(group)
       }
-
       return grouped
     },
     groupedlaptops() {
       const itemsPerSlide = 6
       const products = this.filteredLaptops
       const grouped = []
+      if (products.length <= itemsPerSlide) {
+        grouped.push(products)
+        return grouped
+      }
       for (let i = 0; i < products.length; i += itemsPerSlide) {
         const group = products.slice(i, i + itemsPerSlide)
-
-        // Check if this is the last group and it's not full
         if (
           i + itemsPerSlide >= products.length &&
           group.length < itemsPerSlide
@@ -181,20 +181,20 @@ export default {
           const nextGroup = products.slice(0, remainingItems)
           group.push(...nextGroup)
         }
-
         grouped.push(group)
       }
-
       return grouped
     },
     groupedTablets() {
       const itemsPerSlide = 6
       const products = this.filteredTablets
       const grouped = []
+      if (products.length <= itemsPerSlide) {
+        grouped.push(products)
+        return grouped
+      }
       for (let i = 0; i < products.length; i += itemsPerSlide) {
         const group = products.slice(i, i + itemsPerSlide)
-
-        // Check if this is the last group and it's not full
         if (
           i + itemsPerSlide >= products.length &&
           group.length < itemsPerSlide
@@ -203,20 +203,20 @@ export default {
           const nextGroup = products.slice(0, remainingItems)
           group.push(...nextGroup)
         }
-
         grouped.push(group)
       }
-
       return grouped
     },
     groupedSmartwatches() {
       const itemsPerSlide = 6
       const products = this.filteredSmartwatches
       const grouped = []
+      if (products.length <= itemsPerSlide) {
+        grouped.push(products)
+        return grouped
+      }
       for (let i = 0; i < products.length; i += itemsPerSlide) {
         const group = products.slice(i, i + itemsPerSlide)
-
-        // Check if this is the last group and it's not full
         if (
           i + itemsPerSlide >= products.length &&
           group.length < itemsPerSlide
@@ -225,20 +225,20 @@ export default {
           const nextGroup = products.slice(0, remainingItems)
           group.push(...nextGroup)
         }
-
         grouped.push(group)
       }
-
       return grouped
     },
     groupedSmartphones() {
       const itemsPerSlide = 6
       const products = this.filteredSmartphones
       const grouped = []
+      if (products.length <= itemsPerSlide) {
+        grouped.push(products)
+        return grouped
+      }
       for (let i = 0; i < products.length; i += itemsPerSlide) {
         const group = products.slice(i, i + itemsPerSlide)
-
-        // Check if this is the last group and it's not full
         if (
           i + itemsPerSlide >= products.length &&
           group.length < itemsPerSlide
@@ -247,20 +247,20 @@ export default {
           const nextGroup = products.slice(0, remainingItems)
           group.push(...nextGroup)
         }
-
         grouped.push(group)
       }
-
       return grouped
     },
     groupedTV() {
       const itemsPerSlide = 6
       const products = this.filteredTV
       const grouped = []
+      if (products.length <= itemsPerSlide) {
+        grouped.push(products)
+        return grouped
+      }
       for (let i = 0; i < products.length; i += itemsPerSlide) {
         const group = products.slice(i, i + itemsPerSlide)
-
-        // Check if this is the last group and it's not full
         if (
           i + itemsPerSlide >= products.length &&
           group.length < itemsPerSlide
@@ -269,10 +269,8 @@ export default {
           const nextGroup = products.slice(0, remainingItems)
           group.push(...nextGroup)
         }
-
         grouped.push(group)
       }
-
       return grouped
     },
     discountedProducts() {
@@ -315,27 +313,13 @@ export default {
     },
     favorites() {
       return this.$store.state.favorites
+    },
+    getHeartClasses(product) {
+      const isFavorite = this.isFavorite(product)
+      return isFavorite ? 'fa fa-heart red-color' : 'fa fa-heart-o'
     }
   },
   methods: {
-    getStarClasses(index, rating) {
-      const filledStars = Math.floor(rating)
-      if (index <= filledStars) {
-        return 'fa fa-star checked'
-      } else if (index === filledStars + 1 && rating % 1 !== 0) {
-        return 'fa fa-star-half-full checked'
-      } else {
-        return 'fa fa-star-o checked'
-      }
-    },
-    getHeartClasses() {
-      return product => {
-        const isFavorite = this.$store.state.favorites.some(
-          favProduct => favProduct.id === product.id
-        )
-        return isFavorite ? 'fa fa-heart red-color' : 'fa fa-heart-o'
-      }
-    },
     addToCart(product) {
       this.$store.dispatch('addToCart', product)
     },
