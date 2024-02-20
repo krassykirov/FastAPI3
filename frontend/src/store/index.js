@@ -227,6 +227,8 @@ export default createStore({
       commit('removeAccessToken')
     },
     inactiveLogout({ state, dispatch }) {
+      dispatch('setErrorMessage', "You've been logged out due to inactivity")
+      console.log('Youve been logged out due to inactivity')
       this.lastActiveDate = new Date()
       this.inactiveTime = 0
       VueCookies.remove('access_token')
@@ -235,8 +237,6 @@ export default createStore({
       state.refreshToken = null
       state.accessTokenExpiration = null
       state.refreshTokenExpiration = null
-      console.log('Youve been logged out due to inactivity')
-      dispatch('setErrorMessage', "You've been logged out due to inactivity")
       router.push('/login')
     },
     // updateIdleStatus({ commit }, { isIdle, lastActiveDate, inactiveTime }) {
@@ -284,7 +284,7 @@ export default createStore({
         throw new Error('Token Expired')
       }
     },
-    async login({ commit, dispatch }, { username, password, rememberMe }) {
+    async login({ commit }, { username, password, rememberMe }) {
       const formData = new URLSearchParams()
       formData.append('grant_type', '')
       formData.append('username', username)
@@ -313,10 +313,6 @@ export default createStore({
         const expires_in = jwtDecode(data.access_token).exp
         const user = jwtDecode(data.access_token).user
         const user_id = jwtDecode(data.access_token).user_id
-        commit('setAccessToken', data.access_token)
-        commit('setRefreshToken', data.refresh_token)
-        commit('UPDATE_USER', user)
-        commit('UPDATE_USER_ID', user_id)
         this.lastActiveDate = new Date()
         this.inactiveTime = 0
         const expiresInMinutes = Math.max(
@@ -344,10 +340,14 @@ export default createStore({
             Date.now() + expiresInMinutesrefreshToken * 60 * 1000
           )
         })
-        await dispatch('getProfile')
+        commit('UPDATE_USER', user)
+        commit('UPDATE_USER_ID', user_id)
+        commit('setAccessToken', data.access_token)
+        commit('setRefreshToken', data.refresh_token)
+        // await dispatch('getProfile')
         router.push('/')
       } catch (error) {
-        console.error('ErrorLogin:', error)
+        this.errorMessage = 'Username or password are incorrect!'
         throw new Error(error)
       }
     },
@@ -413,6 +413,17 @@ export default createStore({
       }
     },
     async getProfile({ commit, dispatch, state }) {
+      if (!state.user_id || !state.accessToken) {
+        const accessToken = VueCookies.get('access_token')
+        if (accessToken) {
+          const user = jwtDecode(accessToken).user
+          const user_id = jwtDecode(accessToken).user_id
+          commit('UPDATE_USER', user)
+          commit('UPDATE_USER_ID', user_id)
+        } else {
+          router.push('/login')
+        }
+      }
       try {
         const response = await axios.get(
           `${config.backendEndpoint}/api/profile/${state.user_id}`
@@ -423,15 +434,20 @@ export default createStore({
       } catch (error) {
         if (error.response && error.response.status === 401) {
           console.log('Profile 401 trying to handle:', error.response)
-          // dispatch('setErrorMessage', 'Session has expired. Please log in')
-          // dispatch('logout')
-          // commit('UPDATE_PROFILE', null)
         } else if (error === 'Token Expired') {
           console.log('Profile Other error occured trying to handle', error)
           dispatch('setErrorMessage', 'Session has expired. Please log in')
           dispatch('logout')
           throw new Error('Token Expired')
           // commit('UPDATE_PROFILE', null)
+        } else {
+          console.log(
+            'Unexpected Profile error occured trying to handle',
+            error
+          )
+          dispatch('setErrorMessage', 'Session has expired. Please log in')
+          router.push('/login')
+          throw new Error('Token Expired')
         }
       }
     },
@@ -488,7 +504,6 @@ export default createStore({
           })
         })
         const ratings = await Promise.all(ratingPromises)
-        console.log('ratings', ratings)
         ratings.forEach(rating => {
           commit('UPDATE_PRODUCT_RATING', rating)
           commit('UPDATE_CART_ITEM_RATING', rating)
@@ -537,12 +552,11 @@ export default createStore({
             'Handling error in readFromCartVue.response.status === 401...'
           )
           dispatch('setErrorMessage', 'Session has expired. Please log in')
-          dispatch('logout')
+          throw new Error(error)
         } else {
-          console.log(
-            'Handling error in readFromCartVue.response.status === 401...'
-          )
+          console.log('Handling unexpected error in readFromCartVue', error)
           dispatch('setErrorMessage', 'Session has expired. Please log in')
+          dispatch('logout')
           throw new Error(error)
         }
       }

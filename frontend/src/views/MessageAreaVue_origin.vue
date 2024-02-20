@@ -10,6 +10,28 @@
       text-align: center;
     "
   >
+    <nav
+      class="navbar navbar-expand-lg bg-white sticky-top navbar-light shadow-lg"
+      style="
+        height: 4em;
+        margin-left: 0;
+        margin-right: 0;
+        align-items: center;
+        text-align: center;
+      "
+    >
+      <NavBar
+        :cart="cart"
+        :favorites="favorites"
+        :total="total"
+        :user="user"
+        :user_id="user_id"
+        :profile="profile"
+        @addToCart="addToCart"
+        @removeFromCart="removeFromCart"
+        @redirectToItemFromNavbar="redirectToItemFromNavbar"
+      />
+    </nav>
     <div
       class="toast"
       id="cartToast"
@@ -65,7 +87,7 @@
       </div>
       <carousel
         :products="groupedSmartphones"
-        carouselId="smartphones-products-carousel"
+        carouselId="laptop-products-carousel"
       />
       <div
         class="container"
@@ -75,7 +97,7 @@
       </div>
       <carousel
         :products="groupedSmartwatches"
-        carouselId="smartwatches-products-carousel"
+        carouselId="laptop-products-carousel"
       />
       <div
         class="container"
@@ -89,16 +111,17 @@
 </template>
 
 <script>
+// import ProductList from '@/components/ProductList.vue'
 import Carousel from '@/views/CarouselVue.vue'
 // import CarouselMain from '@/views/CarouselMain.vue'
-// import NavBar from '../components/MyNavbar.vue'
+import NavBar from '../components/MyNavbar.vue'
 import config from '@/config'
 // import axios from 'axios'
 /* global bootstrap */
 
 export default {
   components: {
-    // NavBar,
+    NavBar,
     Carousel
   },
   props: ['profile'],

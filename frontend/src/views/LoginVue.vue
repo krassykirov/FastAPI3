@@ -106,14 +106,18 @@ export default {
       username: '',
       password: '',
       rememberMe: '',
-      backendEndpoint: `${config.backendEndpoint}`,
-      errorMessage: ''
+      backendEndpoint: `${config.backendEndpoint}`
     }
   },
   mixins: [errorHandlingMixin],
   watch: {
-    storeErrorMessage(newVal) {
+    errorMessage(newVal) {
       this.errorMessage = newVal
+    }
+  },
+  computed: {
+    errorMessage() {
+      return this.$store.getters.errorMessage
     }
   },
   methods: {
@@ -125,7 +129,6 @@ export default {
           rememberMe: this.rememberMe
         })
       } catch (error) {
-        console.log('getToken error:', error)
         this.errorMessage = 'Username or password are incorrect!'
       }
     },

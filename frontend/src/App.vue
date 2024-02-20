@@ -23,14 +23,17 @@ export default {
     const lastActiveDate = ref(new Date(lastActive.value))
     const inactiveTime = ref(0)
 
-    // Function to update the values
     const updateValues = () => {
       const currentTime = new Date().getTime()
       const lastActiveTime = lastActive.value
       const diff = currentTime - lastActiveTime
       inactiveTime.value = Math.floor(diff / 60000) // Convert milliseconds to minutes
       isIdle.value = diff >= 1 * 10 * 1000 // Check if the user is idle for more than 5 minutes
-      if (inactiveTime.value >= 30) {
+      if (inactiveTime.value >= 1) {
+        store.dispatch(
+          'setErrorMessage',
+          "You've been logged out due to inactivity"
+        )
         store.dispatch('inactiveLogout')
       }
     }

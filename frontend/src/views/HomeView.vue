@@ -330,14 +330,17 @@ export default {
     }
   },
   created() {
-    const accessToken = VueCookies.get('access_token')
-    if (accessToken) {
-      const user = jwtDecode(accessToken).user
-      const user_id = jwtDecode(accessToken).user_id
-      this.$store.commit('UPDATE_USER', user)
-      this.$store.commit('UPDATE_USER_ID', user_id)
-    } else {
-      router.push('/login')
+    if (!this.$store.state.accessToken) {
+      const accessToken = VueCookies.get('access_token')
+      if (accessToken) {
+        const user = jwtDecode(accessToken).user
+        const user_id = jwtDecode(accessToken).user_id
+        this.$store.commit('UPDATE_USER', user)
+        this.$store.commit('UPDATE_USER_ID', user_id)
+      } else {
+        this.errorMessage = 'Session expired'
+        router.push('/login')
+      }
     }
     this.$store
       .dispatch('getProfile')
@@ -406,10 +409,10 @@ export default {
       return this.$store.getters.accessToken
     },
     accessTokenExpiration() {
-      return this.$store.state.accessTokenExpiration
+      return this.$store.getters.accessTokenExpiration
     },
     refreshTokenExpiration() {
-      return this.$store.state.refreshTokenExpiration
+      return this.$store.getters.refreshTokenExpiration
     },
     user_id() {
       return this.$store.state.user_id

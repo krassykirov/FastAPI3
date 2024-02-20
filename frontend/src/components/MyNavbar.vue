@@ -5,14 +5,14 @@
   >
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav">
-        <a class="navbar-brand" href="/test">
+        <!-- <a class="navbar-brand" href="/test">
           <img
             :src="require('@/assets/logo-house.png')"
             alt=""
             width="40"
             height="40"
           />
-        </a>
+        </a> -->
         <li class="nav-item" style="padding-left: 200px">
           <a class="nav-link mx-2 text-uppercase"
             ><router-link
@@ -445,6 +445,9 @@ export default {
     this.$store.dispatch('readFromCartVue')
   },
   computed: {
+    errorMessage() {
+      return this.$store.getters.errorMessage
+    },
     accessToken() {
       return this.$store.getters.accessToken || null
     },

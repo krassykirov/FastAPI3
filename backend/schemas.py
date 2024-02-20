@@ -103,6 +103,21 @@ class ItemCreate(BaseModel):
            }
         }
 
+class UserProfileCreate(BaseModel):
+    email:   Optional[str]
+    primary_email: Optional[str]
+    number:  Optional[str]
+    address: Optional[str]
+    avatar:  Optional[str]
+    class Config:
+        orm_mode = True
+        schema_extra = {
+        "example": {
+            "email": "krassy@mail.bg",
+            "number": "1234567890",
+            "address": "Sofia"
+           }
+        }
 class UserProfileUpdate(BaseModel):
     email:   Optional[str]
     primary_email: Optional[str]

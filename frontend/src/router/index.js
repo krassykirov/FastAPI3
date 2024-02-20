@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import store from '@/store/index.js'
+// import VueCookies from 'vue-cookies'
 // import { jwtDecode } from 'jwt-decode'
 
 const routes = [
@@ -29,16 +30,16 @@ const routes = [
     name: 'login',
     component: () => import('../views/LoginVue.vue')
   },
-  {
-    path: '/car',
-    name: 'car',
-    component: () => import('../views/CarouselVue2.vue'),
-    props: () => ({
-      cart: store.state.cart,
-      profile: store.state.profile,
-      favorites: store.state.favorites
-    })
-  },
+  // {
+  //   path: '/car',
+  //   name: 'car',
+  //   component: () => import('../views/CarouselMain.vue'),
+  //   props: () => ({
+  //     cart: store.state.cart,
+  //     profile: store.state.profile,
+  //     favorites: store.state.favorites
+  //   })
+  // },
   {
     path: '/test',
     name: 'test',
@@ -49,8 +50,8 @@ const routes = [
       favorites: store.state.favorites,
       filteredLaptops: store.getters.filteredLaptops,
       filteredProducts: store.getters.filteredProducts
-    }),
-    meta: { requiresProfile: true }
+    })
+    // meta: { requiresProfile: true }
   },
   {
     path: '/search',
@@ -61,8 +62,8 @@ const routes = [
       profile: store.state.profile,
       favorites: store.state.favorites,
       searchResults: store.state.searchResults
-    }),
-    meta: { requiresProfile: true }
+    })
+    // meta: { requiresProfile: true }
   },
   {
     path: '/cart',
@@ -72,8 +73,8 @@ const routes = [
       cart: store.state.cart,
       profile: store.state.profile,
       favorites: store.state.favorites
-    }),
-    meta: { requiresProfile: true }
+    })
+    // meta: { requiresProfile: true }
   },
   {
     path: '/favorites',
@@ -83,8 +84,8 @@ const routes = [
       cart: store.state.cart,
       profile: store.state.profile,
       favorites: store.state.favorites
-    }),
-    meta: { requiresProfile: true }
+    })
+    // meta: { requiresProfile: true }
   },
   {
     path: '/signup',
@@ -99,8 +100,8 @@ const routes = [
       cart: store.state.cart,
       favorites: store.state.favorites,
       profile: store.state.profile
-    }),
-    meta: { requiresProfile: true }
+    })
+    // meta: { requiresProfile: true }
   },
   {
     path: '/item/:itemId',
@@ -112,8 +113,8 @@ const routes = [
       profile: store.state.profile,
       favorites: store.state.favorites,
       user: store.state.user
-    }),
-    meta: { requiresProfile: true }
+    })
+    // meta: { requiresProfile: true }
   },
   {
     path: '/:pathMatch(.*)*',
@@ -133,24 +134,10 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach(async (to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresProfile)) {
-    try {
-      await store.dispatch('getProfile')
-      if (!store.state.accessToken) {
-        throw new Error('Token Expired')
-      }
-    } catch (error) {
-      next('/login')
-      throw new Error('Token Expired')
-    }
-  }
-  next()
-})
 // router.beforeEach(async (to, from, next) => {
-//   if (to.matched.some(record => record.meta.requiresAuth)) {
+//   if (to.matched.some(record => record.meta.requiresProfile)) {
 //     try {
-//       await store.dispatch('initializeUser')
+//       await store.dispatch('getProfile')
 //       if (!store.state.accessToken) {
 //         throw new Error('Token Expired')
 //       }
@@ -158,6 +145,18 @@ router.beforeEach(async (to, from, next) => {
 //       next('/login')
 //       throw new Error('Token Expired')
 //     }
+//   }
+//   next()
+// })
+// router.beforeEach(async (to, from, next) => {
+//   const accessToken = VueCookies.get('access_token')
+//   if (accessToken) {
+//     const user = jwtDecode(accessToken).user
+//     const user_id = jwtDecode(accessToken).user_id
+//     store.commit('UPDATE_USER', user)
+//     store.commit('UPDATE_USER_ID', user_id)
+//   } else {
+//     router.push('/login')
 //   }
 //   next()
 // })

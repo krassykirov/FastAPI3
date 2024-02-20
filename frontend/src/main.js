@@ -54,11 +54,9 @@ axios.interceptors.response.use(
       } else if (
         error.response.data.detail == 'Username or password are incorrect!'
       ) {
-        console.log('error.response.data.detail', error.response.data.detail)
         store.dispatch('setErrorMessage', 'Username or password are incorrect!')
         throw new Error('Username or password are incorrect!')
       } else {
-        console.log('No refresh token available, error is:', error)
         store.dispatch('setErrorMessage', 'Session has expired. Please log in.')
         store.dispatch('logout')
         throw new Error('Token Expired')

@@ -190,42 +190,8 @@
       <p class="display-5" v-if="item && getSimilarProducts.length">
         You may also like
       </p>
-
-      <div class="row" v-if="item && filteredProducts.length">
-        <div
-          class="col-md-2"
-          v-for="product in getSimilarProducts"
-          :key="product.id"
-          style="cursor: pointer"
-        >
-          <div class="similar-product" @click="redirectToItem(product.id)">
-            <span
-              class="badge bg-danger position-absolute top-5 start-5"
-              v-if="product.discount >= 0.1"
-              style="font-size: 0.9em; margin: 1%; top: 5; start: 5"
-              >-{{ Math.floor(product.discount * 100) }}%
-            </span>
-            <img
-              class="img-fluid"
-              :src="
-                `${backendEndpoint}/static/img/` +
-                product.username +
-                '/' +
-                product.name +
-                '/' +
-                product.image
-              "
-              alt="Preview"
-            />
-            <p class="title">{{ truncateName(product.name, 30) }}</p>
-            <p class="price">${{ product.discount_price }}</p>
-            <p class="old-price" v-if="product.discount">
-              ${{ product.price }}
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
+    <MessageArea />
     <div class="container" style="padding-left: 10%; margin: 0; width: 100%">
       <!-- Horizontal Tabs -->
       <ul class="nav nav-tabs justify-content-center" style="margin-left: 20%">
@@ -473,15 +439,19 @@
 <script>
 /* global bootstrap */
 import $ from 'jquery'
-// import MessageArea from '@/views/MessageAreaVue.vue'
+import MessageArea from '@/views/MessageAreaVue.vue'
+// import Carousel from '@/views/CarouselVue.vue'
 import errorHandlingMixin from '../errorHandlingMixin'
 import config from '@/config'
 import NavBar from '../components/MyNavbar.vue'
+// import router from '@/router'
+// import VueCookies from 'vue-cookies'
+// import { jwtDecode } from 'jwt-decode'
 
 export default {
   components: {
-    NavBar
-    // MessageArea
+    NavBar,
+    MessageArea
   },
   mixins: [errorHandlingMixin],
   props: ['cart', 'profile', 'favorites'],
@@ -503,21 +473,42 @@ export default {
     next()
   },
   created() {
-    // const accessToken = VueCookies.get('access_token')
-    // if (accessToken) {
-    //   // Decode access token to extract user information
-    //   const user_access_token = jwtDecode(accessToken).user
-    //   const user_id_access_token = jwtDecode(accessToken).user_id
-    //   this.$store.commit('UPDATE_USER', user_access_token)
-    //   this.$store.commit('UPDATE_USER_ID', user_id_access_token)
-    // } else {
-    //   router.push('/login')
-    // }
     this.getProduct()
     this.$store.dispatch('getProfile')
     this.$store.dispatch('getProfiles')
     this.$store.dispatch('getProducts')
     this.setReviewsRating(this.itemId)
+    this.$store.dispatch('checkFavoritesOnLoad')
+    this.$store.dispatch('readFromCartVue').then(() => {
+      const fetchRatingsPromises = this.$store.getters.filteredLaptops.map(
+        product => {
+          return this.$store.dispatch('getItemRating', product.id)
+        }
+      )
+      return Promise.all(fetchRatingsPromises)
+    })
+  },
+  mounted() {
+    const carousels = document.querySelectorAll('.carousel')
+    carousels.forEach(carouselElement => {
+      const carouselId = carouselElement.id
+      const carousel = new bootstrap.Carousel(carouselElement, {
+        interval: false
+      })
+      const carouselControlPrev = document.getElementById(
+        `${carouselId}-control-prev`
+      )
+      const carouselControlNext = document.getElementById(
+        `${carouselId}-control-next`
+      )
+      carouselControlPrev.addEventListener('click', function () {
+        carousel.next()
+      })
+
+      carouselControlNext.addEventListener('click', function () {
+        carousel.prev()
+      })
+    })
   },
   computed: {
     errorMessage() {
@@ -532,6 +523,31 @@ export default {
           product.category_id === this.item.category_id &&
           product.id !== this.item.id
       )
+    },
+    groupedlaptops() {
+      const itemsPerSlide = 6
+      const products = this.filteredLaptops
+      const grouped = []
+      if (products.length <= itemsPerSlide) {
+        grouped.push(products)
+        return grouped
+      }
+      for (let i = 0; i < products.length; i += itemsPerSlide) {
+        const group = products.slice(i, i + itemsPerSlide)
+        if (
+          i + itemsPerSlide >= products.length &&
+          group.length < itemsPerSlide
+        ) {
+          const remainingItems = itemsPerSlide - group.length
+          const nextGroup = products.slice(0, remainingItems)
+          group.push(...nextGroup)
+        }
+        grouped.push(group)
+      }
+      return grouped
+    },
+    filteredLaptops() {
+      return this.$store.getters.filteredLaptops
     },
     user() {
       return this.$store.state.user
@@ -785,12 +801,6 @@ export default {
 }
 </script>
 <style scoped>
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
-@import url('https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css');
-@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css');
-@import url('//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
-@import url('https://fonts.googleapis.com/css?family=Raleway');
-
 .price {
   font-size: 1em;
   color: #dc3545;
@@ -929,6 +939,7 @@ text-color {
 }
 
 .container.my-5 {
+  min-width: 1200px !important;
   max-width: 100% !important;
   height: 550px !important;
   width: 100%;

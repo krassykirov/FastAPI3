@@ -9,6 +9,12 @@ from schemas import UserProfileUpdate
 from fastapi.encoders import jsonable_encoder
 from typing import List
 from my_logger import detailed_logger
+from pathlib import Path
+import shutil, os
+import schemas
+
+PROJECT_ROOT = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 
 PROTECTED = [Depends(get_current_user)]
 
@@ -32,6 +38,33 @@ def get_profile(user_id: int, db: Session = Depends(get_session), user: User = D
     if profile is None:
         logger.info(f"No profile with user_id: {id} found")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No profile with user_id: {id} found")
+    return profile
+
+@profile_router.post("/", status_code=status.HTTP_201_CREATED, include_in_schema=True)
+async def create_profile(user_profile: UserProfile, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+    avatar = 'img_avatar.png'
+    IMG_DIR = os.path.join(PROJECT_ROOT, f'static/img/{user_profile.primary_email}/profile/')
+    SOURCE_DIR = os.path.join(PROJECT_ROOT, f'static/img/img_avatar.png')
+    print('PROJECT_ROOT', PROJECT_ROOT)
+    print('IMG_DIR', IMG_DIR)
+    print('user_profile', user_profile)
+    if not os.path.exists(IMG_DIR):
+                print('creating dir', IMG_DIR)
+                os.makedirs(IMG_DIR, exist_ok=True)
+                shutil.copy2(SOURCE_DIR, IMG_DIR)
+    profile = UserProfile(profile_id=user.id,
+                            email=user_profile.email if user_profile.email else None,
+                            number=user_profile.number if user_profile.number else None,
+                            primary_email=user.username,
+                            address=user_profile.address if user_profile.address else None,
+                            avatar=user_profile.avatar if user_profile.avatar else avatar)
+    try:
+        db.add(profile)
+        db.commit()
+        db.refresh(profile)
+    except Exception as e:
+            db.rollback()
+            return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Something went wrong, error {e}")
     return profile
 
 @profile_router.put("/{user_id}", status_code=status.HTTP_200_OK, response_model=UserProfileUpdate, include_in_schema=True)
