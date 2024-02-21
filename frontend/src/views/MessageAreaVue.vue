@@ -126,11 +126,11 @@ export default {
         `${carouselId}-control-next`
       )
       carouselControlPrev.addEventListener('click', function () {
-        carousel.next()
+        carousel.prev()
       })
 
       carouselControlNext.addEventListener('click', function () {
-        carousel.prev()
+        carousel.next()
       })
     })
   },

@@ -1,5 +1,10 @@
 <template>
-  <div :id="carouselId" class="carousel slide" data-ride="carousel">
+  <div
+    :id="carouselId"
+    class="carousel slide"
+    data-ride="carousel"
+    style="width: 90%; height: 60%"
+  >
     <div class="carousel-inner" role="listbox">
       <div
         v-for="(product, index) in products"
