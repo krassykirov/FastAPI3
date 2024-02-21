@@ -245,6 +245,7 @@ export default createStore({
     //   commit('setInactiveTime', inactiveTime)
     // },
     async refreshAccessToken({ commit, dispatch, state }) {
+      console.log('Refreshing token..')
       try {
         const response = await axios.post(
           `${config.backendEndpoint}/api/token/refresh`,
@@ -330,11 +331,6 @@ export default createStore({
             (refresh_token_expires_in - Math.floor(Date.now() / 1000)) / 60
           )
         )
-        console.log(
-          'RefreshToken, AccessToken expires in minutes',
-          expiresInMinutesrefreshToken,
-          expiresInMinutes
-        )
         VueCookies.set('refresh_token', data.refresh_token, {
           expires: new Date(
             Date.now() + expiresInMinutesrefreshToken * 60 * 1000
@@ -387,16 +383,10 @@ export default createStore({
         }
       }
     },
-    async getProfiles({ commit, dispatch, state }) {
+    async getProfiles({ commit, dispatch }) {
       try {
         const response = await axios.get(
-          `${config.backendEndpoint}/api/profile`,
-          {
-            headers: {
-              Authorization: `Bearer ${state.accessToken}`,
-              Accept: 'application/json'
-            }
-          }
+          `${config.backendEndpoint}/api/profile`
         )
         if (response.status !== 200) {
           commit('UPDATE_PROFILES', null)
@@ -406,10 +396,19 @@ export default createStore({
           commit('UPDATE_PROFILES', data)
         }
       } catch (error) {
-        commit('UPDATE_PROFILES', null)
-        dispatch('setErrorMessage', 'Session has expired. Please log in')
-        dispatch('logout')
-        throw new Error('Token Expired')
+        if (error.response && error.response.status === 401) {
+          console.log('Profile 401 trying to handle:', error.response)
+        } else if (error === 'Token Expired') {
+          dispatch('setErrorMessage', 'Session has expired. Please log in')
+        } else {
+          console.log(
+            'Unexpected Profile error occured trying to handle',
+            error
+          )
+          dispatch('setErrorMessage', 'Session has expired. Please log in')
+          router.push('/login')
+          // throw new Error('Token Expired')
+        }
       }
     },
     async getProfile({ commit, dispatch, state }) {
@@ -438,7 +437,7 @@ export default createStore({
           console.log('Profile Other error occured trying to handle', error)
           dispatch('setErrorMessage', 'Session has expired. Please log in')
           dispatch('logout')
-          throw new Error('Token Expired')
+          // throw new Error('Token Expired')
           // commit('UPDATE_PROFILE', null)
         } else {
           console.log(
@@ -447,7 +446,7 @@ export default createStore({
           )
           dispatch('setErrorMessage', 'Session has expired. Please log in')
           router.push('/login')
-          throw new Error('Token Expired')
+          // throw new Error('Token Expired')
         }
       }
     },
@@ -548,16 +547,14 @@ export default createStore({
         commit('UPDATE_USER_ID', data.user_id)
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          console.log(
-            'Handling error in readFromCartVue.response.status === 401...'
-          )
+          // console.log(
+          //   'Handling error in readFromCartVue.response.status === 401...'
+          // )
           dispatch('setErrorMessage', 'Session has expired. Please log in')
-          throw new Error(error)
         } else {
           console.log('Handling unexpected error in readFromCartVue', error)
           dispatch('setErrorMessage', 'Session has expired. Please log in')
-          dispatch('logout')
-          throw new Error(error)
+          // dispatch('logout')
         }
       }
     },
@@ -774,7 +771,9 @@ export default createStore({
         if (index !== -1) {
           commit('REMOVE_ITEM_FROM_FAVORITES', index)
           const element = document.getElementById(`heart${itemId}`)
-          element.classList.remove('red-color')
+          if (element) {
+            element.classList.remove('red-color')
+          }
         }
       } catch (error) {
         console.error('Error removing item from favorites:', error)

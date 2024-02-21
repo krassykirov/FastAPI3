@@ -130,6 +130,16 @@
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
       <span class="visually-hidden">Next</span>
     </button>
+    <ol class="carousel-indicators" style="margin-bottom: 0">
+      <li
+        v-for="(productGroup, index) in products"
+        :key="index"
+        :data-bs-target="'#' + carouselId"
+        :data-bs-slide-to="index"
+        :class="{ active: index === 0 }"
+        style="background-color: rgb(214, 209, 209)"
+      ></li>
+    </ol>
   </div>
 </template>
 
@@ -243,5 +253,11 @@ export default {
   padding-right: 8px !important;
   padding-bottom: 5px !important;
   margin-top: 10px !important;
+}
+.carousel .carousel-indicators li {
+  width: 10px;
+  height: 10px;
+  border-radius: 100%;
+  background-color: rgb(76, 76, 172) !important;
 }
 </style>

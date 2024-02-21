@@ -33,10 +33,14 @@
       ></div>
     </div>
     <div class="container" style="margin-top: 2%">
-      <carousel
-        :products="groupedProducts"
+      <CarouselMain
+        :products="discountedProducts"
         carouselId="discount-products-carousel"
       />
+      <!-- <carousel
+        :products="groupedProducts"
+        carouselId="discount-products-carousel"
+      /> -->
       <div
         class="container"
         style="font-size: 1.3em; text-align: left; margin-bottom: 1%"
@@ -90,7 +94,7 @@
 
 <script>
 import Carousel from '@/views/CarouselVue.vue'
-// import CarouselMain from '@/views/CarouselMain.vue'
+import CarouselMain from '@/views/CarouselMain.vue'
 // import NavBar from '../components/MyNavbar.vue'
 import config from '@/config'
 // import axios from 'axios'
@@ -99,6 +103,7 @@ import config from '@/config'
 export default {
   components: {
     // NavBar,
+    CarouselMain,
     Carousel
   },
   props: ['profile'],

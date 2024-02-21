@@ -1,30 +1,36 @@
 <template>
   <div :id="carouselId" class="carousel slide" data-ride="carousel">
-    <ol class="carousel-indicators">
-      <li
-        v-for="(product, index) in products"
-        :key="index"
-        :data-target="'#' + carouselId"
-        :data-slide-to="index"
-        :class="{ active: index === 0 }"
-      ></li>
-    </ol>
-
     <div class="carousel-inner" role="listbox">
       <div
         v-for="(product, index) in products"
         :key="index"
         :class="{ 'carousel-item': true, active: index === 0 }"
       >
-        <div class="row justify-content-center align-items-center">
+        <div
+          class="row justify-content-center align-items-center; position-relative"
+        >
           <img
             class="d-block img-fluid"
             :src="`${backendEndpoint}/static/img/${product.username}/${product.name}/${product.image}`"
             :alt="product.name"
           />
+          <div
+            class="position-absolute top-0 start-0"
+            style="margin-top: 5px; margin-left: 25%"
+          >
+            <span
+              v-if="product.discount >= 0.1"
+              style="font-size: 1em; margin: 1%"
+              class="badge bg-danger position-absolute top-0 start-0"
+            >
+              -{{ Math.floor(product.discount * 100) }}%
+            </span>
+          </div>
           <div class="carousel-caption d-none d-md-block">
-            <h3>{{ product.name }}</h3>
-            <p>{{ product.description }}</p>
+            <h6 style="margin-right: 30%; margin-bottom: 2%">
+              {{ truncateName(product.name, 35) }}
+            </h6>
+            <!-- <p>{{ product.description }}</p> -->
             <!-- Add any other product details you want to display -->
           </div>
         </div>
@@ -50,6 +56,16 @@
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
       <span class="visually-hidden">Next</span>
     </button>
+    <ol class="carousel-indicators" style="margin-bottom: 0">
+      <li
+        v-for="(product, index) in products"
+        :key="index"
+        :data-bs-target="'#' + carouselId"
+        :data-bs-slide-to="index"
+        :class="{ active: index === 0 }"
+        style="background-color: rgb(65, 96, 179); margin-top: 2%"
+      ></li>
+    </ol>
   </div>
 </template>
 
@@ -157,5 +173,11 @@ export default {
   height: 550px;
   max-height: 550px;
   width: 60%;
+}
+.carousel .carousel-indicators li {
+  width: 10px;
+  height: 10px;
+  border-radius: 100%;
+  background-color: rgb(76, 76, 172) !important;
 }
 </style>

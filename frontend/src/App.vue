@@ -29,11 +29,7 @@ export default {
       const diff = currentTime - lastActiveTime
       inactiveTime.value = Math.floor(diff / 60000) // Convert milliseconds to minutes
       isIdle.value = diff >= 1 * 10 * 1000 // Check if the user is idle for more than 5 minutes
-      if (inactiveTime.value >= 1) {
-        store.dispatch(
-          'setErrorMessage',
-          "You've been logged out due to inactivity"
-        )
+      if (inactiveTime.value >= 30) {
         store.dispatch('inactiveLogout')
       }
     }

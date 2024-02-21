@@ -28,7 +28,6 @@
         :favorites="favorites"
       />
     </nav>
-    <!-- <MessageArea /> -->
     <div class="container-fluid mt-5" style="margin-left: 10%">
       <div
         class="row"
@@ -128,6 +127,12 @@
         </div>
       </div>
     </div>
+    <div class="container" style="margin-top: 3%; font-size: 2em">
+      <!-- <p class="display-5" v-if="item && getSimilarProducts.length"> -->
+      You may also like
+      <!-- </p> -->
+    </div>
+    <MessageArea />
     <div
       class="toast"
       id="cartToast"
@@ -155,14 +160,14 @@
 
 <script>
 import NavBar from '../components/MyNavbar.vue'
-// import MessageArea from '@/views/MessageAreaVue.vue'
+import MessageArea from '@/views/MessageAreaVue.vue'
 import errorHandlingMixin from '../errorHandlingMixin'
 import config from '@/config'
 
 export default {
   components: {
-    NavBar
-    // MessageArea
+    NavBar,
+    MessageArea
   },
   props: ['profile'],
   data() {

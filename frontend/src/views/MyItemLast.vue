@@ -185,11 +185,10 @@
         style="font-weight: 900; font: 1.1em"
       ></div>
     </div>
-    <div class="container">
-      <hr />
-      <p class="display-5" v-if="item && getSimilarProducts.length">
-        You may also like
-      </p>
+    <div class="container" style="margin-top: 4%; font-size: 2em">
+      <!-- <p class="display-5" v-if="item && getSimilarProducts.length"> -->
+      You may also like
+      <!-- </p> -->
     </div>
     <MessageArea />
     <div class="container" style="padding-left: 10%; margin: 0; width: 100%">
