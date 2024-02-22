@@ -88,7 +88,7 @@
                       :id="'overall-rating' + product.id"
                       class="overall-rating2"
                     >
-                      ({{ product.reviewNumber }})
+                      ({{ product.review_number }})
                     </span>
                   </p>
                 </td>
@@ -176,14 +176,9 @@ export default {
     }
   },
   mixins: [errorHandlingMixin],
-  created() {
-    this.$store.dispatch('readFromCartVue').then(() => {
-      const fetchRatingsPromises = this.$store.state.favorites.map(product => {
-        return this.$store.dispatch('getItemRating', product.id)
-      })
-      return Promise.all(fetchRatingsPromises)
-    })
-  },
+  // created() {
+  //   Promise.all([this.$store.dispatch('getItemRatings')])
+  // },
   computed: {
     errorMessage() {
       return this.$store.state.errorMessage

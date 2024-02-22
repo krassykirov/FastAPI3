@@ -266,12 +266,13 @@ async def create_profile(request: Request, db: Session = Depends(get_session), u
     email = form_data.get('email')
     number = form_data.get('number')
     address = form_data.get('address')
-    primary_email = form_data.get('primary_email')
+    primary_email = user.username
+    # primary_email = form_data.get('primary_email')
     query = select(User).where(User.username == user.username)
     user_db = db.exec(query).first()
     if user_db:
         try:
-            IMG_DIR = os.path.join(PROJECT_ROOT, f'static/img/{user.username}/profile')
+            IMG_DIR = os.path.join(PROJECT_ROOT, f'backend/static/img/{user.username}/profile')
             content = await file.read()
             if not os.path.exists(IMG_DIR):
                 os.makedirs(IMG_DIR, exist_ok=True)

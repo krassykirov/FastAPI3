@@ -17,7 +17,6 @@ const routes = [
     beforeEnter: async (to, from, next) => {
       try {
         await store.dispatch('getProducts')
-        await store.dispatch('getProfile')
         next()
       } catch (error) {
         console.log('error', error)
@@ -29,29 +28,6 @@ const routes = [
     path: '/login',
     name: 'login',
     component: () => import('../views/LoginVue.vue')
-  },
-  {
-    path: '/car',
-    name: 'car',
-    component: () => import('../views/CarouselMain.vue'),
-    props: () => ({
-      cart: store.state.cart,
-      profile: store.state.profile,
-      favorites: store.state.favorites
-    })
-  },
-  {
-    path: '/test',
-    name: 'test',
-    component: () => import('../views/MessageAreaVue.vue'),
-    props: () => ({
-      cart: store.state.cart,
-      profile: store.state.profile,
-      favorites: store.state.favorites,
-      filteredLaptops: store.getters.filteredLaptops,
-      filteredProducts: store.getters.filteredProducts
-    })
-    // meta: { requiresProfile: true }
   },
   {
     path: '/search',
@@ -85,7 +61,14 @@ const routes = [
       profile: store.state.profile,
       favorites: store.state.favorites
     })
-    // meta: { requiresProfile: true }
+    // beforeEnter: async (to, from, next) => {
+    //   try {
+    //     await store.dispatch('getItemRatings')
+    //     next()
+    //   } catch (error) {
+    //     console.log('error', error)
+    //   }
+    // }
   },
   {
     path: '/signup',

@@ -343,16 +343,12 @@ export default {
       }
     }
     this.$store
-      .dispatch('getProfile')
-      .then(() => this.$store.dispatch('getProducts'))
-      .then(() => this.$store.dispatch('readFromCartVue'))
-      .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
+      .dispatch('checkFavoritesOnLoad')
       .then(() => this.$store.dispatch('fetchCategories'))
       .then(() => this.$store.dispatch('updateProductRange'))
-      .then(() => this.$store.dispatch('getItemRatings'))
       .catch(error => {
         if (error.message !== 'Token Expired') {
-          console.error('error', error)
+          // console.error('error', error)
         }
       })
   },
@@ -372,6 +368,9 @@ export default {
     },
     filteredProducts() {
       return this.$store.getters.filteredProducts
+    },
+    products() {
+      return this.$store.getters.products
     },
     cart() {
       return this.$store.getters.cart
@@ -439,9 +438,6 @@ export default {
     },
     async fetchCategories() {
       this.$store.dispatch('fetchCategories')
-    },
-    async getItemRating(itemId) {
-      this.$store.dispatch('getItemRating', itemId)
     },
     async handleCategoryChange() {
       const selectedCategories = await this.$store.dispatch(

@@ -69,13 +69,13 @@
                       :id="'overall-rating' + product.id + '-float'"
                       class="overall-rating"
                     >
-                      &nbsp;{{ product.rating_float }}
+                      &nbsp;{{ parseFloat(product.rating_float).toFixed(2) }}
                     </span>
                     <span
                       :id="'overall-rating' + product.id"
                       class="overall-rating2"
                     >
-                      ({{ product.reviewNumber }})
+                      ({{ product.review_number }})
                     </span>
                   </i>
                 </p>
@@ -160,15 +160,8 @@ export default {
   created() {
     Promise.all([
       this.$store.dispatch('getProducts'),
-      this.$store.dispatch('checkFavoritesOnLoad'),
-      this.$store.dispatch('readFromCartVue').then(() => {
-        const fetchRatingsPromises = this.$store.getters.filteredProducts.map(
-          product => {
-            return this.$store.dispatch('getItemRating', product.id)
-          }
-        )
-        return Promise.all(fetchRatingsPromises)
-      })
+      this.$store.dispatch('checkFavoritesOnLoad')
+      // this.$store.dispatch('readFromCartVue')
     ])
   },
   computed: {

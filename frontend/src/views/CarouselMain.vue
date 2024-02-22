@@ -32,7 +32,7 @@
             </span>
           </div>
           <div class="carousel-caption d-none d-md-block">
-            <h6 style="margin-right: 30%; margin-bottom: 2%">
+            <h6 style="margin-right: 30%; margin-bottom: 3%">
               {{ truncateName(product.name, 35) }}
             </h6>
             <!-- <p>{{ product.description }}</p> -->
@@ -47,8 +47,13 @@
       type="button"
       :data-bs-target="carouselId"
       data-bs-slide="prev"
+      style="display: none"
     >
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span
+        class="carousel-control-prev-icon"
+        style="display: none"
+        aria-hidden="true"
+      ></span>
       <span class="visually-hidden">Prev</span>
     </button>
     <button
@@ -57,8 +62,13 @@
       type="button"
       :data-bs-target="carouselId"
       data-bs-slide="next"
+      style="display: none"
     >
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span
+        class="carousel-control-next-icon"
+        style="display: none"
+        aria-hidden="true"
+      ></span>
       <span class="visually-hidden">Next</span>
     </button>
     <ol class="carousel-indicators" style="margin-bottom: 0">
@@ -90,16 +100,9 @@ export default {
   },
   created() {
     Promise.all([
-      this.$store.dispatch('getProducts'),
-      this.$store.dispatch('checkFavoritesOnLoad'),
-      this.$store.dispatch('readFromCartVue').then(() => {
-        const fetchRatingsPromises = this.$store.getters.filteredProducts.map(
-          product => {
-            return this.$store.dispatch('getItemRating', product.id)
-          }
-        )
-        return Promise.all(fetchRatingsPromises)
-      })
+      this.$store.dispatch('checkFavoritesOnLoad')
+      // this.$store.dispatch('readFromCartVue')
+      // this.$store.dispatch('getItemRatings')
     ])
   },
   computed: {
@@ -178,11 +181,15 @@ export default {
   height: 550px;
   max-height: 550px;
   width: 60%;
+  margin-bottom: 1%;
 }
 .carousel .carousel-indicators li {
   width: 10px;
   height: 10px;
   border-radius: 100%;
   background-color: rgb(76, 76, 172) !important;
+}
+.carousel-inner {
+  background-color: rgb(95, 149, 182);
 }
 </style>

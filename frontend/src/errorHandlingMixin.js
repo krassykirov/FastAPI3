@@ -10,6 +10,8 @@ export default {
       ) {
         this.errorMessage = 'Username or password are incorrect!'
         console.log('Username or password are incorrect!..')
+      } else if (error.message.startsWith('No profile with')) {
+        console.log('No profile found')
       } else if (error.message === 'Token Expired') {
         console.log('Handling error Mixin: Token Expired, logging out..')
         this.errorMessage = 'Session has expired. Please log in.'

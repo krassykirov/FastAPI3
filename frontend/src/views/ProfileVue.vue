@@ -374,7 +374,7 @@ export default {
       $('#create-profile').submit(e => {
         e.preventDefault()
         const formData = new FormData(e.target)
-        formData.append('primary_email', this.user)
+        // formData.append('primary_email', this.user)
         console.log('formData', formData)
         $.ajax({
           url: `${config.backendEndpoint}/create_profile`,

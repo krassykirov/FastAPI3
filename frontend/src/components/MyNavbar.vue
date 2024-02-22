@@ -442,7 +442,6 @@ export default {
         console.error('error', error)
       }
     })
-    this.$store.dispatch('readFromCartVue')
   },
   computed: {
     errorMessage() {

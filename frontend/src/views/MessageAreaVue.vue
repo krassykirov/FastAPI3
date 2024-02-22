@@ -33,10 +33,10 @@
       ></div>
     </div>
     <div class="container" style="margin-top: 2%">
-      <CarouselMain
+      <!-- <CarouselMain
         :products="discountedProducts"
         carouselId="discount-products-carousel"
-      />
+      /> -->
       <!-- <carousel
         :products="groupedProducts"
         carouselId="discount-products-carousel"
@@ -94,7 +94,7 @@
 
 <script>
 import Carousel from '@/views/CarouselVue.vue'
-import CarouselMain from '@/views/CarouselMain.vue'
+// import CarouselMain from '@/views/CarouselMain.vue'
 // import NavBar from '../components/MyNavbar.vue'
 import config from '@/config'
 // import axios from 'axios'
@@ -103,7 +103,7 @@ import config from '@/config'
 export default {
   components: {
     // NavBar,
-    CarouselMain,
+    // CarouselMain,
     Carousel
   },
   props: ['profile'],
@@ -126,25 +126,16 @@ export default {
         `${carouselId}-control-next`
       )
       carouselControlPrev.addEventListener('click', function () {
-        carousel.prev()
+        carousel.next()
       })
 
       carouselControlNext.addEventListener('click', function () {
-        carousel.next()
+        carousel.prev()
       })
     })
   },
   created() {
-    this.$store.dispatch('getProducts')
     this.$store.dispatch('checkFavoritesOnLoad')
-    this.$store.dispatch('readFromCartVue').then(() => {
-      const fetchRatingsPromises = this.$store.getters.filteredLaptops.map(
-        product => {
-          return this.$store.dispatch('getItemRating', product.id)
-        }
-      )
-      return Promise.all(fetchRatingsPromises)
-    })
   },
   computed: {
     groupedProducts() {

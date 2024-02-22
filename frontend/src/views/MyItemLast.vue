@@ -473,19 +473,9 @@ export default {
   },
   created() {
     this.getProduct()
+    this.setReviewsRating(this.itemId)
     this.$store.dispatch('getProfile')
     this.$store.dispatch('getProfiles')
-    this.$store.dispatch('getProducts')
-    this.setReviewsRating(this.itemId)
-    this.$store.dispatch('checkFavoritesOnLoad')
-    this.$store.dispatch('readFromCartVue').then(() => {
-      const fetchRatingsPromises = this.$store.getters.filteredLaptops.map(
-        product => {
-          return this.$store.dispatch('getItemRating', product.id)
-        }
-      )
-      return Promise.all(fetchRatingsPromises)
-    })
   },
   mounted() {
     const carousels = document.querySelectorAll('.carousel')
@@ -515,38 +505,6 @@ export default {
     },
     filteredProducts() {
       return this.$store.getters.filteredProducts
-    },
-    getSimilarProducts() {
-      return this.filteredProducts.filter(
-        product =>
-          product.category_id === this.item.category_id &&
-          product.id !== this.item.id
-      )
-    },
-    groupedlaptops() {
-      const itemsPerSlide = 6
-      const products = this.filteredLaptops
-      const grouped = []
-      if (products.length <= itemsPerSlide) {
-        grouped.push(products)
-        return grouped
-      }
-      for (let i = 0; i < products.length; i += itemsPerSlide) {
-        const group = products.slice(i, i + itemsPerSlide)
-        if (
-          i + itemsPerSlide >= products.length &&
-          group.length < itemsPerSlide
-        ) {
-          const remainingItems = itemsPerSlide - group.length
-          const nextGroup = products.slice(0, remainingItems)
-          group.push(...nextGroup)
-        }
-        grouped.push(group)
-      }
-      return grouped
-    },
-    filteredLaptops() {
-      return this.$store.getters.filteredLaptops
     },
     user() {
       return this.$store.state.user
@@ -659,7 +617,7 @@ export default {
             }
           }
         )
-
+        console.log('response', response)
         if (!response.ok) {
           if (response.status === 404) {
             console.error(`Item with ID ${resolvedItemId} not found`)
@@ -671,6 +629,7 @@ export default {
         } else {
           const data = await response.json()
           this.reviewsData = data
+          console.log('this.reviewsData', this.reviewsData)
         }
       } catch (error) {
         console.error('Error:', error)
@@ -711,8 +670,6 @@ export default {
       }
       const id = this.item.id
       const username = this.$store.state.user
-      console.log('username', username)
-      console.log('user', this.user)
       const ratingValue = rating.value || 0
       const requestOptions = {
         method: 'POST',

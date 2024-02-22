@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode'
 import router from '@/router'
 import config from '@/config'
 import axios from 'axios'
+// import ratingCache from '@/cache'
 
 // const MINUTES_BEFORE_EXPIRATION_TO_LOGOUT = 5
 /* global bootstrap */
@@ -16,6 +17,7 @@ export default createStore({
     isIdle: false,
     lastActiveDate: null,
     inactiveTime: 0,
+    itemRatingsFetched: false,
     user: null,
     user_id: null,
     profile: null,
@@ -41,6 +43,9 @@ export default createStore({
     productMax: 10000
   },
   mutations: {
+    SET_ITEM_RATINGS_FETCHED(state, value) {
+      state.itemRatingsFetched = value
+    },
     setMessage(state, payload) {
       state.message = payload
     },
@@ -56,48 +61,42 @@ export default createStore({
     SET_ERROR_MESSAGE(state, message) {
       state.errorMessage = message
     },
-    UPDATE_PRODUCT_RATING(state, { productId, ratingData }) {
-      const product = state.products.find(p => p.id === productId)
-      if (product) {
-        product.rating = ratingData.rating
-        product.reviewNumber = ratingData.review_number
-        product.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
-      }
-    },
-    UPDATE_CART_ITEM_RATING(state, { productId, ratingData }) {
-      const cartItem = state.cart.find(item => item.id === productId)
-      if (cartItem) {
-        cartItem.rating = ratingData.rating
-        cartItem.reviewNumber = ratingData.review_number
-        cartItem.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
-      }
-    },
-    UPDATE_SEARCH_ITEM_RATING(state, { productId, ratingData }) {
-      const searchRes = state.searchResults.find(item => item.id === productId)
-      if (searchRes) {
-        searchRes.rating = ratingData.rating
-        searchRes.reviewNumber = ratingData.review_number
-        searchRes.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
-      }
-    },
-    UPDATE_FILTERED_LAPTOPS_RATING(state, { productId, ratingData }) {
-      const filtered = state.filteredLaptops.find(item => item.id === productId)
-      if (filtered) {
-        filtered.rating = ratingData.rating
-        filtered.reviewNumber = ratingData.review_number
-        filtered.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
-      }
-    },
-    UPDATE_FAVORITES_ITEM_RATING(state, { productId, ratingData }) {
-      const favoritesItem = state.favorites.find(item => item.id === productId)
-      if (favoritesItem) {
-        favoritesItem.rating = ratingData.rating
-        favoritesItem.reviewNumber = ratingData.review_number
-        favoritesItem.rating_float = parseFloat(
-          ratingData.rating_float
-        ).toFixed(2)
-      }
-    },
+    // UPDATE_ALL_ITEM_RATINGS(state, ratingDataArray) {
+    //   ratingDataArray.forEach(item => {
+    //     const itemId = Object.keys(item)[0]
+    //     const ratingData = item[itemId]
+    //     const product = state.products.find(p => p.id === parseInt(itemId))
+    //     if (product) {
+    //       product.rating = ratingData.rating
+    //       product.reviewNumber = ratingData.review_number
+    //       product.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
+    //     }
+    //   })
+    // },
+    // UPDATE_SEARCH_ITEM_RATINGS(state, ratingDataArray) {
+    //   ratingDataArray.forEach(item => {
+    //     const itemId = Object.keys(item)[0]
+    //     const ratingData = item[itemId]
+    //     const product = state.searchResults.find(p => p.id === parseInt(itemId))
+    //     if (product) {
+    //       product.rating = ratingData.rating
+    //       product.reviewNumber = ratingData.review_number
+    //       product.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
+    //     }
+    //   })
+    // },
+    // UPDATE_FAVORITES_ITEMS_RATING(state, ratingDataArray) {
+    //   ratingDataArray.forEach(item => {
+    //     const itemId = Object.keys(item)[0]
+    //     const ratingData = item[itemId]
+    //     const product = state.favorites.find(p => p.id === parseInt(itemId))
+    //     if (product) {
+    //       product.rating = ratingData.rating
+    //       product.reviewNumber = ratingData.review_number
+    //       product.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
+    //     }
+    //   })
+    // },
     UPDATE_SELECTED_CATEGORIES(state, selectedCategories) {
       state.selectedCategories = selectedCategories
     },
@@ -343,7 +342,7 @@ export default createStore({
         // await dispatch('getProfile')
         router.push('/')
       } catch (error) {
-        this.errorMessage = 'Username or password are incorrect!'
+        // this.errorMessage = 'Username or password are incorrect!'
         throw new Error(error)
       }
     },
@@ -371,9 +370,18 @@ export default createStore({
             `${config.backendEndpoint}/api/items`
           )
           const products = response.data
-          commit('SET_PRODUCTS', products)
-          const maxPrice = Math.max(...products.map(product => product.price))
-          const minPrice = Math.min(...products.map(product => product.price))
+          commit('SET_PRODUCTS', products.items)
+          commit('UPDATE_CART', products.items_in_cart)
+          commit('UPDATE_FAVORITES', products.items_liked)
+          commit('UPDATE_TOTAL', products.total)
+          commit('UPDATE_USER', products.user)
+          commit('UPDATE_USER_ID', products.user_id)
+          const maxPrice = Math.max(
+            ...products.items.map(product => product.price)
+          )
+          const minPrice = Math.min(
+            ...products.items.map(product => product.price)
+          )
           commit('SET_MIN_PRICE', minPrice)
           commit('SET_MAX_PRICE', maxPrice)
           commit('setMessage', `Found ${products.length} products`)
@@ -397,7 +405,7 @@ export default createStore({
         }
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          console.log('Profile 401 trying to handle:', error.response)
+          // console.log('Profile 401 trying to handle:', error.response)
         } else if (error === 'Token Expired') {
           dispatch('setErrorMessage', 'Session has expired. Please log in')
         } else {
@@ -433,19 +441,18 @@ export default createStore({
       } catch (error) {
         if (error.response && error.response.status === 401) {
           console.log('Profile 401 trying to handle:', error.response)
+        } else if (error.response && error.response.status === 404) {
+          // console.log('Profile Not Found', error.response)
         } else if (error === 'Token Expired') {
           console.log('Profile Other error occured trying to handle', error)
-          dispatch('setErrorMessage', 'Session has expired. Please log in')
           dispatch('logout')
-          // throw new Error('Token Expired')
-          // commit('UPDATE_PROFILE', null)
         } else {
-          console.log(
-            'Unexpected Profile error occured trying to handle',
-            error
-          )
-          dispatch('setErrorMessage', 'Session has expired. Please log in')
-          router.push('/login')
+          // console.log(
+          //   'Unexpected Profile error occured trying to handle',
+          //   error
+          // )
+          // throw new Error(error)
+          // router.push('/login')
           // throw new Error('Token Expired')
         }
       }
@@ -461,60 +468,28 @@ export default createStore({
         console.error('Error fetching categories:', error)
       }
     },
-    async getItemRating({ commit }, itemId) {
-      try {
-        const response = await axios.get(
-          `${config.backendEndpoint}/api/reviews/item/rating?id=${itemId}`
-        )
-        const data = await response.data
-        commit('UPDATE_PRODUCT_RATING', { productId: itemId, ratingData: data })
-        commit('UPDATE_CART_ITEM_RATING', {
-          productId: itemId,
-          ratingData: data
-        })
-        commit('UPDATE_FAVORITES_ITEM_RATING', {
-          productId: itemId,
-          ratingData: data
-        })
-        commit('UPDATE_SEARCH_ITEM_RATING', {
-          productId: itemId,
-          ratingData: data
-        })
-        commit('UPDATE_FILTERED_LAPTOPS_RATING', {
-          productId: itemId,
-          ratingData: data
-        })
-      } catch (error) {
-        console.log('error', error)
-        throw new Error(error)
-      }
-    },
-    async getItemRatings({ commit, state }) {
-      try {
-        // Collect an array of promises for each API call
-        const ratingPromises = state.products.map(async product => {
-          const response = await axios.get(
-            `${config.backendEndpoint}/api/reviews/item/rating?id=${product.id}`
-          )
-          const ratingData = response.data
-          return Promise.resolve({
-            productId: product.id,
-            ratingData: ratingData
-          })
-        })
-        const ratings = await Promise.all(ratingPromises)
-        ratings.forEach(rating => {
-          commit('UPDATE_PRODUCT_RATING', rating)
-          commit('UPDATE_CART_ITEM_RATING', rating)
-          commit('UPDATE_FAVORITES_ITEM_RATING', rating)
-          commit('UPDATE_SEARCH_ITEM_RATING', rating)
-          commit('UPDATE_FILTERED_LAPTOPS_RATING', rating)
-        })
-      } catch (error) {
-        console.log(error)
-        throw new Error(error)
-      }
-    },
+    // async getItemRatings({ commit, state }) {
+    //   if (state.itemRatingsFetched) {
+    //     console.log('itemRatingsFetched', state.itemRatingsFetched)
+    //     console.log('products state', state.products)
+    //     console.log('products favorites', state.favorites)
+    //     return
+    //   }
+    //   try {
+    //     const response = await axios.get(
+    //       `${config.backendEndpoint}/api/reviews/item/ratings`
+    //     )
+    //     const data = await response.data
+    //     commit('UPDATE_ALL_ITEM_RATINGS', data)
+    //     commit('UPDATE_FAVORITES_ITEMS_RATING', data)
+    //     commit('UPDATE_SEARCH_ITEM_RATINGS', data)
+    //     commit('SET_ITEM_RATINGS_FETCHED', true)
+    //     return data
+    //   } catch (error) {
+    //     console.error('Error fetching item ratings:', error)
+    //     throw new Error(error)
+    //   }
+    // },
     async handleCategoryChange({ commit, dispatch }) {
       const selectedCategories = await dispatch('getSelectedCategories')
       commit('UPDATE_SELECTED_CATEGORIES', selectedCategories)
@@ -534,30 +509,30 @@ export default createStore({
       commit('TOGGLE_SORT_ORDER')
       commit('SORT_PRODUCTS')
     },
-    async readFromCartVue({ commit, dispatch }) {
-      try {
-        const response = await axios.get(
-          `${config.backendEndpoint}/api/items/user-items-in-cart`
-        )
-        const data = response.data
-        commit('UPDATE_CART', data.items)
-        commit('UPDATE_FAVORITES', data.items_liked)
-        commit('UPDATE_TOTAL', data.total)
-        commit('UPDATE_USER', data.user)
-        commit('UPDATE_USER_ID', data.user_id)
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          // console.log(
-          //   'Handling error in readFromCartVue.response.status === 401...'
-          // )
-          dispatch('setErrorMessage', 'Session has expired. Please log in')
-        } else {
-          console.log('Handling unexpected error in readFromCartVue', error)
-          dispatch('setErrorMessage', 'Session has expired. Please log in')
-          // dispatch('logout')
-        }
-      }
-    },
+    // async readFromCartVue({ commit, dispatch }) {
+    //   try {
+    //     const response = await axios.get(
+    //       `${config.backendEndpoint}/api/items/user-items-in-cart`
+    //     )
+    //     const data = response.data
+    //     commit('UPDATE_CART', data.items)
+    //     commit('UPDATE_FAVORITES', data.items_liked)
+    //     commit('UPDATE_TOTAL', data.total)
+    //     commit('UPDATE_USER', data.user)
+    //     commit('UPDATE_USER_ID', data.user_id)
+    //   } catch (error) {
+    //     if (error.response && error.response.status === 401) {
+    //       // console.log(
+    //       //   'Handling error in readFromCartVue.response.status === 401...'
+    //       // )
+    //       dispatch('setErrorMessage', 'Session has expired. Please log in')
+    //     } else {
+    //       console.log('Handling unexpected error in readFromCartVue', error)
+    //       dispatch('setErrorMessage', 'Session has expired. Please log in')
+    //       // dispatch('logout')
+    //     }
+    //   }
+    // },
     redirectToItem({ commit }, itemId) {
       commit('UPDATE_SELECTED_ITEM', itemId)
       router.push({ name: 'Item', params: { itemId } })
@@ -656,7 +631,6 @@ export default createStore({
         }
       }
     },
-
     async addTofavorites({ commit, state }, product) {
       const itemInfavorites = state.favorites.find(
         item => item.id === product.id

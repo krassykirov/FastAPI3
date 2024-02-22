@@ -36,8 +36,8 @@ def get_profiles(db: Session = Depends(get_session)) -> List[UserProfile]:
 def get_profile(user_id: int, db: Session = Depends(get_session), user: User = Depends(get_current_user)) -> UserProfile:
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user_id)
     if profile is None:
-        logger.info(f"No profile with user_id: {id} found")
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No profile with user_id: {id} found")
+        logger.info(f"No profile with user_id: {user_id} found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No profile with user_id: {user_id} found")
     return profile
 
 @profile_router.post("/", status_code=status.HTTP_201_CREATED, include_in_schema=True)

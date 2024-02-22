@@ -3,6 +3,7 @@ from sqlalchemy import desc
 from sqlmodel import select
 from models import Item, Category, Review, UserProfile, User
 import schemas
+from typing import List
 
 # Events
 class ItemActions:
@@ -112,6 +113,26 @@ class ReviewActions:
             rating = sum(result) / len(result)
             return {'rating':round(rating), 'review_number': len(result), 'rating_float': float(sum(result) / len(result)) }
         return {'rating':0, 'review_number': 0, 'rating_float': 0 }
+
+     def get_item_reviews_new(self, db: Session, id: int):
+        item = ItemActions().get_item_by_id(db=db, id=id)
+        if item:
+            reviews = item.reviews
+            return reviews
+        return None
+
+     def get_item_reviews_rating_new(self, id: List[int], db: Session):
+        all_reviews = []
+        for i in id:
+            item_reviews = self.get_item_reviews_new(db=db, id=List[int])
+            result = [item.rating for item in item_reviews if item.rating]
+            if result:
+                rating = sum(result) / len(result)
+                review = {'rating':round(rating), 'review_number': len(result), 'rating_float': float(sum(result) / len(result)) }
+            else:
+                review = {'rating':0, 'review_number': 0, 'rating_float': 0 }
+            all_reviews.append(review)
+        return all_reviews
 
 class ProfileActions:
 

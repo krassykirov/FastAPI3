@@ -51,26 +51,23 @@ axios.interceptors.response.use(
             isRefreshing = false
           }
         }
-      } else if (
-        error.response.data.detail == 'Username or password are incorrect!'
-      ) {
-        store.dispatch('setErrorMessage', 'Username or password are incorrect!')
-        throw new Error('Username or password are incorrect!')
-      } else {
-        store.dispatch('setErrorMessage', 'Session has expired. Please log in.')
-        store.dispatch('logout')
-        throw new Error('Token Expired')
       }
     }
+    // Pass other errors through without handling
     return Promise.reject(error)
   }
 )
 
 axios.interceptors.request.use(
   config => {
-    config.headers.Authorization = `Bearer ${store.state.accessToken}`
-    config.headers.Accept = 'application/json'
-    return config
+    if (store.state.accessToken !== null) {
+      config.headers.Authorization = `Bearer ${store.state.accessToken}`
+      config.headers.Accept = 'application/json'
+      return config
+    } else {
+      router.push('/login')
+      return config
+    }
   },
   error => {
     return Promise.reject(error)

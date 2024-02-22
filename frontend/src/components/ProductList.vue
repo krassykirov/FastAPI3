@@ -55,7 +55,10 @@
       >
         {{ product.name }}
       </h6>
-      <p style="cursor: pointer; margin-bottom: 1%">
+      <p
+        style="cursor: pointer; margin-bottom: 1%"
+        @click="redirectToItemFromProduct(product.id)"
+      >
         <i>
           <span
             v-for="i in 5"
@@ -65,11 +68,11 @@
           <span
             :id="'overall-rating' + product.id + '-float'"
             class="overall-rating"
-            >&nbsp;{{ product.rating_float }}</span
+            >&nbsp;{{ parseFloat(product.rating_float).toFixed(2) }}</span
           >
         </i>
         <span :id="'overall-rating' + product.id" class="overall-rating2">
-          ({{ product.reviewNumber }})
+          ({{ product.review_number }})
         </span>
       </p>
       <input type="number" :data-price="product.price" hidden />
@@ -111,7 +114,7 @@ import errorHandlingMixin from '../errorHandlingMixin'
 import config from '@/config'
 
 export default {
-  props: ['product', 'min', 'max', 'cart'],
+  props: ['product', 'min', 'max', 'cart', 'products', 'favorites'],
   emits: ['addToCart', 'redirectToItem', 'addTofavorites'],
   mixins: [errorHandlingMixin],
   data() {

@@ -59,10 +59,8 @@
                       class="d-flex justify-content-center mx-4 mb-3 mb-lg-4"
                     >
                       <button
-                        type="submit"
                         class="btn btn-info"
                         style="margin: 2px; margin-top: 15px"
-                        @click="getToken"
                       >
                         Login
                       </button>
@@ -129,7 +127,8 @@ export default {
           rememberMe: this.rememberMe
         })
       } catch (error) {
-        this.errorMessage = 'Username or password are incorrect!'
+        // this.errorMessage = 'Username or password are incorrect!'
+        console.log('error', error)
       }
     },
     redirectToSignup() {

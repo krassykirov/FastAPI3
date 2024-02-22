@@ -177,9 +177,9 @@ export default {
     }
   },
   mixins: [errorHandlingMixin],
-  created() {
-    this.$store.dispatch('readFromCartVue')
-  },
+  // created() {
+  //   this.$store.dispatch('readFromCartVue')
+  // },
   computed: {
     message() {
       return this.$store.state.message

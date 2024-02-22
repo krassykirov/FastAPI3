@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Form
+from fastapi import APIRouter, status, Query
 from fastapi import Request, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from db import get_session
@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from crud.crud import ReviewActions, ItemActions
 from models import Review, User
 from auth.oauth import get_current_user
+from typing import List
 
 # PROTECTED = [Depends(get_current_user)]
 
@@ -45,6 +46,27 @@ def get_item_rating(id: int, db: Session=Depends(get_session)):
     """Get Item rating"""
     rating = ReviewActions().get_item_reviews_rating(db=db,id=id)
     return rating
+
+@reviews_router.get("/item/ratings", status_code=status.HTTP_200_OK, include_in_schema=True)
+def get_item_reviews_rating_new(request: Request, db: Session=Depends(get_session)):
+    all_reviews = []
+    items = ItemActions().get_items(db=db)
+    try:
+        for item in items:
+            item_reviews = ReviewActions().get_item_reviews(db=db, id=item.id)
+            if item_reviews:
+                result = [item.rating for item in item_reviews if item.rating]
+                if result:
+                    rating = sum(result) / len(result)
+                    review = {item.id:{'rating':round(rating), 'review_number': len(result), 'rating_float': float(sum(result) / len(result)) }}
+                else:
+                    review = {item.id: {'rating':0, 'review_number': 0, 'rating_float': 0} }
+                all_reviews.append(review)
+    except Exception as e:
+        print('error', e)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Unable to fetch items reviews!")
+    return all_reviews
+
 
 @reviews_router.post('/create_review/{item_id}')
 async def create_review(text: str, item_id: int, db: Session=Depends(get_session), user: User = Depends(get_current_user)):

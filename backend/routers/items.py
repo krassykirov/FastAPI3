@@ -12,6 +12,7 @@ from typing import Optional, List, Annotated, Union
 from auth.oauth import get_current_user
 from my_logger import detailed_logger
 from routers.categories import get_category_items
+import routers.reviews
 import re
 
 PROTECTED = [Depends(get_current_user)]
@@ -32,19 +33,42 @@ def get_item_by_id( item_id: int, db: Session = Depends(get_session)) -> schemas
                                             if item.get('discount') else item.get('price')),2)},)
     return item
 
-@items_router.get("/", status_code=status.HTTP_200_OK, response_model=list[schemas.ItemRead])
-def get_items(skip: int = 0, limit: int = 100,
-              db: Session = Depends(get_session), user=None) -> List[schemas.ItemRead]:
+@items_router.get("/", status_code=status.HTTP_200_OK)
+def get_items(db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     try:
-        items = ItemActions().get_items(db=db, skip=skip, limit=limit, user=user)
+        items = ItemActions().get_items(db=db)
         items = jsonable_encoder(items)
         for item in items:
             item.update({'discount_price' : round((item.get('price')
                                                 - item.get('price') * item.get('discount')
                                                 if item.get('discount') else item.get('price')),2)})
+            item_reviews = routers.reviews.ReviewActions().get_item_reviews(db=db, id=item.get('id'))
+            if item_reviews:
+                result = [item.rating for item in item_reviews if item.rating]
+                if result:
+                    rating = sum(result) / len(result)
+                    item.update({ 'rating':round(rating),
+                                  'review_number': len(result),
+                                  'rating_float': float(sum(result) / len(result))})
+            else:
+                item.update({'rating': 0, 'review_number': 0, 'rating_float': 0})
+        items_in_cart = [item for item in items
+                                for k, v in item.get('in_cart').items()
+                                if k == user.username and v.get('in_cart') == True]
+        items_liked =  [item for item in items
+                                for k, v in item.get('liked').items()
+                                if k == user.username and v.get('liked') == True]
+        total = sum([item.get('price') for item in items_in_cart])
+        json_items = {'items': items,
+                      'items_in_cart': items_in_cart,
+                      'items_liked': items_liked,
+                      'len_items_in_cart': len(items_in_cart),
+                      'total': total,
+                      'user': user.username,
+                      'user_id': user.id}
         if items is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No items found")
-        return items
+        return json_items
     except Exception as e:
         logger.error(f"Error fetching items, error message: {e}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error fetching items")
@@ -70,7 +94,6 @@ async def read_items(q: List[str] = Query(None), db: Session = Depends(get_sessi
         query = query.filter(or_(*query_filters))
 
     results = query.all()
-    print('results', results)
     return results
 
 @items_router.get("/by-category", status_code=status.HTTP_200_OK, response_model=list[schemas.ItemRead])
@@ -104,17 +127,9 @@ async def update_item(request: Request, item_id: int, item_update: schemas.ItemU
 def delete_item_by_id(item_id: int, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     ItemActions().delete_item_by_id(db=db, id=item_id)
 
-
-# @items_router.get("/items-in-cart", status_code=status.HTTP_200_OK, include_in_schema=True)
-# async def get_user_items_in_cart(request: Request, db: Session=Depends(get_session)):
-#     items = ItemActions().get_items(db=db)
-#     items_in_cart =  [item for item in items for k, v in item.in_cart.items()
-#                       if k == 'krassy@mail.bg' and v['in_cart'] == True]
-#     return items_in_cart
-
 @items_router.get("/user-items-in-cart", status_code=status.HTTP_200_OK, include_in_schema=True)
 def get_user_items_in_cart(db: Session=Depends(get_session), user: User = Depends(get_current_user)):
-    try: 
+    try:
         items = ItemActions().get_items(db=db)
         items_in_cart =  [item for item in items
                             for k, v in item.in_cart.items()

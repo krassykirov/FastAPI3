@@ -50,6 +50,9 @@ class ItemRead(BaseModel):
     discount: Optional[decimal.Decimal]
     discount_price: Optional[decimal.Decimal]
     quantity: Optional[int]
+    rating: Optional[int]
+    review_number: Optional[int]
+    rating_float: Optional[decimal.Decimal]
     class Config:
         orm_mode = True
         schema_extra = {
