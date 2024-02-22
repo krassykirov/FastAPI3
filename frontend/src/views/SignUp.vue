@@ -111,6 +111,9 @@ export default {
       backendEndpoint: `${config.backendEndpoint}`
     }
   },
+  created() {
+    this.$store.dispatch('setErrorMessage', null)
+  },
   methods: {
     submitForm() {
       const password1 = document.getElementById('password').value

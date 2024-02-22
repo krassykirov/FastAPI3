@@ -1,3 +1,6 @@
 export default {
-  backendEndpoint: 'https://fast3-backend.azurewebsites.net'
+  backendEndpoint: 'http://127.0.0.1:8000',
+  devServer: {
+    host: 'localhost'
+  }
 }
