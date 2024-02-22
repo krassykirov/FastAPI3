@@ -31,6 +31,16 @@ def get_item_by_id( item_id: int, db: Session = Depends(get_session)) -> schemas
     item.update({'discount_price' : round((item.get('price')
                                             - item.get('price') * item.get('discount')
                                             if item.get('discount') else item.get('price')),2)},)
+    item_reviews = routers.reviews.ReviewActions().get_item_reviews(db=db, id=item.get('id'))
+    if item_reviews:
+        result = [item.rating for item in item_reviews if item.rating]
+        if result:
+           rating = sum(result) / len(result)
+           item.update({'rating':round(rating),
+                        'review_number': len(result),
+                        'rating_float': float(sum(result) / len(result))})
+    else:
+        item.update({'rating': 0, 'review_number': 0, 'rating_float': 0})
     return item
 
 @items_router.get("/", status_code=status.HTTP_200_OK)
@@ -94,6 +104,18 @@ async def read_items(q: List[str] = Query(None), db: Session = Depends(get_sessi
         query = query.filter(or_(*query_filters))
 
     results = query.all()
+    results = jsonable_encoder(results)
+    for item in results:
+        item_reviews = routers.reviews.ReviewActions().get_item_reviews(db=db, id=item.get('id'))
+        if item_reviews:
+            result = [item.rating for item in item_reviews if item.rating]
+            if result:
+                rating = sum(result) / len(result)
+                item.update({'rating':round(rating),
+                             'review_number': len(result),
+                             'rating_float': float(sum(result) / len(result))})
+        else:
+            item.update({'rating': 0, 'review_number': 0, 'rating_float': 0})
     return results
 
 @items_router.get("/by-category", status_code=status.HTTP_200_OK, response_model=list[schemas.ItemRead])

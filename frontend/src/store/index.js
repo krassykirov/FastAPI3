@@ -61,42 +61,6 @@ export default createStore({
     SET_ERROR_MESSAGE(state, message) {
       state.errorMessage = message
     },
-    // UPDATE_ALL_ITEM_RATINGS(state, ratingDataArray) {
-    //   ratingDataArray.forEach(item => {
-    //     const itemId = Object.keys(item)[0]
-    //     const ratingData = item[itemId]
-    //     const product = state.products.find(p => p.id === parseInt(itemId))
-    //     if (product) {
-    //       product.rating = ratingData.rating
-    //       product.reviewNumber = ratingData.review_number
-    //       product.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
-    //     }
-    //   })
-    // },
-    // UPDATE_SEARCH_ITEM_RATINGS(state, ratingDataArray) {
-    //   ratingDataArray.forEach(item => {
-    //     const itemId = Object.keys(item)[0]
-    //     const ratingData = item[itemId]
-    //     const product = state.searchResults.find(p => p.id === parseInt(itemId))
-    //     if (product) {
-    //       product.rating = ratingData.rating
-    //       product.reviewNumber = ratingData.review_number
-    //       product.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
-    //     }
-    //   })
-    // },
-    // UPDATE_FAVORITES_ITEMS_RATING(state, ratingDataArray) {
-    //   ratingDataArray.forEach(item => {
-    //     const itemId = Object.keys(item)[0]
-    //     const ratingData = item[itemId]
-    //     const product = state.favorites.find(p => p.id === parseInt(itemId))
-    //     if (product) {
-    //       product.rating = ratingData.rating
-    //       product.reviewNumber = ratingData.review_number
-    //       product.rating_float = parseFloat(ratingData.rating_float).toFixed(2)
-    //     }
-    //   })
-    // },
     UPDATE_SELECTED_CATEGORIES(state, selectedCategories) {
       state.selectedCategories = selectedCategories
     },
@@ -238,11 +202,6 @@ export default createStore({
       state.refreshTokenExpiration = null
       router.push('/login')
     },
-    // updateIdleStatus({ commit }, { isIdle, lastActiveDate, inactiveTime }) {
-    //   commit('setIsIdle', isIdle)
-    //   commit('setLastActiveDate', lastActiveDate)
-    //   commit('setInactiveTime', inactiveTime)
-    // },
     async refreshAccessToken({ commit, dispatch, state }) {
       console.log('Refreshing token..')
       try {
@@ -468,28 +427,6 @@ export default createStore({
         console.error('Error fetching categories:', error)
       }
     },
-    // async getItemRatings({ commit, state }) {
-    //   if (state.itemRatingsFetched) {
-    //     console.log('itemRatingsFetched', state.itemRatingsFetched)
-    //     console.log('products state', state.products)
-    //     console.log('products favorites', state.favorites)
-    //     return
-    //   }
-    //   try {
-    //     const response = await axios.get(
-    //       `${config.backendEndpoint}/api/reviews/item/ratings`
-    //     )
-    //     const data = await response.data
-    //     commit('UPDATE_ALL_ITEM_RATINGS', data)
-    //     commit('UPDATE_FAVORITES_ITEMS_RATING', data)
-    //     commit('UPDATE_SEARCH_ITEM_RATINGS', data)
-    //     commit('SET_ITEM_RATINGS_FETCHED', true)
-    //     return data
-    //   } catch (error) {
-    //     console.error('Error fetching item ratings:', error)
-    //     throw new Error(error)
-    //   }
-    // },
     async handleCategoryChange({ commit, dispatch }) {
       const selectedCategories = await dispatch('getSelectedCategories')
       commit('UPDATE_SELECTED_CATEGORIES', selectedCategories)
@@ -509,30 +446,6 @@ export default createStore({
       commit('TOGGLE_SORT_ORDER')
       commit('SORT_PRODUCTS')
     },
-    // async readFromCartVue({ commit, dispatch }) {
-    //   try {
-    //     const response = await axios.get(
-    //       `${config.backendEndpoint}/api/items/user-items-in-cart`
-    //     )
-    //     const data = response.data
-    //     commit('UPDATE_CART', data.items)
-    //     commit('UPDATE_FAVORITES', data.items_liked)
-    //     commit('UPDATE_TOTAL', data.total)
-    //     commit('UPDATE_USER', data.user)
-    //     commit('UPDATE_USER_ID', data.user_id)
-    //   } catch (error) {
-    //     if (error.response && error.response.status === 401) {
-    //       // console.log(
-    //       //   'Handling error in readFromCartVue.response.status === 401...'
-    //       // )
-    //       dispatch('setErrorMessage', 'Session has expired. Please log in')
-    //     } else {
-    //       console.log('Handling unexpected error in readFromCartVue', error)
-    //       dispatch('setErrorMessage', 'Session has expired. Please log in')
-    //       // dispatch('logout')
-    //     }
-    //   }
-    // },
     redirectToItem({ commit }, itemId) {
       commit('UPDATE_SELECTED_ITEM', itemId)
       router.push({ name: 'Item', params: { itemId } })

@@ -161,7 +161,6 @@ export default {
     Promise.all([
       this.$store.dispatch('getProducts'),
       this.$store.dispatch('checkFavoritesOnLoad')
-      // this.$store.dispatch('readFromCartVue')
     ])
   },
   computed: {

@@ -47,7 +47,7 @@
                 message
               }}
             </h6>
-            <div v-else style="align-items: center; margin-right: 12%">
+            <div v-else style="align-items: center; margin-right: 25%">
               <img :src="require('@/assets/no_result.gif')" />
             </div>
           </h3>
@@ -98,14 +98,16 @@
                       <span
                         :id="'overall-rating' + product.id + '-float'"
                         class="overall-rating"
-                        >&nbsp;{{ product.rating_float }}</span
+                        >&nbsp;{{
+                          parseFloat(product.rating_float).toFixed(2)
+                        }}</span
                       >
                     </i>
                     <span
                       :id="'overall-rating' + product.id"
                       class="overall-rating2"
                     >
-                      ({{ product.reviewNumber }})
+                      ({{ product.review_number }})
                     </span>
                   </p>
                   <button
@@ -170,7 +172,7 @@ export default {
     NavBar
     // MessageArea
   },
-  props: ['profile'],
+  props: ['profile', 'cart', 'favorites'],
   data() {
     return {
       backendEndpoint: `${config.backendEndpoint}`
@@ -196,14 +198,8 @@ export default {
     accessToken() {
       return this.$store.getters.accessToken
     },
-    cart() {
-      return this.$store.getters.cart
-    },
     searchResults() {
       return this.$store.state.searchResults
-    },
-    favorites() {
-      return this.$store.getters.favorites
     }
   },
   methods: {

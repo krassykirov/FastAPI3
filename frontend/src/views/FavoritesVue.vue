@@ -81,7 +81,9 @@
                       <span
                         :id="'overall-rating' + product.id + '-float'"
                         class="overall-rating"
-                        >&nbsp;{{ product.rating_float }}</span
+                        >&nbsp;{{
+                          parseFloat(product.rating_float).toFixed(2)
+                        }}</span
                       >
                     </i>
                     <span

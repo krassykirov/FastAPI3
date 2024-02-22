@@ -86,14 +86,14 @@
             margin-top: 1.5%;
           "
         >
-          Price: ${{ product.discount_price }}
+          ${{ product.discount_price }}
           <!-- <span v-if="Number.isInteger(product.price)" class="decimal-part">
             {{ product.price }}
             {{ Math.floor(product.price).toString().split('.')[1] }}
           </span> -->
         </span>
         <span v-if="product.discount >= 0.1" class="old-price">
-          Old Price: ${{ Math.floor(product.price) }}
+          ${{ Math.floor(product.price) }}
         </span>
         <div v-else style="font-size: 0.9em; margin-top: 1%">&nbsp;</div>
         <button

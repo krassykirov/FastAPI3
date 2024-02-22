@@ -86,16 +86,11 @@
             </div>
             <div class="price-area my-4" v-if="item">
               <p class="new-price text-bold mb-1">${{ item.discount_price }}</p>
-              <p
-                v-if="item.discount !== null"
-                class="old-price mb-1"
-                style="font-size: 1rem; text-decoration: line-through"
-              >
-                <span>${{ item.price }} </span>
-                <span
-                  class="old-price-discount text-danger"
-                  v-if="item.discount"
-                  >&nbsp;(-{{ Math.floor(item.discount * 100) }})%</span
+              <p v-if="item.discount !== null">
+                <del>${{ item.price }} </del>
+                <span class="text-danger" v-if="item.discount">&nbsp;</span>
+                <span class="text-danger"
+                  ><b>(-{{ Math.floor(item.discount * 100) }})%</b></span
                 >
               </p>
             </div>
@@ -617,7 +612,6 @@ export default {
             }
           }
         )
-        console.log('response', response)
         if (!response.ok) {
           if (response.status === 404) {
             console.error(`Item with ID ${resolvedItemId} not found`)
@@ -629,7 +623,6 @@ export default {
         } else {
           const data = await response.json()
           this.reviewsData = data
-          console.log('this.reviewsData', this.reviewsData)
         }
       } catch (error) {
         console.error('Error:', error)
@@ -766,7 +759,6 @@ export default {
 }
 .old-price {
   font-size: 1em;
-  text-decoration: line-through;
   color: #404447;
   margin-top: 1%;
   margin-bottom: 2%;

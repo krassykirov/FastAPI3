@@ -99,11 +99,7 @@ export default {
     }
   },
   created() {
-    Promise.all([
-      this.$store.dispatch('checkFavoritesOnLoad')
-      // this.$store.dispatch('readFromCartVue')
-      // this.$store.dispatch('getItemRatings')
-    ])
+    Promise.all([this.$store.dispatch('checkFavoritesOnLoad')])
   },
   computed: {
     errorMessage() {
