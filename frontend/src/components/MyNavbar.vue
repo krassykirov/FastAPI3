@@ -271,7 +271,11 @@
             aria-labelledby="navbarDropdownMenuLink"
             @mouseleave="hideDropdown"
           >
-            <a class="dropdown-item" style="color: grey; pointer-events: none">
+            <a
+              v-if="user"
+              class="dropdown-item"
+              style="color: grey; pointer-events: none"
+            >
               {{ user }}
             </a>
             <a class="dropdown-item">
@@ -436,13 +440,13 @@ export default {
       searchQuery: ''
     }
   },
-  created() {
-    this.$store.dispatch('getProfile').catch(error => {
-      if (error.message !== 'Token Expired') {
-        console.error('error', error)
-      }
-    })
-  },
+  // created() {
+  //   this.$store.dispatch('getProfile').catch(error => {
+  //     if (error.message !== 'Token Expired') {
+  //       console.error('error', error)
+  //     }
+  //   })
+  // },
   computed: {
     errorMessage() {
       return this.$store.getters.errorMessage

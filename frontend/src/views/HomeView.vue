@@ -333,7 +333,7 @@ export default {
     if (!this.$store.state.accessToken) {
       const accessToken = VueCookies.get('access_token')
       if (accessToken) {
-        const user = jwtDecode(accessToken).user
+        const user = jwtDecode(accessToken).sub
         const user_id = jwtDecode(accessToken).user_id
         this.$store.commit('UPDATE_USER', user)
         this.$store.commit('UPDATE_USER_ID', user_id)
@@ -343,9 +343,10 @@ export default {
       }
     }
     this.$store
-      .dispatch('checkFavoritesOnLoad')
-      .then(() => this.$store.dispatch('fetchCategories'))
+    this.$store
+      .dispatch('fetchCategories')
       .then(() => this.$store.dispatch('updateProductRange'))
+      .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
       .catch(error => {
         if (error.message !== 'Token Expired') {
           // console.error('error', error)

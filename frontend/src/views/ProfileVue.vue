@@ -315,7 +315,7 @@ export default {
     const accessToken = VueCookies.get('access_token')
     if (accessToken) {
       // Decode access token to extract user information
-      const user = jwtDecode(accessToken).user
+      const user = jwtDecode(accessToken).sub
       const user_id = jwtDecode(accessToken).user_id
       this.$store.commit('UPDATE_USER', user)
       this.$store.commit('UPDATE_USER_ID', user_id)

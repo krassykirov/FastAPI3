@@ -17,6 +17,7 @@ const routes = [
     beforeEnter: async (to, from, next) => {
       try {
         await store.dispatch('getProducts')
+        await store.dispatch('getProfile')
         next()
       } catch (error) {
         console.log('error', error)

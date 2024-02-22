@@ -170,6 +170,7 @@ export default createStore({
       state.refreshToken = null
       state.accessTokenExpiration = null
       state.refreshTokenExpiration = null
+      state.profile = null
       router.push('/login')
     },
     SET_SELECTED_RATING(state, value) {
@@ -200,6 +201,7 @@ export default createStore({
       state.refreshToken = null
       state.accessTokenExpiration = null
       state.refreshTokenExpiration = null
+      state.profile = null
       router.push('/login')
     },
     async refreshAccessToken({ commit, dispatch, state }) {
@@ -219,7 +221,7 @@ export default createStore({
         }
         const data = response.data
         const expires_in = jwtDecode(data.access_token).exp
-        const user = jwtDecode(data.access_token).user
+        const user = jwtDecode(data.access_token).sub
         const user_id = jwtDecode(data.access_token).user_id
         const expiresInMinutes = Math.max(
           0,
@@ -270,8 +272,10 @@ export default createStore({
 
         const data = response.data
         const expires_in = jwtDecode(data.access_token).exp
-        const user = jwtDecode(data.access_token).user
+        const user = jwtDecode(data.access_token).sub
         const user_id = jwtDecode(data.access_token).user_id
+        console.log('user', user)
+        console.log('user_id', user_id)
         this.lastActiveDate = new Date()
         this.inactiveTime = 0
         const expiresInMinutes = Math.max(
@@ -333,8 +337,8 @@ export default createStore({
           commit('UPDATE_CART', products.items_in_cart)
           commit('UPDATE_FAVORITES', products.items_liked)
           commit('UPDATE_TOTAL', products.total)
-          commit('UPDATE_USER', products.user)
-          commit('UPDATE_USER_ID', products.user_id)
+          // commit('UPDATE_USER', products.user)
+          // commit('UPDATE_USER_ID', products.user_id)
           const maxPrice = Math.max(
             ...products.items.map(product => product.price)
           )
@@ -382,7 +386,7 @@ export default createStore({
       if (!state.user_id || !state.accessToken) {
         const accessToken = VueCookies.get('access_token')
         if (accessToken) {
-          const user = jwtDecode(accessToken).user
+          const user = jwtDecode(accessToken).sub
           const user_id = jwtDecode(accessToken).user_id
           commit('UPDATE_USER', user)
           commit('UPDATE_USER_ID', user_id)
@@ -401,7 +405,7 @@ export default createStore({
         if (error.response && error.response.status === 401) {
           console.log('Profile 401 trying to handle:', error.response)
         } else if (error.response && error.response.status === 404) {
-          // console.log('Profile Not Found', error.response)
+          commit('UPDATE_PROFILE', null)
         } else if (error === 'Token Expired') {
           console.log('Profile Other error occured trying to handle', error)
           dispatch('logout')
