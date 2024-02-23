@@ -127,8 +127,18 @@ export default {
           rememberMe: this.rememberMe
         })
       } catch (error) {
-        // this.errorMessage = 'Username or password are incorrect!'
-        console.log('error', error)
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.detail === 'Username or password are incorrect!'
+        ) {
+          this.$store.dispatch(
+            'setErrorMessage',
+            'Username or password are incorrect!'
+          )
+        } else {
+          // console.error('Login Error:', error)
+        }
       }
     },
     redirectToSignup() {

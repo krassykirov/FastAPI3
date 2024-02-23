@@ -260,15 +260,6 @@ export default createStore({
           `${config.backendEndpoint}/api/token`,
           formData
         )
-
-        if (response.status === 403) {
-          const data = response.data
-          commit('setErrorMessage', 'Forbidden!')
-          throw new Error(data.detail)
-        } else if (response.status === 401) {
-          commit('setErrorMessage', 'Username or password are incorrect!')
-          throw new Error('Username or password are incorrect!')
-        }
         const data = response.data
         const expires_in = jwtDecode(data.access_token).exp
         const user = jwtDecode(data.access_token).sub
@@ -300,8 +291,10 @@ export default createStore({
         commit('setRefreshToken', data.refresh_token)
         router.push('/')
       } catch (error) {
-        // this.errorMessage = 'Username or password are incorrect!'
-        throw new Error(error)
+        // catch: Cannot read properties of undefined (reading 'data') if no response.data
+        if (error.message.startsWith('Cannot read')) {
+          return
+        }
       }
     },
     async getProduct({ commit }, itemId) {
