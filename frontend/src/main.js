@@ -32,6 +32,12 @@ axios.interceptors.response.use(
   response => response,
   async error => {
     if (error.response && error.response.status === 401) {
+      if (
+        error.response.data.detail === 'Username or password are incorrect!'
+      ) {
+        store.dispatch('setErrorMessage', 'Username or password are incorrect!')
+        return
+      }
       const hasRefreshToken = store.state.refreshToken !== null
       if (hasRefreshToken) {
         if (!isRefreshing) {

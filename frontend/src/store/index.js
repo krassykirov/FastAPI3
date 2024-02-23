@@ -269,20 +269,16 @@ export default createStore({
           commit('setErrorMessage', 'Username or password are incorrect!')
           throw new Error('Username or password are incorrect!')
         }
-
         const data = response.data
         const expires_in = jwtDecode(data.access_token).exp
         const user = jwtDecode(data.access_token).sub
         const user_id = jwtDecode(data.access_token).user_id
-        console.log('user', user)
-        console.log('user_id', user_id)
         this.lastActiveDate = new Date()
         this.inactiveTime = 0
         const expiresInMinutes = Math.max(
           0,
           Math.floor((expires_in - Math.floor(Date.now() / 1000)) / 60)
         )
-
         VueCookies.set('access_token', data.access_token, {
           expires: new Date(Date.now() + expiresInMinutes * 60 * 1000)
         })
@@ -302,7 +298,6 @@ export default createStore({
         commit('UPDATE_USER_ID', user_id)
         commit('setAccessToken', data.access_token)
         commit('setRefreshToken', data.refresh_token)
-        // await dispatch('getProfile')
         router.push('/')
       } catch (error) {
         // this.errorMessage = 'Username or password are incorrect!'
@@ -337,8 +332,6 @@ export default createStore({
           commit('UPDATE_CART', products.items_in_cart)
           commit('UPDATE_FAVORITES', products.items_liked)
           commit('UPDATE_TOTAL', products.total)
-          // commit('UPDATE_USER', products.user)
-          // commit('UPDATE_USER_ID', products.user_id)
           const maxPrice = Math.max(
             ...products.items.map(product => product.price)
           )
