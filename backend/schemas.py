@@ -50,6 +50,7 @@ class ItemRead(BaseModel):
     discount: Optional[decimal.Decimal]
     discount_price: Optional[decimal.Decimal]
     quantity: Optional[int]
+    brand:    Optional[str]
     rating: Optional[int]
     review_number: Optional[int]
     rating_float: Optional[decimal.Decimal]

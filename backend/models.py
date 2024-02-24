@@ -77,6 +77,7 @@ class Item(SQLModel, table=True):
     liked:        Optional[Dict[Any,Any]] = Field(default={}, sa_column=Column(JSON))
     discount:     Optional[decimal.Decimal]
     quantity:     Optional[int] = Field(default=1)
+    brand:        Optional[str] = Field(default=None)
 
     class Config:
         arbitrary_types_allowed = True

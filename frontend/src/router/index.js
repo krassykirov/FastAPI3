@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import CategoryComponent from '../views/CategoryComponent.vue'
 import store from '@/store/index.js'
 // import VueCookies from 'vue-cookies'
 // import { jwtDecode } from 'jwt-decode'
@@ -29,6 +30,12 @@ const routes = [
     path: '/login',
     name: 'login',
     component: () => import('../views/LoginVue.vue')
+  },
+  {
+    path: '/catetgory/:category',
+    name: 'category',
+    component: CategoryComponent,
+    props: true
   },
   {
     path: '/search',

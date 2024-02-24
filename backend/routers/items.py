@@ -57,9 +57,9 @@ def get_items(db: Session = Depends(get_session), user: User = Depends(get_curre
                 result = [item.rating for item in item_reviews if item.rating]
                 if result:
                     rating = sum(result) / len(result)
-                    item.update({ 'rating':round(rating),
-                                  'review_number': len(result),
-                                  'rating_float': float(sum(result) / len(result))})
+                    item.update({'rating':round(rating),
+                                'review_number': len(result),
+                                'rating_float': float(sum(result) / len(result))})
             else:
                 item.update({'rating': 0, 'review_number': 0, 'rating_float': 0})
         items_in_cart = [item for item in items

@@ -40,7 +40,6 @@ def get_category_items(name: str, db: Session = Depends(get_session)):
     category = CategoryActions().get_category_by_name(db=db, name=name)
     if category is None:
         raise HTTPException(status_code=404, detail=f"No category  found for {name}")
-    print('category', len(category.items))
     return category
 
 @category_router.get("/category_items_len/", status_code=status.HTTP_200_OK)

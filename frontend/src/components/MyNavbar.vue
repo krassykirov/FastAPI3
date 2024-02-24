@@ -5,15 +5,7 @@
   >
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav">
-        <!-- <a class="navbar-brand" href="/test">
-          <img
-            :src="require('@/assets/logo-house.png')"
-            alt=""
-            width="40"
-            height="40"
-          />
-        </a> -->
-        <li class="nav-item" style="padding-left: 200px">
+        <li class="nav-item" style="padding-left: 100px">
           <a class="nav-link mx-2 text-uppercase"
             ><router-link
               style="
@@ -30,6 +22,38 @@
             </router-link>
           </a>
         </li>
+        <ul
+          class="navbar-nav mb-1 mb-lg-0 categories-menu"
+          style="padding-left: 50px; margin-top: 2%"
+        >
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdownCategories"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Categories
+            </a>
+            <div
+              class="dropdown-menu"
+              aria-labelledby="navbarDropdownCategories"
+              style="cursor: pointer"
+            >
+              <a
+                v-for="(category, index) in categories"
+                :key="index"
+                class="dropdown-item"
+                @click="selectCategory(category[0])"
+              >
+                {{ category[0] }}
+              </a>
+            </div>
+          </li>
+        </ul>
       </ul>
       <form
         class="form-inline"
@@ -324,6 +348,7 @@
               enctype="multipart/form-data"
               data-toggle="validator"
               id="createItem"
+              @submit.prevent="createItem"
             >
               <p id="error" style="text-align: left"></p>
               <div class="form-group">
@@ -361,6 +386,10 @@
                   max="0.95"
                   min="0.1"
                 />
+              </div>
+              <div class="form-group">
+                <label for="brand" class="col-form-label">Brand: </label>
+                <input type="text" name="brand" id="brand" placeholder="ASUS" />
               </div>
               <div class="form-group" form-group-file>
                 <label for="file" class="col-form-label">Upload Photo:</label>
@@ -400,7 +429,7 @@
               <button
                 id="submit-button"
                 class="btn btn-primary"
-                @click="createItem"
+                @click="hideModal"
               >
                 Save
               </button>
@@ -408,6 +437,7 @@
                 type="button"
                 class="btn btn-secondary"
                 data-dismiss="modal"
+                id="close-modal"
               >
                 Close
               </button>
@@ -437,16 +467,10 @@ export default {
       displayLiked: true,
       isDropdownVisible: false,
       backendEndpoint: `${config.backendEndpoint}`,
-      searchQuery: ''
+      searchQuery: '',
+      categoryName: null
     }
   },
-  // created() {
-  //   this.$store.dispatch('getProfile').catch(error => {
-  //     if (error.message !== 'Token Expired') {
-  //       console.error('error', error)
-  //     }
-  //   })
-  // },
   computed: {
     errorMessage() {
       return this.$store.getters.errorMessage
@@ -462,9 +486,21 @@ export default {
     },
     user_id() {
       return this.$store.getters.user_id
+    },
+    categories() {
+      return this.$store.getters.categories
     }
   },
   methods: {
+    selectCategory(categoryName) {
+      this.$router.push({
+        name: 'category',
+        params: { category: categoryName }
+      })
+    },
+    // selectCategory(categoryName) {
+    //   this.$emit('categorySelected', categoryName) // Emitting the category ID
+    // },
     Search() {
       if (this.$route.path == '/') {
         var input, filter, cards, cardContainer, title, i
@@ -583,28 +619,25 @@ export default {
       }, 400)
     },
     createItem() {
-      $('#createItem').submit(e => {
-        console.log('#createItem...', this.$store.state.accessToken)
-        e.preventDefault()
-        const formData = new FormData(e.target)
-        $.ajax({
-          url: `${config.backendEndpoint}/products/create_item`,
-          type: 'POST',
-          processData: false,
-          contentType: false,
-          headers: {
-            Authorization: `Bearer ${this.$store.state.accessToken}`
-          },
-          data: formData,
-          success: function () {
+      const formData = new FormData(document.getElementById('createItem'))
+      axios
+        .post(`${config.backendEndpoint}/products/create_item`, formData, {})
+        .then(response => {
+          console.log('response', response)
+          if (response.status === 201) {
+            // router.push('/')
             window.location.href = '/'
-          },
-          error: function (xhr) {
-            if (xhr.status === 403) {
-              $('#error').text('Item with that name already exists!')
-            }
           }
         })
+        .catch(error => {
+          if (error.response.status === 403) {
+            $('#error').text('Item with that name already exists!')
+          }
+        })
+    },
+    hideModal() {
+      $(document).ready(function () {
+        $('#close-modal').click()
       })
     },
     formatPrice(price) {

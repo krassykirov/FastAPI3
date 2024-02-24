@@ -38,27 +38,6 @@
         style="font-weight: 900; font: 1.1em"
       ></div>
     </div>
-    <!-- <form class="d-flex">
-      <input
-        class="form-control mr-sm-2"
-        id="filter"
-        v-on:keyup="Search()"
-        type="text"
-        placeholder="Search for product.."
-        style="
-          width: 50vw;
-          margin-top: 1.25%;
-          margin-left: 28%;
-          margin-right: 5%;
-        "
-      />
-    </form> -->
-    <!-- <div>
-      <p v-if="isIdle">User is currently idle.</p>
-      <p v-else>User is active.</p>
-      <p>Last Active: {{ formattedLastActive }}</p>
-      <p>Inactive Time: {{ formattedInactiveTime }}</p>
-    </div> -->
     <div class="product-container">
       <div class="filter-products-container row col-2">
         <div class="filter-card">
@@ -263,6 +242,7 @@
             </div>
           </div>
         </div>
+        <!-- <PriceSlider /> -->
       </div>
       <template v-if="filteredProducts && filteredProducts.length > 0">
         <div class="product-list" id="mycard">
@@ -305,6 +285,7 @@ import VueCookies from 'vue-cookies'
 import { jwtDecode } from 'jwt-decode'
 import ProductList from '@/components/ProductList.vue'
 import MyNavbar from '@/components/MyNavbar.vue'
+// import PriceSlider from '@/views/PriceSlider.vue'
 // import MessageArea from '@/views/MessageAreaVue.vue'
 import errorHandlingMixin from '../errorHandlingMixin'
 import config from '@/config'
@@ -315,7 +296,7 @@ export default {
   components: {
     ProductList,
     MyNavbar
-    // MessageArea
+    // PriceSlider
   },
   props: {
     isIdle: Boolean,
@@ -343,10 +324,9 @@ export default {
       }
     }
     this.$store
-    this.$store
       .dispatch('fetchCategories')
-      .then(() => this.$store.dispatch('updateProductRange'))
       .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
+      .then(() => this.$store.dispatch('updateProductRange'))
       .catch(error => {
         if (error.message !== 'Token Expired') {
           // console.error('error', error)

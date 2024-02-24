@@ -569,6 +569,10 @@ export default {
         this.item.rating = data.rating
         this.item.rating_float = parseFloat(data.rating_float).toFixed(2)
         this.item.reviewNumber = data.review_number
+        this.$store.dispatch('updateItemRating', {
+          itemId: itemId,
+          rating: data
+        })
       } catch (error) {
         console.log(error)
       }

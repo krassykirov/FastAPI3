@@ -228,7 +228,7 @@ display: block;
 
 .price-field span {
     margin-right: 10px;
-    margin-top: 10px; 
+    margin-top: 10px;
     font-size: 17px;
     color: #404447;
 }
@@ -262,8 +262,8 @@ display: block;
 .slider-container .price-slider {
     height: 100% !important;
     /* margin-left: -5px; */
-    left: 0%;
-    right: 0%;
+    left: 0% !important;
+    right: 0% !important;
     position: absolute !important;
     border-radius: 5px !important;
     background: #5e95e2 !important;

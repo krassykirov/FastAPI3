@@ -37,15 +37,13 @@ export default createStore({
     favorites: [],
     sortOrder: 'asc',
     selectedCategories: [],
+    selectedBrands: [],
     selectedRating: [],
     ratings: [1, 2, 3, 4, 5],
     productMin: 0,
     productMax: 10000
   },
   mutations: {
-    SET_ITEM_RATINGS_FETCHED(state, value) {
-      state.itemRatingsFetched = value
-    },
     setMessage(state, payload) {
       state.message = payload
     },
@@ -60,6 +58,9 @@ export default createStore({
     },
     SET_ERROR_MESSAGE(state, message) {
       state.errorMessage = message
+    },
+    SET_SELECTED_BRANDS(state, selectedBrands) {
+      state.selectedBrands = selectedBrands
     },
     UPDATE_SELECTED_CATEGORIES(state, selectedCategories) {
       state.selectedCategories = selectedCategories
@@ -143,15 +144,6 @@ export default createStore({
       )
       state.accessTokenExpiration = expiresInMinutes
     },
-    // setIsIdle(state, value) {
-    //   state.isIdle = value
-    // },
-    // setLastActiveDate(state, value) {
-    //   state.lastActiveDate = value
-    // },
-    // setInactiveTime(state, value) {
-    //   state.inactiveTime = value
-    // },
     setRefreshToken(state, refreshToken) {
       state.refreshToken = refreshToken
       const expires_in = jwtDecode(refreshToken).exp
@@ -178,9 +170,22 @@ export default createStore({
     },
     UPDATE_DISCOUNT_CHECKED(state, isChecked) {
       state.isDiscountedChecked = isChecked
+    },
+    UPDATE_ITEM_RATING(state, { index, rating }) {
+      console.log('index', index)
+      console.log('rating', rating)
+      state.products[index].rating = rating.rating
+      state.products[index].review_number = rating.review_number
+      state.products[index].rating_float = rating.rating_float
     }
   },
   actions: {
+    updateItemRating({ commit, state }, { itemId, rating }) {
+      const itemIndex = state.products.findIndex(item => item.id === itemId)
+      if (itemIndex !== -1) {
+        commit('UPDATE_ITEM_RATING', { index: itemIndex, rating })
+      }
+    },
     updateMessage({ commit }, message) {
       commit('setMessage', message)
     },
@@ -340,6 +345,31 @@ export default createStore({
         }
       }
     },
+    // async getCategoryItems({ commit }) {
+    //   try {
+    //     const response = await axios.get(
+    //       `${config.backendEndpoint}/api/categories/category_items/?name=Laptops`
+    //     )
+    //     if (response.status === 200) {
+    //       const category = response.data
+    //       commit('SET_CATEGORY', category)
+    //       const maxPrice = Math.max(
+    //         ...category.items.map(product => product.price)
+    //       )
+    //       const minPrice = Math.min(
+    //         ...category.items.map(product => product.price)
+    //       )
+    //       commit('SET_MIN_PRICE', minPrice)
+    //       commit('SET_MAX_PRICE', maxPrice)
+    //     } else if (response.status === 404) {
+    //       throw new Error(`Item with ID not found`)
+    //     } else {
+    //       console.error('Error fetching product:', response)
+    //     }
+    //   } catch (error) {
+    //     console.error('Error fetching product:', error)
+    //   }
+    // },
     async getProfiles({ commit, dispatch }) {
       try {
         const response = await axios.get(
@@ -357,14 +387,11 @@ export default createStore({
           // console.log('Profile 401 trying to handle:', error.response)
         } else if (error === 'Token Expired') {
           dispatch('setErrorMessage', 'Session has expired. Please log in')
-        } else {
-          console.log(
-            'Unexpected Profile error occured trying to handle',
-            error
-          )
-          dispatch('setErrorMessage', 'Session has expired. Please log in')
-          router.push('/login')
-          // throw new Error('Token Expired')
+        } else if (error.response.data.detail === 'No profiles found') {
+          // console.log(
+          //   'Unexpected Profile error occured trying to handle: No profiles found',
+          //   error
+          // )
         }
       }
     },
@@ -405,6 +432,23 @@ export default createStore({
           // throw new Error('Token Expired')
         }
       }
+    },
+    async getSelectedBrands() {
+      return new Promise(resolve => {
+        const selectedBrands = []
+        const checkboxes = document.querySelectorAll('.brand-checkbox:checked')
+        checkboxes.forEach(checkbox => {
+          const brand = checkbox.getAttribute('data-brand')
+          selectedBrands.push(brand)
+        })
+        resolve(selectedBrands)
+      })
+    },
+    handleBrandChange({ commit }) {
+      console.log('SET_SELECTED_BRANDS')
+      this.$store.dispatch('getSelectedBrands').then(selectedBrands => {
+        commit('SET_SELECTED_BRANDS', selectedBrands)
+      })
     },
     async fetchCategories({ commit }) {
       try {
@@ -702,28 +746,115 @@ export default createStore({
           state.selectedRating.includes(Math.round(item.rating_float))
         const discountCondition =
           !state.isDiscountedChecked || item.discount != null
+        const brandCondition =
+          state.selectedBrands.length === 0 ||
+          state.selectedBrands.includes(item.brand)
         return (
           priceCondition &&
           categoryCondition &&
           ratingCondition &&
-          discountCondition
+          discountCondition &&
+          brandCondition
+        )
+      })
+    },
+    filteredProductsByCategory: state => categoryName => {
+      const categoryId = state.categories.find(
+        category => category[0] === categoryName
+      )[2]
+      if (!categoryId) {
+        return [] // Return empty array if category name is not found
+      }
+      return state.products.filter(item => {
+        const priceCondition =
+          item.price >= state.min &&
+          item.price <= state.max &&
+          item.category_id === parseInt(categoryId)
+        const ratingCondition =
+          state.selectedRating.length === 0 ||
+          state.selectedRating.includes(Math.round(item.rating_float))
+        const discountCondition =
+          !state.isDiscountedChecked || item.discount != null
+        const brandCondition =
+          state.selectedBrands.length === 0 ||
+          state.selectedBrands.includes(item.brand)
+        return (
+          priceCondition &&
+          ratingCondition &&
+          discountCondition &&
+          brandCondition
         )
       })
     },
     filteredLaptops: state => {
-      return state.products.filter(product => product.category_id === 1)
+      return state.products.filter(item => {
+        const priceCondition =
+          item.price >= state.min &&
+          item.price <= state.max &&
+          item.category_id === 1
+        const ratingCondition =
+          state.selectedRating.length === 0 ||
+          state.selectedRating.includes(Math.round(item.rating_float))
+        const discountCondition =
+          !state.isDiscountedChecked || item.discount != null
+        return priceCondition && ratingCondition && discountCondition
+      })
     },
     filteredTablets: state => {
-      return state.products.filter(product => product.category_id === 3)
+      return state.products.filter(item => {
+        const priceCondition =
+          item.price >= state.min &&
+          item.price <= state.max &&
+          item.category_id === 3
+        const ratingCondition =
+          state.selectedRating.length === 0 ||
+          state.selectedRating.includes(Math.round(item.rating_float))
+        const discountCondition =
+          !state.isDiscountedChecked || item.discount != null
+        return priceCondition && ratingCondition && discountCondition
+      })
     },
     filteredSmartphones: state => {
-      return state.products.filter(product => product.category_id === 2)
+      return state.products.filter(item => {
+        const priceCondition =
+          item.price >= state.min &&
+          item.price <= state.max &&
+          item.category_id === 2
+        const ratingCondition =
+          state.selectedRating.length === 0 ||
+          state.selectedRating.includes(Math.round(item.rating_float))
+        const discountCondition =
+          !state.isDiscountedChecked || item.discount != null
+        return priceCondition && ratingCondition && discountCondition
+      })
     },
     filteredSmartwatches: state => {
-      return state.products.filter(product => product.category_id === 4)
+      return state.products.filter(item => {
+        const priceCondition =
+          item.price >= state.min &&
+          item.price <= state.max &&
+          item.category_id === 4
+        const ratingCondition =
+          state.selectedRating.length === 0 ||
+          state.selectedRating.includes(Math.round(item.rating_float))
+        const discountCondition =
+          !state.isDiscountedChecked || item.discount != null
+        return priceCondition && ratingCondition && discountCondition
+      })
     },
     filteredTV: state => {
-      return state.products.filter(product => product.category_id === 5)
+      return state.products.filter(item => {
+        const priceCondition =
+          item.price >= state.min &&
+          item.price <= state.max &&
+          item.category_id === 5
+        const ratingCondition =
+          state.selectedRating.length === 0 ||
+          state.selectedRating.includes(Math.round(item.rating_float))
+        const discountCondition =
+          !state.isDiscountedChecked || item.discount != null
+        return priceCondition && ratingCondition && discountCondition
+      })
     },
     accessToken: state => state.accessToken,
     user: state => state.user,
@@ -731,6 +862,7 @@ export default createStore({
     profile: state => state.profile,
     profiles: state => state.profiles,
     products: state => state.products,
+    category: state => state.category,
     cart: state => state.cart,
     favorites: state => state.favorites,
     searchResults: state => state.searchResults,
@@ -739,6 +871,7 @@ export default createStore({
     categories: state => state.categories,
     sortOrder: state => state.sortOrder,
     selectedCategories: state => state.selectedCategories,
+    selectedBrands: state => state.selectedBrands,
     selectedRating: state => state.selectedRating,
     ratings: state => state.ratings,
     productMin: state => state.productMin,

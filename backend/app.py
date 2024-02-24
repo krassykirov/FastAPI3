@@ -82,7 +82,7 @@ def get_products(request: Request, db: Session = Depends(get_session), user: Use
                                                     #  'categories': categories,
                                                     #  'profile': profile})
 
-@app.post("/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
+@app.post("/create_item", status_code=status.HTTP_201_CREATED, response_model=schemas.ItemRead, include_in_schema=False)
 @app.post("/user_items_in_cart/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @app.post("/products/create_item", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
 @app.post("/user/profile/create_item", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
@@ -97,6 +97,7 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         category_select = form_data['Category']
         description = form_data['Description']
         discount = form_data['discount']
+        brand = form_data['brand']
         category = CategoryActions().get_category_by_name(db=db, name=category_select)
         item = db.query(Item).where(Item.name == item_name).first()
         if item:
@@ -110,14 +111,17 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         with open(f"{BASE_DIR}/static/img/{user.username}/{item_name}/{filename}", 'wb') as f:
             f.write(content)
             item = Item(name=item_name, price=formated_price, image=filename, username=user.username,
-                        category=category, discount=discount, description=description)
+                        category=category, discount=discount, description=description, brand=brand)
         logger.info(f"Creating Item {item}")
         try:
+            logger.info(f"Add to DB Item {item}")
             db.add(item)
             db.commit()
             db.refresh(item)
-        except:
+        except Exception as e:
+            logger.info(f"ERROR OCCURED to DB Item {e}")
             db.rollback()
+        logger.info(f"Item Created! {item}")
         return item
         # redirect_url = request.url_for('get_products')
         # response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)

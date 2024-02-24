@@ -45,7 +45,7 @@
         class="container"
         style="font-size: 1.3em; text-align: left; margin-bottom: 1%"
       >
-        <b>Laptops</b>
+        <a href="#" @click="redirectToCategory('Laptops')"><b>Laptops</b></a>
       </div>
       <carousel
         :products="groupedlaptops"
@@ -55,7 +55,7 @@
         class="container"
         style="font-size: 1.3em; text-align: left; margin-bottom: 1%"
       >
-        <b>Tablets</b>
+        <a href="#" @click="redirectToCategory('Tablets')"><b>Tablets</b></a>
       </div>
       <carousel
         :products="groupedTablets"
@@ -65,7 +65,9 @@
         class="container"
         style="font-size: 1.3em; text-align: left; margin-bottom: 1%"
       >
-        <b>Smartphones</b>
+        <a href="#" @click="redirectToCategory('Smartphones')"
+          ><b>Smartphones</b></a
+        >
       </div>
       <carousel
         :products="groupedSmartphones"
@@ -75,7 +77,9 @@
         class="container"
         style="font-size: 1.3em; text-align: left; margin-bottom: 1%"
       >
-        <b>Smartwatches</b>
+        <a href="#" @click="redirectToCategory('Smartwatches')"
+          ><b>Smartwatches</b></a
+        >
       </div>
       <carousel
         :products="groupedSmartwatches"
@@ -85,7 +89,7 @@
         class="container"
         style="font-size: 1.3em; text-align: left; margin-bottom: 1%"
       >
-        <b>TV's</b>
+        <a href="#" @click="redirectToCategory('TV')"><b>TV's</b></a>
       </div>
       <carousel :products="groupedTV" carouselId="laptop-products-carousel" />
     </div>
@@ -317,6 +321,9 @@ export default {
     }
   },
   methods: {
+    redirectToCategory(category) {
+      this.$router.push({ name: 'category', params: { category: category } })
+    },
     addToCart(product) {
       this.$store.dispatch('addToCart', product)
     },
