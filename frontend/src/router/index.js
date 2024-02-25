@@ -36,6 +36,16 @@ const routes = [
     name: 'category',
     component: CategoryComponent,
     props: true
+    //   beforeEnter: async (to, from, next) => {
+    //     try {
+    //       // Dispatch the action directly from the imported store
+    //       await store.dispatch('updateProductRange', to.params.category)
+    //       next()
+    //     } catch (error) {
+    //       console.error('Error:', error)
+    //       next() // Proceed to the route even if an error occurs
+    //     }
+    //   }
   },
   {
     path: '/search',

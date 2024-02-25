@@ -29,7 +29,7 @@
               "
               >Brands</label
             >
-            <div class="card-body">
+            <div class="card-body" style="height: 200px; overflow-y: auto">
               <div
                 class="container"
                 v-for="brand in uniqueBrands"
@@ -272,16 +272,20 @@ export default {
     }
   },
   created() {
-    this.$store
-      .dispatch('getProducts')
-      .then(() => this.$store.dispatch('fetchCategories'))
-      .then(() => this.$store.dispatch('updateProductRange'))
-      .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
-      .catch(error => {
-        if (error.message !== 'Token Expired') {
-          // console.error('error', error)
-        }
-      })
+    const category = this.$route.params.category
+    console.log('category on create', category)
+    if (category) {
+      this.$store
+        .dispatch('getProducts')
+        .then(() => this.$store.dispatch('fetchCategories'))
+        .then(() => this.$store.dispatch('updateProductRange', category))
+        .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
+        .catch(error => {
+          if (error.message !== 'Token Expired') {
+            console.error('error', error)
+          }
+        })
+    }
   },
   computed: {
     selectedProducts() {
@@ -298,29 +302,30 @@ export default {
     },
     uniqueBrands() {
       const brandCounts = {}
-      const selectedCategory = this.$route.params.category // Assuming you're using Vue Router
-      console.log('selectedCategory', selectedCategory)
-      const categoryId = this.$store.state.categories.find(
-        category => category[0] === selectedCategory
-      )
-      console.log('categoryId', categoryId[2])
-      // Filter products based on the selected category
-      const filteredProducts = this.$store.state.products.filter(
-        product => product.category_id === categoryId[2]
-      )
+      let categoryId
 
-      // Count the brands within the filtered products
-      filteredProducts.forEach(product => {
-        const brand = product.brand
-        brandCounts[brand] = (brandCounts[brand] || 0) + 1
-      })
-
-      // Filter out brands with no associated products in the selected category
+      const selectedCategory = this.$route.params.category
+      if (selectedCategory) {
+        const category = this.$store.state.categories.find(
+          category => category[0] === selectedCategory
+        )
+        if (category) {
+          categoryId = category[2]
+        }
+      }
+      if (categoryId !== undefined) {
+        const filteredProducts = this.$store.state.products.filter(
+          product => product.category_id === categoryId
+        )
+        filteredProducts.forEach(product => {
+          const brand = product.brand
+          brandCounts[brand] = (brandCounts[brand] || 0) + 1
+        })
+      }
       const uniqueBrands = Object.keys(brandCounts).filter(
         brand => brandCounts[brand] > 0
       )
-
-      return uniqueBrands.sort() // Sort alphabetically
+      return uniqueBrands.sort()
     },
     formattedLastActive() {
       if (!this.lastActiveDate) return ''
@@ -394,11 +399,32 @@ export default {
     categories() {
       return this.$store.getters.categories
     },
+    // currentCategory() {
+    //   return this.$store.getters.currentCategory
+    // },
     sortOrder() {
       return this.$store.getters.sortOrder
     }
   },
   methods: {
+    updateProductRange(cat) {
+      // Filter products based on the selected category
+      console.log('cat', cat)
+      const categoryId = this.$store.state.categories.find(
+        category => category[0] === cat
+      )[2]
+      console.log('categoryId', categoryId)
+      const categoryProducts = this.$store.state.products.filter(
+        product => product.category_id === categoryId
+      )
+      console.log('categoryProducts', categoryProducts)
+      const prices = categoryProducts.map(product => product.price)
+      console.log('prices', prices)
+      this.$store.state.productMin = Math.ceil(Math.min(...prices))
+      this.$store.state.productMax = Math.ceil(Math.max(...prices))
+      console.log('state.productMax', this.$store.state.productMax)
+      console.log('state.productMin', this.$store.state.productMin)
+    },
     filterProductsByCategory(categoryID) {
       return this.$store.getters.filteredProductsByCategory(categoryID)
     },
@@ -459,35 +485,51 @@ export default {
       this.$store.dispatch('handleRatingChange', rating)
     },
     getRatingItemCount(rating) {
-      const items = this.$store.state.products // Assuming products are stored in the store
-      const count = items.reduce((accumulator, item) => {
-        const floatRating = parseFloat(item.rating_float)
-        const roundedRating = Math.floor(floatRating + 0.5) // Round to the nearest integer
-        if (roundedRating === rating) {
-          return accumulator + 1
+      let categoryId
+
+      const selectedCategory = this.$route.params.category
+      if (selectedCategory) {
+        const category = this.$store.state.categories.find(
+          category => category[0] === selectedCategory
+        )
+        if (category) {
+          categoryId = category[2]
         }
-        return accumulator
-      }, 0)
-      return count
+      }
+      if (categoryId !== undefined) {
+        const filteredProducts = this.$store.state.products.filter(
+          product => product.category_id === categoryId
+        )
+        const items = filteredProducts // Assuming products are stored in the store
+        const count = items.reduce((accumulator, item) => {
+          const floatRating = parseFloat(item.rating_float)
+          const roundedRating = Math.floor(floatRating + 0.5) // Round to the nearest integer
+          if (roundedRating === rating) {
+            return accumulator + 1
+          }
+          return accumulator
+        }, 0)
+        return count
+      }
     },
     updateInputs() {
       this.$store.dispatch('updateInputs')
     },
-    Search() {
-      var input, filter, cards, cardContainer, title, i
-      input = document.getElementById('filter')
-      filter = input.value.toUpperCase()
-      cardContainer = document.getElementById('mycard')
-      cards = cardContainer.getElementsByClassName('card')
-      for (i = 0; i < cards.length; i++) {
-        title = cards[i].querySelector('.card-body h6.card-title')
-        if (title.innerText.toUpperCase().indexOf(filter) > -1) {
-          cards[i].style.display = ''
-        } else {
-          cards[i].style.display = 'none'
-        }
-      }
-    },
+    // Search() {
+    //   var input, filter, cards, cardContainer, title, i
+    //   input = document.getElementById('filter')
+    //   filter = input.value.toUpperCase()
+    //   cardContainer = document.getElementById('mycard')
+    //   cards = cardContainer.getElementsByClassName('card')
+    //   for (i = 0; i < cards.length; i++) {
+    //     title = cards[i].querySelector('.card-body h6.card-title')
+    //     if (title.innerText.toUpperCase().indexOf(filter) > -1) {
+    //       cards[i].style.display = ''
+    //     } else {
+    //       cards[i].style.display = 'none'
+    //     }
+    //   }
+    // },
     scrollToTop() {
       document.body.scrollIntoView({ behavior: 'smooth' })
     },

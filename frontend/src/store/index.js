@@ -23,6 +23,8 @@ export default createStore({
     profile: null,
     min: 1,
     max: 10000,
+    productMin: 0,
+    productMax: 10000,
     total: 0,
     message: '',
     errorMessage: '',
@@ -39,9 +41,7 @@ export default createStore({
     selectedCategories: [],
     selectedBrands: [],
     selectedRating: [],
-    ratings: [1, 2, 3, 4, 5],
-    productMin: 0,
-    productMax: 10000
+    ratings: [1, 2, 3, 4, 5]
   },
   mutations: {
     setMessage(state, payload) {
@@ -519,10 +519,34 @@ export default createStore({
       commit('SET_MAX_PRICE', maxVal)
       commit('SET_RANGE_INPUT', { min: minVal, max: maxVal })
     },
-    updateProductRange() {
-      const prices = this.state.products.map(product => product.price)
-      this.state.productMin = Math.ceil(Math.min(...prices))
-      this.state.productMax = Math.ceil(Math.max(...prices))
+    // updateProductRange() {
+    //   const prices = this.state.products.map(product => product.price)
+    //   this.state.productMin = Math.ceil(Math.min(...prices))
+    //   this.state.productMax = Math.ceil(Math.max(...prices))
+    // },
+    updateProductRange({ state, commit }, cat) {
+      // Filter products based on the selected category
+      console.log('cat', cat)
+      const categoryId = state.categories.find(
+        category => category[0] === cat
+      )[2]
+      console.log('categoryId', categoryId)
+      const categoryProducts = state.products.filter(
+        product => product.category_id === categoryId
+      )
+      console.log('categoryProducts', categoryProducts)
+      const prices = categoryProducts.map(product => product.price)
+      console.log('prices', prices)
+      state.productMin = Math.ceil(Math.min(...prices))
+      state.productMax = Math.ceil(Math.max(...prices))
+      console.log('state.productMax', state.productMax)
+      console.log('state.productMin', state.productMin)
+      commit('SET_MIN_PRICE', state.productMin)
+      commit('SET_MAX_PRICE', state.productMax)
+      commit('SET_RANGE_INPUT', {
+        min: state.productMin,
+        max: state.productMax
+      })
     },
     Search() {
       var input, filter, cards, cardContainer, title, i
@@ -746,15 +770,15 @@ export default createStore({
           state.selectedRating.includes(Math.round(item.rating_float))
         const discountCondition =
           !state.isDiscountedChecked || item.discount != null
-        const brandCondition =
-          state.selectedBrands.length === 0 ||
-          state.selectedBrands.includes(item.brand)
+        // const brandCondition =
+        //   state.selectedBrands.length === 0 ||
+        //   state.selectedBrands.includes(item.brand)
         return (
           priceCondition &&
           categoryCondition &&
           ratingCondition &&
-          discountCondition &&
-          brandCondition
+          discountCondition
+          // brandCondition
         )
       })
     },

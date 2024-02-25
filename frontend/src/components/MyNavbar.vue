@@ -492,17 +492,22 @@ export default {
     }
   },
   methods: {
-    selectCategory(categoryName) {
-      this.$router.push({
-        name: 'category',
-        params: { category: categoryName }
-      })
+    selectCategory(category) {
+      this.$store
+        .dispatch('updateProductRange', category)
+        .then(() => {
+          this.$router.push({ name: 'category', params: { category } })
+        })
+        .catch(error => {
+          console.error('Error updating product range:', error)
+        })
     },
-    // selectCategory(categoryName) {
-    //   this.$emit('categorySelected', categoryName) // Emitting the category ID
-    // },
     Search() {
-      if (this.$route.path == '/') {
+      if (
+        this.$route.path == '/' ||
+        this.$route.path.startsWith('/catetgory')
+      ) {
+        console.log('seraching..')
         var input, filter, cards, cardContainer, title, i
         input = document.getElementById('filter')
         filter = input.value.toUpperCase()
