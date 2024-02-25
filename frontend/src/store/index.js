@@ -534,11 +534,10 @@ export default createStore({
       const categoryProducts = state.products.filter(
         product => product.category_id === categoryId
       )
-      console.log('categoryProducts', categoryProducts)
       const prices = categoryProducts.map(product => product.price)
       console.log('prices', prices)
-      state.productMin = Math.ceil(Math.min(...prices))
-      state.productMax = Math.ceil(Math.max(...prices))
+      state.productMin = Math.floor(Math.min(...prices))
+      state.productMax = Math.round(Math.max(...prices))
       console.log('state.productMax', state.productMax)
       console.log('state.productMin', state.productMin)
       commit('SET_MIN_PRICE', state.productMin)
@@ -547,6 +546,7 @@ export default createStore({
         min: state.productMin,
         max: state.productMax
       })
+      console.log('categoryProducts', categoryProducts)
     },
     Search() {
       var input, filter, cards, cardContainer, title, i

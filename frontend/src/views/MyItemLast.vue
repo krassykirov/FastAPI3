@@ -468,6 +468,7 @@ export default {
   },
   created() {
     this.getProduct()
+    this.$store.dispatch('fetchCategories')
     this.setReviewsRating(this.itemId)
     this.$store.dispatch('getProfile')
     this.$store.dispatch('getProfiles')
@@ -515,6 +516,9 @@ export default {
     },
     accessToken() {
       return this.$store.state.accessToken
+    },
+    categories() {
+      return this.$store.getters.categories
     },
     totalPages() {
       return Math.ceil(this.reviewsData.length / this.reviewsPerPage)

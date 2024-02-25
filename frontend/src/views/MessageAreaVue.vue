@@ -59,7 +59,7 @@
       </div>
       <carousel
         :products="groupedTablets"
-        carouselId="laptop-products-carousel"
+        carouselId="tablets-products-carousel"
       />
       <div
         class="container"
@@ -91,7 +91,7 @@
       >
         <a href="#" @click="redirectToCategory('TV')"><b>TV's</b></a>
       </div>
-      <carousel :products="groupedTV" carouselId="laptop-products-carousel" />
+      <carousel :products="groupedTV" carouselId="tv-products-carousel" />
     </div>
   </div>
 </template>

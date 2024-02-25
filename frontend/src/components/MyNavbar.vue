@@ -5,7 +5,7 @@
   >
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav">
-        <li class="nav-item" style="padding-left: 100px">
+        <li class="nav-item" style="padding-left: 70px">
           <a class="nav-link mx-2 text-uppercase"
             ><router-link
               style="
@@ -24,7 +24,7 @@
         </li>
         <ul
           class="navbar-nav mb-1 mb-lg-0 categories-menu"
-          style="padding-left: 50px; margin-top: 2%"
+          style="padding-left: 90px; margin-top: 3%"
         >
           <li class="nav-item dropdown">
             <a
@@ -58,7 +58,7 @@
       <form
         class="form-inline"
         @submit.prevent="search"
-        style="padding-left: 10%"
+        style="padding-left: 7%"
       >
         <div class="input-group" style="width: 700px; margin-top: 20px">
           <input

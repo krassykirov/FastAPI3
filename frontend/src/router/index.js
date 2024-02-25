@@ -35,17 +35,16 @@ const routes = [
     path: '/catetgory/:category',
     name: 'category',
     component: CategoryComponent,
-    props: true
-    //   beforeEnter: async (to, from, next) => {
-    //     try {
-    //       // Dispatch the action directly from the imported store
-    //       await store.dispatch('updateProductRange', to.params.category)
-    //       next()
-    //     } catch (error) {
-    //       console.error('Error:', error)
-    //       next() // Proceed to the route even if an error occurs
-    //     }
-    //   }
+    props: true,
+    beforeEnter: async (to, from, next) => {
+      try {
+        await store.dispatch('getProducts')
+        await store.dispatch('getProfile')
+        next()
+      } catch (error) {
+        console.log('error', error)
+      }
+    }
   },
   {
     path: '/search',

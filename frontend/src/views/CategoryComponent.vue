@@ -278,6 +278,9 @@
 import config from '@/config'
 import ProductList from '@/components/ProductList.vue'
 import MyNavbar from '@/components/MyNavbar.vue'
+import VueCookies from 'vue-cookies'
+import { jwtDecode } from 'jwt-decode'
+import router from '@/router'
 // /* global bootstrap */
 
 export default {
@@ -285,7 +288,7 @@ export default {
     ProductList,
     MyNavbar
   },
-  props: ['profile', 'category'],
+  props: ['category'],
   data() {
     return {
       isChecked: this.$store.state.isDiscountedChecked,
@@ -294,12 +297,22 @@ export default {
     }
   },
   created() {
+    if (!this.$store.state.accessToken) {
+      const accessToken = VueCookies.get('access_token')
+      if (accessToken) {
+        const user = jwtDecode(accessToken).sub
+        const user_id = jwtDecode(accessToken).user_id
+        this.$store.commit('UPDATE_USER', user)
+        this.$store.commit('UPDATE_USER_ID', user_id)
+      } else {
+        this.errorMessage = 'Session expired'
+        router.push('/login')
+      }
+    }
     const category = this.$route.params.category
-    console.log('category on create', category)
     if (category) {
       this.$store
-        .dispatch('getProducts')
-        .then(() => this.$store.dispatch('fetchCategories'))
+        .dispatch('fetchCategories')
         .then(() => this.$store.dispatch('updateProductRange', category))
         .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
         .catch(error => {
@@ -317,7 +330,7 @@ export default {
       )
       if (category) {
         const categoryName = category[0]
-        return this.filterProductsByCategory(categoryName, this.selectedBrands)
+        return this.filterProductsByCategory(categoryName)
       } else {
         return []
       }
@@ -421,6 +434,9 @@ export default {
     categories() {
       return this.$store.getters.categories
     },
+    profile() {
+      return this.$store.getters.profile
+    },
     // currentCategory() {
     //   return this.$store.getters.currentCategory
     // },
@@ -429,24 +445,22 @@ export default {
     }
   },
   methods: {
-    updateProductRange(cat) {
-      // Filter products based on the selected category
-      console.log('cat', cat)
-      const categoryId = this.$store.state.categories.find(
-        category => category[0] === cat
-      )[2]
-      console.log('categoryId', categoryId)
-      const categoryProducts = this.$store.state.products.filter(
-        product => product.category_id === categoryId
-      )
-      console.log('categoryProducts', categoryProducts)
-      const prices = categoryProducts.map(product => product.price)
-      console.log('prices', prices)
-      this.$store.state.productMin = Math.ceil(Math.min(...prices))
-      this.$store.state.productMax = Math.ceil(Math.max(...prices))
-      console.log('state.productMax', this.$store.state.productMax)
-      console.log('state.productMin', this.$store.state.productMin)
-    },
+    // updateProductRange(cat) {
+    //   // Filter products based on the selected category
+    //   const categoryId = this.$store.state.categories.find(
+    //     category => category[0] === cat
+    //   )[2]
+    //   console.log('categoryId', categoryId)
+    //   const categoryProducts = this.$store.state.products.filter(
+    //     product => product.category_id === categoryId
+    //   )
+    //   const prices = categoryProducts.map(product => product.price)
+    //   console.log('prices', prices)
+    //   this.$store.state.productMin = Math.ceil(Math.min(...prices))
+    //   this.$store.state.productMax = Math.ceil(Math.max(...prices))
+    //   console.log('state.productMax', this.$store.state.productMax)
+    //   console.log('state.productMin', this.$store.state.productMin)
+    // },
     filterProductsByCategory(categoryID) {
       return this.$store.getters.filteredProductsByCategory(categoryID)
     },
