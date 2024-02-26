@@ -52,7 +52,7 @@
                     :src="`${backendEndpoint}/static/img/${product.username}/${product.name}/${product.image}`"
                     class="img-fluid"
                     alt="Product Image"
-                    style="max-width: 270px; height: 200px; object-fit: cover"
+                    style="max-width: 270px; height: 150px; object-fit: cover"
                   />
                 </td>
                 <td
@@ -114,7 +114,7 @@
                     <i class="bi bi-cart-fill"></i>
                   </button>
                 </td>
-                <td style="padding: 0.15em; padding-top: 5%">
+                <!-- <td style="padding: 0.15em; padding-top: 5%">
                   <button
                     type="button"
                     class="btn btn-outline-danger btn-sm m-0"
@@ -122,7 +122,7 @@
                   >
                     <i class="bi bi-trash"></i>
                   </button>
-                </td>
+                </td> -->
               </tr>
             </tbody>
           </table>

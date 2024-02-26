@@ -85,7 +85,12 @@
               {{ item.name }}
             </div>
             <div class="price-area my-4" v-if="item">
-              <p class="new-price text-bold mb-1">${{ item.discount_price }}</p>
+              <!-- prettier-ignore -->
+              <p class="new-price text-bold mb-1">
+                <span style="font-size: 1.3rem;">$</span>
+                <span style="font-size: 1.3rem;">{{ formattedPrice.integerPart }}</span>
+                <span style="font-size: 0.8rem; position: relative; top: -0.4em;">.{{ formattedPrice.decimalPart }}</span>
+              </p>
               <p v-if="item.discount !== null">
                 <del>${{ item.price }} </del>
                 <span class="text-danger" v-if="item.discount">&nbsp;</span>
@@ -107,6 +112,7 @@
                 ></span>
                 <span
                   class="overall-rating"
+                  style="font-family: Arial; font-size: 0.9rem !important"
                   :id="'overall-rating' + item.id + '-float'"
                   >&nbsp;{{ item.rating_float }}</span
                 >
@@ -496,6 +502,14 @@ export default {
     })
   },
   computed: {
+    formattedPrice() {
+      const price = this.item.discount_price
+      const [integerPart, decimalPart] = price.toString().split('.')
+      return {
+        integerPart: parseInt(integerPart).toLocaleString(),
+        decimalPart: decimalPart || '00'
+      }
+    },
     errorMessage() {
       return this.$store.state.errorMessage
     },

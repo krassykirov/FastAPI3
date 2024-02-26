@@ -164,6 +164,14 @@ export default {
     ])
   },
   computed: {
+    formattedPrice() {
+      const price = this.product.discount_price
+      const [integerPart, decimalPart] = price.toString().split('.')
+      return {
+        integerPart: parseInt(integerPart).toLocaleString(),
+        decimalPart: decimalPart || '00'
+      }
+    },
     errorMessage() {
       return this.$store.state.errorMessage
     },
