@@ -197,14 +197,14 @@ export default {
         return 'fa fa-star-o checked'
       }
     },
-    getHeartClasses(product) {
-      const isFavorite = this.isFavorite(product)
-      return isFavorite ? 'fa fa-heart red-color' : 'fa fa-heart-o'
-    },
     isFavorite(product) {
       return this.$store.state.favorites.some(
         favorite => favorite.id === product.id
       )
+    },
+    getHeartClasses(product) {
+      const isFavorite = this.isFavorite(product)
+      return isFavorite ? 'fa fa-heart red-color' : 'fa fa-heart-o'
     },
     addToCart(product) {
       this.$store.dispatch('addToCart', product)

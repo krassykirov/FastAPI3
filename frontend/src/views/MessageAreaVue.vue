@@ -280,19 +280,32 @@ export default {
       )
     },
     filteredLaptops() {
-      return this.$store.getters.filteredLaptops
+      return this.products.filter(item => {
+        return item.category_id === 1
+      })
+    },
+    products() {
+      return this.$store.getters.products
     },
     filteredTablets() {
-      return this.$store.getters.filteredTablets
+      return this.products.filter(item => {
+        return item.category_id === 3
+      })
     },
     filteredSmartphones() {
-      return this.$store.getters.filteredSmartphones
+      return this.products.filter(item => {
+        return item.category_id === 2
+      })
     },
     filteredSmartwatches() {
-      return this.$store.getters.filteredSmartwatches
+      return this.products.filter(item => {
+        return item.category_id === 4
+      })
     },
     filteredTV() {
-      return this.$store.getters.filteredTV
+      return this.products.filter(item => {
+        return item.category_id === 5
+      })
     },
     errorMessage() {
       return this.$store.state.errorMessage
@@ -314,6 +327,11 @@ export default {
     },
     favorites() {
       return this.$store.state.favorites
+    },
+    isFavorite(product) {
+      return this.$store.state.favorites.some(
+        favorite => favorite.id === product.id
+      )
     },
     getHeartClasses(product) {
       const isFavorite = this.isFavorite(product)

@@ -30,7 +30,6 @@ export default createStore({
     errorMessage: '',
     products: [],
     filteredProducts: [],
-    filteredLaptops: [],
     searchResults: [],
     hasFilteredProducts: false,
     isDiscountedChecked: false,
@@ -172,8 +171,6 @@ export default createStore({
       state.isDiscountedChecked = isChecked
     },
     UPDATE_ITEM_RATING(state, { index, rating }) {
-      console.log('index', index)
-      console.log('rating', rating)
       state.products[index].rating = rating.rating
       state.products[index].review_number = rating.review_number
       state.products[index].rating_float = rating.rating_float
@@ -526,27 +523,21 @@ export default createStore({
     // },
     updateProductRange({ state, commit }, cat) {
       // Filter products based on the selected category
-      console.log('cat', cat)
       const categoryId = state.categories.find(
         category => category[0] === cat
       )[2]
-      console.log('categoryId', categoryId)
       const categoryProducts = state.products.filter(
         product => product.category_id === categoryId
       )
       const prices = categoryProducts.map(product => product.price)
-      console.log('prices', prices)
       state.productMin = Math.floor(Math.min(...prices))
       state.productMax = Math.round(Math.max(...prices))
-      console.log('state.productMax', state.productMax)
-      console.log('state.productMin', state.productMin)
       commit('SET_MIN_PRICE', state.productMin)
       commit('SET_MAX_PRICE', state.productMax)
       commit('SET_RANGE_INPUT', {
         min: state.productMin,
         max: state.productMax
       })
-      console.log('categoryProducts', categoryProducts)
     },
     Search() {
       var input, filter, cards, cardContainer, title, i
@@ -770,15 +761,11 @@ export default createStore({
           state.selectedRating.includes(Math.round(item.rating_float))
         const discountCondition =
           !state.isDiscountedChecked || item.discount != null
-        // const brandCondition =
-        //   state.selectedBrands.length === 0 ||
-        //   state.selectedBrands.includes(item.brand)
         return (
           priceCondition &&
           categoryCondition &&
           ratingCondition &&
           discountCondition
-          // brandCondition
         )
       })
     },
@@ -808,76 +795,6 @@ export default createStore({
           discountCondition &&
           brandCondition
         )
-      })
-    },
-    filteredLaptops: state => {
-      return state.products.filter(item => {
-        const priceCondition =
-          item.price >= state.min &&
-          item.price <= state.max &&
-          item.category_id === 1
-        const ratingCondition =
-          state.selectedRating.length === 0 ||
-          state.selectedRating.includes(Math.round(item.rating_float))
-        const discountCondition =
-          !state.isDiscountedChecked || item.discount != null
-        return priceCondition && ratingCondition && discountCondition
-      })
-    },
-    filteredTablets: state => {
-      return state.products.filter(item => {
-        const priceCondition =
-          item.price >= state.min &&
-          item.price <= state.max &&
-          item.category_id === 3
-        const ratingCondition =
-          state.selectedRating.length === 0 ||
-          state.selectedRating.includes(Math.round(item.rating_float))
-        const discountCondition =
-          !state.isDiscountedChecked || item.discount != null
-        return priceCondition && ratingCondition && discountCondition
-      })
-    },
-    filteredSmartphones: state => {
-      return state.products.filter(item => {
-        const priceCondition =
-          item.price >= state.min &&
-          item.price <= state.max &&
-          item.category_id === 2
-        const ratingCondition =
-          state.selectedRating.length === 0 ||
-          state.selectedRating.includes(Math.round(item.rating_float))
-        const discountCondition =
-          !state.isDiscountedChecked || item.discount != null
-        return priceCondition && ratingCondition && discountCondition
-      })
-    },
-    filteredSmartwatches: state => {
-      return state.products.filter(item => {
-        const priceCondition =
-          item.price >= state.min &&
-          item.price <= state.max &&
-          item.category_id === 4
-        const ratingCondition =
-          state.selectedRating.length === 0 ||
-          state.selectedRating.includes(Math.round(item.rating_float))
-        const discountCondition =
-          !state.isDiscountedChecked || item.discount != null
-        return priceCondition && ratingCondition && discountCondition
-      })
-    },
-    filteredTV: state => {
-      return state.products.filter(item => {
-        const priceCondition =
-          item.price >= state.min &&
-          item.price <= state.max &&
-          item.category_id === 5
-        const ratingCondition =
-          state.selectedRating.length === 0 ||
-          state.selectedRating.includes(Math.round(item.rating_float))
-        const discountCondition =
-          !state.isDiscountedChecked || item.discount != null
-        return priceCondition && ratingCondition && discountCondition
       })
     },
     accessToken: state => state.accessToken,

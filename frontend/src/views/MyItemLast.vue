@@ -499,9 +499,6 @@ export default {
     errorMessage() {
       return this.$store.state.errorMessage
     },
-    filteredProducts() {
-      return this.$store.getters.filteredProducts
-    },
     user() {
       return this.$store.state.user
     },

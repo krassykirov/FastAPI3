@@ -480,12 +480,10 @@ export default {
 
       if (checkbox.checked) {
         selectedBrands.push(brand)
-        console.log('selectedBrands', selectedBrands)
       } else {
         const index = selectedBrands.indexOf(brand)
         if (index !== -1) {
           selectedBrands.splice(index, 1)
-          console.log('selectedBrands', selectedBrands)
         }
       }
       this.$store.commit('SET_SELECTED_BRANDS', selectedBrands)

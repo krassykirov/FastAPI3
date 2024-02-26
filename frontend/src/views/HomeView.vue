@@ -411,6 +411,11 @@ export default {
     }
   },
   methods: {
+    updateProductRange() {
+      const prices = this.$store.state.products.map(product => product.price)
+      this.$store.state.productMin = Math.ceil(Math.min(...prices))
+      this.$store.state.productMax = Math.ceil(Math.max(...prices))
+    },
     async getProduct(itemId) {
       this.$store.dispatch('getProduct', itemId)
     },

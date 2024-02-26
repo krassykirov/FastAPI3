@@ -139,6 +139,11 @@ export default {
         return (this.product.price * 1).toFixed(2)
       }
     },
+    isFavorite(product) {
+      return this.$store.state.favorites.some(
+        favorite => favorite.id === product.id
+      )
+    },
     getHeartClasses() {
       return product => {
         const isFavorite = this.$store.state.favorites.some(
