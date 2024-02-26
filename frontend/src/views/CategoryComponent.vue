@@ -57,19 +57,33 @@
                 v-for="brand in uniqueBrands"
                 :key="brand"
                 :class="{ active: getBrandCount(brand) !== 0 }"
+                style="padding-left: 8px"
               >
                 <label style="font-size: 0.8rem">
                   <input
-                    style="font-size: 0.9rem; margin-bottom: 2px"
+                    style="
+                      font-size: 0.9rem;
+                      margin-bottom: 2px;
+                      padding-left: 0;
+                    "
                     type="checkbox"
                     class="brand-checkbox"
                     :data-brand="brand"
                     :disabled="getBrandCount(brand) === 0"
                     @change="handleBrandChange($event, brand)"
                   />
-                  {{ brand }}
+                  <span style="padding-left: 8px; font-size: 0.8rem">
+                    {{ brand }}
+                  </span>
                 </label>
-                <span class="text-muted" style="font-size: 0.9rem">
+                <span
+                  class="text-muted"
+                  style="
+                    font-size: 0.9rem;
+                    padding-left: 0;
+                    font-familly: sans-serif;
+                  "
+                >
                   ({{ getBrandCount(brand) }})
                 </span>
               </div>
@@ -127,8 +141,9 @@
                   <div
                     class="price-slider"
                     :style="{
-                      left: `${(min / productMax) * 100}%`,
-                      right: `${100 - (max / productMax) * 100}%`
+                      '--min': min,
+                      '--max': max,
+                      '--productMax': productMax
                     }"
                   ></div>
                 </div>
@@ -194,7 +209,7 @@
                 @change="handleDiscountChange"
                 style="margin-top: 0; margin-bottom: 0"
               />
-              <label style="font-size: 0.9rem; margin-top: 0; margin-bottom: 0"
+              <label style="font-size: 0.85rem; margin-top: 0; margin-bottom: 0"
                 >Discount > 10%</label
               >
             </div>
@@ -211,18 +226,28 @@
               class="form-check form-check-inline"
               v-for="rating in ratings.slice().reverse()"
               :key="rating"
-              style="display: flex; align-items: center; font-size: 0.9rem"
+              style="
+                display: flex;
+                align-items: center;
+                font-size: 0.8rem;
+                padding-left: 8px;
+                padding-bottom: 0;
+              "
             >
               <input
-                style="font-size: 1rem; margin-top: 3px !important"
-                class="form-check-input"
+                style="font-size: 0.9rem; margin-bottom: 2px"
+                class="brand-checkbox"
                 type="checkbox"
                 :id="'rating' + rating"
                 :value="rating"
                 :disabled="getRatingItemCount(rating) === 0"
                 v-model="selectedRating"
               />
-              <label class="form-check-label" :for="'rating' + rating">
+              <label
+                class="form-check-label"
+                :for="'rating' + rating"
+                style="margin-left: 7px"
+              >
                 <span
                   v-for="i in 5"
                   :key="i"
@@ -231,11 +256,11 @@
                     'fa-star checked': i <= rating,
                     'fa-star unchecked': i > rating
                   }"
-                  style="font-size: 0.9rem; margin-top: 7px"
+                  style="font-size: 15px; margin-top: 13px; font-size: 0.95rem"
                 >
                 </span>
                 <!-- prettier-ignore -->
-                <span style="font-size: 0.9rem"
+                <span style="font-size: 0.9rem; margin-bottom: 10px"
                 >&nbsp;({{ getRatingItemCount(rating) }})
               </span>
               </label>
@@ -533,21 +558,6 @@ export default {
     updateInputs() {
       this.$store.dispatch('updateInputs')
     },
-    // Search() {
-    //   var input, filter, cards, cardContainer, title, i
-    //   input = document.getElementById('filter')
-    //   filter = input.value.toUpperCase()
-    //   cardContainer = document.getElementById('mycard')
-    //   cards = cardContainer.getElementsByClassName('card')
-    //   for (i = 0; i < cards.length; i++) {
-    //     title = cards[i].querySelector('.card-body h6.card-title')
-    //     if (title.innerText.toUpperCase().indexOf(filter) > -1) {
-    //       cards[i].style.display = ''
-    //     } else {
-    //       cards[i].style.display = 'none'
-    //     }
-    //   }
-    // },
     scrollToTop() {
       document.body.scrollIntoView({ behavior: 'smooth' })
     },

@@ -342,31 +342,6 @@ export default createStore({
         }
       }
     },
-    // async getCategoryItems({ commit }) {
-    //   try {
-    //     const response = await axios.get(
-    //       `${config.backendEndpoint}/api/categories/category_items/?name=Laptops`
-    //     )
-    //     if (response.status === 200) {
-    //       const category = response.data
-    //       commit('SET_CATEGORY', category)
-    //       const maxPrice = Math.max(
-    //         ...category.items.map(product => product.price)
-    //       )
-    //       const minPrice = Math.min(
-    //         ...category.items.map(product => product.price)
-    //       )
-    //       commit('SET_MIN_PRICE', minPrice)
-    //       commit('SET_MAX_PRICE', maxPrice)
-    //     } else if (response.status === 404) {
-    //       throw new Error(`Item with ID not found`)
-    //     } else {
-    //       console.error('Error fetching product:', response)
-    //     }
-    //   } catch (error) {
-    //     console.error('Error fetching product:', error)
-    //   }
-    // },
     async getProfiles({ commit, dispatch }) {
       try {
         const response = await axios.get(
@@ -442,7 +417,6 @@ export default createStore({
       })
     },
     handleBrandChange({ commit }) {
-      console.log('SET_SELECTED_BRANDS')
       this.$store.dispatch('getSelectedBrands').then(selectedBrands => {
         commit('SET_SELECTED_BRANDS', selectedBrands)
       })
@@ -514,15 +488,14 @@ export default createStore({
       }
       commit('SET_MIN_PRICE', minVal)
       commit('SET_MAX_PRICE', maxVal)
-      commit('SET_RANGE_INPUT', { min: minVal, max: maxVal })
+      // commit('SET_RANGE_INPUT', { min: minVal, max: maxVal })
     },
-    // updateProductRange() {
-    //   const prices = this.state.products.map(product => product.price)
-    //   this.state.productMin = Math.ceil(Math.min(...prices))
-    //   this.state.productMax = Math.ceil(Math.max(...prices))
-    // },
+    updateHomeProductRange() {
+      const prices = this.state.products.map(product => product.price)
+      this.state.productMin = Math.ceil(Math.min(...prices))
+      this.state.productMax = Math.ceil(Math.max(...prices))
+    },
     updateProductRange({ state, commit }, cat) {
-      // Filter products based on the selected category
       const categoryId = state.categories.find(
         category => category[0] === cat
       )[2]

@@ -54,25 +54,28 @@
           cursor: pointer;
         "
       >
-        {{ truncateName(product.name, 75) }}
+        {{ truncateName(product.name, 70) }}
       </h6>
       <p
         style="cursor: pointer; margin-bottom: 1%; font-size: 0.9em"
         @click="redirectToItemFromProduct(product.id)"
       >
-        <i>
-          <span
-            v-for="i in 5"
-            :key="i"
-            :class="getStarClasses(i, product.rating_float)"
-          ></span>
-          <span
-            :id="'overall-rating' + product.id + '-float'"
-            class="overall-rating"
-            >&nbsp;{{ parseFloat(product.rating_float).toFixed(2) }}</span
-          >
-        </i>
-        <span :id="'overall-rating' + product.id" class="overall-rating2">
+        <span
+          v-for="i in 5"
+          :key="i"
+          :class="getStarClasses(i, product.rating_float)"
+        ></span>
+        <span
+          :id="'overall-rating' + product.id + '-float'"
+          class="overall-rating"
+          style="font-familiy: Arial"
+          >&nbsp;{{ parseFloat(product.rating_float).toFixed(2) }}</span
+        >
+        <span
+          :id="'overall-rating' + product.id"
+          class="overall-rating2"
+          style="font-familiy: Arial"
+        >
           ({{ product.review_number }})
         </span>
       </p>
@@ -80,15 +83,21 @@
       <div style="margin: 0; padding: 0; display: flex; flex-direction: column">
         <span
           style="
-            font-size: 0.9em;
+            font-size: 0.95rem;
             color: #dc3545;
-            font-weight: 900;
+            font-weight: 800;
             margin-bottom: 1%;
             margin-top: 1%;
             margin-left: -12px;
           "
         >
-          ${{ product.discount_price }}
+          <!-- prettier-ignore -->
+          <div>
+          <!-- prettier-ignore -->
+          <span style="font-size: 1rem;">$</span>
+          <span style="font-size: 1rem;">{{ formattedPrice.integerPart }}</span>
+          <span style="font-size: 0.8em; position: relative; top: -0.3em;">.{{ formattedPrice.decimalPart }}</span>
+        </div>
         </span>
         <span v-if="product.discount >= 0.1" class="old-price">
           ${{ Math.floor(product.price) }}
@@ -121,6 +130,14 @@ export default {
     }
   },
   computed: {
+    formattedPrice() {
+      const price = this.product.discount_price
+      const [integerPart, decimalPart] = price.toString().split('.')
+      return {
+        integerPart: parseInt(integerPart).toLocaleString(),
+        decimalPart: decimalPart || '00'
+      }
+    },
     filteredProducts() {
       return this.$store.state.filteredProducts
     },

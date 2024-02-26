@@ -44,7 +44,7 @@
           <div class="filter-content collapse show" id="collapse_2">
             <label
               style="
-                font-size: 1rem;
+                font-size: 0.9rem;
                 display: block;
                 margin-bottom: 10px;
                 font-weight: 400;
@@ -57,19 +57,25 @@
                 v-for="category in categories"
                 :key="category[2]"
                 :class="{ active: category[1] !== 0 }"
+                style="padding-left: 7px"
               >
-                <label style="font-size: 1rem">
+                <label style="font-size: 0.9rem">
                   <input
-                    style="font-size: 1rem; margin-bottom: 2px"
+                    style="font-size: 0.8rem; margin-bottom: 2px"
                     type="checkbox"
                     class="cat-checkbox"
                     :data-category="category[2]"
                     :disabled="category[1] === 0"
                     @change="handleCategoryChange"
                   />
-                  {{ category[0] }}
+                  <span style="padding-left: 5px; font-size: 0.8rem">
+                    {{ category[0] }}
+                  </span>
                 </label>
-                <span class="text-muted" style="font-size: 0.9rem">
+                <span
+                  class="text-muted"
+                  style="font-size: 0.8rem; font-familly: sans-serif"
+                >
                   ({{ category[1] }})
                 </span>
               </div>
@@ -78,19 +84,19 @@
         </div>
         <div class="filter-card">
           <div class="card-body">
-            <label style="font-size: 1rem; display: block; margin-bottom: 5px"
+            <label style="font-size: 0.9rem; display: block; margin-bottom: 5px"
               >Price</label
             >
             <div class="price-input row">
               <div class="form-group col-md-6">
                 <label
                   for="minPrice"
-                  style="font-size: 0.9rem; margin-left: 23px"
+                  style="font-size: 0.8rem; margin-left: 23px"
                   >Min Price</label
                 >
                 <input
                   v-model.number="min"
-                  style="font-size: 0.9rem"
+                  style="font-size: 0.8rem"
                   type="text"
                   class="min-input form-control"
                   id="minPrice"
@@ -104,12 +110,12 @@
               <div class="form-group col-md-6">
                 <label
                   for="maxPrice"
-                  style="font-size: 0.9rem; margin-left: 12px"
+                  style="font-size: 0.8rem; margin-left: 12px"
                   >Max Price</label
                 >
                 <input
                   v-model.number="max"
-                  style="font-size: 0.9rem"
+                  style="font-size: 0.8rem"
                   type="text"
                   class="max-input form-control"
                   id="maxPrice"
@@ -161,18 +167,18 @@
               type="button"
               class="custom-button"
               @click="toggleSortOrder"
-              style="align-items: center"
+              style="align-items: center; font-size: 0.8rem"
             >
               Sort Price
               <span
                 v-if="sortOrder === 'asc'"
                 class="bi bi-sort-up-alt"
-                style="font-size: 1rem"
+                style="font-size: 0.9rem"
               ></span>
               <span
                 v-else
                 class="bi bi-sort-down"
-                style="font-size: 1rem"
+                style="font-size: 0.9rem"
               ></span>
             </button>
           </div>
@@ -194,7 +200,7 @@
                 @change="handleDiscountChange"
                 style="margin-top: 0; margin-bottom: 0"
               />
-              <label style="font-size: 1rem; margin-top: 0; margin-bottom: 0"
+              <label style="font-size: 0.9rem; margin-top: 0; margin-bottom: 0"
                 >Discount > 10%</label
               >
             </div>
@@ -206,12 +212,17 @@
             id="collapse_4"
             v-if="ratings && ratings.length"
           >
-            <label style="font-size: 1rem">Overall Rating</label>
+            <label style="font-size: 0.9rem">Overall Rating</label>
             <div
               class="form-check form-check-inline"
               v-for="rating in ratings.slice().reverse()"
               :key="rating"
-              style="display: flex; align-items: center; font-size: 1rem"
+              style="
+                display: flex;
+                align-items: center;
+                font-size: 0.8rem;
+                margin-left: 10px;
+              "
             >
               <input
                 style="font-size: 1rem; margin-top: 3px !important"
@@ -231,11 +242,11 @@
                     'fa-star checked': i <= rating,
                     'fa-star unchecked': i > rating
                   }"
-                  style="font-size: 1rem; margin-top: 7px"
+                  style="font-size: 0.9rem; margin-top: 8px"
                 >
                 </span>
                 <!-- prettier-ignore -->
-                <span style="font-size: 0.9rem"
+                <span style="font-size: 0.8rem; font-familly: sans-serif"
                 >&nbsp;({{ getRatingItemCount(rating) }})
               </span>
               </label>
@@ -310,6 +321,10 @@ export default {
       backendEndpoint: `${config.backendEndpoint}`
     }
   },
+  beforeRouteUpdate(to, from, next) {
+    this.$store.store.dispatch('getProducts')
+    next()
+  },
   created() {
     if (!this.$store.state.accessToken) {
       const accessToken = VueCookies.get('access_token')
@@ -326,7 +341,7 @@ export default {
     this.$store
       .dispatch('fetchCategories')
       .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
-      .then(() => this.$store.dispatch('updateProductRange'))
+      .then(() => this.$store.dispatch('updateHomeProductRange'))
       .catch(error => {
         if (error.message !== 'Token Expired') {
           // console.error('error', error)
