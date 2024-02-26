@@ -43,9 +43,11 @@
       /> -->
       <div
         class="container"
-        style="font-size: 1.3em; text-align: left; margin-bottom: 1%"
+        style="font-size: 1em; text-align: left; margin-bottom: 1%"
       >
-        <a href="#" @click="redirectToCategory('Laptops')"><b>Laptops</b></a>
+        <a class="link" @click="redirectToCategory('Laptops')"
+          ><b>Laptops</b></a
+        >
       </div>
       <carousel
         :products="groupedlaptops"
@@ -53,9 +55,11 @@
       />
       <div
         class="container"
-        style="font-size: 1.3em; text-align: left; margin-bottom: 1%"
+        style="font-size: 1em; text-align: left; margin-bottom: 1%"
       >
-        <a href="#" @click="redirectToCategory('Tablets')"><b>Tablets</b></a>
+        <a class="link" @click="redirectToCategory('Tablets')"
+          ><b>Tablets</b></a
+        >
       </div>
       <carousel
         :products="groupedTablets"
@@ -63,9 +67,9 @@
       />
       <div
         class="container"
-        style="font-size: 1.3em; text-align: left; margin-bottom: 1%"
+        style="font-size: 1em; text-align: left; margin-bottom: 1%"
       >
-        <a href="#" @click="redirectToCategory('Smartphones')"
+        <a class="link" @click="redirectToCategory('Smartphones')"
           ><b>Smartphones</b></a
         >
       </div>
@@ -75,9 +79,9 @@
       />
       <div
         class="container"
-        style="font-size: 1.3em; text-align: left; margin-bottom: 1%"
+        style="font-size: 1em; text-align: left; margin-bottom: 1%"
       >
-        <a href="#" @click="redirectToCategory('Smartwatches')"
+        <a class="link" @click="redirectToCategory('Smartwatches')"
           ><b>Smartwatches</b></a
         >
       </div>
@@ -87,9 +91,9 @@
       />
       <div
         class="container"
-        style="font-size: 1.3em; text-align: left; margin-bottom: 1%"
+        style="font-size: 1em; text-align: left; margin-bottom: 1%"
       >
-        <a href="#" @click="redirectToCategory('TV')"><b>TV's</b></a>
+        <a class="link" @click="redirectToCategory('TV')"><b>TV's</b></a>
       </div>
       <carousel :products="groupedTV" carouselId="tv-products-carousel" />
     </div>

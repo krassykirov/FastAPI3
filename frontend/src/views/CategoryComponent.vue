@@ -44,7 +44,7 @@
           <div class="filter-content collapse show" id="collapse_2">
             <label
               style="
-                font-size: 1rem;
+                font-size: 0.9rem;
                 display: block;
                 margin-bottom: 10px;
                 font-weight: 400;
@@ -58,9 +58,9 @@
                 :key="brand"
                 :class="{ active: getBrandCount(brand) !== 0 }"
               >
-                <label style="font-size: 1rem">
+                <label style="font-size: 0.8rem">
                   <input
-                    style="font-size: 1rem; margin-bottom: 2px"
+                    style="font-size: 0.9rem; margin-bottom: 2px"
                     type="checkbox"
                     class="brand-checkbox"
                     :data-brand="brand"
@@ -78,19 +78,19 @@
         </div>
         <div class="filter-card">
           <div class="card-body">
-            <label style="font-size: 1rem; display: block; margin-bottom: 5px"
+            <label style="font-size: 0.9rem; display: block; margin-bottom: 5px"
               >Price</label
             >
             <div class="price-input row">
               <div class="form-group col-md-6">
                 <label
                   for="minPrice"
-                  style="font-size: 0.9rem; margin-left: 23px"
+                  style="font-size: 0.8rem; margin-left: 23px"
                   >Min Price</label
                 >
                 <input
                   v-model.number="min"
-                  style="font-size: 0.9rem"
+                  style="font-size: 0.8rem"
                   type="text"
                   class="min-input form-control"
                   id="minPrice"
@@ -104,12 +104,12 @@
               <div class="form-group col-md-6">
                 <label
                   for="maxPrice"
-                  style="font-size: 0.9rem; margin-left: 12px"
+                  style="font-size: 0.8rem; margin-left: 12px"
                   >Max Price</label
                 >
                 <input
                   v-model.number="max"
-                  style="font-size: 0.9rem"
+                  style="font-size: 0.8rem"
                   type="text"
                   class="max-input form-control"
                   id="maxPrice"
@@ -161,18 +161,18 @@
               type="button"
               class="custom-button"
               @click="toggleSortOrder"
-              style="align-items: center"
+              style="align-items: center; font-size: 0.8rem"
             >
               Sort Price
               <span
                 v-if="sortOrder === 'asc'"
                 class="bi bi-sort-up-alt"
-                style="font-size: 1rem"
+                style="font-size: 0.8rem"
               ></span>
               <span
                 v-else
                 class="bi bi-sort-down"
-                style="font-size: 1rem"
+                style="font-size: 0.8rem"
               ></span>
             </button>
           </div>
@@ -194,7 +194,7 @@
                 @change="handleDiscountChange"
                 style="margin-top: 0; margin-bottom: 0"
               />
-              <label style="font-size: 1rem; margin-top: 0; margin-bottom: 0"
+              <label style="font-size: 0.9rem; margin-top: 0; margin-bottom: 0"
                 >Discount > 10%</label
               >
             </div>
@@ -206,12 +206,12 @@
             id="collapse_4"
             v-if="ratings && ratings.length"
           >
-            <label style="font-size: 1rem">Overall Rating</label>
+            <label style="font-size: 0.9rem">Overall Rating</label>
             <div
               class="form-check form-check-inline"
               v-for="rating in ratings.slice().reverse()"
               :key="rating"
-              style="display: flex; align-items: center; font-size: 1rem"
+              style="display: flex; align-items: center; font-size: 0.9rem"
             >
               <input
                 style="font-size: 1rem; margin-top: 3px !important"
@@ -231,7 +231,7 @@
                     'fa-star checked': i <= rating,
                     'fa-star unchecked': i > rating
                   }"
-                  style="font-size: 1rem; margin-top: 7px"
+                  style="font-size: 0.9rem; margin-top: 7px"
                 >
                 </span>
                 <!-- prettier-ignore -->
@@ -445,22 +445,6 @@ export default {
     }
   },
   methods: {
-    // updateProductRange(cat) {
-    //   // Filter products based on the selected category
-    //   const categoryId = this.$store.state.categories.find(
-    //     category => category[0] === cat
-    //   )[2]
-    //   console.log('categoryId', categoryId)
-    //   const categoryProducts = this.$store.state.products.filter(
-    //     product => product.category_id === categoryId
-    //   )
-    //   const prices = categoryProducts.map(product => product.price)
-    //   console.log('prices', prices)
-    //   this.$store.state.productMin = Math.ceil(Math.min(...prices))
-    //   this.$store.state.productMax = Math.ceil(Math.max(...prices))
-    //   console.log('state.productMax', this.$store.state.productMax)
-    //   console.log('state.productMin', this.$store.state.productMin)
-    // },
     filterProductsByCategory(categoryID) {
       return this.$store.getters.filteredProductsByCategory(categoryID)
     },

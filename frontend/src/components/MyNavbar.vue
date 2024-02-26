@@ -24,31 +24,48 @@
         </li>
         <ul
           class="navbar-nav mb-1 mb-lg-0 categories-menu"
-          style="padding-left: 90px; margin-top: 3%"
+          style="padding-left: 40px; margin-top: 5%"
         >
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle"
-              href="#"
-              id="navbarDropdownCategories"
-              role="button"
-              data-toggle="dropdown"
+          <li class="nav-item dropdown" @mouseleave="hideCategories">
+            <button
+              class="btn btn-light dropdown-toggle btn-sm"
+              id="categoriesDropdown"
               aria-haspopup="true"
               aria-expanded="false"
+              @mouseenter="showCategories"
+              @click="toggleCategories"
             >
-              Categories
-            </a>
+              <i class="fa fa-bars" style="font-size: 1rem"></i>
+              CATEGORIES
+            </button>
             <div
               class="dropdown-menu"
-              aria-labelledby="navbarDropdownCategories"
-              style="cursor: pointer"
+              aria-labelledby="categoriesDropdown"
+              :style="{ display: displayCategories ? 'none' : 'block' }"
+              @mouseenter="showCategories"
+              @mouseleave="hideCategories"
+              style="margin-left: -23px"
             >
               <a
                 v-for="(category, index) in categories"
                 :key="index"
                 class="dropdown-item"
                 @click="selectCategory(category[0])"
+                style="font-size: 0.9em; cursor: pointer"
               >
+                <img
+                  :src="categoryImages[category[0]]"
+                  class="mr-2"
+                  style="
+                    width: 35px;
+                    height: 35px;
+                    object-fit: cover;
+                    border-radius: 5px;
+                    font-family: 'Raleway';
+                    margin-left: 0;
+                    padding-left: 0;
+                  "
+                />
                 {{ category[0] }}
               </a>
             </div>
@@ -282,7 +299,7 @@
             />
             <img
               v-else
-              :src="`${backendEndpoint}/static/img/img_avatar.png`"
+              :src="require('@/assets/img_avatar.png')"
               width="50"
               height="50"
               class="rounded-circle"
@@ -465,10 +482,18 @@ export default {
     return {
       displayCart: true,
       displayLiked: true,
+      displayCategories: true,
       isDropdownVisible: false,
       backendEndpoint: `${config.backendEndpoint}`,
       searchQuery: '',
-      categoryName: null
+      categoryName: null,
+      categoryImages: {
+        Laptops: require('@/assets/Laptop.jpg'),
+        Smartphones: require('@/assets/Smartphone.jpeg'),
+        Tablets: require('@/assets/Tablet.webp'),
+        Smartwatches: require('@/assets/garmin.jpg'),
+        TV: require('@/assets/TV.avif')
+      }
     }
   },
   computed: {
@@ -604,24 +629,40 @@ export default {
     hideCart() {
       setTimeout(() => {
         this.displayCart = true
-      }, 600)
+      }, 300)
     },
     showCart() {
       setTimeout(() => {
         this.displayCart = false
         this.displayLiked = true
-      }, 400)
+      }, 100)
     },
     hideFavorites() {
       setTimeout(() => {
         this.displayLiked = true
-      }, 600)
+      }, 300)
     },
     showFavorites() {
       setTimeout(() => {
         this.displayLiked = false
         this.displayCart = true
-      }, 400)
+      }, 100)
+    },
+    showCategories() {
+      setTimeout(() => {
+        this.displayCategories = false
+      }, 100)
+    },
+    hideCategories() {
+      setTimeout(() => {
+        this.displayCategories = true
+      }, 300)
+    },
+    handleMouseCatLeave() {
+      this.hideCategories()
+    },
+    toggleCategories() {
+      this.displayCategories = !this.displayCategories
     },
     createItem() {
       const formData = new FormData(document.getElementById('createItem'))

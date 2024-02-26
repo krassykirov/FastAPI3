@@ -39,8 +39,8 @@ body {
 }
 
 label {
-  font-size: 14px !important;
-  font-weight: 400 !important;
+  font-size: 14px;
+  font-weight: 400;
   /* font-size: 0.9em !important; */
 }
 
@@ -67,7 +67,7 @@ padding-right: -17px;
   margin-left: 1px !important;
   margin-right: 1px !important;
   width: 17vw !important;
-  height: 24vw !important;
+  height: 24vw;
   justify-content: left !important;
   /* border: 2px solid #969696; */
   text-align: center !important;
@@ -89,11 +89,12 @@ padding-right: -17px;
 }
 
 .old-price {
-  font-size: 0.9em;
+  font-size: 0.8em;
   text-decoration: line-through;
   color: #404447;
   margin-top: 1%;
-  margin-bottom: 1%;
+  margin-bottom: 1.2%;
+  margin-left: -12px;
 }
 
 
@@ -253,6 +254,7 @@ display: block;
 .slider-container {
     width: 100% !important;
     height: 6px !important;
+    margin-left: 0 !important;
     position: relative !important;
     background: #e4e4e4 !important;
     border-radius: 5px;
@@ -486,4 +488,14 @@ INPUT[type="checkbox"]:disabled {
   .carousel-control-next-icon {
     color: rgb(127, 147, 213) !important;
     background-color: rgb(127, 147, 213) !important;
+  }
+
+  .link {
+    cursor: pointer; /* Show pointer cursor on hover */
+    text-decoration: none;
+    color: black;
+  }
+  .link:hover {
+    color: #0d6efd /* Change color on hover */
+    text-decoration: none; /* Remove underline on hover */
   }
