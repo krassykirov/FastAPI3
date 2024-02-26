@@ -260,7 +260,7 @@
                 >
                 </span>
                 <!-- prettier-ignore -->
-                <span style="font-size: 0.9rem; margin-bottom: 10px"
+                <span style="font-size: 0.85rem; margin-bottom: 10px"
                 >&nbsp;({{ getRatingItemCount(rating) }})
               </span>
               </label>

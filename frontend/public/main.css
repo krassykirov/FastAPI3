@@ -63,16 +63,17 @@ padding-right: -17px;
   margin-top: 10px !important;
 }
 
-.card{
+.card {
   margin-bottom: 1px !important;
   margin-left: 1px !important;
   margin-right: 1px !important;
   width: 17vw !important;
-  height: 24vw;
+  height: 23vw !important;
   justify-content: left !important;
   /* border: 2px solid #969696; */
   text-align: center !important;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2) !important;
+  padding-bottom: 0 !important;
 }
 
 .price {

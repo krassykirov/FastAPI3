@@ -104,7 +104,7 @@
                     }}</b
                   >
                 </td>
-                <td style="padding: 0; padding-top: 5%">
+                <td style="padding: 15px; padding-top: 5%">
                   <button
                     type="button"
                     ref="addToCartButton"
