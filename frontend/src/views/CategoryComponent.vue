@@ -256,7 +256,7 @@
                     'fa-star checked': i <= rating,
                     'fa-star unchecked': i > rating
                   }"
-                  style="font-size: 15px; margin-top: 13px; font-size: 0.95rem"
+                  style="font-size: 15px; margin-top: 13px"
                 >
                 </span>
                 <!-- prettier-ignore -->

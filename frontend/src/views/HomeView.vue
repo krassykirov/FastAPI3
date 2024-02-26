@@ -221,19 +221,24 @@
                 display: flex;
                 align-items: center;
                 font-size: 0.8rem;
-                margin-left: 10px;
+                margin-left: 0;
+                padding-left: 0;
               "
             >
               <input
-                style="font-size: 1rem; margin-top: 3px !important"
-                class="form-check-input"
+                style="font-size: 0.9rem; margin-bottom: 8px; margin-left: 8px"
+                class="brand-checkbox"
                 type="checkbox"
                 :id="'rating' + rating"
                 :value="rating"
                 :disabled="getRatingItemCount(rating) === 0"
                 v-model="selectedRating"
               />
-              <label class="form-check-label" :for="'rating' + rating">
+              <label
+                class="form-check-label"
+                :for="'rating' + rating"
+                style="margin-left: 5px"
+              >
                 <span
                   v-for="i in 5"
                   :key="i"
@@ -242,11 +247,11 @@
                     'fa-star checked': i <= rating,
                     'fa-star unchecked': i > rating
                   }"
-                  style="font-size: 0.9rem; margin-top: 8px"
+                  style="font-size: 15px; margin-top: 8px"
                 >
                 </span>
                 <!-- prettier-ignore -->
-                <span style="font-size: 0.8rem; font-familly: sans-serif"
+                <span style="font-size: 0.85rem; font-familly: sans-serif"
                 >&nbsp;({{ getRatingItemCount(rating) }})
               </span>
               </label>
