@@ -40,7 +40,7 @@
         "
       >
         <div class="col-md-8" style="max-width: 1200px; margin-left: 3%">
-          <h3 class="text-center mb-4" style="margin-left: 12%">
+          <h3 class="text-center mb-4" style="margin-left: 2%">
             <i class="fa fa-heart red-color" style="font-size: 1.6rem"> </i>
             Favorite Products
           </h3>

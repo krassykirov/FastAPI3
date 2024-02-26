@@ -41,7 +41,7 @@
         "
       >
         <div class="col-md-8" style="max-width: 1200px">
-          <h3 class="text-center mb-4">
+          <h3 class="text-center mb-4" style="margin-right: 3%">
             <i class="bi bi-cart-fill" style="font-size: 1.6rem"> </i>
             Shopping Cart
           </h3>
