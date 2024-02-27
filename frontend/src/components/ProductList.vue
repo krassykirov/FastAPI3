@@ -96,7 +96,7 @@
           <!-- prettier-ignore -->
           <span style="font-size: 1rem;">$</span>
           <span style="font-size: 1rem;">{{ formattedPrice.integerPart }}</span>
-          <span style="font-size: 0.7em; position: relative; top: -0.3em;">.{{ formattedPrice.decimalPart }}</span>
+          <span style="font-size: 0.7em; position: relative; top: -0.4em;">.{{ formattedPrice.decimalPart }}</span>
         </div>
         </span>
         <span v-if="product.discount >= 0.1" class="old-price">
