@@ -6,20 +6,15 @@
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav">
         <li class="nav-item" style="padding-left: 70px">
-          <a class="nav-link mx-2 text-uppercase"
-            ><router-link
-              style="
-                text-decoration: none;
-                color: inherit;
-                font-family: inherit;
-              "
-              to="/"
-            >
-              <img
-                :src="require('@/assets/logo-house.png')"
-                style="width: 40px; height: 40px"
-              />
-            </router-link>
+          <a
+            class="nav-link mx-2 text-uppercase"
+            href="/"
+            style="text-decoration: none; color: inherit; font-family: inherit"
+          >
+            <img
+              :src="require('@/assets/logo-house.png')"
+              style="width: 40px; height: 40px"
+            />
           </a>
         </li>
         <ul

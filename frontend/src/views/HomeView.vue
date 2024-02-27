@@ -326,10 +326,19 @@ export default {
       backendEndpoint: `${config.backendEndpoint}`
     }
   },
-  beforeRouteUpdate(to, from, next) {
-    this.$store.store.dispatch('getProducts')
-    next()
-  },
+  // beforeRouteUpdate(to, from, next) {
+  //   this.$store.state.dispatch('getProducts')
+  //   next()
+  // },
+  // mounted() {
+  //   console.log('before mounting HomeVue')
+  //   Promise.all([
+  //     this.$store.dispatch('getProducts'),
+  //     console.log('products mounting', this.$store.state.products),
+  //     (this.$store.state.filteredProducts = this.$store.state.products),
+  //     console.log('filteredProducts', this.$store.state.filteredProducts)
+  //   ])
+  // },
   created() {
     if (!this.$store.state.accessToken) {
       const accessToken = VueCookies.get('access_token')
@@ -457,9 +466,6 @@ export default {
     toggleSortOrder() {
       this.$store.dispatch('toggleSortOrder')
     },
-    // async readFromCartVue() {
-    //   this.$store.dispatch('readFromCartVue')
-    // },
     redirectToItem(itemId) {
       this.$store.dispatch('redirectToItem', itemId)
     },

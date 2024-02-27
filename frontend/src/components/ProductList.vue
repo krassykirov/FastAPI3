@@ -121,7 +121,7 @@ import errorHandlingMixin from '../errorHandlingMixin'
 import config from '@/config'
 
 export default {
-  props: ['product', 'min', 'max', 'cart', 'products', 'favorites'],
+  props: ['product', 'min', 'max', 'cart', 'favorites', 'products'],
   emits: ['addToCart', 'redirectToItem', 'addTofavorites'],
   mixins: [errorHandlingMixin],
   data() {
@@ -139,7 +139,7 @@ export default {
       }
     },
     filteredProducts() {
-      return this.$store.state.filteredProducts
+      return this.$store.getters.filteredProducts
     },
     errorMessage() {
       return this.$store.getters.errorMessage

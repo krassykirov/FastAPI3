@@ -518,9 +518,6 @@ export default {
     toggleSortOrder() {
       this.$store.dispatch('toggleSortOrder')
     },
-    // async readFromCartVue() {
-    //   this.$store.dispatch('readFromCartVue')
-    // },
     redirectToItem(itemId) {
       this.$store.dispatch('redirectToItem', itemId)
     },

@@ -50,7 +50,7 @@
             <thead>
               <tr style="height: auto">
                 <th scope="col"></th>
-                <th scope="col">Product</th>
+                <th scope="col" style="padding-left: 25%">Product</th>
                 <th scope="col">Price</th>
                 <th scope="col">Quantity</th>
                 <th scope="col">Actions</th>
