@@ -24,7 +24,7 @@
             style="margin-top: 5px; margin-left: 25%"
           >
             <span
-              v-if="product.discount >= 0.1"
+              v-if="product.discount >= 0.01"
               style="font-size: 1em; margin: 1%"
               class="badge bg-danger position-absolute top-0 start-0"
             >

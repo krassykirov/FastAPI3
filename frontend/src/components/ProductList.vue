@@ -8,7 +8,7 @@
     <div class="card-body" style="padding: 1%">
       <span
         class="badge bg-danger position-absolute top-0 start-0"
-        v-if="product.discount >= 0.1"
+        v-if="product.discount >= 0.01"
         style="font-size: 0.8rem; margin: 1%; top: 0; start: 0"
         >-{{ Math.floor(product.discount * 100) }}%
       </span>

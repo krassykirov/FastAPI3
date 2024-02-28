@@ -365,7 +365,8 @@ export default {
       }
     }
     this.$store
-      .dispatch('getProfile')
+      .dispatch('getProducts')
+      .then(() => this.$store.dispatch('getProfile'))
       .then(() => this.$store.dispatch('fetchCategories'))
       .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
       .then(() => this.$store.dispatch('updateHomeProductRange'))

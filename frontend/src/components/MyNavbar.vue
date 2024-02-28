@@ -545,6 +545,11 @@ export default {
       }
     },
     selectCategory(category) {
+      this.$store.commit('SET_SELECTED_BRANDS', [])
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]')
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = false
+      })
       this.$store
         .dispatch('updateProductRange', category)
         .then(() => {

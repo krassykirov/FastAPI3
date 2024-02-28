@@ -35,7 +35,7 @@
           <div class="main-img" v-if="item" :id="'main-image-' + item.id">
             <span
               class="badge bg-danger position-absolute top-5 start-5"
-              v-if="item.discount >= 0.1"
+              v-if="item.discount >= 0.01"
               style="font-size: 0.9em; margin: 1%; top: 5; start: 5"
               >-{{ Math.floor(item.discount * 100) }}%
             </span>
@@ -82,21 +82,22 @@
               Category: {{ getCategoryNameById(item.category_id) }}
             </div>
             <div class="product-title text-bold my-3" v-if="item">
-              {{ item.name }}
+              <!-- {{ item.name }} -->
+              {{ truncateName(item.name, 60) }}
             </div>
             <!-- prettier-ignore -->
             <div class="price-area my-4" v-if="item">
               <p class="new-price text-bold mb-1">
-                <span style="font-size: 1.4rem;">$</span>
-                <span style="font-size: 1.4rem;">{{ formatPrice(item.discount_price).integerPart }}</span>
-                <span style="font-size: 0.8rem; position: relative; top: -0.6em;">.{{ formatPrice(item.discount_price).decimalPart }}</span>
+                <span style="font-size: 1.2rem;">$</span>
+                <span style="font-size: 1.2rem;">{{ formatPrice(item.discount_price).integerPart }}</span>
+                <span style="font-size: 0.7rem; position: relative; top: -0.6em;">.{{ formatPrice(item.discount_price).decimalPart }}</span>
               </p>
               <p v-if="item.discount">
                 <del style="font-size: 0.9rem">${{ item.price }} </del>
                 <span class="text-danger" v-if="item.discount">&nbsp;</span>
-                <span style="font-size: 0.9rem" class="text-danger"
-                  ><b>(-{{ Math.floor(item.discount * 100) }})%</b></span
-                >
+                <!-- <span style="font-size: 0.7rem" class="badge bg-danger"
+                  >- {{ Math.floor(item.discount * 100) }}%</span
+                > -->
               </p>
             </div>
             <p
@@ -534,6 +535,23 @@ export default {
     }
   },
   methods: {
+    truncateName(name, maxLength) {
+      if (!name) return '' // Add this guard clause
+      if (name.length > maxLength) {
+        const firstLine = name.substring(0, maxLength)
+        const remainingChars = name.substring(maxLength)
+        const indexOfSpace = remainingChars.indexOf(' ') // Find the index of the next space after maxLength
+        if (indexOfSpace !== -1) {
+          // If there is a space within the remaining characters, split at that space
+          const secondLine = remainingChars.substring(0, indexOfSpace)
+          return `${firstLine}\n${secondLine}`
+        } else {
+          // If there is no space within the remaining characters, just return the truncated first line
+          return `${firstLine}..`
+        }
+      }
+      return name
+    },
     formatPrice(price) {
       const [integerPart, decimalPart] = price.toFixed(2).split('.')
       const formattedIntegerPart = integerPart.replace(
@@ -594,13 +612,6 @@ export default {
       } catch (error) {
         console.log(error)
       }
-    },
-    truncateName(description, maxLength) {
-      if (!description) return '' // Add this guard clause
-      if (description.length > maxLength) {
-        return description.substring(0, maxLength) + '..'
-      }
-      return description
     },
     addToCart(product) {
       this.$store.dispatch('addToCart', product)
@@ -815,7 +826,7 @@ text-color {
 }
 
 .main-description .product-title {
-  font-size: 1.8rem;
+  font-size: 1.1rem;
 }
 
 .old-price-discount {
@@ -824,7 +835,7 @@ text-color {
 }
 
 .new-price {
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   color: rgb(222, 24, 24);
 }
 
