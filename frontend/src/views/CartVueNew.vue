@@ -72,23 +72,21 @@
                 >
                   {{ product.name }}
                 </td>
+                <!-- prettier-ignore -->
                 <td style="width: 100px">
-                  <b
-                    >${{
-                      (
-                        product.price -
-                        product.price * product.discount
-                      ).toFixed(2)
-                    }}</b
-                  >
+                   <!-- prettier-ignore -->
+                  <span style="font-size: 1rem;">$</span>
+                  <span style="font-size: 1rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
+                  <span style="font-size: 0.7em; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
                 </td>
                 <td class="align-left text-left">
                   <div
                     class="input-group"
-                    style="max-width: 110px; margin-left: 55px; padding: 0"
+                    style="max-width: 100px; margin-left: 55px; padding: 0"
                   >
                     <button
-                      class="btn btn-outline-secondary"
+                      class="btn btn-outline-secondary btn-sm"
+                      style="font-size: 12px; width: 25px; height: 31px"
                       type="button"
                       @click="updateQuantity(product.id, product.quantity - 1)"
                     >
@@ -101,10 +99,17 @@
                       max="3"
                       :value="product.quantity"
                       disabled
-                      style="text-align: center"
+                      style="
+                        text-align: center;
+                        font-size: 14px;
+                        max-width: 30px;
+                        max-height: 31px;
+                        padding-left: 8px;
+                      "
                     />
                     <button
-                      class="btn btn-outline-secondary"
+                      class="btn btn-outline-secondary btn-sm"
+                      style="font-size: 12px; width: 25px; height: 31px"
                       type="button"
                       @click="updateQuantity(product.id, product.quantity + 1)"
                     >
@@ -125,7 +130,12 @@
             </tbody>
           </table>
           <div>
-            <h4>Total: ${{ total }}</h4>
+            <!-- prettier-ignore -->
+            <h4>
+              <span style="font-size: 1.3rem;">$</span>
+              <span style="font-size: 1.3rem;">{{ formatPrice(total).integerPart }}</span>
+              <span style="font-size: 0.8rem; position: relative; top: -0.6em;">.{{ formatPrice(total).decimalPart }}</span>
+            </h4>
             <button
               type="button"
               class="btn btn-primary"
@@ -241,15 +251,14 @@
                             {{ truncateName(product.name, 20) }}
                           </b>
                         </td>
+                        <!-- prettier-ignore -->
                         <td style="width: 100px">
-                          <b
-                            >${{
-                              (
-                                product.price -
-                                product.price * product.discount
-                              ).toFixed(2)
-                            }}</b
-                          >
+                          <!-- prettier-ignore -->
+                          <div>
+                          <span style="font-size: 1.1rem;">$</span>
+                          <span style="font-size: 1.1rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
+                          <span style="font-size: 0.8em; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
+                        </div>
                         </td>
                         <td>
                           <button
@@ -273,6 +282,7 @@
                         overflow: hidden;
                       "
                     >
+                      <!-- prettier-ignore -->
                       <div class="text-end mt-4">
                         <h4
                           style="
@@ -280,8 +290,11 @@
                             margin-left: 60%;
                             margin-right: 5%;
                           "
-                        >
-                          Total: ${{ total }}
+                        > <!-- prettier-ignore -->
+                          <!-- Total: ${{ total }} -->
+                          <span style="font-size: 1.3rem;">$</span>
+                          <span style="font-size: 1.3rem;">{{ formatPrice(total).integerPart }}</span>
+                          <span style="font-size: 0.8rem; position: relative; top: -0.6em;">.{{ formatPrice(total).decimalPart }}</span>
                         </h4>
                       </div>
                     </div>
@@ -450,7 +463,7 @@ export default {
     // MessageArea
   },
   mixins: [errorHandlingMixin],
-  props: ['profile', 'favorites'],
+  props: ['profile', 'favorites', 'cart'],
   data() {
     return {
       item: null,
@@ -462,13 +475,8 @@ export default {
     this.$store.dispatch('getProducts')
   },
   computed: {
-    formattedPrice() {
-      const price = this.product.discount_price
-      const [integerPart, decimalPart] = price.toString().split('.')
-      return {
-        integerPart: parseInt(integerPart).toLocaleString(),
-        decimalPart: decimalPart || '00'
-      }
+    categories() {
+      return this.$store.getters.categories
     },
     errorMessage() {
       return this.$store.state.errorMessage
@@ -481,12 +489,19 @@ export default {
     },
     accessToken() {
       return this.$store.state.accessToken
-    },
-    cart() {
-      return this.$store.state.cart
     }
+    // cart() {
+    //   return this.$store.state.cart
+    // }
   },
   methods: {
+    formatPrice(price) {
+      const [integerPart, decimalPart] = price.toString().split('.')
+      return {
+        integerPart: parseInt(integerPart).toLocaleString(),
+        decimalPart: decimalPart || '00'
+      }
+    },
     itemAlreadyInCart(product) {
       return this.cart.some(item => item.id === product.id)
     },

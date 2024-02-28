@@ -72,37 +72,34 @@
                     {{ truncateName(product.description, 200) }}
                   </p>
                   <p style="cursor: pointer">
-                    <i>
-                      <span
-                        v-for="i in 5"
-                        :key="i"
-                        :class="getStarClasses(i, product.rating_float)"
-                      ></span>
-                      <span
-                        :id="'overall-rating' + product.id + '-float'"
-                        class="overall-rating"
-                        >&nbsp;{{
-                          parseFloat(product.rating_float).toFixed(2)
-                        }}</span
-                      >
-                    </i>
+                    <span
+                      v-for="i in 5"
+                      :key="i"
+                      :class="getStarClasses(i, product.rating_float)"
+                    ></span>
+                    <span
+                      :id="'overall-rating' + product.id + '-float'"
+                      class="overall-rating"
+                      style="font-size: 0.9rem; font-familly: sans-serif"
+                      >&nbsp;{{
+                        parseFloat(product.rating_float).toFixed(2)
+                      }}</span
+                    >
                     <span
                       :id="'overall-rating' + product.id"
                       class="overall-rating2"
+                      style="font-size: 0.9rem; font-familly: sans-serif"
                     >
                       ({{ product.review_number }})
                     </span>
                   </p>
                 </td>
+                <!-- prettier-ignore -->
                 <td style="padding-top: 5.3%; padding-right: 10px">
-                  <b
-                    >${{
-                      (
-                        product.price -
-                        product.price * product.discount
-                      ).toFixed(2)
-                    }}</b
-                  >
+                  <!-- prettier-ignore -->
+                  <span style="font-size: 1.1rem;">$</span>
+                  <span style="font-size: 1.1rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
+                  <span style="font-size: 0.8em; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
                 </td>
                 <td style="padding: 15px; padding-top: 5%">
                   <button
@@ -182,6 +179,9 @@ export default {
   //   Promise.all([this.$store.dispatch('getItemRatings')])
   // },
   computed: {
+    categories() {
+      return this.$store.getters.categories
+    },
     errorMessage() {
       return this.$store.state.errorMessage
     },
@@ -202,6 +202,13 @@ export default {
     }
   },
   methods: {
+    formatPrice(price) {
+      const [integerPart, decimalPart] = price.toString().split('.')
+      return {
+        integerPart: parseInt(integerPart).toLocaleString(),
+        decimalPart: decimalPart || '00'
+      }
+    },
     getStarClasses(index, rating) {
       const filledStars = Math.floor(rating)
       if (index <= filledStars) {

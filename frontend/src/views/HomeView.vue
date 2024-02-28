@@ -26,7 +26,7 @@
       style="
         position: fixed;
         top: 12%;
-        right: 5%;
+        right: 2%;
         transform: translate(0, -50%);
         width: 250px;
         z-index: 1000;
@@ -35,7 +35,7 @@
       <div
         class="toast-body"
         id="cartToastBody"
-        style="font-weight: 900; font: 1.1em"
+        style="font-weight: 500; font: 1.1rem"
       ></div>
     </div>
     <div class="product-container">
@@ -47,7 +47,7 @@
                 font-size: 0.9rem;
                 display: block;
                 margin-bottom: 10px;
-                font-weight: 400;
+                font-weight: 500;
               "
               >Categories
             </label>
@@ -68,13 +68,23 @@
                     :disabled="category[1] === 0"
                     @change="handleCategoryChange"
                   />
-                  <span style="padding-left: 5px; font-size: 0.8rem">
+                  <span
+                    style="
+                      padding-left: 5px;
+                      font-size: 0.85rem;
+                      font-weight: 500;
+                    "
+                  >
                     {{ category[0] }}
                   </span>
                 </label>
                 <span
                   class="text-muted"
-                  style="font-size: 0.8rem; font-familly: sans-serif"
+                  style="
+                    font-size: 0.8rem;
+                    font-familly: sans-serif;
+                    font-weight: 500;
+                  "
                 >
                   ({{ category[1] }})
                 </span>
@@ -212,7 +222,9 @@
             id="collapse_4"
             v-if="ratings && ratings.length"
           >
-            <label style="font-size: 0.9rem">Overall Rating</label>
+            <label style="font-size: 0.9rem; font-weight: 500">
+              Overall Rating
+            </label>
             <div
               class="form-check form-check-inline"
               v-for="rating in ratings.slice().reverse()"

@@ -35,7 +35,7 @@
       <div
         class="toast-body"
         id="cartToastBody"
-        style="font-weight: 900; font: 1.1em"
+        style="font-weight: 600; font: 1.1em"
       ></div>
     </div>
     <div class="product-container">
@@ -47,7 +47,7 @@
                 font-size: 0.9rem;
                 display: block;
                 margin-bottom: 10px;
-                font-weight: 400;
+                font-weight: 500;
               "
               >Brands</label
             >
@@ -59,7 +59,7 @@
                 :class="{ active: getBrandCount(brand) !== 0 }"
                 style="padding-left: 8px"
               >
-                <label style="font-size: 0.8rem">
+                <label style="font-size: 0.85rem">
                   <input
                     style="
                       font-size: 0.9rem;
@@ -72,16 +72,23 @@
                     :disabled="getBrandCount(brand) === 0"
                     @change="handleBrandChange($event, brand)"
                   />
-                  <span style="padding-left: 8px; font-size: 0.8rem">
+                  <span
+                    style="
+                      padding-left: 8px;
+                      font-size: 0.8rem;
+                      font-weight: 500;
+                    "
+                  >
                     {{ brand }}
                   </span>
                 </label>
                 <span
                   class="text-muted"
                   style="
-                    font-size: 0.9rem;
+                    font-size: 0.8rem;
                     padding-left: 0;
                     font-familly: sans-serif;
+                    font-weight: 500;
                   "
                 >
                   ({{ getBrandCount(brand) }})
@@ -92,14 +99,20 @@
         </div>
         <div class="filter-card">
           <div class="card-body">
-            <label style="font-size: 0.9rem; display: block; margin-bottom: 5px"
+            <label
+              style="
+                font-size: 0.9rem;
+                display: block;
+                margin-bottom: 5px;
+                font-weight: 500;
+              "
               >Price</label
             >
             <div class="price-input row">
               <div class="form-group col-md-6">
                 <label
                   for="minPrice"
-                  style="font-size: 0.8rem; margin-left: 23px"
+                  style="font-size: 0.8rem; margin-left: 23px; font-weight: 500"
                   >Min Price</label
                 >
                 <input
@@ -118,7 +131,7 @@
               <div class="form-group col-md-6">
                 <label
                   for="maxPrice"
-                  style="font-size: 0.8rem; margin-left: 12px"
+                  style="font-size: 0.8rem; margin-left: 12px; font-weight: 500"
                   >Max Price</label
                 >
                 <input
@@ -221,7 +234,9 @@
             id="collapse_4"
             v-if="ratings && ratings.length"
           >
-            <label style="font-size: 0.9rem">Overall Rating</label>
+            <label style="font-size: 0.9rem; font-weight: 500">
+              Overall Rating
+            </label>
             <div
               class="form-check form-check-inline"
               v-for="rating in ratings.slice().reverse()"
@@ -230,12 +245,12 @@
                 display: flex;
                 align-items: center;
                 font-size: 0.8rem;
-                padding-left: 8px;
-                padding-bottom: 0;
+                margin-left: 0;
+                padding-left: 0;
               "
             >
               <input
-                style="font-size: 0.9rem; margin-bottom: 2px"
+                style="font-size: 0.9rem; margin-bottom: 8px; margin-left: 8px"
                 class="brand-checkbox"
                 type="checkbox"
                 :id="'rating' + rating"
@@ -246,7 +261,7 @@
               <label
                 class="form-check-label"
                 :for="'rating' + rating"
-                style="margin-left: 7px"
+                style="margin-left: 5px"
               >
                 <span
                   v-for="i in 5"
@@ -256,11 +271,11 @@
                     'fa-star checked': i <= rating,
                     'fa-star unchecked': i > rating
                   }"
-                  style="font-size: 15px; margin-top: 13px"
+                  style="font-size: 15px; margin-top: 8px"
                 >
                 </span>
                 <!-- prettier-ignore -->
-                <span style="font-size: 0.85rem; margin-bottom: 10px"
+                <span style="font-size: 0.8rem; font-familly: sans-serif"
                 >&nbsp;({{ getRatingItemCount(rating) }})
               </span>
               </label>

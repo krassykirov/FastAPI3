@@ -17,10 +17,10 @@ body {
   margin-right: 0 !important;
   padding-left: 0 !important;
 }
-/* font-family: 'Lato', Open Sans Helvetica Arial !important; */
-* {
+/* font-family: 'Lato', Open Sans Helvetica Arial !important; 'Spartan', san-serif; */
+/* * {
   font-family: 'Raleway'
-}
+} */
 
 .product-fade-enter-active, .product-fade-leave-active {
   transition: opacity 0.3s, transform 0.3s;
@@ -68,7 +68,7 @@ padding-right: -17px;
   margin-left: 1px !important;
   margin-right: 1px !important;
   width: 17vw !important;
-  height: 23vw !important;
+  height: 23.4vw !important;
   justify-content: left !important;
   /* border: 2px solid #969696; */
   text-align: center !important;
@@ -92,12 +92,12 @@ padding-right: -17px;
 
 .old-price {
   font-size: 0.9rem;
-  font-family: 'Lato' !important;
+  /* font-family: 'Lato' !important; */
   text-decoration: line-through;
   color: #404447;
   margin-top: 1%;
   margin-bottom: 1.2%;
-  margin-left: -12px;
+  margin-left: -25px;
 }
 
 
@@ -334,7 +334,7 @@ INPUT[type=checkbox]:focus
 
 INPUT[type=checkbox]
 {
-    background-color: #e6eaeb;
+    background-color: #dce3e3;
     border-radius: 1px;
     appearance: none;
     -webkit-appearance: none;
@@ -438,14 +438,14 @@ INPUT[type="checkbox"]:disabled {
     opacity: 0;
   }
 
-  .overall-rating {
-    font-size: 0.95em !important;
-    margin-bottom: 2%;
-  }
-  .overall-rating2 {
-    font-size: 0.9rem !important;
-    margin-bottom: 2%;
-  }
+  /* .overall-rating {
+    /* font-size: 0.95em !important; */
+    /* margin-bottom: 2%;
+  } */
+  /* .overall-rating2 { */
+    /* font-size: 0.9rem !important; */
+    /* margin-bottom: 2%; */
+  /* } */
   .red-color {
     color: red;
   }

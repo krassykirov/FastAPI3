@@ -9,7 +9,7 @@
       <span
         class="badge bg-danger position-absolute top-0 start-0"
         v-if="product.discount >= 0.1"
-        style="font-size: 0.8em; margin: 1%; top: 0; start: 0"
+        style="font-size: 0.8rem; margin: 1%; top: 0; start: 0"
         >-{{ Math.floor(product.discount * 100) }}%
       </span>
       <span
@@ -45,7 +45,7 @@
           margin-bottom: 1%;
           padding: 1%;
           height: 3em;
-          font-size: 0.9rem;
+          font-size: 1rem;
           overflow: hidden;
           display: -webkit-box;
           -webkit-line-clamp: 3;
@@ -54,7 +54,7 @@
           cursor: pointer;
         "
       >
-        {{ truncateName(product.name, 70) }}
+        {{ truncateName(product.name, 60) }}
       </h6>
       <p
         style="cursor: pointer; margin-bottom: 1%; font-size: 0.9em"
@@ -107,7 +107,7 @@
           ref="addToCartButton"
           @click="addToCart(product)"
           class="btn btn-secondary btn-sm"
-          style="margin-top: 1px; margin-bottom: 0; width: 100%"
+          style="margin-top: 1px; width: 100%"
         >
           Add to Cart <i class="bi bi-cart-fill" style="font-size: 0.9rem"> </i>
         </button>
@@ -143,16 +143,6 @@ export default {
     },
     errorMessage() {
       return this.$store.getters.errorMessage
-    },
-    discountedPrice() {
-      if (this.product.discount) {
-        return (
-          this.product.price -
-          this.product.price * this.product.discount
-        ).toFixed(2)
-      } else {
-        return (this.product.price * 1).toFixed(2)
-      }
     },
     isFavorite(product) {
       return this.$store.state.favorites.some(

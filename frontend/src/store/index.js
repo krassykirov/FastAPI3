@@ -106,14 +106,14 @@ export default createStore({
     SET_RANGE_INPUT(state, { min, max }) {
       state.rangeInput = { min, max }
     },
+    ADD_TO_CART(state, product) {
+      state.cart.push(product)
+    },
     REMOVE_ITEM_FROM_CART(state, index) {
       state.cart.splice(index, 1)
     },
     REMOVE_ITEM_FROM_FAVORITES(state, index) {
       state.favorites.splice(index, 1)
-    },
-    ADD_TO_CART(state, product) {
-      state.cart.push(product)
     },
     ADD_TO_FAVORITES(state, product) {
       state.favorites.push(product)
@@ -162,6 +162,8 @@ export default createStore({
       state.accessTokenExpiration = null
       state.refreshTokenExpiration = null
       state.profile = null
+      state.cart = []
+      state.favorites = []
       router.push('/login')
     },
     SET_SELECTED_RATING(state, value) {
@@ -177,6 +179,14 @@ export default createStore({
     }
   },
   actions: {
+    formattedPrice() {
+      const price = this.product.discount_price
+      const [integerPart, decimalPart] = price.toString().split('.')
+      return {
+        integerPart: parseInt(integerPart).toLocaleString(),
+        decimalPart: decimalPart || '00'
+      }
+    },
     updateItemRating({ commit, state }, { itemId, rating }) {
       const itemIndex = state.products.findIndex(item => item.id === itemId)
       if (itemIndex !== -1) {
@@ -204,6 +214,8 @@ export default createStore({
       state.accessTokenExpiration = null
       state.refreshTokenExpiration = null
       state.profile = null
+      state.cart = []
+      state.favorites = []
       router.push('/login')
     },
     async refreshAccessToken({ commit, dispatch, state }) {
@@ -572,8 +584,8 @@ export default createStore({
       )
 
       const toastContent = itemInfavorites
-        ? `${product.name} was removed from Favorites `
-        : `${product.name} was addedd in Favorites`
+        ? `${product.name} has been removed from Favorites `
+        : `${product.name} has been added to Favorites`
 
       const toastElement = new bootstrap.Toast(
         document.getElementById('cartToast'),

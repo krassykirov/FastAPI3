@@ -84,12 +84,12 @@
             <div class="product-title text-bold my-3" v-if="item">
               {{ item.name }}
             </div>
+            <!-- prettier-ignore -->
             <div class="price-area my-4" v-if="item">
-              <!-- prettier-ignore -->
               <p class="new-price text-bold mb-1">
-                <span style="font-size: 1.3rem;">$</span>
-                <span style="font-size: 1.3rem;">{{ formattedPrice.integerPart }}</span>
-                <span style="font-size: 0.8rem; position: relative; top: -0.4em;">.{{ formattedPrice.decimalPart }}</span>
+                <span style="font-size: 1.4rem;">$</span>
+                <span style="font-size: 1.4rem;">{{ formatPrice(item.price).integerPart }}</span>
+                <span style="font-size: 0.8rem; position: relative; top: -0.6em;">.{{ formatPrice(item.price).decimalPart }}</span>
               </p>
               <p v-if="item.discount !== null">
                 <del>${{ item.price }} </del>
@@ -104,19 +104,17 @@
               v-if="item"
               @click="scrollToTarget"
             >
-              <i>
-                <span
-                  v-for="i in 5"
-                  :key="i"
-                  :class="getStarClasses(i, item.rating_float)"
-                ></span>
-                <span
-                  class="overall-rating"
-                  style="font-family: Arial; font-size: 0.9rem !important"
-                  :id="'overall-rating' + item.id + '-float'"
-                  >&nbsp;{{ item.rating_float }}</span
-                >
-              </i>
+              <span
+                v-for="i in 5"
+                :key="i"
+                :class="getStarClasses(i, item.rating_float)"
+              ></span>
+              <span
+                class="overall-rating"
+                style="font-size: 0.9rem !important"
+                :id="'overall-rating' + item.id + '-float'"
+                >&nbsp;{{ item.rating_float }}</span
+              >
               <span :id="'overall-rating' + item.id">
                 ({{ item.reviewNumber }}) Review's
               </span>
@@ -502,14 +500,6 @@ export default {
     })
   },
   computed: {
-    formattedPrice() {
-      const price = this.item.discount_price
-      const [integerPart, decimalPart] = price.toString().split('.')
-      return {
-        integerPart: parseInt(integerPart).toLocaleString(),
-        decimalPart: decimalPart || '00'
-      }
-    },
     errorMessage() {
       return this.$store.state.errorMessage
     },
@@ -544,6 +534,13 @@ export default {
     }
   },
   methods: {
+    formatPrice(price) {
+      const [integerPart, decimalPart] = price.toString().split('.')
+      return {
+        integerPart: parseInt(integerPart).toLocaleString(),
+        decimalPart: decimalPart || '00'
+      }
+    },
     async getProduct(itemId) {
       try {
         const resolvedItemId = itemId || this.$route.params.itemId

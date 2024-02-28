@@ -58,39 +58,42 @@
                   style="cursor: pointer; margin-bottom: 10px"
                   @click="redirectToItemFromProduct(product.id)"
                 >
-                  <i>
-                    <span
-                      v-for="i in 5"
-                      :key="i"
-                      :class="getStarClasses(i, product.rating_float)"
-                      style="margin-right: 2px; font-size: 0.9em"
-                    ></span>
-                    <span
-                      :id="'overall-rating' + product.id + '-float'"
-                      class="overall-rating"
-                    >
-                      &nbsp;{{ parseFloat(product.rating_float).toFixed(2) }}
-                    </span>
-                    <span
-                      :id="'overall-rating' + product.id"
-                      class="overall-rating2"
-                    >
-                      ({{ product.review_number }})
-                    </span>
-                  </i>
+                  <span
+                    v-for="i in 5"
+                    :key="i"
+                    :class="getStarClasses(i, product.rating_float)"
+                    style="margin-right: 2px; font-size: 0.9rem"
+                  ></span>
+                  <span
+                    :id="'overall-rating' + product.id + '-float'"
+                    class="overall-rating"
+                    style="font-size: 0.85em !important"
+                  >
+                    &nbsp;{{ parseFloat(product.rating_float).toFixed(2) }}
+                  </span>
+                  <span
+                    :id="'overall-rating' + product.id"
+                    class="overall-rating2"
+                    style="font-size: 0.8rem; font-familly: sans-serif"
+                  >
+                    ({{ product.review_number }})
+                  </span>
                 </p>
+                <!-- prettier-ignore -->
                 <div style="justify-content: space-between">
                   <span
                     class="discount-price"
                     style="
-                      font-size: 0.95em;
+                      font-size: 0.9em;
                       color: #dc3545;
-                      font-weight: 900;
+                      font-weight: 700;
                       margin-bottom: 10px;
-                      padding-right: 5%;
+                      padding-right: 4%;
                     "
                   >
-                    ${{ product.discount_price }}
+                  <span style="font-size: 0.9rem;">$</span>
+                  <span style="font-size: 0.9rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
+                  <span style="font-size: 0.7em; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
                   </span>
                   <button
                     type="button"
@@ -164,14 +167,6 @@ export default {
     ])
   },
   computed: {
-    formattedPrice() {
-      const price = this.product.discount_price
-      const [integerPart, decimalPart] = price.toString().split('.')
-      return {
-        integerPart: parseInt(integerPart).toLocaleString(),
-        decimalPart: decimalPart || '00'
-      }
-    },
     errorMessage() {
       return this.$store.state.errorMessage
     },
@@ -195,6 +190,13 @@ export default {
     }
   },
   methods: {
+    formatPrice(price) {
+      const [integerPart, decimalPart] = price.toString().split('.')
+      return {
+        integerPart: parseInt(integerPart).toLocaleString(),
+        decimalPart: decimalPart || '00'
+      }
+    },
     getStarClasses(index, rating) {
       const filledStars = Math.floor(rating)
       if (index <= filledStars) {

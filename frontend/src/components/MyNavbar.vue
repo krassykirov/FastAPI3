@@ -56,7 +56,6 @@
                     height: 35px;
                     object-fit: cover;
                     border-radius: 5px;
-                    font-family: 'Raleway';
                     margin-left: 0;
                     padding-left: 0;
                   "
@@ -143,8 +142,8 @@
                 :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                 class="mr-2"
                 style="
-                  width: 60px;
-                  height: 60px;
+                  width: 45px;
+                  height: 45px;
                   object-fit: cover;
                   border-radius: 5px;
                   font-family: Georgia, 'Times New Roman', Times, serif;
@@ -154,10 +153,15 @@
                 style="cursor: pointer"
                 @click="redirectToItemFromNavbar(item.id)"
               >
-                <div style="font-size: 0.9rem; width: 150px">
-                  {{ truncateDescription(item.name, 30) }} ${{
-                    formatPrice(item.price)
-                  }}
+                <!-- prettier-ignore -->
+                <div style="font-size: 0.8rem; width: 150px">
+                  {{ truncateDescription(item.name, 42) }}
+                </div>
+                <!-- prettier-ignore -->
+                <div>
+                  <span style="font-size: 0.8rem;">$</span>
+                  <span style="font-size: 0.8rem;">{{ formatPrice(item.price).integerPart }}</span>
+                  <span style="font-size: 0.6rem; position: relative; top: -0.4em;">.{{ formatPrice(item.price).decimalPart }}</span>
                 </div>
               </div>
             </div>
@@ -174,6 +178,7 @@
             v-if="favorites.length > 0"
             @click="redirectToFavorites"
             class="btn btn-sm btn-primary"
+            style="margin-bottom: 0; margin-right: 0"
           >
             Go to Favorites
           </button>
@@ -227,8 +232,8 @@
                 :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                 class="mr-2"
                 style="
-                  width: 60px;
-                  height: 60px;
+                  width: 45px;
+                  height: 45px;
                   object-fit: cover;
                   border-radius: 5px;
                   font-family: Georgia, 'Times New Roman', Times, serif;
@@ -238,11 +243,13 @@
                 style="cursor: pointer"
                 @click="redirectToItemFromNavbar(item.id)"
               >
-                <div style="font-size: 0.9rem; width: 150px">
+                <!-- prettier-ignore -->
+                <div style="font-size: 0.8rem; width: 150px; margin-left: 0">
                   x{{ item.quantity }}
-                  {{ truncateDescription(item.name, 30) }} ${{
-                    formatPrice(item.price)
-                  }}
+                  {{ truncateDescription(item.name, 35) }}
+                  <span style="font-size: 0.8rem;">$</span>
+                  <span style="font-size: 0.8rem;">{{ formatPrice(item.price).integerPart }}</span>
+                  <span style="font-size: 0.6rem; position: relative; top: -0.4em;">.{{ formatPrice(item.price).decimalPart }}</span>
                 </div>
               </div>
             </div>
@@ -255,17 +262,22 @@
               <i class="bi bi-trash"></i>
             </button>
           </div>
+          <!-- prettier-ignore -->
           <button
             id="total"
             class="btn btn-sm btn-light"
             style="pointer-events: none; opacity: 1; margin-bottom: 1px"
           >
-            Total: {{ cart.length }} products - <b> ${{ total }} </b>
+            Total: {{ cart.length }} products -
+              <span style="font-size: 0.9rem;">$</span>
+              <span style="font-size: 0.9rem;">{{ formatPrice(total).integerPart }}</span>
+              <span style="font-size: 0.6rem; position: relative; top: -0.4em;">.{{ formatPrice(total).decimalPart }}</span>
           </button>
           <button
             v-if="cart.length > 0"
             @click="redirectToCart"
             class="btn btn-sm btn-primary"
+            style="margin-bottom: 0; margin-right: 0"
           >
             Go to Cart
           </button>
@@ -512,6 +524,13 @@ export default {
     }
   },
   methods: {
+    formatPrice(price) {
+      const [integerPart, decimalPart] = price.toString().split('.')
+      return {
+        integerPart: parseInt(integerPart).toLocaleString(),
+        decimalPart: decimalPart || '00'
+      }
+    },
     selectCategory(category) {
       this.$store
         .dispatch('updateProductRange', category)
@@ -681,9 +700,9 @@ export default {
         $('#close-modal').click()
       })
     },
-    formatPrice(price) {
-      return price.toFixed(2)
-    },
+    // formatPrice(price) {
+    //   return price.toFixed(2)
+    // },
     truncateDescription(description, maxLength) {
       if (description.length > maxLength) {
         return description.substring(0, maxLength) + '..'
