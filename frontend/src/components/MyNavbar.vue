@@ -269,9 +269,9 @@
             style="pointer-events: none; opacity: 1; margin-bottom: 1px"
           >
             Total: {{ cart.length }} products -
-              <span style="font-size: 0.9rem;">$</span>
-              <span style="font-size: 0.9rem;">{{ formatPrice(total).integerPart }}</span>
-              <span style="font-size: 0.6rem; position: relative; top: -0.4em;">.{{ formatPrice(total).decimalPart }}</span>
+            <span style="font-size: 0.9rem;">$</span>
+            <span style="font-size: 0.9rem;">{{ formatTotal(total).integerPart }}</span>
+            <span style="font-size: 0.6rem; position: relative; top: -0.6em;">.{{ formatTotal(total).decimalPart }}</span>
           </button>
           <button
             v-if="cart.length > 0"
@@ -525,6 +525,19 @@ export default {
   },
   methods: {
     formatPrice(price) {
+      const [integerPart, decimalPart] = price.toFixed(2).split('.')
+      const formattedIntegerPart = integerPart.replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        '.'
+      ) // Add dots for every 3 digits
+      const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
+
+      return {
+        integerPart: formattedIntegerPart,
+        decimalPart: formattedDecimalPart
+      }
+    },
+    formatTotal(price) {
       const [integerPart, decimalPart] = price.toString().split('.')
       return {
         integerPart: parseInt(integerPart).toLocaleString(),
@@ -700,9 +713,6 @@ export default {
         $('#close-modal').click()
       })
     },
-    // formatPrice(price) {
-    //   return price.toFixed(2)
-    // },
     truncateDescription(description, maxLength) {
       if (description.length > maxLength) {
         return description.substring(0, maxLength) + '..'

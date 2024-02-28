@@ -133,8 +133,8 @@
             <!-- prettier-ignore -->
             <h4>
               <span style="font-size: 1.3rem;">$</span>
-              <span style="font-size: 1.3rem;">{{ formatPrice(total).integerPart }}</span>
-              <span style="font-size: 0.8rem; position: relative; top: -0.6em;">.{{ formatPrice(total).decimalPart }}</span>
+              <span style="font-size: 1.3rem;">{{ formatTotal(total).integerPart }}</span>
+              <span style="font-size: 0.8rem; position: relative; top: -0.6em;">.{{ formatTotal(total).decimalPart }}</span>
             </h4>
             <button
               type="button"
@@ -293,8 +293,8 @@
                         > <!-- prettier-ignore -->
                           <!-- Total: ${{ total }} -->
                           <span style="font-size: 1.3rem;">$</span>
-                          <span style="font-size: 1.3rem;">{{ formatPrice(total).integerPart }}</span>
-                          <span style="font-size: 0.8rem; position: relative; top: -0.6em;">.{{ formatPrice(total).decimalPart }}</span>
+                          <span style="font-size: 1.3rem;">{{ formatTotal(total).integerPart }}</span>
+                          <span style="font-size: 0.8rem; position: relative; top: -0.6em;">.{{ formatTotal(total).decimalPart }}</span>
                         </h4>
                       </div>
                     </div>
@@ -463,7 +463,7 @@ export default {
     // MessageArea
   },
   mixins: [errorHandlingMixin],
-  props: ['profile', 'favorites', 'cart'],
+  props: ['profile'],
   data() {
     return {
       item: null,
@@ -473,6 +473,7 @@ export default {
   },
   created() {
     this.$store.dispatch('getProducts')
+    this.$store.dispatch('fetchCategories')
   },
   computed: {
     categories() {
@@ -489,13 +490,29 @@ export default {
     },
     accessToken() {
       return this.$store.state.accessToken
+    },
+    cart() {
+      return this.$store.state.cart
+    },
+    favorites() {
+      return this.$store.state.favorites
     }
-    // cart() {
-    //   return this.$store.state.cart
-    // }
   },
   methods: {
     formatPrice(price) {
+      const [integerPart, decimalPart] = price.toFixed(2).split('.')
+      const formattedIntegerPart = integerPart.replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        '.'
+      ) // Add dots for every 3 digits
+      const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
+
+      return {
+        integerPart: formattedIntegerPart,
+        decimalPart: formattedDecimalPart
+      }
+    },
+    formatTotal(price) {
       const [integerPart, decimalPart] = price.toString().split('.')
       return {
         integerPart: parseInt(integerPart).toLocaleString(),

@@ -97,6 +97,7 @@
                     <span
                       :id="'overall-rating' + product.id + '-float'"
                       class="overall-rating"
+                      style="font-size: 0.9rem !important"
                       >&nbsp;{{
                         parseFloat(product.rating_float).toFixed(2)
                       }}</span
@@ -104,6 +105,7 @@
                     <span
                       :id="'overall-rating' + product.id"
                       class="overall-rating2"
+                      style="font-size: 0.9rem !important"
                     >
                       ({{ product.review_number }})
                     </span>
@@ -201,10 +203,16 @@ export default {
   },
   methods: {
     formatPrice(price) {
-      const [integerPart, decimalPart] = price.toString().split('.')
+      const [integerPart, decimalPart] = price.toFixed(2).split('.')
+      const formattedIntegerPart = integerPart.replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        '.'
+      ) // Add dots for every 3 digits
+      const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
+
       return {
-        integerPart: parseInt(integerPart).toLocaleString(),
-        decimalPart: decimalPart || '00'
+        integerPart: formattedIntegerPart,
+        decimalPart: formattedDecimalPart
       }
     },
     getStarClasses(index, rating) {

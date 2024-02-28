@@ -88,13 +88,13 @@
             <div class="price-area my-4" v-if="item">
               <p class="new-price text-bold mb-1">
                 <span style="font-size: 1.4rem;">$</span>
-                <span style="font-size: 1.4rem;">{{ formatPrice(item.price).integerPart }}</span>
-                <span style="font-size: 0.8rem; position: relative; top: -0.6em;">.{{ formatPrice(item.price).decimalPart }}</span>
+                <span style="font-size: 1.4rem;">{{ formatPrice(item.discount_price).integerPart }}</span>
+                <span style="font-size: 0.8rem; position: relative; top: -0.6em;">.{{ formatPrice(item.discount_price).decimalPart }}</span>
               </p>
-              <p v-if="item.discount !== null">
-                <del>${{ item.price }} </del>
+              <p v-if="item.discount">
+                <del style="font-size: 0.9rem">${{ item.price }} </del>
                 <span class="text-danger" v-if="item.discount">&nbsp;</span>
-                <span class="text-danger"
+                <span style="font-size: 0.9rem" class="text-danger"
                   ><b>(-{{ Math.floor(item.discount * 100) }})%</b></span
                 >
               </p>
@@ -115,7 +115,7 @@
                 :id="'overall-rating' + item.id + '-float'"
                 >&nbsp;{{ item.rating_float }}</span
               >
-              <span :id="'overall-rating' + item.id">
+              <span :id="'overall-rating' + item.id" style="font-size: 0.9rem">
                 ({{ item.reviewNumber }}) Review's
               </span>
             </p>
@@ -535,10 +535,16 @@ export default {
   },
   methods: {
     formatPrice(price) {
-      const [integerPart, decimalPart] = price.toString().split('.')
+      const [integerPart, decimalPart] = price.toFixed(2).split('.')
+      const formattedIntegerPart = integerPart.replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        '.'
+      ) // Add dots for every 3 digits
+      const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
+
       return {
-        integerPart: parseInt(integerPart).toLocaleString(),
-        decimalPart: decimalPart || '00'
+        integerPart: formattedIntegerPart,
+        decimalPart: formattedDecimalPart
       }
     },
     async getProduct(itemId) {

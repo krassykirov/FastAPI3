@@ -131,11 +131,17 @@ export default {
   },
   computed: {
     formattedPrice() {
-      const price = this.product.discount_price
-      const [integerPart, decimalPart] = price.toString().split('.')
+      const price = Number(this.product.discount_price) || 0 // Convert to number and handle NaN
+      const [integerPart, decimalPart] = price.toFixed(2).split('.')
+      const formattedIntegerPart = integerPart.replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        '.'
+      ) // Add dots for every 3 digits
+      const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
+
       return {
-        integerPart: parseInt(integerPart).toLocaleString(),
-        decimalPart: decimalPart || '00'
+        integerPart: formattedIntegerPart,
+        decimalPart: formattedDecimalPart
       }
     },
     filteredProducts() {
