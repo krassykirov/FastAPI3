@@ -194,6 +194,9 @@ export default {
     },
     searchResults() {
       return this.$store.state.searchResults
+    },
+    categories() {
+      return this.$store.getters.categories
     }
   },
   methods: {
