@@ -106,6 +106,9 @@ async def read_items(q: List[str] = Query(None), db: Session = Depends(get_sessi
     results = query.all()
     results = jsonable_encoder(results)
     for item in results:
+        item.update({'discount_price' : round((item.get('price')
+                                                - item.get('price') * item.get('discount')
+                                                if item.get('discount') else item.get('price')),2)})
         item_reviews = routers.reviews.ReviewActions().get_item_reviews(db=db, id=item.get('id'))
         if item_reviews:
             result = [item.rating for item in item_reviews if item.rating]

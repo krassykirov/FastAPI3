@@ -96,7 +96,6 @@
                 </td>
                 <!-- prettier-ignore -->
                 <td style="padding-top: 5.3%; padding-right: 10px">
-                  <!-- prettier-ignore -->
                   <span style="font-size: 1.1rem;">$</span>
                   <span style="font-size: 1.1rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
                   <span style="font-size: 0.8em; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
