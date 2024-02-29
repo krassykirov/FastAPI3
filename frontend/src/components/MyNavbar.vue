@@ -5,21 +5,19 @@
   >
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav">
-        <li class="nav-item" style="padding-left: 70px">
-          <a
-            class="nav-link mx-2 text-uppercase"
-            href="/"
-            style="text-decoration: none; color: inherit; font-family: inherit"
+        <li class="nav-item" style="padding-left: 55px; margin-top: 8%">
+          <button
+            class="btn btn-light btn-sm"
+            aria-haspopup="true"
+            aria-expanded="false"
+            @click="goHome"
           >
-            <img
-              :src="require('@/assets/logo-house.png')"
-              style="width: 40px; height: 40px"
-            />
-          </a>
+            <i class="fa fa-home" style="font-size: 1.6rem"></i>
+          </button>
         </li>
         <ul
           class="navbar-nav mb-1 mb-lg-0 categories-menu"
-          style="padding-left: 40px; margin-top: 5%"
+          style="padding-left: 33%; margin-top: 10%"
         >
           <li class="nav-item dropdown" @mouseleave="hideCategories">
             <button
@@ -69,7 +67,7 @@
       <form
         class="form-inline"
         @submit.prevent="search"
-        style="padding-left: 7%"
+        style="padding-left: 17%"
       >
         <div class="input-group" style="width: 700px; margin-top: 20px">
           <input
@@ -97,7 +95,7 @@
         d-flex
         bd-highlight
         mb-1
-        style="margin-top: 18px; padding-left: 2%; position: relative"
+        style="margin-top: 18px; padding-left: 3%; position: relative"
         @mouseleave="handleMouseLFavLeave"
       >
         <button
@@ -120,7 +118,7 @@
           class="list-group position-absolute"
           style="
             top: 100%;
-            left: -55px;
+            left: -35px;
             z-index: 1000;
             min-width: 200px;
             max-height: 400px;
@@ -537,6 +535,9 @@ export default {
         decimalPart: formattedDecimalPart
       }
     },
+    goHome() {
+      window.location.href = '/'
+    },
     formatTotal(price) {
       const [integerPart, decimalPart] = price.toString().split('.')
       return {
@@ -558,6 +559,7 @@ export default {
         .catch(error => {
           console.error('Error updating product range:', error)
         })
+      this.hideCategories()
     },
     Search() {
       if (
@@ -688,7 +690,7 @@ export default {
     hideCategories() {
       setTimeout(() => {
         this.displayCategories = true
-      }, 300)
+      }, 100)
     },
     handleMouseCatLeave() {
       this.hideCategories()
