@@ -47,12 +47,16 @@ axios.interceptors.response.use(
             error.config.headers.Authorization = `Bearer ${newAccessToken}`
             return axios.request(error.config)
           } catch (refreshError) {
-            store.dispatch(
-              'setErrorMessage',
-              'Session has expired. Please log in.'
-            )
-            store.dispatch('logout')
-            throw new Error('Token Expired')
+            if (refreshError.response.data.detail === 'Token has expired') {
+              store.dispatch(
+                'setErrorMessage',
+                'Session has expired. Please log in.'
+              )
+              store.dispatch('logout')
+              router.push({ name: 'login' })
+            } else {
+              throw refreshError
+            }
           } finally {
             isRefreshing = false
           }

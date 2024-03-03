@@ -7,7 +7,7 @@ import store from '@/store/index.js'
 
 const routes = [
   {
-    path: '/',
+    path: '/products',
     name: 'home',
     component: HomeView,
     props: route => ({
@@ -26,15 +26,29 @@ const routes = [
     // meta: { requiresAuth: true }
   },
   {
-    path: '/test',
+    path: '/',
     name: 'NewHome',
-    component: () => import('../views/HomeViewNew.vue')
+    component: () => import('../views/HomeViewNew.vue'),
+    props: true
+    // beforeEnter: async (to, from, next) => {
+    //   try {
+    //     await store.dispatch('getProfile')
+    //     next()
+    //   } catch (error) {
+    //     console.log('error', error)
+    //   }
+    // }
   },
   {
     path: '/login',
     name: 'login',
     component: () => import('../views/LoginVue.vue')
   },
+  // {
+  //   path: '/itemnew',
+  //   name: 'itemnew',
+  //   component: () => import('../views/MyItemLastTest.vue')
+  // },
   {
     path: '/catetgory/:category',
     name: 'category',

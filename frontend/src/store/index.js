@@ -231,7 +231,7 @@ export default createStore({
           console.log('response.status !== 200', response)
           dispatch('setErrorMessage', 'Session has expired. Please log in')
           dispatch('logout')
-          throw new Error('Token Expired')
+          throw new Error('Token has expired')
         }
         const data = response.data
         const expires_in = jwtDecode(data.access_token).exp
@@ -253,10 +253,9 @@ export default createStore({
         // dispatch('startExpirationCheckTimer')
         return data.access_token
       } catch (error) {
-        console.log('Refresh Token Error', error)
         dispatch('setErrorMessage', 'Session has expired. Please log in')
         dispatch('logout')
-        throw new Error('Token Expired')
+        throw new Error('Token has expired')
       }
     },
     async login({ commit }, { username, password, rememberMe }) {
@@ -349,8 +348,8 @@ export default createStore({
           commit('SET_MAX_PRICE', maxPrice)
           commit('setMessage', `Found ${products.length} products`)
         } catch (error) {
-          console.error('Error fetching products:', error)
-          throw error
+          // console.error('Error fetching products:', error)
+          // throw error
         }
       }
     },

@@ -302,6 +302,7 @@
         </div>
       </template>
     </div>
+    <Footer />
   </div>
 </template>
 
@@ -313,6 +314,7 @@ import VueCookies from 'vue-cookies'
 import { jwtDecode } from 'jwt-decode'
 import ProductList from '@/components/ProductList.vue'
 import MyNavbar from '@/components/MyNavbar.vue'
+import Footer from '@/views/FooterVue.vue'
 // import PriceSlider from '@/views/PriceSlider.vue'
 // import MessageArea from '@/views/MessageAreaVue.vue'
 import errorHandlingMixin from '../errorHandlingMixin'
@@ -323,7 +325,8 @@ export default {
   name: 'HomeView',
   components: {
     ProductList,
-    MyNavbar
+    MyNavbar,
+    Footer
     // PriceSlider
   },
   props: {

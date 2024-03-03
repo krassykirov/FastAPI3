@@ -5,7 +5,7 @@
   >
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav">
-        <li class="nav-item" style="padding-left: 55px; margin-top: 8%">
+        <li class="nav-item" style="padding-left: 50px; margin-top: 8%">
           <button
             class="btn btn-light btn-sm"
             aria-haspopup="true"
@@ -17,7 +17,7 @@
         </li>
         <ul
           class="navbar-nav mb-1 mb-lg-0 categories-menu"
-          style="padding-left: 33%; margin-top: 10%"
+          style="padding-left: 42%; margin-top: 9%"
         >
           <li class="nav-item dropdown" @mouseleave="hideCategories">
             <button
@@ -46,7 +46,7 @@
                 @click="selectCategory(category[0])"
                 style="font-size: 0.9em; cursor: pointer"
               >
-                <img
+                <!-- <img
                   :src="categoryImages[category[0]]"
                   class="mr-2"
                   style="
@@ -57,9 +57,12 @@
                     margin-left: 0;
                     padding-left: 0;
                   "
-                />
+                /> -->
                 {{ category[0] }}
               </a>
+              <a class="dropdown-item" href="/products" style="font-size: 0.9em"
+                >All Products</a
+              >
             </div>
           </li>
         </ul>
@@ -523,20 +526,22 @@ export default {
   },
   methods: {
     formatPrice(price) {
-      const [integerPart, decimalPart] = price.toFixed(2).split('.')
-      const formattedIntegerPart = integerPart.replace(
-        /\B(?=(\d{3})+(?!\d))/g,
-        '.'
-      ) // Add dots for every 3 digits
-      const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
+      if (price !== null || price !== undefined) {
+        const [integerPart, decimalPart] = price.toFixed(2).split('.')
+        const formattedIntegerPart = integerPart.replace(
+          /\B(?=(\d{3})+(?!\d))/g,
+          '.'
+        ) // Add dots for every 3 digits
+        const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
 
-      return {
-        integerPart: formattedIntegerPart,
-        decimalPart: formattedDecimalPart
+        return {
+          integerPart: formattedIntegerPart,
+          decimalPart: formattedDecimalPart
+        }
       }
     },
     goHome() {
-      window.location.href = '/'
+      this.$router.push({ name: 'NewHome' })
     },
     formatTotal(price) {
       const [integerPart, decimalPart] = price.toString().split('.')
@@ -555,6 +560,7 @@ export default {
         .dispatch('updateProductRange', category)
         .then(() => {
           this.$router.push({ name: 'category', params: { category } })
+          document.body.scrollIntoView({ behavior: 'smooth' })
         })
         .catch(error => {
           console.error('Error updating product range:', error)
@@ -562,10 +568,7 @@ export default {
       this.hideCategories()
     },
     Search() {
-      if (
-        this.$route.path == '/' ||
-        this.$route.path.startsWith('/catetgory')
-      ) {
+      if (this.$route.path.startsWith('/catetgory')) {
         console.log('seraching..')
         var input, filter, cards, cardContainer, title, i
         input = document.getElementById('filter')
@@ -583,13 +586,13 @@ export default {
       }
     },
     async search() {
-      if (
-        this.searchQuery.trim() === '' ||
-        !this.searchQuery ||
-        this.$route.path === '/'
-      ) {
-        return
-      }
+      // if (
+      //   this.searchQuery.trim() === '' ||
+      //   !this.searchQuery ||
+      //   this.$route.path === '/'
+      // ) {
+      //   return
+      // }
       try {
         const response = await axios.get(
           `${config.backendEndpoint}/api/items/search/`,
@@ -609,9 +612,7 @@ export default {
             'updateMessage',
             `Found ${products.length} results for '${this.searchQuery}'`
           )
-          if (this.$route.path !== '/') {
-            this.$router.push('/search')
-          }
+          this.$router.push('/search')
         } else {
           this.$store.dispatch(
             'updateMessage',

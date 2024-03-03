@@ -187,7 +187,7 @@
                   <div class="container">
                     <h5>
                       Cart
-                      <span class="price" style="color: black"
+                      <span style="color: black"
                         ><i class="fa fa-shopping-cart"></i>
                         <b>&nbsp;{{ cart.length }}</b></span
                       >
@@ -243,21 +243,22 @@
                             </button>
                           </div>
                         </td>
+                        <!-- prettier-ignore -->
                         <td
                           @click="redirectToItemFromCart(product.id)"
                           style="cursor: pointer"
                         >
-                          <b style="cursor: pointer; margin: 15px">
+                          <p style="cursor: pointer; margin: 15px; font-size: 14px">
                             {{ truncateName(product.name, 20) }}
-                          </b>
+                          </p>
                         </td>
                         <!-- prettier-ignore -->
                         <td style="width: 100px">
                           <!-- prettier-ignore -->
                           <div>
-                          <span style="font-size: 1.1rem;">$</span>
-                          <span style="font-size: 1.1rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
-                          <span style="font-size: 0.8em; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
+                          <span style="font-size: 0.9rem;">$</span>
+                          <span style="font-size: 0.9rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
+                          <span style="font-size: 0.6em; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
                         </div>
                         </td>
                         <td>
@@ -447,11 +448,13 @@
         </div>
       </div>
     </div>
+    <Footer />
   </div>
 </template>
 
 <script>
 import NavBar from '../components/MyNavbar.vue'
+import Footer from '@/views/FooterVue.vue'
 // import MessageArea from '@/views/MessageAreaVue.vue'
 import errorHandlingMixin from '../errorHandlingMixin'
 import $ from 'jquery'
@@ -459,7 +462,8 @@ import config from '@/config'
 
 export default {
   components: {
-    NavBar
+    NavBar,
+    Footer
     // MessageArea
   },
   mixins: [errorHandlingMixin],
@@ -500,16 +504,18 @@ export default {
   },
   methods: {
     formatPrice(price) {
-      const [integerPart, decimalPart] = price.toFixed(2).split('.')
-      const formattedIntegerPart = integerPart.replace(
-        /\B(?=(\d{3})+(?!\d))/g,
-        '.'
-      ) // Add dots for every 3 digits
-      const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
+      if (price !== null || price !== undefined) {
+        const [integerPart, decimalPart] = price.toFixed(2).split('.')
+        const formattedIntegerPart = integerPart.replace(
+          /\B(?=(\d{3})+(?!\d))/g,
+          '.'
+        ) // Add dots for every 3 digits
+        const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
 
-      return {
-        integerPart: formattedIntegerPart,
-        decimalPart: formattedDecimalPart
+        return {
+          integerPart: formattedIntegerPart,
+          decimalPart: formattedDecimalPart
+        }
       }
     },
     formatTotal(price) {

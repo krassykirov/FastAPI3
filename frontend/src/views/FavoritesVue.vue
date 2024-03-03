@@ -131,6 +131,7 @@
       <!-- </p> -->
     </div>
     <MessageArea />
+    <Footer />
     <div
       class="toast"
       id="cartToast"
@@ -159,13 +160,15 @@
 <script>
 import NavBar from '../components/MyNavbar.vue'
 import MessageArea from '@/views/MessageAreaVue.vue'
+import Footer from '@/views/FooterVue.vue'
 import errorHandlingMixin from '../errorHandlingMixin'
 import config from '@/config'
 
 export default {
   components: {
     NavBar,
-    MessageArea
+    MessageArea,
+    Footer
   },
   props: ['profile'],
   data() {
@@ -202,16 +205,18 @@ export default {
   },
   methods: {
     formatPrice(price) {
-      const [integerPart, decimalPart] = price.toFixed(2).split('.')
-      const formattedIntegerPart = integerPart.replace(
-        /\B(?=(\d{3})+(?!\d))/g,
-        '.'
-      ) // Add dots for every 3 digits
-      const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
+      if (price !== null || price !== undefined) {
+        const [integerPart, decimalPart] = price.toFixed(2).split('.')
+        const formattedIntegerPart = integerPart.replace(
+          /\B(?=(\d{3})+(?!\d))/g,
+          '.'
+        ) // Add dots for every 3 digits
+        const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
 
-      return {
-        integerPart: formattedIntegerPart,
-        decimalPart: formattedDecimalPart
+        return {
+          integerPart: formattedIntegerPart,
+          decimalPart: formattedDecimalPart
+        }
       }
     },
     getStarClasses(index, rating) {

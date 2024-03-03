@@ -553,16 +553,18 @@ export default {
       return name
     },
     formatPrice(price) {
-      const [integerPart, decimalPart] = price.toFixed(2).split('.')
-      const formattedIntegerPart = integerPart.replace(
-        /\B(?=(\d{3})+(?!\d))/g,
-        '.'
-      ) // Add dots for every 3 digits
-      const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
+      if (price !== null || price !== undefined) {
+        const [integerPart, decimalPart] = price.toFixed(2).split('.')
+        const formattedIntegerPart = integerPart.replace(
+          /\B(?=(\d{3})+(?!\d))/g,
+          '.'
+        ) // Add dots for every 3 digits
+        const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
 
-      return {
-        integerPart: formattedIntegerPart,
-        decimalPart: formattedDecimalPart
+        return {
+          integerPart: formattedIntegerPart,
+          decimalPart: formattedDecimalPart
+        }
       }
     },
     async getProduct(itemId) {
@@ -806,12 +808,15 @@ text-color {
 
 /* Main image - left */
 .main-img {
-  width: 100% !important;
+  padding: 0;
+  margin: 0;
+  width: 90% !important;
+  height: 100% !important;
   max-height: 550px !important;
 }
 .main-img img {
   width: 70% !important;
-  max-height: 400px !important;
+  max-height: 500px !important;
 }
 
 /* Preview images */
@@ -826,7 +831,8 @@ text-color {
 }
 
 .main-description .product-title {
-  font-size: 1.1rem;
+  padding-top: 1%;
+  font-size: 1.3rem;
 }
 
 .old-price-discount {

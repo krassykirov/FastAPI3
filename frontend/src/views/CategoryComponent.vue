@@ -312,12 +312,14 @@
         </div>
       </template>
     </div>
+    <Footer />
   </div>
 </template>
 <script>
 import config from '@/config'
 import ProductList from '@/components/ProductList.vue'
 import MyNavbar from '@/components/MyNavbar.vue'
+import Footer from '@/views/FooterVue.vue'
 import VueCookies from 'vue-cookies'
 import { jwtDecode } from 'jwt-decode'
 import router from '@/router'
@@ -326,7 +328,8 @@ import router from '@/router'
 export default {
   components: {
     ProductList,
-    MyNavbar
+    MyNavbar,
+    Footer
   },
   props: ['category'],
   data() {

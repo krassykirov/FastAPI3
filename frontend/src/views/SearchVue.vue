@@ -154,6 +154,7 @@
         style="font-weight: 900; font: 1.1em"
       ></div>
     </div>
+    <Footer />
   </div>
 </template>
 
@@ -161,11 +162,13 @@
 import NavBar from '../components/MyNavbar.vue'
 // import MessageArea from '@/views/MessageAreaVue.vue'
 import errorHandlingMixin from '../errorHandlingMixin'
+import Footer from '@/views/FooterVue.vue'
 import config from '@/config'
 
 export default {
   components: {
-    NavBar
+    NavBar,
+    Footer
     // MessageArea
   },
   props: ['profile', 'cart', 'favorites'],
@@ -203,16 +206,18 @@ export default {
   },
   methods: {
     formatPrice(price) {
-      const [integerPart, decimalPart] = price.toFixed(2).split('.')
-      const formattedIntegerPart = integerPart.replace(
-        /\B(?=(\d{3})+(?!\d))/g,
-        '.'
-      ) // Add dots for every 3 digits
-      const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
+      if (price !== null || price !== undefined) {
+        const [integerPart, decimalPart] = price.toFixed(2).split('.')
+        const formattedIntegerPart = integerPart.replace(
+          /\B(?=(\d{3})+(?!\d))/g,
+          '.'
+        ) // Add dots for every 3 digits
+        const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
 
-      return {
-        integerPart: formattedIntegerPart,
-        decimalPart: formattedDecimalPart
+        return {
+          integerPart: formattedIntegerPart,
+          decimalPart: formattedDecimalPart
+        }
       }
     },
     getStarClasses(index, rating) {
