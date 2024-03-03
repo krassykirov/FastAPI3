@@ -257,7 +257,8 @@ export default {
 .card-img-top,
 .card-img-bottom {
   width: 80% !important;
-  max-height: 120px !important;
+  height: 90%;
+  max-height: 160px !important;
   object-fit: cover !important;
   padding-left: 8px !important;
   padding-right: 8px !important;

@@ -37,7 +37,7 @@
               :style="{ display: displayCategories ? 'none' : 'block' }"
               @mouseenter="showCategories"
               @mouseleave="hideCategories"
-              style="margin-left: -23px"
+              style="margin-left: -10px"
             >
               <a
                 v-for="(category, index) in categories"
@@ -560,7 +560,6 @@ export default {
         .dispatch('updateProductRange', category)
         .then(() => {
           this.$router.push({ name: 'category', params: { category } })
-          document.body.scrollIntoView({ behavior: 'smooth' })
         })
         .catch(error => {
           console.error('Error updating product range:', error)
