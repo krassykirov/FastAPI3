@@ -222,7 +222,7 @@
                 @change="handleDiscountChange"
                 style="
                   font-size: 0.9rem;
-                  margin-bottom: 9px;
+                  margin-bottom: 11px;
                   margin-left: -17px;
                 "
               />
@@ -281,11 +281,16 @@
                     'fa-star checked': i <= rating,
                     'fa-star unchecked': i > rating
                   }"
-                  style="font-size: 15px; margin-top: 8px"
+                  style="font-size: 14px; margin-top: 9px"
                 >
                 </span>
                 <!-- prettier-ignore -->
-                <span style="font-size: 0.8rem; font-familly: sans-serif"
+                <span class="text-muted"
+                  style="
+                    font-size: 0.8rem;
+                    padding-left: 0;
+                    font-weight: 500;
+                  "
                 >&nbsp;({{ getRatingItemCount(rating) }})
               </span>
               </label>

@@ -279,7 +279,12 @@
                 >
                 </span>
                 <!-- prettier-ignore -->
-                <span style="font-size: 0.85rem; font-familly: sans-serif"
+                <span class="text-muted"
+                  style="
+                    font-size: 0.8rem;
+                    padding-left: 0;
+                    font-weight: 500;
+                  "
                 >&nbsp;({{ getRatingItemCount(rating) }})
               </span>
               </label>
