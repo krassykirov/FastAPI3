@@ -408,6 +408,7 @@
         <p v-else>No specification available.</p>
       </div>
     </div>
+    <Footer />
     <div
       class="toast bg-info"
       id="cartToast2"
@@ -439,6 +440,7 @@
 /* global bootstrap */
 import $ from 'jquery'
 import MessageArea from '@/views/MessageAreaVue.vue'
+import Footer from '@/views/FooterVue.vue'
 // import Carousel from '@/views/CarouselVue.vue'
 import errorHandlingMixin from '../errorHandlingMixin'
 import config from '@/config'
@@ -450,7 +452,8 @@ import NavBar from '../components/MyNavbar.vue'
 export default {
   components: {
     NavBar,
-    MessageArea
+    MessageArea,
+    Footer
   },
   mixins: [errorHandlingMixin],
   props: ['cart', 'profile', 'favorites'],

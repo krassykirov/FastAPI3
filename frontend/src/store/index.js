@@ -539,7 +539,11 @@ export default createStore({
       }
     },
     scrollToTop() {
-      document.body.scrollIntoView({ behavior: 'smooth' })
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      })
     },
     async addToCart({ commit, state }, product) {
       const itemInCart = state.cart.find(item => item.id === product.id)

@@ -49,7 +49,7 @@
                 margin-bottom: 10px;
                 font-weight: 500;
               "
-              >Brands</label
+              >Filter by Brand</label
             >
             <div class="card-body" style="height: 200px; overflow-y: auto">
               <div
@@ -106,7 +106,7 @@
                 margin-bottom: 5px;
                 font-weight: 500;
               "
-              >Price</label
+              >Filter by Price</label
             >
             <div class="price-input row">
               <div class="form-group col-md-6">
@@ -215,15 +215,25 @@
               style="display: flex; align-items: center"
             >
               <input
-                class="form-check-input"
+                class="brand-checkbox"
                 type="checkbox"
                 id="discountCheckbox"
                 v-model="isChecked"
                 @change="handleDiscountChange"
-                style="margin-top: 0; margin-bottom: 0"
+                style="
+                  font-size: 0.9rem;
+                  margin-bottom: 9px;
+                  margin-left: -17px;
+                "
               />
-              <label style="font-size: 0.85rem; margin-top: 0; margin-bottom: 0"
-                >Discount > 10%</label
+              <label
+                style="
+                  font-size: 0.85rem;
+                  margin-top: 0;
+                  margin-bottom: 0;
+                  padding-left: 5px;
+                "
+                >Discounted Products</label
               >
             </div>
           </div>
@@ -235,7 +245,7 @@
             v-if="ratings && ratings.length"
           >
             <label style="font-size: 0.9rem; font-weight: 500">
-              Overall Rating
+              Filter by Rating
             </label>
             <div
               class="form-check form-check-inline"

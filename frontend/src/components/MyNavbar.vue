@@ -78,7 +78,7 @@
             type="search"
             id="filter"
             v-on:keyup="Search()"
-            placeholder="Search"
+            placeholder="Search by Keyword"
             aria-label="Search"
             v-model="searchQuery"
           />
@@ -155,11 +155,8 @@
                 @click="redirectToItemFromNavbar(item.id)"
               >
                 <!-- prettier-ignore -->
-                <div style="font-size: 0.8rem; width: 150px">
-                  {{ truncateDescription(item.name, 42) }}
-                </div>
-                <!-- prettier-ignore -->
-                <div>
+                <div style="font-size: 0.8rem; width: 150px; margin-left: 0">
+                  {{ truncateDescription(item.name, 35) }}
                   <span style="font-size: 0.8rem;">$</span>
                   <span style="font-size: 0.8rem;">{{ formatPrice(item.price).integerPart }}</span>
                   <span style="font-size: 0.6rem; position: relative; top: -0.4em;">.{{ formatPrice(item.price).decimalPart }}</span>
@@ -560,6 +557,10 @@ export default {
         .dispatch('updateProductRange', category)
         .then(() => {
           this.$router.push({ name: 'category', params: { category } })
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          })
         })
         .catch(error => {
           console.error('Error updating product range:', error)

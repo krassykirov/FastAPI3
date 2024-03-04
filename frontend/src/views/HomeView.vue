@@ -49,7 +49,7 @@
                 margin-bottom: 10px;
                 font-weight: 500;
               "
-              >Categories
+              >Filter by Category
             </label>
             <div class="card-body">
               <div
@@ -72,7 +72,7 @@
                     style="
                       padding-left: 5px;
                       font-size: 0.85rem;
-                      font-weight: 500;
+                      font-weight: 400;
                     "
                   >
                     {{ category[0] }}
@@ -94,8 +94,14 @@
         </div>
         <div class="filter-card">
           <div class="card-body">
-            <label style="font-size: 0.9rem; display: block; margin-bottom: 5px"
-              >Price</label
+            <label
+              style="
+                font-size: 0.9rem;
+                display: block;
+                margin-bottom: 5px;
+                font-weight: 500;
+              "
+              >Filter by Price</label
             >
             <div class="price-input row">
               <div class="form-group col-md-6">
@@ -200,18 +206,28 @@
           <div class="filter-content collapse show" id="collapse_3">
             <div
               class="form-check form-check-inline"
-              style="display: flex; align-items: center"
+              style="display: flex; align-items: left"
             >
               <input
-                class="form-check-input"
+                class="brand-checkbox"
                 type="checkbox"
                 id="discountCheckbox"
                 v-model="isChecked"
                 @change="handleDiscountChange"
-                style="margin-top: 0; margin-bottom: 0"
+                style="
+                  font-size: 0.9rem;
+                  margin-bottom: 9px;
+                  margin-left: -17px;
+                "
               />
-              <label style="font-size: 0.9rem; margin-top: 0; margin-bottom: 0"
-                >Discount > 10%</label
+              <label
+                style="
+                  font-size: 0.9rem;
+                  margin-top: 0;
+                  margin-bottom: 0;
+                  padding-left: 5px;
+                "
+                >Discounted Products</label
               >
             </div>
           </div>
@@ -223,7 +239,7 @@
             v-if="ratings && ratings.length"
           >
             <label style="font-size: 0.9rem; font-weight: 500">
-              Overall Rating
+              Filter by Rating
             </label>
             <div
               class="form-check form-check-inline"
@@ -520,7 +536,11 @@ export default {
     //   }
     // },
     scrollToTop() {
-      document.body.scrollIntoView({ behavior: 'smooth' })
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      })
     },
     addToCart(product) {
       this.$store.dispatch('addToCart', product)

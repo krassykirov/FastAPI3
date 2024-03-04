@@ -17,11 +17,10 @@ body {
   margin-right: 0 !important;
   padding-left: 0 !important;
 }
-/* font-family: 'Lato', Open Sans Helvetica Arial !important; 'Spartan', san-serif; */
-/* * {
- @import url('https://fonts.googleapis.com/css2?family=Spartan:wght@100;200;300;400;500;600;700;800;900&display=swap');
-  font-family: 'Raleway'
-} */
+* {
+ /* @import url('https://fonts.googleapis.com/css2?family=Spartan:wght@100;200;300;400;500;600;700;800;900&display=swap'); */
+  font-family: 'Oswald',"Roboto Condensed",'Roboto',"Noto Sans TC","Noto Sans SC","Noto Sans JP","Noto Sans KR",'Prompt',sans-serif
+}
 
 .product-fade-enter-active, .product-fade-leave-active {
   transition: opacity 0.3s, transform 0.3s;
