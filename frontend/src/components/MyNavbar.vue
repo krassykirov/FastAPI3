@@ -17,7 +17,7 @@
         </li>
         <ul
           class="navbar-nav mb-1 mb-lg-0 categories-menu"
-          style="padding-left: 42%; margin-top: 9%"
+          style="padding-left: 40%; margin-top: 9%"
         >
           <li class="nav-item dropdown" @mouseleave="hideCategories">
             <button
@@ -37,7 +37,7 @@
               :style="{ display: displayCategories ? 'none' : 'block' }"
               @mouseenter="showCategories"
               @mouseleave="hideCategories"
-              style="margin-left: -10px"
+              style="margin-left: -15px"
             >
               <a
                 v-for="(category, index) in categories"
@@ -60,9 +60,13 @@
                 /> -->
                 {{ category[0] }}
               </a>
-              <a class="dropdown-item" href="/products" style="font-size: 0.9em"
-                >All Products</a
+              <button
+                class="dropdown-item"
+                @click="goToAllProducts()"
+                style="font-size: 0.9em; cursor: pointer"
               >
+                All Products
+              </button>
             </div>
           </li>
         </ul>
@@ -539,6 +543,13 @@ export default {
     },
     goHome() {
       this.$router.push({ name: 'NewHome' })
+    },
+    goToAllProducts() {
+      this.$router.push({ name: 'home' })
+      this.$nextTick(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      })
+      this.hideCategories()
     },
     formatTotal(price) {
       const [integerPart, decimalPart] = price.toString().split('.')

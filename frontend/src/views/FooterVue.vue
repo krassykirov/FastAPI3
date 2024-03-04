@@ -1,5 +1,14 @@
 <template>
-  <section id="newsletter" class="section-p1" style="margin-top: 2%">
+  <section
+    id="newsletter"
+    class="section-p1"
+    style="margin-top: 2%; height: 50px; color: white; cursor: pointer"
+    @click="goToTop"
+  >
+    <div style="cursor: pointer; padding-left: 45%">Back to Top</div>
+  </section>
+
+  <section id="newsletter" class="section-p1" style="margin-top: 1%">
     <div class="newstext">
       <h4 style="margin-top: 15px">Sign Up for Newsletters</h4>
       <p>Get Email updates about our latest shop and special offers.</p>
@@ -51,9 +60,9 @@
 
       <div class="col">
         <h4>My Account</h4>
-        <a href="/cart">View Cart</a>
-        <a href="/profile">My Account</a>
-        <a href="/favorites">My Wishlist</a>
+        <a href="#">View Cart</a>
+        <a href="#">My Account</a>
+        <a href="#">My Wishlist</a>
         <a href="#">Track my Order</a>
         <a href="#">Help</a>
       </div>
@@ -77,18 +86,17 @@
   </footer>
 </template>
 <script>
-import errorHandlingMixin from '../errorHandlingMixin'
-
 export default {
   props: ['cart', 'avatar', 'profile', 'favorites'],
-  emits: ['removeFromCart'],
-  mixins: [errorHandlingMixin],
   methods: {
     goToAllProducts() {
       this.$router.push({ name: 'home' })
       this.$nextTick(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' })
       })
+    },
+    goToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 }
@@ -134,24 +142,6 @@ p {
 
 .section-m1 {
   padding: 40px 0;
-}
-
-#header {
-  position: fixed;
-  width: 100%;
-  overflow: hidden;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 80px;
-  background-color: #e3e6f3;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
-}
-
-#mobile {
-  display: none;
-  align-items: center;
 }
 
 #banner {
@@ -317,7 +307,6 @@ button.white:hover {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  background-image: url(https://i.postimg.cc/R0Bs4qqt/b14.png);
   background-repeat: no-repeat;
   background-position: 20% 30%;
   background-color: #041e42;

@@ -395,7 +395,7 @@
         :key="'specification_' + activeTab"
         id="specification"
         style="
-          align-text: center;
+          text-align: center;
           align-items: center;
           margin-left: 30%;
           margin-right: 30%;

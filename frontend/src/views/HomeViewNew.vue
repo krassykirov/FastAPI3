@@ -82,29 +82,21 @@
         </div>
       </div>
     </section>
-
-    <section
-      id="newsletter"
-      class="section-p1"
-      style="margin-top: 15px; height: 100px"
-    >
-      <div class="newstext">
-        <h4>Browse All Products</h4>
-        <!-- <p>
-          Get Email updates about our latest shop and
-          <span> special offers.</span>
-        </p> -->
-      </div>
-      <div class="form" style="margin-top: 15px">
-        <button
-          class="btn white"
-          style="padding: 20px 180px; background-color: transparent"
-          @click="goToAllProducts()"
-        >
-          All Offers
-        </button>
-      </div>
-    </section>
+    <div class="form" style="margin-top: 15px; margin-left: 30%">
+      <button
+        class="custom-button"
+        style="height: 50px; width: 350px"
+        @click="goToAllProducts()"
+        @mouseover="hover = true"
+        @mouseleave="hover = false"
+        :style="{
+          backgroundColor: hover ? '#088178' : 'transparent',
+          color: hover ? '#fff' : 'inherit'
+        }"
+      >
+        Browse All Products
+      </button>
+    </div>
 
     <section id="banner3" class="section-p1" style="margin-top: 15px">
       <div class="banner-box" @click="goToItem(24)" style="cursor: pointer">
@@ -130,14 +122,24 @@
         <h3>-50% OFF</h3> -->
       </div>
     </section>
-
+    <section
+      id="newsletter"
+      class="section-p1"
+      style="
+        margin-top: 0;
+        margin-bottom: 10px;
+        height: 50px;
+        color: white;
+        cursor: pointer;
+      "
+      @click="goToTop"
+    >
+      <div style="cursor: pointer; padding-left: 45%">Back to Top</div>
+    </section>
     <section id="newsletter" class="section-p1">
       <div class="newstext">
         <h4 style="margin-top: 15px">Sign Up for Newsletters</h4>
-        <p>
-          Get Email updates about our latest shop and
-          <span> special offers.</span>
-        </p>
+        <p>Get Email updates about our latest shop and special offers.</p>
       </div>
       <div class="form" style="margin-top: 15px">
         <input type="text" placeholder="Your email address" />
@@ -186,7 +188,6 @@
 
         <div class="col">
           <h4>My Account</h4>
-          <a href="#">Sign In</a>
           <a href="#">View Cart</a>
           <a href="#">My Account</a>
           <a href="#">My Wishlist</a>
@@ -276,6 +277,9 @@ export default {
     },
     goToItem(itemId) {
       this.$router.push({ name: 'Item', params: { itemId } })
+    },
+    goToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   },
   computed: {
@@ -613,7 +617,6 @@ button.white:hover {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  background-image: url(https://i.postimg.cc/R0Bs4qqt/b14.png);
   background-repeat: no-repeat;
   background-position: 20% 30%;
   background-color: #041e42;
