@@ -345,7 +345,7 @@ export default {
   methods: {
     redirectToCategory(category) {
       this.$router.push({ name: 'category', params: { category: category } })
-      document.body.scrollIntoView({ behavior: 'smooth' })
+      document.body.scrollIntoView({ behavior: 'auto' })
     },
     addToCart(product) {
       this.$store.dispatch('addToCart', product)

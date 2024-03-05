@@ -60,13 +60,14 @@
                 /> -->
                 {{ category[0] }}
               </a>
-              <button
+              <a
                 class="dropdown-item"
-                @click="goToAllProducts()"
+                type="button"
+                href="/products"
                 style="font-size: 0.9em; cursor: pointer"
               >
                 All Products
-              </button>
+              </a>
             </div>
           </li>
         </ul>
@@ -545,9 +546,9 @@ export default {
       this.$router.push({ name: 'NewHome' })
     },
     goToAllProducts() {
-      this.$router.push({ name: 'home' })
+      this.$router.replace('/products')
       this.$nextTick(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+        window.scrollTo({ top: 0, behavior: 'auto' })
       })
       this.hideCategories()
     },
@@ -570,7 +571,7 @@ export default {
           this.$router.push({ name: 'category', params: { category } })
           window.scrollTo({
             top: 0,
-            behavior: 'smooth'
+            behavior: 'auto'
           })
         })
         .catch(error => {
@@ -579,8 +580,10 @@ export default {
       this.hideCategories()
     },
     Search() {
-      if (this.$route.path.startsWith('/catetgory')) {
-        console.log('seraching..')
+      if (
+        this.$route.path.startsWith('/catetgory') ||
+        this.$route.path === '/products'
+      ) {
         var input, filter, cards, cardContainer, title, i
         input = document.getElementById('filter')
         filter = input.value.toUpperCase()

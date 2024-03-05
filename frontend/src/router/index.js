@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HomeViewPagination from '../views/HomeViewPagination.vue'
 import CategoryComponent from '../views/CategoryComponent.vue'
 import store from '@/store/index.js'
 // import VueCookies from 'vue-cookies'
@@ -9,20 +9,26 @@ const routes = [
   {
     path: '/products',
     name: 'home',
-    component: HomeView,
+    component: HomeViewPagination,
     props: route => ({
       isIdle: route.params.isIdle,
       lastActiveDate: route.params.lastActiveDate,
       inactiveTime: route.params.inactiveTime
-    }),
-    beforeEnter: async (to, from, next) => {
-      try {
-        await store.dispatch('getProducts')
-        next()
-      } catch (error) {
-        console.log('error', error)
-      }
-    }
+    })
+    // beforeEnter: async (to, from, next) => {
+    //   try {
+    //     await store.dispatch('getProducts')
+    //     // window.location.reload()
+    //     next()
+    //   } catch (error) {
+    //     console.log('error', error)
+    //   }
+    // }
+    // beforeRouteLeave(to, from, next) {
+    //   const selectedCategories = store.dispatch('getSelectedCategories')
+    //   store.commit('UPDATE_SELECTED_CATEGORIES', selectedCategories)
+    //   next()
+    // }
     // meta: { requiresAuth: true }
   },
   {
@@ -30,14 +36,6 @@ const routes = [
     name: 'NewHome',
     component: () => import('../views/HomeViewNew.vue'),
     props: true
-    // beforeEnter: async (to, from, next) => {
-    //   try {
-    //     await store.dispatch('getProfile')
-    //     next()
-    //   } catch (error) {
-    //     console.log('error', error)
-    //   }
-    // }
   },
   {
     path: '/login',
@@ -50,7 +48,7 @@ const routes = [
   //   component: () => import('../views/MyItemLastTest.vue')
   // },
   {
-    path: '/catetgory/:category',
+    path: '/category/:category',
     name: 'category',
     component: CategoryComponent,
     props: true,

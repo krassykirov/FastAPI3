@@ -238,6 +238,11 @@ export default {
     lastActiveDate: Date,
     inactiveTime: Number
   },
+  data() {
+    return {
+      hover: false
+    }
+  },
   mixins: [errorHandlingMixin],
   created() {
     if (!this.$store.state.accessToken) {
@@ -266,20 +271,20 @@ export default {
     goToCategory(category) {
       this.$router.push({ name: 'category', params: { category: category } })
       this.$nextTick(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+        window.scrollTo({ top: 0, behavior: 'auto' })
       })
     },
     goToAllProducts() {
       this.$router.push({ name: 'home' })
       this.$nextTick(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+        window.scrollTo({ top: 0, behavior: 'auto' })
       })
     },
     goToItem(itemId) {
       this.$router.push({ name: 'Item', params: { itemId } })
     },
     goToTop() {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      window.scrollTo({ top: 0, behavior: 'auto' })
     }
   },
   computed: {

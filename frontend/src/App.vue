@@ -33,8 +33,19 @@ export default {
         store.dispatch('inactiveLogout')
       }
     }
+    const handlePopstate = function (event) {
+      if (event.state && event.state.current === '/products') {
+        window.location.assign('/products')
+      }
+    }
+    const handlePopstate2 = function (event) {
+      if (event.state && event.state.current.startsWith('/category')) {
+        window.location.assign(event.state.current)
+      }
+    }
+    window.addEventListener('popstate', handlePopstate)
+    window.addEventListener('popstate', handlePopstate2)
 
-    // Update idle status and last active time when idle changes
     onMounted(() => {
       idle.value = false
       intervalId = setInterval(updateValues, 60000) // 1m, Check every second 1000
@@ -44,6 +55,8 @@ export default {
       clearInterval(intervalId)
       lastActiveDate.value = new Date()
       inactiveTime.value = 0
+      window.removeEventListener('popstate', handlePopstate)
+      window.removeEventListener('popstate2', handlePopstate2)
     })
 
     watch(lastActive, () => {

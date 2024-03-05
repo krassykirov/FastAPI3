@@ -26,7 +26,7 @@
       style="
         position: fixed;
         top: 12%;
-        right: 5%;
+        right: 2%;
         transform: translate(0, -50%);
         width: 250px;
         z-index: 1000;
@@ -35,7 +35,7 @@
       <div
         class="toast-body"
         id="cartToastBody"
-        style="font-weight: 600; font: 1.1em"
+        style="font-weight: 500; font: 1.1rem"
       ></div>
     </div>
     <div class="product-container">
@@ -49,49 +49,44 @@
                 margin-bottom: 10px;
                 font-weight: 500;
               "
-              >Filter by Brand</label
-            >
-            <div class="card-body" style="height: 200px; overflow-y: auto">
+              >Filter by Category
+            </label>
+            <div class="card-body">
               <div
                 class="container"
-                v-for="brand in uniqueBrands"
-                :key="brand"
-                :class="{ active: getBrandCount(brand) !== 0 }"
-                style="padding-left: 8px"
+                v-for="category in categories"
+                :key="category[2]"
+                :class="{ active: category[1] !== 0 }"
+                style="padding-left: 7px"
               >
-                <label style="font-size: 0.85rem">
+                <label style="font-size: 0.9rem">
                   <input
-                    style="
-                      font-size: 0.9rem;
-                      margin-bottom: 2px;
-                      padding-left: 0;
-                    "
+                    style="font-size: 0.8rem; margin-bottom: 2px"
                     type="checkbox"
-                    class="brand-checkbox"
-                    :data-brand="brand"
-                    :disabled="getBrandCount(brand) === 0"
-                    @change="handleBrandChange($event, brand)"
+                    class="cat-checkbox"
+                    :data-category="category[2]"
+                    :disabled="category[1] === 0"
+                    @change="handleCategoryChange"
                   />
                   <span
                     style="
-                      padding-left: 8px;
-                      font-size: 0.8rem;
-                      font-weight: 500;
+                      padding-left: 5px;
+                      font-size: 0.85rem;
+                      font-weight: 400;
                     "
                   >
-                    {{ brand }}
+                    {{ category[0] }}
                   </span>
                 </label>
                 <span
                   class="text-muted"
                   style="
                     font-size: 0.8rem;
-                    padding-left: 0;
-                    font-familly: sans-serif;
+                    font-family: sans-serif;
                     font-weight: 500;
                   "
                 >
-                  ({{ getBrandCount(brand) }})
+                  ({{ category[1] }})
                 </span>
               </div>
             </div>
@@ -112,7 +107,7 @@
               <div class="form-group col-md-6">
                 <label
                   for="minPrice"
-                  style="font-size: 0.8rem; margin-left: 23px; font-weight: 500"
+                  style="font-size: 0.8rem; margin-left: 23px"
                   >Min Price</label
                 >
                 <input
@@ -131,7 +126,7 @@
               <div class="form-group col-md-6">
                 <label
                   for="maxPrice"
-                  style="font-size: 0.8rem; margin-left: 12px; font-weight: 500"
+                  style="font-size: 0.8rem; margin-left: 12px"
                   >Max Price</label
                 >
                 <input
@@ -154,9 +149,8 @@
                   <div
                     class="price-slider"
                     :style="{
-                      '--min': min,
-                      '--max': max,
-                      '--productMax': productMax
+                      left: `${(min / productMax) * 100}%`,
+                      right: `${100 - (max / productMax) * 100}%`
                     }"
                   ></div>
                 </div>
@@ -195,12 +189,12 @@
               <span
                 v-if="sortOrder === 'asc'"
                 class="bi bi-sort-up-alt"
-                style="font-size: 0.8rem"
+                style="font-size: 0.9rem"
               ></span>
               <span
                 v-else
                 class="bi bi-sort-down"
-                style="font-size: 0.8rem"
+                style="font-size: 0.9rem"
               ></span>
             </button>
           </div>
@@ -212,7 +206,7 @@
           <div class="filter-content collapse show" id="collapse_3">
             <div
               class="form-check form-check-inline"
-              style="display: flex; align-items: center"
+              style="display: flex; align-items: left"
             >
               <input
                 class="brand-checkbox"
@@ -222,13 +216,13 @@
                 @change="handleDiscountChange"
                 style="
                   font-size: 0.9rem;
-                  margin-bottom: 11px;
+                  margin-bottom: 9px;
                   margin-left: -17px;
                 "
               />
               <label
                 style="
-                  font-size: 0.85rem;
+                  font-size: 0.9rem;
                   margin-top: 0;
                   margin-bottom: 0;
                   padding-left: 5px;
@@ -281,7 +275,7 @@
                     'fa-star checked': i <= rating,
                     'fa-star unchecked': i > rating
                   }"
-                  style="font-size: 14px; margin-top: 9px"
+                  style="font-size: 15px; margin-top: 8px"
                 >
                 </span>
                 <!-- prettier-ignore -->
@@ -297,27 +291,26 @@
             </div>
           </div>
         </div>
+        <!-- <PriceSlider /> -->
       </div>
-      <template v-if="selectedProducts && selectedProducts.length > 0">
-        <div class="product-list" id="mycard" style="margin-top: 3%">
+      <template v-if="filteredProducts && filteredProducts.length > 0">
+        <div class="product-list" id="mycard">
           <transition-group name="product-fade">
+            <!-- Render ProductList if there are filteredProducts -->
             <ProductList
-              v-for="product in selectedProducts"
-              :key="product.id"
+              :products="paginatedProducts"
+              :key="products"
+              :currentPage="currentPage"
+              :itemsPerPage="itemsPerPage"
               :cart="cart"
               :favorites="favorites"
-              class="row g-0 col-auto"
-              :product="product"
-              :min="min"
-              :max="max"
-              :total="total"
               @addToCart="addToCart"
               @addTofavorites="addTofavorites"
               @removeFromCart="removeFromCart"
               @removeFromFavorites="removeFromFavorites"
-              v-on:redirectToItem="redirectToItem"
-              style="justify-content: left"
-            ></ProductList>
+              @redirectToItem="redirectToItem"
+              style="justify-content: left; margin-top: 0"
+            />
           </transition-group>
         </div>
       </template>
@@ -327,31 +320,76 @@
         </div>
       </template>
     </div>
+    <nav aria-label="Pagination" style="margin-top: 30px">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" :class="{ disabled: currentPage === 1 }">
+          <button
+            class="page-link"
+            @click="prevPage"
+            :disabled="currentPage === 1"
+          >
+            Prev
+          </button>
+        </li>
+        <!-- Show pages around the current page -->
+        <template v-for="page in visiblePages" :key="page">
+          <li class="page-item" :class="{ active: currentPage === page }">
+            <button class="page-link" @click="setCurrentPage(page)">
+              {{ page }}
+            </button>
+          </li>
+        </template>
+        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+          <button
+            class="page-link"
+            @click="nextPage"
+            :disabled="currentPage === totalPages"
+          >
+            Next
+          </button>
+        </li>
+      </ul>
+    </nav>
     <Footer />
   </div>
 </template>
+
 <script>
-import config from '@/config'
-import ProductList from '@/components/ProductList.vue'
-import MyNavbar from '@/components/MyNavbar.vue'
-import Footer from '@/views/FooterVue.vue'
+// import $ from 'jquery'
+import 'bootstrap'
+import router from '@/router'
 import VueCookies from 'vue-cookies'
 import { jwtDecode } from 'jwt-decode'
-import router from '@/router'
-// /* global bootstrap */
+import ProductList from '@/components/ProductListPagination.vue'
+import MyNavbar from '@/components/MyNavbar.vue'
+import Footer from '@/views/FooterVue.vue'
+// import PriceSlider from '@/views/PriceSlider.vue'
+// import MessageArea from '@/views/MessageAreaVue.vue'
+import errorHandlingMixin from '../errorHandlingMixin'
+import config from '@/config'
+// import { handleError } from 'vue'
 
 export default {
+  name: 'HomeView',
   components: {
     ProductList,
     MyNavbar,
     Footer
+    // PriceSlider
   },
-  props: ['category'],
+  props: {
+    isIdle: Boolean,
+    lastActiveDate: Date,
+    inactiveTime: Number
+  },
+  mixins: [errorHandlingMixin],
   data() {
     return {
       isChecked: this.$store.state.isDiscountedChecked,
       backendEndpoint: `${config.backendEndpoint}`,
-      categoryName: null
+      currentPage: 1,
+      itemsPerPage: 32,
+      visiblePageRange: 5
     }
   },
   created() {
@@ -367,58 +405,73 @@ export default {
         router.push('/login')
       }
     }
-    const category = this.$route.params.category
-    if (category) {
-      this.$store
-        .dispatch('fetchCategories')
-        .then(() => this.$store.dispatch('updateProductRange', category))
-        .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
-        .catch(error => {
-          if (error.message !== 'Token Expired') {
-            console.error('error', error)
-          }
-        })
-    }
+    this.$store
+      .dispatch('getProducts')
+      .then(() => this.$store.dispatch('getProfile'))
+      .then(() => this.$store.dispatch('fetchCategories'))
+      .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
+      .then(() => this.$store.dispatch('updateHomeProductRange'))
+      .catch(error => {
+        if (error.message !== 'Token Expired') {
+          // console.error('error', error)
+        }
+      })
   },
   computed: {
-    selectedProducts() {
-      if (!this.category) return []
-      const category = this.$store.getters.categories.find(
-        cat => cat[0] === this.category
-      )
-      if (category) {
-        const categoryName = category[0]
-        return this.filterProductsByCategory(categoryName)
-      } else {
-        return []
-      }
-    },
-    uniqueBrands() {
-      const brandCounts = {}
-      let categoryId
+    paginatedProducts() {
+      const groupedProducts = this.groupedProducts
+      const currentPageIndex = this.currentPage - 1
+      if (currentPageIndex >= 0 && currentPageIndex < groupedProducts.length) {
+        const currentPageProducts = groupedProducts[currentPageIndex]
 
-      const selectedCategory = this.$route.params.category
-      if (selectedCategory) {
-        const category = this.$store.state.categories.find(
-          category => category[0] === selectedCategory
-        )
-        if (category) {
-          categoryId = category[2]
-        }
-      }
-      if (categoryId !== undefined) {
-        const filteredProducts = this.$store.state.products.filter(
-          product => product.category_id === categoryId
-        )
-        filteredProducts.forEach(product => {
-          const brand = product.brand
-          brandCounts[brand] = (brandCounts[brand] || 0) + 1
+        const filteredProducts = currentPageProducts.filter(item => {
+          const categoryCondition =
+            this.$store.state.selectedCategories.length === 0 ||
+            this.$store.state.selectedCategories.includes(
+              String(item.category_id)
+            )
+          const priceCondition =
+            item.price >= this.$store.state.min &&
+            item.price <= this.$store.state.max
+          const ratingCondition =
+            this.$store.state.selectedRating.length === 0 ||
+            this.$store.state.selectedRating.includes(
+              Math.round(item.rating_float)
+            )
+          const discountCondition =
+            !this.$store.state.isDiscountedChecked || item.discount != null
+          return (
+            priceCondition &&
+            categoryCondition &&
+            ratingCondition &&
+            discountCondition
+          )
         })
+        return filteredProducts
       }
-      const uniqueBrands = Object.keys(brandCounts).filter(
-        brand => brandCounts[brand] > 0
-      )
-      return uniqueBrands.sort()
+      return [] // Return an empty array if page index is out of bounds
+    },
+    groupedProducts() {
+      const itemsPerPage = this.itemsPerPage
+      const filteredProducts = this.$store.getters.filteredProducts
+      const grouped = []
+      for (let i = 0; i < filteredProducts.length; i += itemsPerPage) {
+        const group = filteredProducts.slice(i, i + itemsPerPage)
+        grouped.push(group)
+      }
+      return grouped
+    },
+    totalPages() {
+      return Math.ceil(this.filteredProducts.length / this.itemsPerPage)
+    },
+    visiblePages() {
+      const start = Math.max(1, this.currentPage - this.visiblePageRange)
+      const end = Math.min(this.totalPages, start + this.visiblePageRange * 2)
+      const pages = []
+      for (let i = start; i <= end; i++) {
+        pages.push(i)
+      }
+      return pages
     },
     formattedLastActive() {
       if (!this.lastActiveDate) return ''
@@ -460,9 +513,6 @@ export default {
     selectedCategories() {
       return this.$store.getters.selectedCategories
     },
-    selectedBrands() {
-      return this.$store.getters.selectedBrands
-    },
     selectedRating: {
       get() {
         return this.$store.getters.selectedRating
@@ -489,46 +539,40 @@ export default {
     user() {
       return this.$store.state.user
     },
+    profile() {
+      return this.$store.state.profile
+    },
     categories() {
       return this.$store.getters.categories
     },
-    profile() {
-      return this.$store.getters.profile
-    },
-    // currentCategory() {
-    //   return this.$store.getters.currentCategory
-    // },
     sortOrder() {
       return this.$store.getters.sortOrder
     }
   },
   methods: {
-    filterProductsByCategory(categoryID) {
-      return this.$store.getters.filteredProductsByCategory(categoryID)
+    handlePageChange(page) {
+      this.currentPage = page
     },
-    getBrandCount(brand) {
-      const selectedCategory = this.$route.params.category
-      const categoryId = this.$store.state.categories.find(
-        category => category[0] === selectedCategory
-      )[2]
-      const filteredProducts = this.$store.state.products.filter(
-        product => product.category_id === categoryId
-      )
-      return filteredProducts.filter(product => product.brand === brand).length
-    },
-    handleBrandChange(event, brand) {
-      const checkbox = event.target
-      const selectedBrands = [...this.selectedBrands]
-
-      if (checkbox.checked) {
-        selectedBrands.push(brand)
-      } else {
-        const index = selectedBrands.indexOf(brand)
-        if (index !== -1) {
-          selectedBrands.splice(index, 1)
-        }
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++
       }
-      this.$store.commit('SET_SELECTED_BRANDS', selectedBrands)
+      this.scrollToTop()
+    },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--
+      }
+      this.scrollToTop()
+    },
+    setCurrentPage(page) {
+      this.currentPage = page
+      this.scrollToTop()
+    },
+    updateProductRange() {
+      const prices = this.$store.state.products.map(product => product.price)
+      this.$store.state.productMin = Math.ceil(Math.min(...prices))
+      this.$store.state.productMax = Math.ceil(Math.max(...prices))
     },
     async getProduct(itemId) {
       this.$store.dispatch('getProduct', itemId)
@@ -544,9 +588,7 @@ export default {
         'getSelectedCategories'
       )
       this.$store.commit('UPDATE_SELECTED_CATEGORIES', selectedCategories)
-    },
-    getSelectedCategories() {
-      this.$store.dispatch('getSelectedCategories')
+      this.currentPage = 1
     },
     toggleSortOrder() {
       this.$store.dispatch('toggleSortOrder')
@@ -558,38 +600,26 @@ export default {
       this.$store.dispatch('handleRatingChange', rating)
     },
     getRatingItemCount(rating) {
-      let categoryId
-
-      const selectedCategory = this.$route.params.category
-      if (selectedCategory) {
-        const category = this.$store.state.categories.find(
-          category => category[0] === selectedCategory
-        )
-        if (category) {
-          categoryId = category[2]
+      const items = this.$store.state.products // Assuming products are stored in the store
+      const count = items.reduce((accumulator, item) => {
+        const floatRating = parseFloat(item.rating_float)
+        const roundedRating = Math.floor(floatRating + 0.5) // Round to the nearest integer
+        if (roundedRating === rating) {
+          return accumulator + 1
         }
-      }
-      if (categoryId !== undefined) {
-        const filteredProducts = this.$store.state.products.filter(
-          product => product.category_id === categoryId
-        )
-        const items = filteredProducts // Assuming products are stored in the store
-        const count = items.reduce((accumulator, item) => {
-          const floatRating = parseFloat(item.rating_float)
-          const roundedRating = Math.floor(floatRating + 0.5) // Round to the nearest integer
-          if (roundedRating === rating) {
-            return accumulator + 1
-          }
-          return accumulator
-        }, 0)
-        return count
-      }
+        return accumulator
+      }, 0)
+      return count
     },
     updateInputs() {
       this.$store.dispatch('updateInputs')
     },
     scrollToTop() {
-      window.scrollTo({ top: 0, behavior: 'auto' })
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'auto'
+      })
     },
     addToCart(product) {
       this.$store.dispatch('addToCart', product)

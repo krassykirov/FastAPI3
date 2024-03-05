@@ -223,7 +223,7 @@
           :class="{ active: activeTab === 'reviews' }"
           :key="'reviews_' + activeTab"
           id="reviews"
-          style="justify-content-center; align-text: center; align-items: center;"
+          style="justify-content: center; align-items: center"
         >
           <nav aria-label="Page navigation example">
             <ul class="pagination" style="margin-left: 20%">
@@ -621,16 +621,6 @@ export default {
     addToCart(product) {
       this.$store.dispatch('addToCart', product)
     },
-    getProfileAvatar(review) {
-      const matchedProfile = this.profiles.find(
-        profile => profile.primary_email === review.created_by
-      )
-      if (matchedProfile) {
-        return `${config.backendEndpoint}/static/img/${review.created_by}/profile/${matchedProfile.avatar}`
-      } else {
-        return `${config.backendEndpoint}/static/img/img_avatar.png`
-      }
-    },
     redirectToItem(itemId) {
       this.$store.dispatch('redirectToItem', itemId)
     },
@@ -758,11 +748,11 @@ export default {
     scrollToTarget() {
       var targetDiv = document.getElementById('reviews')
       if (targetDiv) {
-        targetDiv.scrollIntoView({ behavior: 'smooth' })
+        targetDiv.scrollIntoView({ behavior: 'auto' })
       }
     },
     scrollToTop() {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      window.scrollTo({ top: 0, behavior: 'auto' })
     },
     switchTab(tabId) {
       const scrollPosition = window.scrollY || window.pageYOffset

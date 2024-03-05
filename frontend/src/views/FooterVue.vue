@@ -92,11 +92,11 @@ export default {
     goToAllProducts() {
       this.$router.push({ name: 'home' })
       this.$nextTick(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+        window.scrollTo({ top: 0, behavior: 'auto' })
       })
     },
     goToTop() {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      window.scrollTo({ top: 0, behavior: 'auto' })
     }
   }
 }
