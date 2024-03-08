@@ -333,7 +333,7 @@
 
 <script>
 import $ from 'jquery'
-import NavBar from '../components/MyNavbar.vue'
+import NavBar from '@/components/MyNavbar.vue'
 import Footer from '@/views/FooterVue.vue'
 // import MessageArea from '@/views/MessageAreaVue.vue'
 import errorHandlingMixin from '../errorHandlingMixin'
@@ -432,8 +432,6 @@ export default {
       $('#create-profile').submit(e => {
         e.preventDefault()
         const formData = new FormData(e.target)
-        // formData.append('primary_email', this.user)
-        console.log('formData', formData)
         $.ajax({
           url: `${config.backendEndpoint}/create_profile`,
           type: 'POST',

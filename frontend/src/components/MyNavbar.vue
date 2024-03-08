@@ -46,24 +46,12 @@
                 @click="selectCategory(category[0])"
                 style="font-size: 0.9em; cursor: pointer"
               >
-                <!-- <img
-                  :src="categoryImages[category[0]]"
-                  class="mr-2"
-                  style="
-                    width: 35px;
-                    height: 35px;
-                    object-fit: cover;
-                    border-radius: 5px;
-                    margin-left: 0;
-                    padding-left: 0;
-                  "
-                /> -->
                 {{ category[0] }}
               </a>
               <a
                 class="dropdown-item"
                 type="button"
-                href="/products"
+                @click="goToAllProducts"
                 style="font-size: 0.9em; cursor: pointer"
               >
                 All Products
@@ -496,14 +484,7 @@ export default {
       isDropdownVisible: false,
       backendEndpoint: `${config.backendEndpoint}`,
       searchQuery: '',
-      categoryName: null,
-      categoryImages: {
-        Laptops: require('@/assets/Laptop.jpg'),
-        Smartphones: require('@/assets/Smartphone.jpeg'),
-        Tablets: require('@/assets/Tablet.webp'),
-        Smartwatches: require('@/assets/garmin.jpg'),
-        TV: require('@/assets/TV.avif')
-      }
+      categoryName: null
     }
   },
   computed: {
@@ -546,7 +527,8 @@ export default {
       this.$router.push({ name: 'NewHome' })
     },
     goToAllProducts() {
-      this.$router.replace('/products')
+      // this.$router.push({ name: 'home' })
+      window.location.assign('/products')
       this.$nextTick(() => {
         window.scrollTo({ top: 0, behavior: 'auto' })
       })
@@ -575,13 +557,13 @@ export default {
           })
         })
         .catch(error => {
-          console.error('Error updating product range:', error)
+          throw error
         })
       this.hideCategories()
     },
     Search() {
       if (
-        this.$route.path.startsWith('/catetgory') ||
+        this.$route.path.startsWith('/category') ||
         this.$route.path === '/products'
       ) {
         var input, filter, cards, cardContainer, title, i
@@ -600,13 +582,14 @@ export default {
       }
     },
     async search() {
-      // if (
-      //   this.searchQuery.trim() === '' ||
-      //   !this.searchQuery ||
-      //   this.$route.path === '/'
-      // ) {
-      //   return
-      // }
+      if (
+        this.searchQuery.trim() === '' ||
+        !this.searchQuery ||
+        this.$route.path === '/products' ||
+        this.$route.path.startsWith('/category')
+      ) {
+        return
+      }
       try {
         const response = await axios.get(
           `${config.backendEndpoint}/api/items/search/`,
@@ -634,7 +617,7 @@ export default {
           )
         }
       } catch (error) {
-        console.error('Error fetching items:', error)
+        // console.error('Error fetching items:', error)
       }
     },
     redirectToItemFromNavbar(itemId) {
@@ -718,7 +701,6 @@ export default {
       axios
         .post(`${config.backendEndpoint}/products/create_item`, formData, {})
         .then(response => {
-          console.log('response', response)
           if (response.status === 201) {
             // router.push('/')
             window.location.href = '/'

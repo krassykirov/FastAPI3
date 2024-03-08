@@ -588,7 +588,6 @@ export default {
 
         this.scrollToTop()
       } catch (error) {
-        console.error('Error fetching product:', error)
         this.$router.push({ name: 'NotFound' })
       }
     },
@@ -615,7 +614,7 @@ export default {
           rating: data
         })
       } catch (error) {
-        console.log(error)
+        // console.log('error')
       }
     },
     addToCart(product) {
@@ -642,7 +641,7 @@ export default {
         )
         if (!response.ok) {
           if (response.status === 404) {
-            console.error(`Item with ID ${resolvedItemId} not found`)
+            // console.error(`Item with ID ${resolvedItemId} not found`)
           } else {
             throw new Error(
               `Error: ${response.status} - ${response.statusText}`
@@ -653,7 +652,7 @@ export default {
           this.reviewsData = data
         }
       } catch (error) {
-        console.error('Error:', error)
+        // console.error('Error:', error)
       }
     },
     updateStarRatings(review) {
@@ -723,7 +722,7 @@ export default {
           this.setReviewsRating(id)
         })
         .catch(error => {
-          console.error('Error:', error)
+          throw error
         })
     },
     userHasWrittenReview() {

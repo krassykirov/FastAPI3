@@ -40,7 +40,8 @@ export default {
     }
     const handlePopstate2 = function (event) {
       if (event.state && event.state.current.startsWith('/category')) {
-        window.location.assign(event.state.current)
+        let navigateTo = event.state.current
+        window.location.assign(navigateTo)
       }
     }
     window.addEventListener('popstate', handlePopstate)

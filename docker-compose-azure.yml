@@ -13,3 +13,5 @@ services:
     container_name: frontend
     ports:
       - "8081:8080"
+networks:
+  fullstack:

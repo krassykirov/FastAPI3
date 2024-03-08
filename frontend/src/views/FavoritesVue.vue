@@ -158,7 +158,7 @@
 </template>
 
 <script>
-import NavBar from '../components/MyNavbar.vue'
+import NavBar from '@/components/MyNavbar.vue'
 import MessageArea from '@/views/MessageAreaVue.vue'
 import Footer from '@/views/FooterVue.vue'
 import errorHandlingMixin from '../errorHandlingMixin'

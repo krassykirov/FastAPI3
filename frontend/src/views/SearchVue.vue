@@ -159,7 +159,7 @@
 </template>
 
 <script>
-import NavBar from '../components/MyNavbar.vue'
+import NavBar from '@/components/MyNavbar.vue'
 // import MessageArea from '@/views/MessageAreaVue.vue'
 import errorHandlingMixin from '../errorHandlingMixin'
 import Footer from '@/views/FooterVue.vue'
@@ -178,9 +178,9 @@ export default {
     }
   },
   mixins: [errorHandlingMixin],
-  // created() {
-  //   this.$store.dispatch('readFromCartVue')
-  // },
+  created() {
+    this.$store.dispatch('fetchCategories')
+  },
   computed: {
     message() {
       return this.$store.state.message

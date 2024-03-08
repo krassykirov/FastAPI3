@@ -1,7 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeViewPagination from '../views/HomeViewPagination.vue'
-import CategoryComponent from '../views/CategoryComponent.vue'
+import ProductsView from '@/views/ProductsView.vue'
+import CategoryComponent from '@/views/CategoryComponent.vue'
+import MyItem from '@/views/MyItemLast.vue'
+import Search from '@/views/SearchVue.vue'
+import CartVueNew from '@/views/CartVueNew.vue'
+import FavoritesVue from '@/views/FavoritesVue.vue'
 import store from '@/store/index.js'
+import NotFound from '@/views/NotFound.vue'
 // import VueCookies from 'vue-cookies'
 // import { jwtDecode } from 'jwt-decode'
 
@@ -9,27 +14,12 @@ const routes = [
   {
     path: '/products',
     name: 'home',
-    component: HomeViewPagination,
+    component: ProductsView,
     props: route => ({
       isIdle: route.params.isIdle,
       lastActiveDate: route.params.lastActiveDate,
       inactiveTime: route.params.inactiveTime
     })
-    // beforeEnter: async (to, from, next) => {
-    //   try {
-    //     await store.dispatch('getProducts')
-    //     // window.location.reload()
-    //     next()
-    //   } catch (error) {
-    //     console.log('error', error)
-    //   }
-    // }
-    // beforeRouteLeave(to, from, next) {
-    //   const selectedCategories = store.dispatch('getSelectedCategories')
-    //   store.commit('UPDATE_SELECTED_CATEGORIES', selectedCategories)
-    //   next()
-    // }
-    // meta: { requiresAuth: true }
   },
   {
     path: '/',
@@ -42,11 +32,6 @@ const routes = [
     name: 'login',
     component: () => import('../views/LoginVue.vue')
   },
-  // {
-  //   path: '/itemnew',
-  //   name: 'itemnew',
-  //   component: () => import('../views/MyItemLastTest.vue')
-  // },
   {
     path: '/category/:category',
     name: 'category',
@@ -58,50 +43,40 @@ const routes = [
         await store.dispatch('getProfile')
         next()
       } catch (error) {
-        console.log('error', error)
+        // console.log('error', error)
       }
     }
   },
   {
     path: '/search',
     name: 'search',
-    component: () => import('../views/SearchVue.vue'),
+    component: Search,
     props: () => ({
       cart: store.state.cart,
       profile: store.state.profile,
       favorites: store.state.favorites,
       searchResults: store.state.searchResults
     })
-    // meta: { requiresProfile: true }
   },
   {
     path: '/cart',
     name: 'ItemsInCart',
-    component: () => import('../views/CartVueNew.vue'),
+    component: CartVueNew,
     props: () => ({
       cart: store.state.cart,
       profile: store.state.profile,
       favorites: store.state.favorites
     })
-    // meta: { requiresProfile: true }
   },
   {
     path: '/favorites',
     name: 'ItemsInFavorites',
-    component: () => import('../views/FavoritesVue.vue'),
+    component: FavoritesVue,
     props: () => ({
       cart: store.state.cart,
       profile: store.state.profile,
       favorites: store.state.favorites
     })
-    // beforeEnter: async (to, from, next) => {
-    //   try {
-    //     await store.dispatch('getItemRatings')
-    //     next()
-    //   } catch (error) {
-    //     console.log('error', error)
-    //   }
-    // }
   },
   {
     path: '/signup',
@@ -117,12 +92,11 @@ const routes = [
       favorites: store.state.favorites,
       profile: store.state.profile
     })
-    // meta: { requiresProfile: true }
   },
   {
     path: '/item/:itemId',
     name: 'Item',
-    component: () => import('../views/MyItemLast.vue'),
+    component: MyItem,
     props: route => ({
       itemId: route.params.itemId,
       cart: store.state.cart,
@@ -130,12 +104,11 @@ const routes = [
       favorites: store.state.favorites,
       user: store.state.user
     })
-    // meta: { requiresProfile: true }
   },
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: () => import('../views/NotFound.vue'),
+    component: NotFound,
     props: route => ({
       itemId: route.params.itemId,
       cart: store.state.cart,

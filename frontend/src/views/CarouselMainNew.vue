@@ -107,11 +107,12 @@
     </div>
     <div class="carousel-inner">
       <div class="carousel-item active" data-bs-interval="3000">
-        <a href="/catetgory/Smartwatches">
+        <a @click="goToCategory('Smartwatches')">
           <img
             src="../assets/garmin-last.png"
             class="d-block w-100"
             alt="..."
+            style="cursor: pointer"
           />
         </a>
         <div class="carousel-caption d-none d-md-block">
@@ -120,16 +121,22 @@
         </div>
       </div>
       <div class="carousel-item" data-bs-interval="3000">
-        <a href="/catetgory/Laptops">
-          <img src="../assets/ASUS_OLED.jpeg" class="d-block w-100" alt="..." />
+        <a @click="goToCategory('Laptops')">
+          <img
+            src="../assets/ASUS_OLED.jpeg"
+            class="d-block w-100"
+            alt="..."
+            style="cursor: pointer"
+          />
         </a>
       </div>
       <div class="carousel-item" data-bs-interval="3000">
-        <a href="/item/50">
+        <a @click="goToItem(50)">
           <img
             src="../assets/samsung-banner-last2.jpeg"
             class="d-block w-100"
             alt="..."
+            style="cursor: pointer"
           />
         </a>
         <div class="carousel-caption d-none d-md-block">
@@ -141,11 +148,12 @@
         </div>
       </div>
       <div class="carousel-item" data-bs-interval="3000">
-        <a href="/item/8">
+        <a @click="goToItem(8)">
           <img
             src="../assets/lenovo-legion.jpeg"
             class="d-block w-100"
             alt="..."
+            style="cursor: pointer"
           />
         </a>
         <div class="carousel-caption d-none d-md-block">
@@ -154,11 +162,12 @@
         </div>
       </div>
       <div class="carousel-item" data-bs-interval="3000">
-        <a href="/item/49">
+        <a @click="goToItem(49)">
           <img
             src="../assets/Xiaomi-13-Ultra.jpg"
             class="d-block w-100"
             alt="..."
+            style="cursor: pointer"
           />
         </a>
         <div class="carousel-caption d-none d-md-block">
@@ -234,8 +243,11 @@ export default {
     }
   },
   methods: {
-    goToCategory() {
-      window.location.href = '/catetgory/Laptops'
+    goToCategory(category) {
+      this.$router.push({ name: 'category', params: { category: category } })
+      this.$nextTick(() => {
+        window.scrollTo({ top: 0, behavior: 'auto' })
+      })
     },
     goToItem(itemId) {
       this.$router.push({ name: 'Item', params: { itemId } })

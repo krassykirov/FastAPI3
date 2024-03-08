@@ -263,7 +263,7 @@ export default {
       .then(() => this.$store.dispatch('fetchCategories'))
       .catch(error => {
         if (error.message !== 'Token Expired') {
-          // console.error('error', error)
+          console.error('error', error)
         }
       })
   },

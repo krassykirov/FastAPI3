@@ -110,8 +110,6 @@ import config from '@/config'
 
 export default {
   components: {
-    // NavBar,
-    // CarouselMain,
     Carousel
   },
   props: ['profile'],

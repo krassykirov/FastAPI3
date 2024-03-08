@@ -204,7 +204,7 @@ export default createStore({
     },
     inactiveLogout({ state, dispatch }) {
       dispatch('setErrorMessage', "You've been logged out due to inactivity")
-      console.log('Youve been logged out due to inactivity')
+      // console.log('Youve been logged out due to inactivity')
       this.lastActiveDate = new Date()
       this.inactiveTime = 0
       VueCookies.remove('access_token')
@@ -219,7 +219,7 @@ export default createStore({
       router.push('/login')
     },
     async refreshAccessToken({ commit, dispatch, state }) {
-      console.log('Refreshing token..')
+      // console.log('Refreshing token..')
       try {
         const response = await axios.post(
           `${config.backendEndpoint}/api/token/refresh`,
@@ -228,7 +228,7 @@ export default createStore({
           }
         )
         if (response.status !== 200) {
-          console.log('response.status !== 200', response)
+          // console.log('response.status !== 200', response)
           dispatch('setErrorMessage', 'Session has expired. Please log in')
           dispatch('logout')
           throw new Error('Token has expired')
@@ -348,8 +348,8 @@ export default createStore({
           commit('SET_MAX_PRICE', maxPrice)
           commit('setMessage', `Found ${products.length} products`)
         } catch (error) {
-          // console.error('Error fetching products:', error)
-          // throw error
+          console.error('Error fetching products:', error)
+          throw error
         }
       }
     },
@@ -399,11 +399,11 @@ export default createStore({
         }
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          console.log('Profile 401 trying to handle:', error.response)
+          // console.log('Profile 401 trying to handle:', error.response)
         } else if (error.response && error.response.status === 404) {
           commit('UPDATE_PROFILE', null)
         } else if (error === 'Token Expired') {
-          console.log('Profile Other error occured trying to handle', error)
+          // console.log('Profile Other error occured trying to handle', error)
           dispatch('logout')
         } else {
           // console.log(
@@ -675,7 +675,7 @@ export default createStore({
           }
           commit('updateCartItemQuantity', { product_id, newQuantity })
         } catch (error) {
-          console.error('Error:', error)
+          // console.error('Error:', error)
           throw new Error(error)
         }
       }
@@ -700,7 +700,7 @@ export default createStore({
           }
         }
       } catch (error) {
-        console.error('Error removing item from favorites:', error)
+        // console.error('Error removing item from favorites:', error)
         throw new Error(error)
       }
     },
@@ -720,7 +720,7 @@ export default createStore({
           commit('REMOVE_ITEM_FROM_CART', index)
         }
       } catch (error) {
-        console.error('Error removing item from cart:', error)
+        // console.error('Error removing item from cart:', error)
         throw new Error(error)
       }
     },

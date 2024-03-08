@@ -1,6 +1,5 @@
 import { createApp } from 'vue'
 import axios from 'axios'
-import { emitter } from './emitter'
 import store from '@/store/index.js'
 import App from './App.vue'
 import VueCookies from 'vue-cookies'
@@ -10,8 +9,8 @@ window.$ = window.jQuery = $
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.css'
 
-axios.defaults.baseURL =
-  process.env.VUE_APP_API_BASE_URL || 'http://localhost:8000'
+axios.defaults.baseURL = process.env.VUE_APP_API_BASE_URL || 'localhost:8081'
+console.log('axios.defaults.baseURL', axios.defaults.baseURL)
 import router from './router'
 
 let isRefreshing = false
@@ -74,11 +73,4 @@ axios.interceptors.request.use(
 
 const app = createApp(App)
 app.mixin(errorHandlingMixin)
-app.config.globalProperties.emitter = emitter
-
-// Listen for the session expired pop-up event
-// emitter.on('sessionExpiredPopup', () => {
-//   console.log('sessionExpiredPopup event received')
-//   alert('Your session has expired. Please log in again.')
-// })
 app.use(router).use(store).use(VueCookies).mount('#app')
