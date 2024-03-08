@@ -10,5 +10,6 @@ DS_Store
 events.db
 test/
 .test
+env
 env/
 .env
