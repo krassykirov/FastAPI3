@@ -40,6 +40,13 @@ export default createStore({
     selectedCategories: [],
     selectedBrands: [],
     selectedRating: [],
+    selectedPriceRanges: [],
+    productCounts: {
+      range1: 0,
+      range2: 0,
+      range3: 0,
+      range4: 0
+    },
     ratings: [1, 2, 3, 4, 5]
   },
   mutations: {
@@ -69,6 +76,9 @@ export default createStore({
     },
     UPDATE_FAVORITES(state, items) {
       state.favorites = items
+    },
+    UPDATE_SELECTED_PRICE_RANGES(state, selectedPriceRanges) {
+      state.selectedPriceRanges = selectedPriceRanges
     },
     UPDATE_CART(state, items) {
       state.cart = items
@@ -179,6 +189,21 @@ export default createStore({
     }
   },
   actions: {
+    async handlePriceRangeChange({ commit, dispatch }) {
+      const selectedPriceRanges = await dispatch('getSelectedPriceRanges')
+      commit('UPDATE_SELECTED_PRICE_RANGES', selectedPriceRanges)
+    },
+    async getSelectedPriceRanges() {
+      return new Promise(resolve => {
+        const selectedPriceRanges = []
+        const checkboxes = document.querySelectorAll('.price-checkbox:checked')
+        checkboxes.forEach(checkbox => {
+          const priceRange = checkbox.getAttribute('price-range')
+          selectedPriceRanges.push(priceRange)
+        })
+        resolve(selectedPriceRanges)
+      })
+    },
     formattedPrice() {
       const price = this.product.discount_price
       const [integerPart, decimalPart] = price.toString().split('.')
@@ -741,7 +766,21 @@ export default createStore({
     filteredProducts: state => {
       return state.products.filter(item => {
         const priceCondition =
-          item.price >= state.min && item.price <= state.max
+          state.selectedPriceRanges.length === 0 ||
+          state.selectedPriceRanges.some(range => {
+            switch (range) {
+              case 'range1':
+                return item.price <= 500
+              case 'range2':
+                return item.price > 500 && item.price <= 1000
+              case 'range3':
+                return item.price > 1000 && item.price <= 2000
+              case 'range4':
+                return item.price > 2000 && item.price <= 10000
+              default:
+                return false
+            }
+          })
         const categoryCondition =
           state.selectedCategories.length === 0 ||
           state.selectedCategories.includes(String(item.category_id))

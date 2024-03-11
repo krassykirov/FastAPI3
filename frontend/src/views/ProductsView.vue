@@ -199,6 +199,43 @@
             </button>
           </div>
         </div>
+        <div class="filter-card">
+          <div class="card-body">
+            <label style="font-size: 0.9rem; display: block; font-weight: 500">
+              Price Range
+            </label>
+            <!-- Price range checkboxes -->
+            <div
+              class="form-check"
+              style="padding-left: 5px"
+              v-for="(range, index) in priceRanges"
+              :key="index"
+            >
+              <input
+                type="checkbox"
+                class="price-checkbox"
+                :value="range.value"
+                :price-range="range.value"
+                style="font-size: 0.9rem; margin-bottom: 2px; margin-left: 0"
+                @change="handlePriceRangeChange"
+              />
+              <label :for="range.value" style="margin-left: 5px">{{
+                range.label
+              }}</label>
+              <span
+                class="text-muted"
+                style="
+                  font-size: 0.8rem;
+                  font-family: sans-serif;
+                  font-weight: 500;
+                "
+              >
+                <!-- ({{ getProductCount(range.value) }}) -->
+              </span>
+            </div>
+          </div>
+        </div>
+
         <div
           class="filter-card"
           style="height: 45px; align-items: center; text-align: left"
@@ -401,11 +438,16 @@ export default {
       currentPage: 1,
       itemsPerPage: 32,
       visiblePageRange: 5,
-      isLoading: true
+      isLoading: true,
+      priceRanges: [
+        { value: 'range1', label: 'Under $500' },
+        { value: 'range2', label: '$500-$1000' },
+        { value: 'range3', label: '$1000-$2000' },
+        { value: 'range4', label: '$2000 & Above' }
+      ]
     }
   },
   mounted() {
-    console.log(this.filteredProducts && this.filteredProducts.length > 0)
     if (this.filteredProducts && this.filteredProducts.length > 0) {
       this.isLoading = false
     }
@@ -569,6 +611,13 @@ export default {
     }
   },
   methods: {
+    async handlePriceRangeChange() {
+      const selectedPriceRanges = await this.$store.dispatch(
+        'getSelectedPriceRanges'
+      )
+      this.$store.commit('UPDATE_SELECTED_PRICE_RANGES', selectedPriceRanges)
+      this.currentPage = 1 // Update other relevant data as needed
+    },
     handlePageChange(page) {
       this.currentPage = page
     },

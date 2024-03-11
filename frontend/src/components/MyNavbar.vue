@@ -527,8 +527,8 @@ export default {
       this.$router.push({ name: 'NewHome' })
     },
     goToAllProducts() {
-      // this.$router.push({ name: 'home' })
-      window.location.assign('/products')
+      this.$router.push({ name: 'home' })
+      // window.location.assign('/products')
       this.$nextTick(() => {
         window.scrollTo({ top: 0, behavior: 'auto' })
       })
