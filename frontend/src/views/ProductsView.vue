@@ -230,7 +230,7 @@
                   font-weight: 500;
                 "
               >
-                <!-- ({{ getProductCount(range.value) }}) -->
+                ({{ getProductCount(range.value) }})
               </span>
             </div>
           </div>
@@ -611,6 +611,21 @@ export default {
     }
   },
   methods: {
+    getProductCount(rangeValue) {
+      // Calculate product count for the specified price range
+      return this.products.filter(product => {
+        switch (rangeValue) {
+          case 'range1':
+            return product.price <= 500
+          case 'range2':
+            return product.price > 500 && product.price <= 1000
+          case 'range3':
+            return product.price > 1000 && product.price <= 2000
+          case 'range4':
+            return product.price > 2000
+        }
+      }).length
+    },
     async handlePriceRangeChange() {
       const selectedPriceRanges = await this.$store.dispatch(
         'getSelectedPriceRanges'
