@@ -207,4 +207,16 @@ async def remove_from_favorites(request: Request, db: Session = Depends(get_sess
     db.refresh(item)
     return item
 
-
+@items_router.post("/checkout", status_code=status.HTTP_200_OK,  include_in_schema=True)
+async def checkout(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+    form_data = await request.form()
+    print('data checkout', form_data)
+    return JSONResponse(content="Your Order has been processed!")
+    # item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
+    # new_dict = {user.username: {"liked": True}}
+    # favorites = dict(item.liked, **new_dict )
+    # item.liked = favorites
+    # db.commit()
+    # db.refresh(item)
+    # result = get_user_items_in_cart(db=db, user=user)
+    # return result

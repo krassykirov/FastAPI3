@@ -31,30 +31,30 @@ ALGORITHM = "HS256"
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 
 
-@oauth_router.get("/", include_in_schema=False)
-def home(request: Request):
-    try:
-        token = request.cookies.get("access_token")
-        if token:
-            access_token = token.split(' ')[-1]
-            payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
-            username = payload.get("sub")
-            expires = payload.get("exp")
-            converted_expires = datetime.datetime.fromtimestamp(expires)
-            if datetime.datetime.now() < converted_expires:
-                context = {'request': request, 'current_user': username, 'access_token': access_token, 'expires': converted_expires}
-                redirect_url = request.url_for('get_products')
-                response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
-                return response
-                # return templates.TemplateResponse("base.html",{"request":request, 'current_user': username})
-        else:
-            context = {'request': request}
-            return templates.TemplateResponse("login.html", context)
-    except ExpiredSignatureError:
-        context = {'request': request, 'message': "Session expired please login"}
-        return templates.TemplateResponse("login.html", context)
-    except Exception:
-        raise
+# @oauth_router.get("/", include_in_schema=False)
+# def home(request: Request):
+#     try:
+#         token = request.cookies.get("access_token")
+#         if token:
+#             access_token = token.split(' ')[-1]
+#             payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
+#             username = payload.get("sub")
+#             expires = payload.get("exp")
+#             converted_expires = datetime.datetime.fromtimestamp(expires)
+#             if datetime.datetime.now() < converted_expires:
+#                 context = {'request': request, 'current_user': username, 'access_token': access_token, 'expires': converted_expires}
+#                 redirect_url = request.url_for('get_products')
+#                 response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
+#                 return response
+#                 # return templates.TemplateResponse("base.html",{"request":request, 'current_user': username})
+#         else:
+#             context = {'request': request}
+#             return templates.TemplateResponse("login.html", context)
+#     except ExpiredSignatureError:
+#         context = {'request': request, 'message': "Session expired please login"}
+#         return templates.TemplateResponse("login.html", context)
+#     except Exception:
+#         raise
 
 def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
     to_encode = data.copy()
@@ -135,12 +135,12 @@ async def login_access_token(*, request: Request, form_data: OAuth2PasswordReque
         if remember_me == 'true':
             access_token = create_access_token(
                 data={"sub": user.username, 'user_id': user.id}, expires_delta=token_expires)
-            refresh_token = create_refresh_token(user.id, user.username, minutes=ACCESS_TOKEN_EXPIRE_MINUTES * 5)
+            refresh_token = create_refresh_token(user.id, user.username, minutes=ACCESS_TOKEN_EXPIRE_MINUTES * 12)
             return {"access_token": access_token, "token_type": "bearer", "refresh_token": refresh_token}
         else:
             access_token = create_access_token(
             data={"sub": user.username, 'user_id': user.id}, expires_delta=token_expires)
-            refresh_token = create_refresh_token(user.id, user.username, minutes=ACCESS_TOKEN_EXPIRE_MINUTES * 2)
+            refresh_token = create_refresh_token(user.id, user.username, minutes=ACCESS_TOKEN_EXPIRE_MINUTES * 5)
             return {"access_token": access_token, "token_type": "bearer", "refresh_token": refresh_token}
     else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Username or password are incorrect!")
@@ -171,14 +171,14 @@ async def signup(request: Request, db: Session = Depends(get_session)):
         return True
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail=f"Password did not match!")
 
-@oauth_router.get("/signup", include_in_schema=False)
-def login(request: Request):
-    response = templates.TemplateResponse("signup.html",{"request":request})
-    return response
+# @oauth_router.get("/signup", include_in_schema=False)
+# def login(request: Request):
+#     response = templates.TemplateResponse("signup.html",{"request":request})
+#     return response
 
-@oauth_router.get("/logout", include_in_schema=False)
-def logout(request: Request):
-    response = RedirectResponse("login.html", status_code=status.HTTP_302_FOUND)
-    response = templates.TemplateResponse("login.html",{"request":request, 'current_user': None})
-    response.delete_cookie(key="access_token")
-    return response
+# @oauth_router.get("/logout", include_in_schema=False)
+# def logout(request: Request):
+#     response = RedirectResponse("login.html", status_code=status.HTTP_302_FOUND)
+#     response = templates.TemplateResponse("login.html",{"request":request, 'current_user': None})
+#     response.delete_cookie(key="access_token")
+#     return response

@@ -348,8 +348,9 @@ export default createStore({
           commit('SET_MAX_PRICE', maxPrice)
           commit('setMessage', `Found ${products.length} products`)
         } catch (error) {
-          console.error('Error fetching products:', error)
-          throw error
+          if (error.response.data.detail === 'Not authorized') {
+            throw new Error('Token Expired')
+          }
         }
       }
     },

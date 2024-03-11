@@ -553,37 +553,34 @@ export default {
       $(document).ready(function () {
         $('#close-modal').click()
       })
+    },
+    paymentCheckout() {
+      $('#paymentForm').submit(e => {
+        e.preventDefault()
+        const formData = new FormData(e.target)
+        $.ajax({
+          url: `${config.backendEndpoint}/api/items/checkout`,
+          type: 'POST',
+          processData: false,
+          contentType: false,
+          headers: {
+            Authorization: `Bearer ${this.$store.state.accessToken}`
+          },
+          data: formData,
+          success: data => {
+            console.log('data', data)
+            $(document).ready(function () {
+              $('#exampleModal').hide()
+            })
+          },
+          error: function (xhr) {
+            if (xhr.status === 403) {
+              $('#error').text('Item with that name already exists!')
+            }
+          }
+        })
+      })
     }
-    // paymentCheckout() {
-    //   $('#paymentForm').submit(e => {
-    //     e.preventDefault()
-    //     const formData = new FormData(e.target)
-    //     // formData.append('primary_email', this.user)
-    //     $.ajax({
-    //       url: `${config.backendEndpoint}/checkout`,
-    //       type: 'POST',
-    //       processData: false,
-    //       contentType: false,
-    //       headers: {
-    //         Authorization: `Bearer ${this.$store.state.accessToken}`
-    //       },
-    //       data: formData,
-    //       success: data => {
-    //         // var user = this.$store.getters.user
-    //         // var img_path = `/static/img/${user}/profile/${data.avatar}`
-    //         // $('#card-email').text(`Email: ${data.email}`)
-    //         // $('#card-address').text(`Address: ${data.address}`)
-    //         // $('#card-phone').text(`Address: ${data.number}`)
-    //         // $('#avatar-image').attr('src', img_path)
-    //       },
-    //       error: function (xhr) {
-    //         if (xhr.status === 403) {
-    //           $('#error').text('Item with that name already exists!')
-    //         }
-    //       }
-    //     })
-    //   })
-    // }
   }
 }
 </script>

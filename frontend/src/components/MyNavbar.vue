@@ -514,8 +514,8 @@ export default {
         const formattedIntegerPart = integerPart.replace(
           /\B(?=(\d{3})+(?!\d))/g,
           '.'
-        ) // Add dots for every 3 digits
-        const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
+        )
+        const formattedDecimalPart = decimalPart || '00'
 
         return {
           integerPart: formattedIntegerPart,

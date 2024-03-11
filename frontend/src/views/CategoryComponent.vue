@@ -298,6 +298,13 @@
           </div>
         </div>
       </div>
+      <template
+        v-if="isLoading && selectedProducts && selectedProducts.length === 0"
+      >
+        <div style="align-items: center; margin-left: 25%; margin-top: 5%">
+          <img :src="require('@/assets/loading2.gif')" />
+        </div>
+      </template>
       <template v-if="selectedProducts && selectedProducts.length > 0">
         <div class="product-list" id="mycard" style="margin-top: 3%">
           <transition-group name="product-fade">
@@ -321,9 +328,13 @@
           </transition-group>
         </div>
       </template>
-      <template v-else>
-        <div style="align-items: center; margin-left: 10%">
-          <img :src="require('@/assets/loading.gif')" />
+      <template
+        v-else-if="
+          !isLoading && selectedProducts && selectedProducts.length === 0
+        "
+      >
+        <div style="align-items: center; margin-left: 10%; margin-top: 3%">
+          <img :src="require('@/assets/no_result.gif')" />
         </div>
       </template>
     </div>
@@ -351,7 +362,14 @@ export default {
     return {
       isChecked: this.$store.state.isDiscountedChecked,
       backendEndpoint: `${config.backendEndpoint}`,
-      categoryName: null
+      categoryName: null,
+      isLoading: true
+    }
+  },
+  mounted() {
+    this.isLoading = true
+    if (this.filteredProducts.length > 0 || this.filteredProducts.length > 0) {
+      this.isLoading = false
     }
   },
   created() {
@@ -370,12 +388,13 @@ export default {
     const category = this.$route.params.category
     if (category) {
       this.$store
-        .dispatch('fetchCategories')
+        .dispatch('getProducts')
+        .then(() => this.$store.dispatch('fetchCategories'))
         .then(() => this.$store.dispatch('updateProductRange', category))
         .then(() => this.$store.dispatch('checkFavoritesOnLoad'))
         .catch(error => {
           if (error.message !== 'Token Expired') {
-            console.error('error', error)
+            // console.error('error', error)
           }
         })
     }
@@ -495,9 +514,6 @@ export default {
     profile() {
       return this.$store.getters.profile
     },
-    // currentCategory() {
-    //   return this.$store.getters.currentCategory
-    // },
     sortOrder() {
       return this.$store.getters.sortOrder
     }
@@ -573,10 +589,10 @@ export default {
         const filteredProducts = this.$store.state.products.filter(
           product => product.category_id === categoryId
         )
-        const items = filteredProducts // Assuming products are stored in the store
+        const items = filteredProducts
         const count = items.reduce((accumulator, item) => {
           const floatRating = parseFloat(item.rating_float)
-          const roundedRating = Math.floor(floatRating + 0.5) // Round to the nearest integer
+          const roundedRating = Math.floor(floatRating + 0.5)
           if (roundedRating === rating) {
             return accumulator + 1
           }

@@ -19,7 +19,15 @@ const routes = [
       isIdle: route.params.isIdle,
       lastActiveDate: route.params.lastActiveDate,
       inactiveTime: route.params.inactiveTime
-    })
+    }),
+    beforeEnter: async (to, from, next) => {
+      try {
+        await store.dispatch('getProducts')
+        next()
+      } catch (error) {
+        console.log('error', error)
+      }
+    }
   },
   {
     path: '/',

@@ -79,7 +79,7 @@
                   class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2"
                 >
                   <img
-                    :src="`${backendEndpoint}/static/img/draw1.webp`"
+                    :src="require('@/assets/cloud-chessboard.jpg')"
                     class="img-fluid"
                     alt="Sample image"
                   />
@@ -153,8 +153,5 @@ input[type='checkbox'] {
 }
 input[type='checkbox']:checked {
   background-color: #409fd6;
-  background: #409fd6
-    url('data:image/gif;base64,R0lGODlhCwAKAIABAP////3cnSH5BAEKAAEALAAAAAALAAoAAAIUjH+AC73WHIsw0UCjglraO20PNhYAOw==')
-    3px 3px no-repeat !important;
 }
 </style>

@@ -293,6 +293,13 @@
         </div>
         <!-- <PriceSlider /> -->
       </div>
+      <template
+        v-if="isLoading && filteredProducts && filteredProducts.length === 0"
+      >
+        <div style="align-items: center; margin-left: 25%; margin-top: 5%">
+          <img :src="require('@/assets/loading2.gif')" />
+        </div>
+      </template>
       <template v-if="filteredProducts && filteredProducts.length > 0">
         <div class="product-list" id="mycard">
           <transition-group name="product-fade">
@@ -314,9 +321,13 @@
           </transition-group>
         </div>
       </template>
-      <template v-else>
-        <div style="align-items: center; margin-left: 10%">
-          <img :src="require('@/assets/loading.gif')" />
+      <template
+        v-else-if="
+          !isLoading && filteredProducts && filteredProducts.length === 0
+        "
+      >
+        <div style="align-items: center; margin-left: 10%; margin-top: 3%">
+          <img :src="require('@/assets/no_result.gif')" />
         </div>
       </template>
     </div>
@@ -389,8 +400,16 @@ export default {
       backendEndpoint: `${config.backendEndpoint}`,
       currentPage: 1,
       itemsPerPage: 32,
-      visiblePageRange: 5
+      visiblePageRange: 5,
+      isLoading: true
     }
+  },
+  mounted() {
+    console.log(this.filteredProducts && this.filteredProducts.length > 0)
+    if (this.filteredProducts && this.filteredProducts.length > 0) {
+      this.isLoading = false
+    }
+    console.log('Is loading:', this.isLoading)
   },
   created() {
     if (!this.$store.state.accessToken) {
@@ -413,7 +432,7 @@ export default {
       .then(() => this.$store.dispatch('updateHomeProductRange'))
       .catch(error => {
         if (error.message !== 'Token Expired') {
-          console.error('error', error)
+          // console.error('error', error)
         }
       })
   },

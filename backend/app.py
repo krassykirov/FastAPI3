@@ -41,8 +41,7 @@ app.include_router(oauth_router)
 app.include_router(profile_router)
 # app.include_router(cart_router)
 origins = [
-    "https://fast3-frontend.azurewebsites.net",
-    "https://fast3-backend.azurewebsites.net"
+    "https://salmon-grass-011456d03.4.azurestaticapps.net"
 ]
 
 app.add_middleware(

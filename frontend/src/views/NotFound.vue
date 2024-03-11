@@ -53,6 +53,14 @@ export default {
     'user',
     'profile'
   ],
-  name: 'NotFound'
+  name: 'NotFound',
+  created() {
+    this.$store.dispatch('fetchCategories')
+  },
+  computed: {
+    categories() {
+      return this.$store.getters.categories
+    }
+  }
 }
 </script>

@@ -10,7 +10,6 @@ import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.css'
 
 axios.defaults.baseURL = process.env.VUE_APP_API_BASE_URL || 'localhost:8081'
-console.log('axios.defaults.baseURL', axios.defaults.baseURL)
 import router from './router'
 
 let isRefreshing = false
