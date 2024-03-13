@@ -552,6 +552,7 @@ export default {
     hideModal() {
       $(document).ready(function () {
         $('#close-modal').click()
+        $('#exampleModal').hide()
       })
     },
     paymentCheckout() {

@@ -7,7 +7,7 @@
           :key="product.id"
           class="card"
           :data-category="product.category_id"
-          style="margin: 0.15%; padding: 0.15%"
+          style="margin: 0.1%; padding: 0.1%"
         >
           <div class="card-body" style="padding: 1%">
             <span
@@ -102,7 +102,7 @@
                   </span>
                 </div>
               </span>
-              <span v-if="product.discount >= 0.1" class="old-price">
+              <span v-if="product.discount >= 0.01" class="old-price">
                 ${{ Math.floor(product.price) }}
               </span>
               <span v-else style="font-size: 1em; margin-top: 1%">&nbsp;</span>

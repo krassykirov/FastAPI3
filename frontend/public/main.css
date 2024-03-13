@@ -365,13 +365,13 @@ INPUT[type="checkbox"]:disabled {
 }
 
 .product-list {
-  flex-grow: 1;
   padding-right: 1%;
-  padding-left: 0.03%;
-  margin-top: 1.65%;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
+  padding-left: 0.01%;
+  margin-left: 0;
+  margin-top: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  text-align: left;
 }
 
 .filter-card {
@@ -482,4 +482,10 @@ INPUT[type="checkbox"]:disabled {
   }
   .link:hover {
     color: #0d6efd /* Change color on hover */
+  }
+
+  .disabled {
+    cursor: not-allowed;
+    pointer-events: none;
+    background-color: grey;
   }

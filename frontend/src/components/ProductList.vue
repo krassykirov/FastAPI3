@@ -68,14 +68,9 @@
         <span
           :id="'overall-rating' + product.id + '-float'"
           class="overall-rating"
-          style="font-familiy: Arial"
           >&nbsp;{{ parseFloat(product.rating_float).toFixed(2) }}</span
         >
-        <span
-          :id="'overall-rating' + product.id"
-          class="overall-rating2"
-          style="font-familiy: Arial"
-        >
+        <span :id="'overall-rating' + product.id" class="overall-rating2">
           ({{ product.review_number }})
         </span>
       </p>

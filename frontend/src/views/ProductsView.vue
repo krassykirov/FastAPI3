@@ -16,28 +16,6 @@
         @redirectToItemFromNavbar="redirectToItemFromNavbar"
       />
     </nav>
-    <div
-      class="toast"
-      id="cartToast"
-      role="alert"
-      aria-live="assertive"
-      aria-atomic="true"
-      data-bs-autohide="false"
-      style="
-        position: fixed;
-        top: 12%;
-        right: 2%;
-        transform: translate(0, -50%);
-        width: 250px;
-        z-index: 1000;
-      "
-    >
-      <div
-        class="toast-body"
-        id="cartToastBody"
-        style="font-weight: 500; font: 1.1rem"
-      ></div>
-    </div>
     <div class="product-container">
       <div class="filter-products-container row col-2">
         <div class="filter-card">
@@ -65,6 +43,7 @@
                     type="checkbox"
                     class="cat-checkbox"
                     :data-category="category[2]"
+                    :data-category-name="category[0]"
                     :disabled="category[1] === 0"
                     @change="handleCategoryChange"
                   />
@@ -148,6 +127,7 @@
                 <div class="slider-container">
                   <div
                     class="price-slider"
+                    :class="{ disabled: isPriceRangesSelected }"
                     :style="{
                       left: `${(min / productMax) * 100}%`,
                       right: `${100 - (max / productMax) * 100}%`
@@ -158,7 +138,7 @@
             </div>
           </div>
           <!-- Slider -->
-          <div class="range-input">
+          <div class="range-input" :class="{ disabled: isPriceRangesSelected }">
             <input
               type="range"
               class="min-range"
@@ -167,6 +147,7 @@
               :value="min"
               step="1"
               @input="updateInputs"
+              :disabled="isPriceRangesSelected"
             />
             <input
               type="range"
@@ -176,28 +157,10 @@
               :value="max"
               step="1"
               @input="updateInputs"
+              :disabled="isPriceRangesSelected"
             />
           </div>
-          <div style="padding-top: 11%; padding-bottom: 1%">
-            <button
-              type="button"
-              class="custom-button"
-              @click="toggleSortOrder"
-              style="align-items: center; font-size: 0.8rem"
-            >
-              Sort Price
-              <span
-                v-if="sortOrder === 'asc'"
-                class="bi bi-sort-up-alt"
-                style="font-size: 0.9rem"
-              ></span>
-              <span
-                v-else
-                class="bi bi-sort-down"
-                style="font-size: 0.9rem"
-              ></span>
-            </button>
-          </div>
+          <div style="padding-top: 11%; padding-bottom: 0"></div>
         </div>
         <div class="filter-card">
           <div class="card-body">
@@ -216,6 +179,7 @@
                 class="price-checkbox"
                 :value="range.value"
                 :price-range="range.value"
+                :data-price-label="range.label"
                 style="font-size: 0.9rem; margin-bottom: 2px; margin-left: 0"
                 @change="handlePriceRangeChange"
               />
@@ -235,7 +199,6 @@
             </div>
           </div>
         </div>
-
         <div
           class="filter-card"
           style="height: 45px; align-items: center; text-align: left"
@@ -292,7 +255,7 @@
             >
               <input
                 style="font-size: 0.9rem; margin-bottom: 8px; margin-left: 8px"
-                class="brand-checkbox"
+                class="rating-checkbox"
                 type="checkbox"
                 :id="'rating' + rating"
                 :value="rating"
@@ -328,7 +291,6 @@
             </div>
           </div>
         </div>
-        <!-- <PriceSlider /> -->
       </div>
       <template
         v-if="isLoading && filteredProducts && filteredProducts.length === 0"
@@ -337,68 +299,164 @@
           <img :src="require('@/assets/loading2.gif')" />
         </div>
       </template>
-      <template v-if="filteredProducts && filteredProducts.length > 0">
-        <div class="product-list" id="mycard">
-          <transition-group name="product-fade">
-            <!-- Render ProductList if there are filteredProducts -->
-            <ProductList
-              :products="paginatedProducts"
-              :key="products"
-              :currentPage="currentPage"
-              :itemsPerPage="itemsPerPage"
-              :cart="cart"
-              :favorites="favorites"
-              @addToCart="addToCart"
-              @addTofavorites="addTofavorites"
-              @removeFromCart="removeFromCart"
-              @removeFromFavorites="removeFromFavorites"
-              @redirectToItem="redirectToItem"
-              style="justify-content: left; margin-top: 0"
-            />
-          </transition-group>
-        </div>
-      </template>
-      <template
-        v-else-if="
-          !isLoading && filteredProducts && filteredProducts.length === 0
-        "
-      >
-        <div style="align-items: center; margin-left: 10%; margin-top: 3%">
-          <img :src="require('@/assets/no_result.gif')" />
-        </div>
-      </template>
-    </div>
-    <nav aria-label="Pagination" style="margin-top: 30px">
-      <ul class="pagination justify-content-center">
-        <li class="page-item" :class="{ disabled: currentPage === 1 }">
-          <button
-            class="page-link"
-            @click="prevPage"
-            :disabled="currentPage === 1"
+      <div class="container" style="padding-left: 0; margin-left: 0">
+        <template v-if="appliedFilters && appliedFilters.length > 0">
+          <div
+            class="container"
+            style="
+              margin-top: 4%;
+              border: 1px solid #cfcdcd;
+              margin-left: 0;
+              margin-bottom: 0;
+              width: 1187px !important;
+              max-height: 200px;
+            "
           >
-            Prev
-          </button>
-        </li>
-        <!-- Show pages around the current page -->
-        <template v-for="page in visiblePages" :key="page">
-          <li class="page-item" :class="{ active: currentPage === page }">
-            <button class="page-link" @click="setCurrentPage(page)">
-              {{ page }}
+            <div
+              style="
+                font-weight: 500;
+                font-size: 0.9rem;
+                margin-bottom: 0;
+                margin-top: 5px;
+              "
+            >
+              Active Filters ({{ appliedFilters.length }}) Products ({{
+                filteredProducts.length
+              }})
+            </div>
+            <button
+              v-for="(filter, index) in appliedFilters"
+              :key="index"
+              class="shadow btn custom-btn"
+              style="margin-bottom: 0; margin-top: 10px"
+              @click="removeFilter(filter)"
+            >
+              {{ filter }}
             </button>
-          </li>
+            <hr />
+            <div style="margin-top: 10px; margin-left: 0">
+              <button
+                type="button"
+                class="shadow btn custom-btn"
+                @click="toggleSortOrder"
+                style="align-items: center"
+              >
+                Sort Price
+                <span
+                  v-if="sortOrder === 'asc'"
+                  class="bi bi-sort-up-alt"
+                  style="font-size: 0.9rem"
+                ></span>
+                <span
+                  v-else
+                  class="bi bi-sort-down"
+                  style="font-size: 0.9rem"
+                ></span>
+              </button>
+              <button
+                v-if="appliedFilters.length > 0"
+                class="shadow btn custom-btn"
+                @click="removeAllFilters"
+                style="margin-bottom: 15px"
+              >
+                Reset Filters
+              </button>
+            </div>
+          </div>
         </template>
-        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-          <button
-            class="page-link"
-            @click="nextPage"
-            :disabled="currentPage === totalPages"
-          >
-            Next
-          </button>
-        </li>
-      </ul>
-    </nav>
+        <template v-if="filteredProducts && filteredProducts.length > 0">
+          <div class="product-list" id="mycard">
+            <transition-group name="product-fade">
+              <!-- Render ProductList if there are filteredProducts -->
+              <ProductList
+                :products="paginatedProducts"
+                :key="products"
+                :currentPage="currentPage"
+                :itemsPerPage="itemsPerPage"
+                :cart="cart"
+                :favorites="favorites"
+                @addToCart="addToCart"
+                @addTofavorites="addTofavorites"
+                @removeFromCart="removeFromCart"
+                @removeFromFavorites="removeFromFavorites"
+                @redirectToItem="redirectToItem"
+                style="justify-content: left; margin-top: 0"
+              />
+            </transition-group>
+          </div>
+        </template>
+        <template
+          v-else-if="
+            !isLoading && filteredProducts && filteredProducts.length === 0
+          "
+        >
+          <img
+            :src="require('@/assets/no_result.gif')"
+            style="margin-left: 15%"
+          />
+        </template>
+        <nav
+          v-if="filteredProducts.length > 32"
+          aria-label="Pagination"
+          style="margin-top: 30px; margin-left: 30%"
+        >
+          <ul class="pagination justify-content-left">
+            <li class="page-item" :class="{ disabled: currentPage === 1 }">
+              <button
+                class="page-link"
+                @click="prevPage"
+                :disabled="currentPage === 1"
+              >
+                Prev
+              </button>
+            </li>
+            <!-- Show pages around the current page -->
+            <template v-for="page in visiblePages" :key="page">
+              <li class="page-item" :class="{ active: currentPage === page }">
+                <button class="page-link" @click="setCurrentPage(page)">
+                  {{ page }}
+                </button>
+              </li>
+            </template>
+            <li
+              class="page-item"
+              :class="{ disabled: currentPage === totalPages }"
+            >
+              <button
+                class="page-link"
+                @click="nextPage"
+                :disabled="currentPage === totalPages"
+              >
+                Next
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
     <Footer />
+    <div
+      class="toast"
+      id="cartToast"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+      data-bs-autohide="false"
+      style="
+        position: fixed;
+        top: 12%;
+        right: 2%;
+        transform: translate(0, -50%);
+        width: 250px;
+        z-index: 1000;
+      "
+    >
+      <div
+        class="toast-body"
+        id="cartToastBody"
+        style="font-weight: 500; font: 1.1rem"
+      ></div>
+    </div>
   </div>
 </template>
 
@@ -439,19 +497,30 @@ export default {
       itemsPerPage: 32,
       visiblePageRange: 5,
       isLoading: true,
+      appliedFilters: [],
       priceRanges: [
         { value: 'range1', label: 'Under $500' },
-        { value: 'range2', label: '$500-$1000' },
-        { value: 'range3', label: '$1000-$2000' },
+        { value: 'range2', label: '$500 - $1000' },
+        { value: 'range3', label: '$1000 - $2000' },
         { value: 'range4', label: '$2000 & Above' }
       ]
     }
+  },
+  watch: {
+    filteredProducts() {
+      this.updateAppliedFilters()
+    }
+  },
+  updated() {
+    this.updateAppliedFilters()
+  },
+  beforeUnmount() {
+    this.appliedFilters = []
   },
   mounted() {
     if (this.filteredProducts && this.filteredProducts.length > 0) {
       this.isLoading = false
     }
-    console.log('Is loading:', this.isLoading)
   },
   created() {
     if (!this.$store.state.accessToken) {
@@ -466,6 +535,8 @@ export default {
         router.push('/login')
       }
     }
+    this.removeAllFilters()
+    this.updateAppliedFilters()
     this.$store
       .dispatch('getProducts')
       .then(() => this.$store.dispatch('getProfile'))
@@ -479,6 +550,12 @@ export default {
       })
   },
   computed: {
+    isPriceRangesSelected() {
+      return this.$store.state.selectedPriceRanges.length > 0
+    },
+    selectedPriceRanges() {
+      return this.$store.state.selectedPriceRanges
+    },
     paginatedProducts() {
       const groupedProducts = this.groupedProducts
       const currentPageIndex = this.currentPage - 1
@@ -611,8 +688,115 @@ export default {
     }
   },
   methods: {
+    removeAllFilters() {
+      this.appliedFilters = []
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]')
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = false
+      })
+      const prices = this.$store.state.products.map(product => product.price)
+      this.$store.state.productMin = Math.ceil(Math.min(...prices))
+      this.$store.state.productMax = Math.ceil(Math.max(...prices))
+      this.$store.state.min = Math.ceil(Math.min(...prices))
+      this.$store.state.max = Math.ceil(Math.max(...prices))
+      this.selectedRating = []
+      this.isChecked = false
+      this.handleCategoryChange()
+      this.handlePriceRangeChange()
+      this.handleDiscountChange()
+    },
+    removeFilter(filter) {
+      if (filter === 'Discounted Products') {
+        this.isChecked = false
+        this.handleDiscountChange()
+        return
+      } else if (filter.startsWith('Rating')) {
+        const rating = parseInt(filter.split(': ')[1])
+        const index = this.appliedFilters.indexOf(rating)
+        this.selectedRating.splice(index, 1)
+        return
+      } else if (
+        filter.includes('-') ||
+        filter.startsWith('Under') ||
+        filter.includes('&')
+      ) {
+        // const formattedLabel = filter.replace(' - ', '-')
+        const checkbox = document.querySelector(
+          `input[data-price-label="${filter}"]`
+        )
+        if (checkbox) {
+          checkbox.checked = false
+        }
+        this.handlePriceRangeChange()
+        return
+      } else {
+        const checkbox = document.querySelector(
+          `input[data-category-name="${filter}"]`
+        )
+        if (checkbox) {
+          checkbox.checked = false
+          this.handleCategoryChange()
+        }
+      }
+    },
+    updateAppliedFilters() {
+      const filters = []
+      const selectedCategories = this.$store.state.selectedCategories.map(
+        categoryId => {
+          return this.getCategoryLabel(categoryId)
+        }
+      )
+      selectedCategories.forEach(category => {
+        filters.push(category)
+      })
+      if (this.isChecked) {
+        filters.push('Discounted Products')
+      }
+      if (this.$store.state.selectedRating.length > 0) {
+        const selectedRatings = this.$store.state.selectedRating.map(rating => {
+          // filters.push(`${rating}`)
+          return `Rating: ${rating}`
+        })
+        filters.push(...selectedRatings)
+      }
+      const priceRanges = this.$store.state.selectedPriceRanges
+        .map(range => {
+          switch (range) {
+            case 'range1':
+              return 'Under $500'
+            case 'range2':
+              return '$500 - $1000'
+            case 'range3':
+              return '$1000 - $2000'
+            case 'range4':
+              return '$2000 & Above'
+            default:
+              return null
+          }
+        })
+        .filter(range => range !== null)
+
+      if (priceRanges.length > 0) {
+        const prices = this.$store.state.products.map(product => product.price)
+        this.$store.state.productMin = Math.ceil(Math.min(...prices))
+        this.$store.state.productMax = Math.ceil(Math.max(...prices))
+        this.$store.state.min = Math.ceil(Math.min(...prices))
+        this.$store.state.max = Math.ceil(Math.max(...prices))
+        filters.push(...priceRanges)
+      } else {
+        filters.push(`$${this.$store.state.min} - $${this.$store.state.max}`)
+      }
+      const newFilters = JSON.stringify(filters)
+      if (newFilters !== JSON.stringify(this.appliedFilters)) {
+        this.appliedFilters = filters
+      }
+    },
+    getCategoryLabel(categoryId) {
+      categoryId = parseInt(categoryId)
+      const category = this.categories.find(cat => cat[2] === categoryId)
+      return category ? category[0] : ''
+    },
     getProductCount(rangeValue) {
-      // Calculate product count for the specified price range
       return this.products.filter(product => {
         switch (rangeValue) {
           case 'range1':
@@ -631,7 +815,7 @@ export default {
         'getSelectedPriceRanges'
       )
       this.$store.commit('UPDATE_SELECTED_PRICE_RANGES', selectedPriceRanges)
-      this.currentPage = 1 // Update other relevant data as needed
+      this.currentPage = 1
     },
     handlePageChange(page) {
       this.currentPage = page
@@ -725,3 +909,36 @@ export default {
   }
 }
 </script>
+<style scoped>
+#newsletter {
+  display: flex;
+  width: 200px;
+  height: 50px;
+  margin-top: 4%;
+  margin-left: 30%;
+  margin-bottom: 0;
+  padding: 0;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  background-repeat: no-repeat;
+  background-color: #ffffff;
+  color: blue;
+}
+
+.custom-btn {
+  text-transform: capitalize;
+  background-color: #fdfeff;
+  font-size: 12.5px;
+  color: rgb(10, 0, 0);
+  max-width: 220px;
+  height: 35px;
+  border-radius: 5px;
+  border: 1px solid #cfcdcd;
+}
+.custom-btn:hover {
+  background-color: #608b95 !important;
+  font-size: 12.5px;
+  color: white !important;
+}
+</style>
