@@ -797,7 +797,7 @@ export default {
       return category ? category[0] : ''
     },
     getProductCount(rangeValue) {
-      return this.products.filter(product => {
+      return this.filteredProducts.filter(product => {
         switch (rangeValue) {
           case 'range1':
             return product.price <= 500
@@ -867,10 +867,10 @@ export default {
       this.$store.dispatch('handleRatingChange', rating)
     },
     getRatingItemCount(rating) {
-      const items = this.$store.state.products // Assuming products are stored in the store
+      const items = this.$store.getters.filteredProducts
       const count = items.reduce((accumulator, item) => {
         const floatRating = parseFloat(item.rating_float)
-        const roundedRating = Math.floor(floatRating + 0.5) // Round to the nearest integer
+        const roundedRating = Math.floor(floatRating + 0.5)
         if (roundedRating === rating) {
           return accumulator + 1
         }
