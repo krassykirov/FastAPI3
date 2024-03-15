@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ProductsView from '@/views/ProductsView.vue'
+import ProductsViewTest from '@/views/ProductsViewTest.vue'
 import CategoryComponent from '@/views/CategoryComponent.vue'
 import MyItem from '@/views/MyItemLast.vue'
 import Search from '@/views/SearchVue.vue'

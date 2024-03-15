@@ -534,6 +534,14 @@ export default {
       })
       this.hideCategories()
     },
+    goToAllOffers() {
+      this.$router.push({ name: 'hometest' })
+      // window.location.assign('/products')
+      this.$nextTick(() => {
+        window.scrollTo({ top: 0, behavior: 'auto' })
+      })
+      this.hideCategories()
+    },
     formatTotal(price) {
       const [integerPart, decimalPart] = price.toString().split('.')
       return {

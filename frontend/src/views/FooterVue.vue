@@ -1,7 +1,7 @@
 <template>
   <div>
     <section
-      id="newsletter"
+      id="newsletter2"
       class="section-p1"
       style="margin-top: 2%; height: 50px; color: white; cursor: pointer"
       @click="goToTop"
@@ -308,6 +308,19 @@ button.white:hover {
   background-repeat: no-repeat;
   background-position: 20% 30%;
   background-color: #041e42;
+}
+
+#newsletter2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  background-repeat: no-repeat;
+  background-position: 20% 30%;
+  background-color: #386796;
+  color: rgb(10, 0, 0);
+  border-radius: 5px;
+  border: 1px solid #cfcdcd;
 }
 
 #newsletter h4 {

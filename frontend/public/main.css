@@ -485,7 +485,7 @@ INPUT[type="checkbox"]:disabled {
   }
 
   .disabled {
-    cursor: not-allowed;
-    pointer-events: none;
-    background-color: grey;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    background-color: grey !important;
   }

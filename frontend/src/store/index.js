@@ -510,7 +510,7 @@ export default createStore({
         maxVal = minVal
       }
       if (minVal >= state.max - 200) {
-        minVal = Math.ceil(state.productMin)
+        minVal = Math.floor(state.productMin)
       }
       if (maxVal <= state.min + 200) {
         maxVal = Math.ceil(state.productMax)
@@ -518,7 +518,7 @@ export default createStore({
       const rangeInput = document.querySelector('.min-range')
       const rangeInputMax = document.querySelector('.max-range')
       if (rangeInput) {
-        rangeInput.value = Math.ceil(minVal)
+        rangeInput.value = Math.floor(minVal)
       }
       if (rangeInputMax) {
         rangeInputMax.value = Math.ceil(maxVal)
@@ -527,10 +527,12 @@ export default createStore({
       commit('SET_MAX_PRICE', maxVal)
       // commit('SET_RANGE_INPUT', { min: minVal, max: maxVal })
     },
-    updateHomeProductRange() {
+    updateHomeProductRange({ state, commit }) {
       const prices = this.state.products.map(product => product.price)
-      this.state.productMin = Math.ceil(Math.min(...prices))
-      this.state.productMax = Math.ceil(Math.max(...prices))
+      state.productMin = Math.floor(Math.min(...prices))
+      state.productMax = Math.ceil(Math.max(...prices))
+      commit('SET_MIN_PRICE', state.productMin)
+      commit('SET_MAX_PRICE', state.productMax)
     },
     updateProductRange({ state, commit }, cat) {
       const categoryId = state.categories.find(
@@ -540,8 +542,8 @@ export default createStore({
         product => product.category_id === categoryId
       )
       const prices = categoryProducts.map(product => product.price)
-      state.productMin = Math.floor(Math.min(...prices))
-      state.productMax = Math.round(Math.max(...prices))
+      this.state.productMin = Math.floor(Math.min(...prices))
+      this.state.productMax = Math.ceil(Math.max(...prices))
       commit('SET_MIN_PRICE', state.productMin)
       commit('SET_MAX_PRICE', state.productMax)
       commit('SET_RANGE_INPUT', {
