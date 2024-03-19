@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from sqlmodel import select
-from models import Item, Category, Review, UserProfile, Laptop, Smartphone
+from models import Item, Category, Review, UserProfile, Laptop, Smartphone, Tablet, TV, Smartwatch
 import schemas
 from typing import List
 from fastapi.encoders import jsonable_encoder
@@ -20,23 +20,44 @@ class ItemActions:
     def get_laptops(self, db: Session, skip: int = 0, limit: int = 100):
         laptops = db.query(Laptop).order_by(Laptop.name).offset(skip).limit(limit).all()
         if laptops:
-            return jsonable_encoder(laptops)
+            return laptops
         return []
 
     def get_smartphones(self, db: Session, skip: int = 0, limit: int = 100):
         smartphones = db.query(Smartphone).order_by(Smartphone.name).offset(skip).limit(limit).all()
         if smartphones:
-            return jsonable_encoder(smartphones)
+            return smartphones
+        return []
+
+    def get_tablets(self, db: Session, skip: int = 0, limit: int = 100):
+        tablets = db.query(Tablet).order_by(Tablet.name).offset(skip).limit(limit).all()
+        if tablets:
+            return tablets
+        return []
+
+    def get_smartwatches(self, db: Session, skip: int = 0, limit: int = 100):
+        smartwatches = db.query(Smartwatch).order_by(Smartwatch.name).offset(skip).limit(limit).all()
+        if smartwatches:
+            return smartwatches
+        return []
+
+    def get_tvs(self, db: Session, skip: int = 0, limit: int = 100):
+        tvs = db.query(TV).order_by(TV.name).offset(skip).limit(limit).all()
+        if tvs:
+            return tvs
         return []
 
     def get_items(self, db: Session, skip: int = 0, limit: int = 100, user=None):
         if user:
             items = db.query(Item).where(Item.username==user).order_by(Item.name).offset(skip).limit(limit).all()
             return items
-        # laptops = self.get_laptops(db=db)
-        # smartphones = self.get_smartphones(db=db)
-        # items = laptops + smartphones
-        items = db.query(Item).order_by(Item.name).offset(skip).limit(limit).all()
+        laptops = self.get_laptops(db=db)
+        smartphones = self.get_smartphones(db=db)
+        tablets = self.get_tablets(db=db)
+        smartwatches = self.get_smartwatches(db=db)
+        tvs = self.get_tvs(db=db)
+        items = laptops + smartphones + tablets + smartwatches + tvs
+        # items = db.query(Item).order_by(Item.name).offset(skip).limit(limit).all()
         return items
 
 

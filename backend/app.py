@@ -20,7 +20,7 @@ from routers.reviews import reviews_router
 from routers.profile import profile_router
 # from src.routers.cart import cart_router
 from auth.oauth import oauth_router, get_current_user
-from models import Item, Category, Laptop, TV, Smartphone, Smartwatch, Review, User, UserRead, UserProfile, Categories
+from models import Item, Category, Laptop, TV, Smartphone, Smartwatch, Review, User, UserRead, UserProfile, Tablet, TV
 from crud.crud import CategoryActions, ItemActions, ReviewActions, ProfileActions
 from helper import delete_item_dir, create_categories
 import schemas
@@ -118,21 +118,20 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
                os.makedirs(path,exist_ok=True)
         with open(f"{BASE_DIR}/static/img/{user.username}/{item_name}/{filename}", 'wb') as f:
             f.write(content)
-        print('CATEGORY', category_select)
         if category_select == 'Laptops':
             item = Laptop(**item, category=category, image=filename, username=user.username)
-            db.add(item)
-            db.commit()
-            db.refresh(item)
-            logger.info(f"Creating Item {item}")
         elif category_select == 'Smartphones':
-            item_builder = SmartphoneBuilder()
+            item = Smartphone(**item, category=category, image=filename, username=user.username)
         elif category_select == 'Tablets':
-            item_builder = TabletBuilder()
+            item = Tablet(**item, category=category, image=filename, username=user.username)
         elif category_select == 'Smartwathes':
-            item_builder = SmartwatchBuilder()
+            item = Smartwatch(**item, category=category, image=filename, username=user.username)
         elif category_select == 'TV':
-            item_builder = TvBuilder()
+            item = TV(**item, category=category, image=filename, username=user.username)
+        db.add(item)
+        db.commit()
+        db.refresh(item)
+        logger.info(f"Creating Item {item}")
         # print('CATEGORY', category_select)
         # if category_select == 'Laptops':
         #     item_builder = LaptopBuilder()
