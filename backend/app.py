@@ -13,14 +13,14 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from sqlmodel import SQLModel, Session
 from db import engine
-from abs_builders.abs_builder import ItemBuilder, LaptopBuilder, SmartphoneBuilder
+from abs_builders.abs_builder import ItemBuilder, LaptopBuilder, SmartphoneBuilder, TabletBuilder, TvBuilder, SmartwatchBuilder
 from routers.categories import category_router
 from routers.items import items_router
 from routers.reviews import reviews_router
 from routers.profile import profile_router
 # from src.routers.cart import cart_router
 from auth.oauth import oauth_router, get_current_user
-from models import Item, Category, Review, User, UserRead, UserProfile, Categories
+from models import Item, Category, Laptop, TV, Smartphone, Smartwatch, Review, User, UserRead, UserProfile, Categories
 from crud.crud import CategoryActions, ItemActions, ReviewActions, ProfileActions
 from helper import delete_item_dir, create_categories
 import schemas
@@ -90,20 +90,25 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         """ Create an Item """
         form_data = await request.form()
         print('form_data', form_data)
+        item = dict(form_data)
+        print('item', item)
         file = form_data['file']
         filename = form_data['file'].filename
         item_name =form_data['name']
-        formated_price = Decimal("{:.2f}".format(float(form_data['price'])))
         category_select = form_data['Category']
-        description = form_data['Description']
-        discount = form_data['discount']
-        brand = form_data['brand']
-        memory = form_data['ram']
-        processor = form_data['cpu']
-        size = form_data['inches']
+        # formated_price = Decimal("{:.2f}".format(float(form_data['price'])))
+        # description = form_data['Description']
+        # discount = form_data['discount']
+        # brand = form_data['brand']
+        # ram = form_data['ram']
+        # processor = form_data['processor']
+        # size = form_data['size']
+        # storage = form_data['storage']
+        # resolution = form_data['resolution']
+        # is_smart = form_data['smart']
         category = CategoryActions().get_category_by_name(db=db, name=category_select)
-        item = db.query(Item).where(Item.name == item_name).first()
-        if item:
+        item_db = db.query(Item).where(Item.name == item_name).first()
+        if item_db:
             logger.error(f"Item with that name already exists!")
             raise HTTPException(status_code=403,detail=f"Item with that name already exists!")
         IMG_DIR = os.path.join(BASE_DIR, f'static/img/{user.username}')
@@ -115,33 +120,55 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
             f.write(content)
         print('CATEGORY', category_select)
         if category_select == 'Laptops':
-            item_builder = LaptopBuilder()
-        elif category_select == 'Smartphones':
-            item_builder = SmartphoneBuilder()
-        else:
-            item_builder = ItemBuilder()
-        try:
-            item_builder.set_name(item_name)
-            item_builder.set_price(formated_price)
-            item_builder.set_brand(brand)
-            item_builder.set_discount(discount)
-            item_builder.set_description(description)
-            item_builder.set_category(category)
-            item_builder.set_image(filename)
-            item_builder.set_memory(memory)
-            item_builder.set_processor(processor)
-            item_builder.set_size(size)
-            item_builder.set_username(user.username)
-            item = item_builder.build()
+            item = Laptop(**item, category=category, image=filename, username=user.username)
             db.add(item)
             db.commit()
             db.refresh(item)
             logger.info(f"Creating Item {item}")
-        except Exception as e:
-            logger.info(f"ERROR OCCURED to DB Item {e}")
-            db.rollback()
-            raise e
-        return item
+        elif category_select == 'Smartphones':
+            item_builder = SmartphoneBuilder()
+        elif category_select == 'Tablets':
+            item_builder = TabletBuilder()
+        elif category_select == 'Smartwathes':
+            item_builder = SmartwatchBuilder()
+        elif category_select == 'TV':
+            item_builder = TvBuilder()
+        # print('CATEGORY', category_select)
+        # if category_select == 'Laptops':
+        #     item_builder = LaptopBuilder()
+        # elif category_select == 'Smartphones':
+        #     item_builder = SmartphoneBuilder()
+        # elif category_select == 'Tablets':
+        #     item_builder = TabletBuilder()
+        # elif category_select == 'Smartwathes':
+        #     item_builder = SmartwatchBuilder()
+        # elif category_select == 'TV':
+        #     item_builder = TvBuilder()
+        # try:
+        #     item_builder.set_name(item_name)
+        #     item_builder.set_price(formated_price)
+        #     item_builder.set_brand(brand)
+        #     item_builder.set_discount(discount)
+        #     item_builder.set_description(description)
+        #     item_builder.set_category(category)
+        #     item_builder.set_image(filename)
+        #     item_builder.set_ram(ram)
+        #     item_builder.set_storage(storage)
+        #     item_builder.set_processor(processor)
+        #     item_builder.set_size(size)
+        #     item_builder.set_resolution(resolution)
+        #     item_builder.set_is_smart(is_smart)
+        #     item_builder.set_username(user.username)
+        #     item = item_builder.build()
+        #     db.add(item)
+        #     db.commit()
+        #     db.refresh(item)
+        #     logger.info(f"Creating Item {item}")
+        # except Exception as e:
+        #     logger.info(f"ERROR OCCURED to DB Item {e}")
+        #     db.rollback()
+        #     raise e
+        # return item
         # redirect_url = request.url_for('get_products')
         # response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
         # return response

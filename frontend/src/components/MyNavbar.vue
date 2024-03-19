@@ -427,27 +427,41 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="cpu" class="col-form-label">CPU:</label>
-                <input type="text" name="cpu" placeholder="CPU" />
+                <label for="cpu" class="col-form-label">Processor:</label>
+                <input type="text" name="processor" placeholder="CPU" />
               </div>
               <div class="form-group">
                 <label for="ram" class="col-form-label">RAM:</label>
                 <input type="text" name="ram" placeholder="RAM" />
               </div>
               <div class="form-group">
-                <label for="inches" class="col-form-label">Inches:</label>
-                <input type="number" name="inches" placeholder="Inches" />
+                <label for="storage" class="col-form-label">Storage:</label>
+                <input type="text" name="storage" placeholder="Storage" />
               </div>
               <div class="form-group">
-                <label for="Description" class="col-form-label"
+                <label for="size" class="col-form-label">Size:</label>
+                <input type="text" name="size" placeholder="Size" />
+              </div>
+              <div class="form-group">
+                <label for="resolution" class="col-form-label"
+                  >Resolution:</label
+                >
+                <input type="text" name="resolution" placeholder="Resolution" />
+              </div>
+              <div class="form-group">
+                <label for="smart" class="col-form-label">SmartTV:</label>
+                <input type="text" name="smart" placeholder="SmartTV" />
+              </div>
+              <div class="form-group">
+                <label for="description" class="col-form-label"
                   >Description:</label
                 >
                 <textarea
-                  name="Description"
+                  name="description"
                   id="add-description"
                   rows="4"
                   cols="50"
-                  maxlength="250"
+                  maxlength="300"
                 ></textarea>
               </div>
               <button

@@ -1,9 +1,10 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from sqlmodel import select
-from models import Item, Category, Review, UserProfile, User
+from models import Item, Category, Review, UserProfile, Laptop, Smartphone
 import schemas
 from typing import List
+from fastapi.encoders import jsonable_encoder
 
 # Events
 class ItemActions:
@@ -16,12 +17,28 @@ class ItemActions:
         item = db.query(Item).filter(Item.name == name).first()
         return item
 
+    def get_laptops(self, db: Session, skip: int = 0, limit: int = 100):
+        laptops = db.query(Laptop).order_by(Laptop.name).offset(skip).limit(limit).all()
+        if laptops:
+            return jsonable_encoder(laptops)
+        return []
+
+    def get_smartphones(self, db: Session, skip: int = 0, limit: int = 100):
+        smartphones = db.query(Smartphone).order_by(Smartphone.name).offset(skip).limit(limit).all()
+        if smartphones:
+            return jsonable_encoder(smartphones)
+        return []
+
     def get_items(self, db: Session, skip: int = 0, limit: int = 100, user=None):
         if user:
             items = db.query(Item).where(Item.username==user).order_by(Item.name).offset(skip).limit(limit).all()
             return items
+        # laptops = self.get_laptops(db=db)
+        # smartphones = self.get_smartphones(db=db)
+        # items = laptops + smartphones
         items = db.query(Item).order_by(Item.name).offset(skip).limit(limit).all()
         return items
+
 
     def get_items_by_category_id(self, db: Session, skip: int = 0, limit: int = 100, category_id=None):
         if category_id:

@@ -80,23 +80,45 @@ class Item(SQLModel, table=True):
     discount:     Optional[decimal.Decimal] = Field(default=0)
     quantity:     Optional[int] = Field(default=1)
     brand:        Optional[str] = Field(default=None)
+    resolution:   Optional[str] = Field(default=None)
+    size:         Optional[str] = Field(default=None)
     class Config:
         arbitrary_types_allowed = True
 @mapper_registry.mapped
 class Laptop(Item):
-    laptop_id:  Optional[int] = Field(default=None, foreign_key="item.id")
-    processor: Optional[str] = Field(default=None)
-    memory: Optional[str] = Field(default=None)
-    size:Optional[str] = Field(default=None)
+    laptop_id:    Optional[int] = Field(default=None, foreign_key="item.id")
+    processor:    Optional[str] = Field(default=None)
+    storage:      Optional[str] = Field(default=None)
+    ram:          Optional[str] = Field(default=None)
     category:     Optional['Category'] = Relationship(back_populates='items')
 
 @mapper_registry.mapped
 class Smartphone(Item):
     smartphone_id : Optional[int] = Field(default=None, foreign_key="item.id")
-    size: Optional[int]     = Field(default=None)
-    memory: Optional[int]    = Field(default=None)
+    ram:            Optional[int] = Field(default=None)
+    storage:        Optional[str] = Field(default=None)
+    processor:      Optional[str] = Field(default=None)
+    category:     Optional['Category'] = Relationship(back_populates='items')
+@mapper_registry.mapped
+class Tablet(Item):
+    tablet_id :   Optional[int] = Field(default=None, foreign_key="item.id")
+    ram:          Optional[int] = Field(default=None)
+    processor:    Optional[str] = Field(default=None)
+    storage:      Optional[str] = Field(default=None)
+    category:     Optional['Category'] = Relationship(back_populates='items')
+
+@mapper_registry.mapped
+class Smartwatch(Item):
+    smartwatch_id : Optional[int] = Field(default=None, foreign_key="item.id")
+    ram: Optional[int]    = Field(default=None)
     processor: Optional[str] = Field(default=None)
-    camera_resolution: Optional[str] = Field(default=None)
+    category:     Optional['Category'] = Relationship(back_populates='items')
+
+@mapper_registry.mapped
+class TV(Item):
+    tv_id :       Optional[int] = Field(default=None, foreign_key="item.id")
+    display_size: Optional[int] = Field(default=None)
+    is_smart:     Optional[int] = Field(default=True)
     category:     Optional['Category'] = Relationship(back_populates='items')
 
 class Categories(str, enum.Enum):
