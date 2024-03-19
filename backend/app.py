@@ -13,6 +13,7 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from sqlmodel import SQLModel, Session
 from db import engine
+from abs_builders.abs_builder import ItemBuilder, LaptopBuilder, SmartphoneBuilder
 from routers.categories import category_router
 from routers.items import items_router
 from routers.reviews import reviews_router
@@ -97,6 +98,9 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         description = form_data['Description']
         discount = form_data['discount']
         brand = form_data['brand']
+        memory = form_data['ram']
+        processor = form_data['cpu']
+        size = form_data['inches']
         category = CategoryActions().get_category_by_name(db=db, name=category_select)
         item = db.query(Item).where(Item.name == item_name).first()
         if item:
@@ -109,18 +113,34 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
                os.makedirs(path,exist_ok=True)
         with open(f"{BASE_DIR}/static/img/{user.username}/{item_name}/{filename}", 'wb') as f:
             f.write(content)
-            item = Item(name=item_name, price=formated_price, image=filename, username=user.username,
-                        category=category, discount=discount, description=description, brand=brand)
-        logger.info(f"Creating Item {item}")
+        print('CATEGORY', category_select)
+        if category_select == 'Laptops':
+            item_builder = LaptopBuilder()
+        elif category_select == 'Smartphones':
+            item_builder = SmartphoneBuilder()
+        else:
+            item_builder = ItemBuilder()
         try:
-            logger.info(f"Add to DB Item {item}")
+            item_builder.set_name(item_name)
+            item_builder.set_price(formated_price)
+            item_builder.set_brand(brand)
+            item_builder.set_discount(discount)
+            item_builder.set_description(description)
+            item_builder.set_category(category)
+            item_builder.set_image(filename)
+            item_builder.set_memory(memory)
+            item_builder.set_processor(processor)
+            item_builder.set_size(size)
+            item_builder.set_username(user.username)
+            item = item_builder.build()
             db.add(item)
             db.commit()
             db.refresh(item)
+            logger.info(f"Creating Item {item}")
         except Exception as e:
             logger.info(f"ERROR OCCURED to DB Item {e}")
             db.rollback()
-        logger.info(f"Item Created! {item}")
+            raise e
         return item
         # redirect_url = request.url_for('get_products')
         # response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)

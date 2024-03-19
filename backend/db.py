@@ -5,7 +5,7 @@ import os
 # default_session = scoped_session(sessionmaker(autocommit=False,
 #                                          autoflush=False,
 #                                          bind=engine))
-SQLALCHEMY_DATABASE_URL = os.getenv('SQLALCHEMY_DATABASE_URL','sqlite:///backend.db')
+SQLALCHEMY_DATABASE_URL = os.getenv('SQLALCHEMY_DATABASE_URL','sqlite:///test.db')
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 
 

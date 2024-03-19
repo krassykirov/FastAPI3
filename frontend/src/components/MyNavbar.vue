@@ -17,7 +17,7 @@
         </li>
         <ul
           class="navbar-nav mb-1 mb-lg-0 categories-menu"
-          style="padding-left: 40%; margin-top: 9%"
+          style="padding-left: 50%; margin-top: 9%"
         >
           <li class="nav-item dropdown" @mouseleave="hideCategories">
             <button
@@ -63,14 +63,14 @@
       <form
         class="form-inline"
         @submit.prevent="search"
-        style="padding-left: 17%"
+        style="padding-left: 23%"
       >
         <div class="input-group" style="width: 700px; margin-top: 20px">
           <input
             class="form-control"
+            required
             type="search"
             id="filter"
-            v-on:keyup="Search()"
             placeholder="Search by Keyword"
             aria-label="Search"
             v-model="searchQuery"
@@ -79,9 +79,6 @@
             <button type="submit" class="btn btn-outline-success">
               <i class="fas fa-search"></i>
             </button>
-            <!-- <button class="btn btn-outline-danger" @submit.prevent="clearSearch">
-              <i class="fas fa-times"></i>
-            </button> -->
           </div>
         </div>
       </form>
@@ -378,7 +375,7 @@
                 />
               </div>
               <div class="form-group">
-                <label for="price" class="col-form-label">Price: </label>
+                <label for="price" class="col-form-label">Price:</label>
                 <input
                   type="number"
                   step="any"
@@ -391,7 +388,7 @@
                 />
               </div>
               <div class="form-group">
-                <label for="discount" class="col-form-label">Discount: </label>
+                <label for="discount" class="col-form-label">Discount:</label>
                 <input
                   type="number"
                   step="0.01"
@@ -403,7 +400,7 @@
                 />
               </div>
               <div class="form-group">
-                <label for="brand" class="col-form-label">Brand: </label>
+                <label for="brand" class="col-form-label">Brand:</label>
                 <input type="text" name="brand" id="brand" placeholder="ASUS" />
               </div>
               <div class="form-group" form-group-file>
@@ -414,7 +411,7 @@
                   name="file"
                   class="form-control"
                   data-filesize="1000000"
-                  data-filesize-error="File must be smaller then 1MB"
+                  data-filesize-error="File must be smaller than 1MB"
                   accept="image/*"
                   required
                 />
@@ -428,6 +425,18 @@
                   <option value="Smartwatches">Smart Watches</option>
                   <option value="TV">TV</option>
                 </select>
+              </div>
+              <div class="form-group">
+                <label for="cpu" class="col-form-label">CPU:</label>
+                <input type="text" name="cpu" placeholder="CPU" />
+              </div>
+              <div class="form-group">
+                <label for="ram" class="col-form-label">RAM:</label>
+                <input type="text" name="ram" placeholder="RAM" />
+              </div>
+              <div class="form-group">
+                <label for="inches" class="col-form-label">Inches:</label>
+                <input type="number" name="inches" placeholder="Inches" />
               </div>
               <div class="form-group">
                 <label for="Description" class="col-form-label"
@@ -569,33 +578,28 @@ export default {
         })
       this.hideCategories()
     },
-    Search() {
-      if (
-        this.$route.path.startsWith('/category') ||
-        this.$route.path === '/products'
-      ) {
-        var input, filter, cards, cardContainer, title, i
-        input = document.getElementById('filter')
-        filter = input.value.toUpperCase()
-        cardContainer = document.getElementById('mycard')
-        cards = cardContainer.getElementsByClassName('card')
-        for (i = 0; i < cards.length; i++) {
-          title = cards[i].querySelector('.card-body h6.card-title')
-          if (title.innerText.toUpperCase().indexOf(filter) > -1) {
-            cards[i].style.display = ''
-          } else {
-            cards[i].style.display = 'none'
-          }
-        }
-      }
-    },
+    // Search() {
+    //   if (
+    //     this.$route.path.startsWith('/category') ||
+    //     this.$route.path === '/products'
+    //   ) {
+    //     var input, filter, cards, cardContainer, title, i
+    //     input = document.getElementById('filter')
+    //     filter = input.value.toUpperCase()
+    //     cardContainer = document.getElementById('mycard')
+    //     cards = cardContainer.getElementsByClassName('card')
+    //     for (i = 0; i < cards.length; i++) {
+    //       title = cards[i].querySelector('.card-body h6.card-title')
+    //       if (title.innerText.toUpperCase().indexOf(filter) > -1) {
+    //         cards[i].style.display = ''
+    //       } else {
+    //         cards[i].style.display = 'none'
+    //       }
+    //     }
+    //   }
+    // },
     async search() {
-      if (
-        this.searchQuery.trim() === '' ||
-        !this.searchQuery ||
-        this.$route.path === '/products' ||
-        this.$route.path.startsWith('/category')
-      ) {
+      if (this.searchQuery.trim() === '' || !this.searchQuery) {
         return
       }
       try {
@@ -610,15 +614,14 @@ export default {
         const products = response.data
         if (products.length > 0) {
           this.$store.commit('SET_SEARCH_RESULTS', products)
-          this.$store.state.searchResults.map(product => {
-            return this.$store.dispatch('getItemRating', product.id)
-          })
           this.$store.dispatch(
             'updateMessage',
             `Found ${products.length} results for '${this.searchQuery}'`
           )
           this.$router.push('/search')
         } else {
+          document.getElementById('filter').value =
+            'No result found for this query'
           this.$store.dispatch(
             'updateMessage',
             `Found ${products.length} results for '${this.searchQuery}'`

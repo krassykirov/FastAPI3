@@ -13,6 +13,8 @@ import datetime
 import uuid
 from enum import Enum
 from auth.oauth import pwd_context
+from sqlalchemy.orm import registry
+mapper_registry = registry()
 
 class BaseSQLModel(SQLModel):
     def __init__(self, **kwargs):
@@ -73,14 +75,29 @@ class Item(SQLModel, table=True):
     owner:        Optional[User] = Relationship(back_populates="items")
     username:     Optional[str] = Field(default=None, foreign_key="user.username")
     description:  Optional[str]
-    in_cart:      Optional[Dict[Any,Any]] = Field(default={}, sa_column=Column(JSON))
-    liked:        Optional[Dict[Any,Any]] = Field(default={}, sa_column=Column(JSON))
-    discount:     Optional[decimal.Decimal]
+    in_cart:      Optional[dict] = Field(default_factory=dict, sa_type=(JSON))
+    liked:        Optional[dict] = Field(default_factory=dict, sa_type=(JSON))
+    discount:     Optional[decimal.Decimal] = Field(default=0)
     quantity:     Optional[int] = Field(default=1)
     brand:        Optional[str] = Field(default=None)
-
     class Config:
         arbitrary_types_allowed = True
+@mapper_registry.mapped
+class Laptop(Item):
+    laptop_id:  Optional[int] = Field(default=None, foreign_key="item.id")
+    processor: Optional[str] = Field(default=None)
+    memory: Optional[str] = Field(default=None)
+    size:Optional[str] = Field(default=None)
+    category:     Optional['Category'] = Relationship(back_populates='items')
+
+@mapper_registry.mapped
+class Smartphone(Item):
+    smartphone_id : Optional[int] = Field(default=None, foreign_key="item.id")
+    size: Optional[int]     = Field(default=None)
+    memory: Optional[int]    = Field(default=None)
+    processor: Optional[str] = Field(default=None)
+    camera_resolution: Optional[str] = Field(default=None)
+    category:     Optional['Category'] = Relationship(back_populates='items')
 
 class Categories(str, enum.Enum):
     Laptops = "Laptops"
