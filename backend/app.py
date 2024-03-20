@@ -21,9 +21,9 @@ from routers.profile import profile_router
 from auth.oauth import oauth_router, get_current_user
 from models import Item, Category, Review, User, UserRead, UserProfile, Categories
 from crud.crud import CategoryActions, ItemActions, ReviewActions, ProfileActions
-from helper import delete_item_dir, create_categories
+from helper import delete_item_dir
 import schemas
-import os
+import os, base64
 from os.path import abspath
 from my_logger import detailed_logger
 from decimal import Decimal
@@ -89,31 +89,21 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         """ Create an Item """
         form_data = await request.form()
         print('form_data', form_data)
+        item = dict(form_data)
         file = form_data['file']
         filename = form_data['file'].filename
         item_name =form_data['name']
-        formated_price = Decimal("{:.2f}".format(float(form_data['price'])))
         category_select = form_data['Category']
-        description = form_data['Description']
-        discount = form_data['discount']
-        brand = form_data['brand']
         category = CategoryActions().get_category_by_name(db=db, name=category_select)
-        item = db.query(Item).where(Item.name == item_name).first()
-        if item:
+        item_db = db.query(Item).where(Item.name == item_name).first()
+        if item_db:
             logger.error(f"Item with that name already exists!")
             raise HTTPException(status_code=403,detail=f"Item with that name already exists!")
-        IMG_DIR = os.path.join(BASE_DIR, f'static/img/{user.username}')
         content = await file.read()
-        path = os.path.join(IMG_DIR, item_name)
-        if not os.path.exists(path):
-               os.makedirs(path,exist_ok=True)
-        with open(f"{BASE_DIR}/static/img/{user.username}/{item_name}/{filename}", 'wb') as f:
-            f.write(content)
-            item = Item(name=item_name, price=formated_price, image=filename, username=user.username,
-                        category=category, discount=discount, description=description, brand=brand)
-        logger.info(f"Creating Item {item}")
+        encoded_string = base64.b64encode(content).decode("utf-8")
         try:
             logger.info(f"Add to DB Item {item}")
+            item = Item(**item, category=category, image=filename, image_base64=encoded_string, username=user.username)
             db.add(item)
             db.commit()
             db.refresh(item)
@@ -141,7 +131,6 @@ async def delete_item(request: Request, background_tasks: BackgroundTasks, id: i
             return HTTPException(status_code=400, detail=f"Something went wrong, error {e}")
         try:
             dir_to_delete = abspath(f"static/img/{user.username}/{item.name}/")
-            background_tasks.add_task(delete_item_dir, path=dir_to_delete)
             redirect_url = request.url_for('get_products')
             response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
             return response
@@ -275,12 +264,8 @@ async def create_profile(request: Request, db: Session = Depends(get_session), u
     user_db = db.exec(query).first()
     if user_db:
         try:
-            IMG_DIR = os.path.join(PROJECT_ROOT, f'backend/static/img/{user.username}/profile')
-            content = await file.read()
-            if not os.path.exists(IMG_DIR):
-                os.makedirs(IMG_DIR, exist_ok=True)
-            with open(f"static/img/{user.username}/profile/{filename}", 'wb') as f:
-                f.write(content)
+           content = await file.read()
+           encoded_string = base64.b64encode(content).decode("utf-8")
         except Exception as e:
             logger.error(f"Something went wrong, error: {e}")
         user_profile = UserProfile(profile_id=user.id,
@@ -288,7 +273,7 @@ async def create_profile(request: Request, db: Session = Depends(get_session), u
                                    number=number,
                                    primary_email=primary_email,
                                    address=address,
-                                   avatar=filename)
+                                   avatar=encoded_string)
         try:
             db.add(user_profile)
             db.commit()
@@ -316,11 +301,10 @@ async def update_profile(request: Request, db: Session = Depends(get_session), u
         try:
             if form_data['file'].filename:
                 content = await form_data['file'].read()
-                with open(f"static/img/{user.username}/profile/{form_data['file'].filename}", 'wb') as f:
-                    f.write(content)
+                encoded_string = base64.b64encode(content).decode("utf-8")
         except Exception as e:
             logger.error(f"Something went wrong, error: {e}")
-        new_data = UserProfile(**dict(json_data), user=user, avatar=filename if filename else None).dict(exclude_unset=True,
+        new_data = UserProfile(**dict(json_data), user=user, avatar=encoded_string if filename else None).dict(exclude_unset=True,
                                                                                                           exclude_none=True)
         for key, value in new_data.items():
             setattr(db_profile, key, value)
@@ -328,9 +312,6 @@ async def update_profile(request: Request, db: Session = Depends(get_session), u
             db.refresh(db_profile)
     json_compatible_item_data = jsonable_encoder(db_profile)
     return JSONResponse(content=json_compatible_item_data)
-    # return templates.TemplateResponse("profile.html", {"request": request,
-    #                                                    'current_user': user.username,
-    #                                                    'profile': db_profile })
 
 @app.get("/categories", status_code=status.HTTP_200_OK, include_in_schema=False)
 async def get_category(request: Request,  db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -410,3 +391,14 @@ async def get_items_in_cart(request: Request, db: Session=Depends(get_session), 
                                                      'current_user': user.username,
                                                      'profile': profile,
                                                      'avatar':avatar})
+
+
+def create_categories(engine):
+    with Session(engine) as session:
+        cat = session.query(Category).all()
+        if not cat:
+            for c in Categories:
+                category = Category(name=c)
+                session.add(category)
+            session.commit()
+            session.refresh(category)

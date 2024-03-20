@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Response
+from fastapi import APIRouter, Query, Response, BackgroundTasks
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi import Request, Depends, HTTPException, status
@@ -12,8 +12,10 @@ from typing import Optional, List, Annotated, Union
 from auth.oauth import get_current_user
 from my_logger import detailed_logger
 from routers.categories import get_category_items
+from helper import delete_item_dir
 import routers.reviews
-import re
+import re, os
+from os.path import abspath
 
 PROTECTED = [Depends(get_current_user)]
 
@@ -49,7 +51,7 @@ def get_items(db: Session = Depends(get_session), user: User = Depends(get_curre
         items = ItemActions().get_items(db=db)
         items = jsonable_encoder(items)
         for item in items:
-            item.update({'discount_price' : round((item.get('price')
+            item.update({'discount_price': round((item.get('price')
                                                 - item.get('price') * item.get('discount')
                                                 if item.get('discount') else item.get('price')),2)})
             item_reviews = routers.reviews.ReviewActions().get_item_reviews(db=db, id=item.get('id'))
@@ -58,8 +60,8 @@ def get_items(db: Session = Depends(get_session), user: User = Depends(get_curre
                 if result:
                     rating = sum(result) / len(result)
                     item.update({'rating':round(rating),
-                                'review_number': len(result),
-                                'rating_float': float(sum(result) / len(result))})
+                                 'review_number': len(result),
+                                 'rating_float': float(sum(result) / len(result))})
             else:
                 item.update({'rating': 0, 'review_number': 0, 'rating_float': 0})
         items_in_cart = [item for item in items
@@ -87,7 +89,6 @@ def get_items(db: Session = Depends(get_session), user: User = Depends(get_curre
 async def read_items(q: List[str] = Query(None), db: Session = Depends(get_session)):
     query_filters = []
     categories_user_input = ["Laptops", "Smartphones", "Tablets", "Smartwatches", "TV"]
-    print('q', q)
     if q:
         for category_name in categories_user_input:
             if category_name.lower().startswith(q[0].lower()):
@@ -95,8 +96,6 @@ async def read_items(q: List[str] = Query(None), db: Session = Depends(get_sessi
                 return items_in_category.items
     if q:
         for param in q:
-            print('param', param)
-            # query_filters.append(Item.name.contains(param.lower()))
             query_filters.append(Item.name.ilike(f"%{param}%"))
 
     query = db.query(Item)
@@ -149,8 +148,14 @@ async def update_item(request: Request, item_id: int, item_update: schemas.ItemU
     return item
 
 @items_router.delete("/delete/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_item_by_id(item_id: int, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+def delete_item_by_id(item_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+    item = ItemActions().get_item_by_id(db=db, id=item_id)
     ItemActions().delete_item_by_id(db=db, id=item_id)
+    dir_to_delete = os.path.abspath(os.path.join('static/img', user.username, item.name))
+    if os.path.exists(dir_to_delete):
+        background_tasks.add_task(delete_item_dir, path=dir_to_delete)
+    else:
+        logger.error(f"Directory does not exist: {dir_to_delete}")
 
 @items_router.get("/user-items-in-cart", status_code=status.HTTP_200_OK, include_in_schema=True)
 def get_user_items_in_cart(db: Session=Depends(get_session), user: User = Depends(get_current_user)):
@@ -175,7 +180,7 @@ async def update_basket(request: Request, db: Session = Depends(get_session), us
     data = await request.json()
     item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
     new_dict = {user.username: {"in_cart": True}}
-    basket = dict(item.in_cart, **new_dict )
+    basket = dict(item.in_cart, **new_dict)
     item.in_cart = basket
     db.commit()
     db.refresh(item)
@@ -198,7 +203,7 @@ async def update_favorites(request: Request, db: Session = Depends(get_session),
 @items_router.post("/remove-from-favorites", status_code=status.HTTP_200_OK,  include_in_schema=True)
 async def remove_from_favorites(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     data = await request.json()
-    print('remove-from-favorites', data)
+    logger.info('remove-from-favorites', data)
     item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
     new_dict = {user.username: {"liked": False}}
     favorites = dict(item.liked, **new_dict )
@@ -210,7 +215,7 @@ async def remove_from_favorites(request: Request, db: Session = Depends(get_sess
 @items_router.post("/checkout", status_code=status.HTTP_200_OK,  include_in_schema=True)
 async def checkout(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     form_data = await request.form()
-    print('data checkout', form_data)
+    logger.info('data checkout', form_data)
     return JSONResponse(content="Your Order has been processed!")
     # item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
     # new_dict = {user.username: {"liked": True}}

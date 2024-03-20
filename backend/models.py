@@ -7,12 +7,13 @@ from sqlmodel import SQLModel, Field, Relationship, Column, VARCHAR
 from sqlalchemy import JSON
 from sqlalchemy_utils import ChoiceType
 import enum
-# from enum import Enum as enum
 from typing import Optional, List
 import datetime
-import uuid
+import uuid, base64
 from enum import Enum
 from auth.oauth import pwd_context
+from helper import default_avatar_base64
+
 
 class BaseSQLModel(SQLModel):
     def __init__(self, **kwargs):
@@ -50,6 +51,7 @@ class UserRead(SQLModel):
     id: int
     username: Optional[str]
 
+
 class UserProfile(BaseSQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
     profile_id: int = Field(default=None, foreign_key="user.id", unique=True)
@@ -67,6 +69,7 @@ class Item(SQLModel, table=True):
     date:         Optional[datetime.datetime] = Field(default=datetime.datetime.now().replace(microsecond=0), nullable=False)
     price:        Optional[decimal.Decimal] = Field(default=0, max_digits=6, decimal_places=2)
     image:        Optional[str] = Field(default="no-image.png")
+    image_base64: Optional[str] = Field(default=None)
     reviews:      Optional[List['Review']] = Relationship(sa_relationship_kwargs={"cascade": "delete"}, back_populates='item')
     category_id:  Optional[int] = Field(default=None, foreign_key="category.id")
     category:     Optional['Category'] = Relationship(back_populates='items')
@@ -78,7 +81,6 @@ class Item(SQLModel, table=True):
     discount:     Optional[decimal.Decimal]
     quantity:     Optional[int] = Field(default=1)
     brand:        Optional[str] = Field(default=None)
-
     class Config:
         arbitrary_types_allowed = True
 
@@ -109,9 +111,3 @@ class Review(SQLModel, table=True):
     created_by:   Optional[str]    = Field(default=None, foreign_key="user.username")
     user:         Optional['User'] = Relationship(back_populates='reviews')
     date:         Optional[datetime.datetime] = Field(default=datetime.datetime.now().replace(microsecond=0), nullable=False)
-
-# class Cart(BaseSQLModel, table=True):
-#       id: Optional[int] = Field(default=None, primary_key=True)
-#       items: Optional[List[Item]] = Relationship(back_populates='cart')
-#       username: str = Field(default=None, foreign_key="user.username", unique=True)
-#       user: Optional[User] = Relationship(back_populates='cart')

@@ -133,7 +133,7 @@
           >
             <div class="d-flex align-items-center">
               <img
-                :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
+                :src="`data:image/jpeg;base64,${item.image_base64}`"
                 class="mr-2"
                 style="
                   width: 45px;
@@ -220,7 +220,7 @@
           >
             <div class="d-flex align-items-center">
               <img
-                :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
+                :src="`data:image/jpeg;base64,${item.image_base64}`"
                 class="mr-2"
                 style="
                   width: 45px;
@@ -289,7 +289,7 @@
           >
             <img
               v-if="profile"
-              :src="`${backendEndpoint}/static/img/${profile.primary_email}/profile/${profile.avatar}`"
+              :src="`data:image/jpeg;base64,${profile.avatar}`"
               width="50"
               height="50"
               class="rounded-circle"

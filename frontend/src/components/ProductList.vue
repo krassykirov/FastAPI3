@@ -26,14 +26,7 @@
         "
       ></span>
       <img
-        :src="
-          `${backendEndpoint}/static/img/` +
-          product.username +
-          '/' +
-          product.name +
-          '/' +
-          product.image
-        "
+        :src="`data:image/jpeg;base64,${product.image_base64}`"
         class="card-img-top"
         @click="redirectToItemFromProduct(product.id)"
         style="cursor: pointer"
