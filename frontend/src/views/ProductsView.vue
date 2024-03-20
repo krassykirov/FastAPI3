@@ -16,6 +16,31 @@
         @redirectToItemFromNavbar="redirectToItemFromNavbar"
       />
     </nav>
+    <div class="submenu">
+      <nav
+        aria-label="breadcrumb"
+        style="
+          margin-top: 1%;
+          margin-left: 0;
+          font-size: 14px;
+          --bs-breadcrumb-divider: '|';
+        "
+      >
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item" :class="{ active: isActiveLink('home') }">
+            <a @click="goToAllProducts">All Products</a>
+          </li>
+          <li
+            v-for="(category, index) in categories"
+            :key="index"
+            class="breadcrumb-item"
+            :class="{ active: isActiveCategory(category[0]) }"
+          >
+            <a @click="selectCategory(category[0])">{{ category[0] }}</a>
+          </li>
+        </ol>
+      </nav>
+    </div>
     <div class="product-container">
       <div class="filter-products-container row col-2">
         <div class="filter-card">
@@ -299,22 +324,9 @@
           <img :src="require('@/assets/loading2.gif')" />
         </div>
       </template>
-      <div class="container" style="padding-left: 0; margin-left: 0">
+      <div class="main-filter-container">
         <template v-if="appliedFilters && appliedFilters.length > 0">
-          <div
-            class="container"
-            style="
-              margin-top: 4%;
-              border: 1px solid #cfcdcd;
-              margin-left: 0;
-              margin-bottom: 0;
-              width: 1187px !important;
-              max-height: 200px;
-              display: flex; /* Use flexbox to arrange items horizontally */
-              flex-direction: column; /* Arrange items in a column */
-            "
-          >
-            <!-- Area 1: Filters -->
+          <div class="apply-filter-container">
             <div>
               <div
                 style="
@@ -326,7 +338,9 @@
               >
                 Active Filters ({{ appliedFilters.length }}) Products Found ({{
                   paginatedProducts.length
-                }}/{{ filteredProducts.length }})
+                }}/{{ filteredProducts.length }}) Page({{ this.currentPage }}/{{
+                  totalPages
+                }})
               </div>
               <button
                 v-for="(filter, index) in appliedFilters"
@@ -355,7 +369,6 @@
               </button>
             </div>
             <hr />
-
             <!-- Area 2: Sort button, Reset Button, Select -->
             <div
               style="display: flex; flex-direction: row; justify-content: left"
@@ -427,46 +440,47 @@
             !isLoading && filteredProducts && filteredProducts.length === 0
           "
         >
-          <img
-            :src="require('@/assets/no_result.gif')"
-            style="margin-left: 15%"
-          />
+          <div style="align-items: center; margin-left: 10%">
+            <p style="margin-left: 12%; margin-top: 5px; font-size: 15px">
+              No products were found matching your selection. Use fewer filters
+              or remove all
+            </p>
+            <img :src="require('@/assets/no_result.gif')" />
+          </div>
         </template>
         <nav
           v-if="totalPages > 1"
           aria-label="Pagination"
-          style="margin-top: 30px; margin-left: 30%"
+          class="pagination"
+          style="margin-top: 30px; margin-left: -190px"
         >
-          <ul class="pagination justify-content-left">
-            <li class="page-item" :class="{ disabled: currentPage === 1 }">
-              <button
-                class="page-link"
-                @click="prevPage"
-                :disabled="currentPage === 1"
-              >
-                Prev
-              </button>
-            </li>
+          <button
+            class="arrow"
+            id="prevPage"
+            :disabled="currentPage === 1"
+            @click="prevPage"
+          >
+            ← <span class="nav-text">PREV</span>
+          </button>
+          <div class="pages">
             <template v-for="page in visiblePages" :key="page">
-              <li class="page-item" :class="{ active: currentPage === page }">
-                <button class="page-link" @click="setCurrentPage(page)">
-                  {{ page }}
-                </button>
-              </li>
-            </template>
-            <li
-              class="page-item"
-              :class="{ disabled: currentPage === totalPages }"
-            >
-              <button
-                class="page-link"
-                @click="nextPage"
-                :disabled="currentPage === totalPages"
+              <div
+                class="page-number"
+                :class="{ active: currentPage === page }"
+                @click="setCurrentPage(page)"
               >
-                Next
-              </button>
-            </li>
-          </ul>
+                {{ page }}
+              </div>
+            </template>
+          </div>
+          <button
+            class="arrow"
+            id="nextPage"
+            :disabled="currentPage === totalPages"
+            @click="nextPage"
+          >
+            <span class="nav-text">NEXT</span> →
+          </button>
         </nav>
       </div>
     </div>
@@ -758,6 +772,44 @@ export default {
     }
   },
   methods: {
+    isActiveLink(link) {
+      return this.$route.name === link || !this.$route.name
+    },
+    isActiveCategory(category) {
+      return (
+        this.$route.name === 'category' &&
+        this.$route.params.category === category
+      )
+    },
+    goHome() {
+      this.$router.push({ name: 'NewHome' })
+    },
+    goToAllProducts() {
+      this.$router.push({ name: 'home' })
+      // window.location.assign('/products')
+      this.$nextTick(() => {
+        window.scrollTo({ top: 0, behavior: 'auto' })
+      })
+    },
+    selectCategory(category) {
+      this.$store.commit('SET_SELECTED_BRANDS', [])
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]')
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = false
+      })
+      this.$store
+        .dispatch('updateProductRange', category)
+        .then(() => {
+          this.$router.push({ name: 'category', params: { category } })
+          window.scrollTo({
+            top: 0,
+            behavior: 'auto'
+          })
+        })
+        .catch(error => {
+          throw error
+        })
+    },
     changeItemsPerPage(event) {
       this.itemsPerPage = parseInt(event.target.value)
       this.setCurrentPage(1)
@@ -913,51 +965,19 @@ export default {
       if (this.currentPage < this.totalPages) {
         this.currentPage++
       }
-      this.scrollToTop()
+      window.scrollTo({ top: 0, behavior: 'auto' })
     },
     prevPage() {
       if (this.currentPage > 1) {
         this.currentPage--
       }
-      this.scrollToTop()
+      window.scrollTo({ top: 0, behavior: 'auto' })
     },
     setCurrentPage(page) {
       this.currentPage = page
       console.log('this.currentPage ', this.currentPage)
-      this.scrollToTop()
-      // if (page < 1) {
-      //   this.currentPage = 1
-      // } else if (page > this.totalPages) {
-      //   this.currentPage = this.totalPages
-      // } else {
-      //   this.currentPage = page
-      // }
-      // this.scrollToTop()
+      window.scrollTo({ top: 0, behavior: 'auto' })
     },
-    // updatePaginationControls() {
-    //   if (this.paginatedProducts.length < 32) {
-    //     this.totalPages = 1
-    //     this.currentPage = 1
-    //     // this.visiblePages = [1]
-    //   } else {
-    //     this.totalPages = Math.ceil(
-    //       this.filteredProducts.length / this.itemsPerPage
-    //     )
-    //     if (this.totalPages < this.currentPage) {
-    //       // this.currentPage = this.totalPages
-    //       this.totalPages = 1
-    //       this.currentPage = 1
-    //       this.visiblePages = [1]
-    //     }
-    //     const start = Math.max(1, this.currentPage - this.visiblePageRange)
-    //     const end = Math.min(this.totalPages, start + this.visiblePageRange * 2)
-    //     const pages = []
-    //     for (let i = start; i <= end; i++) {
-    //       pages.push(i)
-    //     }
-    //     this.visiblePages = pages
-    //   }
-    // },
     updateProductRange() {
       const prices = this.$store.state.products.map(product => product.price)
       this.$store.state.productMin = Math.ceil(Math.min(...prices))
@@ -1083,5 +1103,97 @@ export default {
 .remove-filter-btn:hover .remove-icon {
   opacity: 1;
   border-bottom: 2px solid darkred;
+}
+.page {
+  width: 300px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.page li {
+  list-style: none;
+  margin: 10px auto;
+  padding: 12px;
+  background: white;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.pagination {
+  text-align: center;
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  width: auto; /* Change width to auto */
+}
+
+.page-number {
+  cursor: pointer;
+  font-size: 1em;
+  background-color: white;
+  color: #999;
+  border-radius: 50%;
+  height: 30px;
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.4s ease;
+  margin: 2px;
+}
+.pagination .active {
+  font-size: 1.2em;
+  height: 30px;
+  width: 30px;
+  background-color: #0057b3;
+  color: white;
+}
+
+.pagination button {
+  width: 120px;
+  padding: 8px 16px;
+  background-color: #ffffff00;
+  color: #0057b3;
+  border: none;
+  cursor: pointer;
+  margin: 0 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pagination button:hover {
+  color: #0056b3;
+}
+
+.pagination button:disabled {
+  background-color: #ffffff00;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+#prevPage {
+  margin-right: 5px;
+}
+
+#nextPage {
+  margin-left: 5px;
+}
+
+.arrow {
+  font-size: 1.2em;
+}
+
+.nav-text {
+  font-size: 0.7em;
+  letter-spacing: 0.3em;
 }
 </style>

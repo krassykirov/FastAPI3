@@ -49,7 +49,7 @@
               <tr v-for="product in favorites" :key="product.id">
                 <td style="padding-top: 1%">
                   <img
-                    :src="`${backendEndpoint}/static/img/${product.username}/${product.name}/${product.image}`"
+                    :src="`data:image/jpeg;base64,${product.image_base64}`"
                     class="img-fluid"
                     alt="Product Image"
                     style="max-width: 270px; height: 150px; object-fit: cover"

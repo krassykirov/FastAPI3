@@ -54,6 +54,10 @@ class ItemRead(BaseModel):
     rating: Optional[int]
     review_number: Optional[int]
     rating_float: Optional[decimal.Decimal]
+    quantity:     Optional[int]
+    brand:        Optional[str]
+    image_base64: Optional[str]
+    # image_base64: Optional[str]
     class Config:
         orm_mode = True
         schema_extra = {
@@ -69,7 +73,8 @@ class ItemRead(BaseModel):
             'liked': "false",
             'discount': 0.2,
             'discount_price': '1009.11',
-            'quantity': 1
+            'quantity': 1,
+            'brand': 'ASUS'
            }
         }
 

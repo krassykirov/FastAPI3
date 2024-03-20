@@ -16,27 +16,30 @@
         @redirectToItemFromNavbar="redirectToItemFromNavbar"
       />
     </nav>
-    <div
-      class="toast"
-      id="cartToast"
-      role="alert"
-      aria-live="assertive"
-      aria-atomic="true"
-      data-bs-autohide="false"
-      style="
-        position: fixed;
-        top: 12%;
-        right: 5%;
-        transform: translate(0, -50%);
-        width: 250px;
-        z-index: 1000;
-      "
-    >
-      <div
-        class="toast-body"
-        id="cartToastBody"
-        style="font-weight: 600; font: 1.1em"
-      ></div>
+    <div class="submenu">
+      <nav
+        aria-label="breadcrumb"
+        style="
+          margin-top: 1%;
+          margin-left: 0;
+          font-size: 14px;
+          --bs-breadcrumb-divider: '|';
+        "
+      >
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item" :class="{ active: isActiveLink('home') }">
+            <a @click="goToAllProducts">All Products</a>
+          </li>
+          <li
+            v-for="(category, index) in categories"
+            :key="index"
+            class="breadcrumb-item"
+            :class="{ active: isActiveCategory(category[0]) }"
+          >
+            <a @click="selectCategory(category[0])">{{ category[0] }}</a>
+          </li>
+        </ol>
+      </nav>
     </div>
     <div class="product-container">
       <div class="filter-products-container row col-2">
@@ -306,7 +309,7 @@
         </div>
       </template>
       <template v-if="selectedProducts && selectedProducts.length > 0">
-        <div class="product-list" id="mycard" style="margin-top: 3%">
+        <div class="product-list-category" id="mycard" style="margin-top: 0">
           <transition-group name="product-fade">
             <ProductList
               v-for="product in selectedProducts"
@@ -339,6 +342,28 @@
       </template>
     </div>
     <Footer />
+    <div
+      class="toast"
+      id="cartToast"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+      data-bs-autohide="false"
+      style="
+        position: fixed;
+        top: 12%;
+        right: 5%;
+        transform: translate(0, -50%);
+        width: 250px;
+        z-index: 1000;
+      "
+    >
+      <div
+        class="toast-body"
+        id="cartToastBody"
+        style="font-weight: 600; font: 1.1em"
+      ></div>
+    </div>
   </div>
 </template>
 <script>
@@ -519,6 +544,45 @@ export default {
     }
   },
   methods: {
+    isActiveLink(link) {
+      console.log('link', link)
+      return this.$route.name === 'home'
+    },
+    isActiveCategory(category) {
+      return (
+        this.$route.name === 'category' &&
+        this.$route.params.category === category
+      )
+    },
+    goHome() {
+      this.$router.push({ name: 'NewHome' })
+    },
+    goToAllProducts() {
+      this.$router.push({ name: 'home' })
+      // window.location.assign('/products')
+      this.$nextTick(() => {
+        window.scrollTo({ top: 0, behavior: 'auto' })
+      })
+    },
+    selectCategory(category) {
+      this.$store.commit('SET_SELECTED_BRANDS', [])
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]')
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = false
+      })
+      this.$store
+        .dispatch('updateProductRange', category)
+        .then(() => {
+          this.$router.push({ name: 'category', params: { category } })
+          window.scrollTo({
+            top: 0,
+            behavior: 'auto'
+          })
+        })
+        .catch(error => {
+          throw error
+        })
+    },
     filterProductsByCategory(categoryID) {
       return this.$store.getters.filteredProductsByCategory(categoryID)
     },

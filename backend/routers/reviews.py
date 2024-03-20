@@ -7,8 +7,9 @@ from crud.crud import ReviewActions, ItemActions
 from models import Review, User
 from auth.oauth import get_current_user
 from typing import List
+from my_logger import detailed_logger
 
-# PROTECTED = [Depends(get_current_user)]
+logger = detailed_logger()
 
 reviews_router = APIRouter(prefix='/api/reviews', tags=["reviews"],
                             responses={404: {"description": "Not found"}},)
@@ -63,7 +64,7 @@ def get_item_reviews_rating_new(request: Request, db: Session=Depends(get_sessio
                     review = {item.id: {'rating':0, 'review_number': 0, 'rating_float': 0} }
                 all_reviews.append(review)
     except Exception as e:
-        print('error', e)
+        logger.error('error', e)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Unable to fetch items reviews!")
     return all_reviews
 

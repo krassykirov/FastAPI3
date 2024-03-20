@@ -1,19 +1,10 @@
 import shutil
 from functools import wraps
-from models import Categories, Category
-from db import get_session
 from sqlalchemy.orm import Session
+from my_logger import detailed_logger
+import base64 
 
-
-def delete_item_dir(path):
-    try:
-        print(f"Deleting item directory: {path}")
-        shutil.rmtree(path) # onerror={'error'}
-    except OSError as e:
-        print(f"Error deleting the directory: {path}, {e}")
-    except Exception as e:
-        print(f"Something went wrong, error: {e}")
-    return True
+logger = detailed_logger()
 
 def wrap(func):
     @wraps(func)
@@ -29,12 +20,28 @@ def write_log(message=""):
         content = f"Log message: {message}"+ '\n'
         log_file.write(content)
 
-def create_categories(engine):
-    with Session(engine) as session:
-        cat = session.query(Category).all()
-        if not cat:
-            for c in Categories:
-                category = Category(name=c)
-                session.add(category)
-            session.commit()
-            session.refresh(category)
+def discounted_price(price, discount):
+        if discount:
+            discounted_price = round(price - price * discount, 2)
+        else:
+            discounted_price = round(price, 2)
+        return discounted_price
+
+def delete_item_dir(path):
+    try:
+        shutil.rmtree(path)
+        logger.info(f"Done deleting item directory: {path}")
+    except OSError as e:
+        logger.error(f"Error deleting the directory: {path}, {e}")
+    except Exception as e:
+        logger.error(f"Something went wrong, error: {e}")
+    return True
+
+
+def encode_image_to_base64(image_path):
+    with open(image_path, 'rb') as file:
+        content = file.read()
+        return base64.b64encode(content).decode("utf-8")
+
+default_avatar_path = 'static/img/img_avatar.png'
+default_avatar_base64 = encode_image_to_base64(default_avatar_path)

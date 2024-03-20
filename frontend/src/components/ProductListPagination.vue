@@ -7,7 +7,7 @@
           :key="product.id"
           class="card"
           :data-category="product.category_id"
-          style="margin: 0.1%; padding: 0.1%"
+          style="margin: 0.15%; padding: 0.15%"
         >
           <div class="card-body" style="padding: 1%">
             <span
@@ -30,7 +30,7 @@
               "
             ></span>
             <img
-              :src="`${backendEndpoint}/static/img/${product.username}/${product.name}/${product.image}`"
+              :src="`data:image/jpeg;base64,${product.image_base64}`"
               class="card-img-top"
               @click="redirectToItemFromProduct(product.id)"
               style="cursor: pointer"
@@ -123,6 +123,10 @@
   </div>
   <template v-else>
     <div style="align-items: center; margin-left: 10%">
+      <p style="margin-left: 22%; margin-top: 5px; font-size: 15px">
+        No products were found matching your selection. Use fewer filters or
+        remove all
+      </p>
       <img :src="require('@/assets/no_result.gif')" />
     </div>
   </template>

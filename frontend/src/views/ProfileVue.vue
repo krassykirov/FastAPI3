@@ -32,7 +32,7 @@
     <div class="container" style="margin-top: 2%">
       <div class="card" v-if="profile">
         <img
-          :src="`${backendEndpoint}/static/img/${profile.primary_email}/profile/${profile.avatar}`"
+          :src="`data:image/jpeg;base64,${profile.avatar}`"
           id="avatar-image"
           style="width: 100%"
           class="img-top"

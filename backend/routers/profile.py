@@ -36,8 +36,8 @@ def get_profiles(db: Session = Depends(get_session)) -> List[UserProfile]:
 def get_profile(user_id: int, db: Session = Depends(get_session), user: User = Depends(get_current_user)) -> UserProfile:
     profile = ProfileActions().get_profile_by_user_id(db=db, user_id=user_id)
     if profile is None:
-        logger.info(f"No profile with user_id: {user_id} found")
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No profile with user_id: {user_id} found")
+        logger.info(f"No user profile found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No user profile found")
     return profile
 
 @profile_router.post("/", status_code=status.HTTP_201_CREATED, include_in_schema=True)
@@ -45,11 +45,7 @@ async def create_profile(user_profile: UserProfile, db: Session = Depends(get_se
     avatar = 'img_avatar.png'
     IMG_DIR = os.path.join(PROJECT_ROOT, f'static/img/{user_profile.primary_email}/profile/')
     SOURCE_DIR = os.path.join(PROJECT_ROOT, f'static/img/img_avatar.png')
-    print('PROJECT_ROOT', PROJECT_ROOT)
-    print('IMG_DIR', IMG_DIR)
-    print('user_profile', user_profile)
     if not os.path.exists(IMG_DIR):
-                print('creating dir', IMG_DIR)
                 os.makedirs(IMG_DIR, exist_ok=True)
                 shutil.copy2(SOURCE_DIR, IMG_DIR)
     profile = UserProfile(profile_id=user.id,
