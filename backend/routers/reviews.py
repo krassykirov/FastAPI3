@@ -9,6 +9,8 @@ from auth.oauth import get_current_user
 from typing import List
 from my_logger import detailed_logger
 
+# PROTECTED = [Depends(get_current_user)]
+
 logger = detailed_logger()
 
 reviews_router = APIRouter(prefix='/api/reviews', tags=["reviews"],
@@ -18,10 +20,13 @@ reviews_router = APIRouter(prefix='/api/reviews', tags=["reviews"],
 @reviews_router.get("/{id}", status_code=status.HTTP_200_OK, response_model=Review)
 def get_review_by_id( id: int, db: Session = Depends(get_session)):
     """ Return review by given id"""
-    comment = ReviewActions().get_review_by_id(db=db, id=id)
-    if comment is None:
+    review = ReviewActions().get_review_by_id(db=db, id=id)
+    user = db.query(User).filter(User.username==review.created_by).first()
+    if review is None:
         raise HTTPException(status_code=404, detail=f"No comment with id {id} found")
-    return comment
+    if user.profile:
+       review.user_avatar = user.profile[0].avatar
+    return review
 
 @reviews_router.get("/item/by_user", status_code=status.HTTP_200_OK, response_model=list[Review])
 def get_item_reviews_by_user( item_id: int, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -40,6 +45,10 @@ def get_item_reviews( item_id: int, db: Session = Depends(get_session)):
     reviews = ReviewActions().get_item_reviews(db=db, id=item_id)
     if reviews is None:
         raise HTTPException(status_code=404, detail=f"No reviews found")
+    for review in reviews:
+        user = db.query(User).filter(User.username==review.created_by).first()
+        if user.profile:
+            review.user_avatar = user.profile[0].avatar
     return reviews # JSONResponse(content= comments)
 
 @reviews_router.get("/item/rating", status_code=status.HTTP_200_OK, include_in_schema=True)

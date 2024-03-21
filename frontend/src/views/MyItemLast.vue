@@ -278,15 +278,15 @@
               <!-- Left Side -->
               <div style="flex: 1; display: flex; align-items: center">
                 <img
-                  v-if="profile"
-                  :src="`${backendEndpoint}/static/img/${user}/profile/${profile.avatar}`"
+                  v-if="review.user_avatar"
+                  :src="`data:image/jpeg;base64,${review.user_avatar}`"
                   width="50"
                   height="50"
                   class="rounded-circle"
                 />
                 <img
                   v-else
-                  :src="`${backendEndpoint}/static/img/img_avatar.png`"
+                  :src="require('@/assets/img_avatar.png')"
                   width="50"
                   height="50"
                   class="rounded-circle"
@@ -573,8 +573,13 @@ export default {
     async getProduct(itemId) {
       try {
         const resolvedItemId = itemId || this.$route.params.itemId
+        const headers = {
+          Authorization: `Bearer ${this.$store.state.accessToken}`,
+          Accept: 'application/json'
+        }
         const res = await fetch(
-          `${config.backendEndpoint}/api/items/item/${resolvedItemId}`
+          `${config.backendEndpoint}/api/items/item/${resolvedItemId}`,
+          { headers: headers }
         )
         if (!res.ok) {
           throw new Error(`HTTP error! Status: ${res.status}`)

@@ -41,7 +41,7 @@ class User(SQLModel, table=True):
     password_hash: str = ""
     items: List['Item'] = Relationship(sa_relationship_kwargs={"cascade": "delete"}, back_populates="owner")
     reviews: List['Review'] = Relationship(sa_relationship_kwargs={"cascade": "delete"}, back_populates="user")
-    profile: Optional['UserProfile'] = Relationship(sa_relationship_kwargs={"cascade": "delete"},back_populates='user')
+    profile: Optional['UserProfile'] = Relationship(sa_relationship_kwargs={"cascade": "delete"}, back_populates='user')
     def set_password(self,password):
         self.password_hash = pwd_context.hash(password)
     def verify_password(self,password):
@@ -110,4 +110,5 @@ class Review(SQLModel, table=True):
     rating:       Optional[int]    = Field(default=None)
     created_by:   Optional[str]    = Field(default=None, foreign_key="user.username")
     user:         Optional['User'] = Relationship(back_populates='reviews')
+    user_avatar:  Optional[str]    = Field(default=None)
     date:         Optional[datetime.datetime] = Field(default=datetime.datetime.now().replace(microsecond=0), nullable=False)

@@ -545,8 +545,7 @@ export default {
   },
   methods: {
     isActiveLink(link) {
-      console.log('link', link)
-      return this.$route.name === 'home'
+      return this.$route.name === link
     },
     isActiveCategory(category) {
       return (

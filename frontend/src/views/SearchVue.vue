@@ -71,12 +71,14 @@
                   />
                 </td>
                 <td
+                  v-if="product"
                   style="cursor: pointer; padding-top: 1%; text-align: center"
                 >
                   <h6 @click="redirectToItemFromCart(product.id)">
                     {{ truncateName(product.name, 45) }}
                   </h6>
                   <p
+                    v-if="product.description"
                     @click="redirectToItemFromCart(product.id)"
                     style="
                       font-size: 0.95em;
@@ -121,7 +123,7 @@
                   </button>
                 </td>
                 <!-- prettier-ignore -->
-                <td style="padding-top: 5.3%; padding-right: 10px">
+                <td v-if="product" style="padding-top: 5.3%; padding-right: 10px">
                   <span style="font-size: 1.1rem;">$</span>
                   <span style="font-size: 1.1rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
                   <span style="font-size: 0.8em; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>

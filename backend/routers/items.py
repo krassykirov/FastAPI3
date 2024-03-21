@@ -24,36 +24,37 @@ logger = detailed_logger()
 items_router = APIRouter(prefix='/api/items', tags=["items"],
                           responses={404: {"description": "Not found"}})
 
-@items_router.get("/item/{item_id}", status_code=status.HTTP_200_OK, response_model=schemas.ItemRead)
-def get_item_by_id( item_id: int, db: Session = Depends(get_session)) -> schemas.ItemRead:
-    item = ItemActions().get_item_by_id(db=db, id=item_id)
-    item = jsonable_encoder(item)
-    if item is None:
-        raise HTTPException(status_code=404, detail=f"No item with id: {item_id} found")
-    item.update({'discount_price' : round((item.get('price')
-                                            - item.get('price') * item.get('discount')
-                                            if item.get('discount') else item.get('price')),2)},)
-    item_reviews = routers.reviews.ReviewActions().get_item_reviews(db=db, id=item.get('id'))
-    if item_reviews:
-        result = [item.rating for item in item_reviews if item.rating]
-        if result:
-           rating = sum(result) / len(result)
-           item.update({'rating':round(rating),
-                        'review_number': len(result),
-                        'rating_float': float(sum(result) / len(result))})
-    else:
-        item.update({'rating': 0, 'review_number': 0, 'rating_float': 0})
-    return item
+@items_router.get("/item/{item_id}", status_code=status.HTTP_200_OK)
+def get_item_by_id( item_id: int, db: Session = Depends(get_session), user: User = Depends(get_current_user)) -> schemas.ItemRead:
+    try:
+        item = ItemActions().get_item_by_id(db=db, id=item_id)
+        updated_item = update_item_props(db=db, item=item)
+        if update_item:
+            return updated_item
+        else:
+          raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Item with id:{item_id} not found")
+    except Exception as e:
+        logger.error(f"Error fetching item, error message: {e}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error fetchin item {e}")
 
 @items_router.get("/", status_code=status.HTTP_200_OK)
 def get_items(db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     try:
         items = ItemActions().get_items(db=db)
+        updated_items = update_items(db=db, items=items, user=user)
+        return updated_items
+    except Exception as e:
+        logger.error(f"Error fetching items, error message: {e}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error fetching items")
+
+def update_items(items: List[Item], db: Session , user: User):
         items = jsonable_encoder(items)
         for item in items:
-            item.update({'discount_price': round((item.get('price')
-                                                - item.get('price') * item.get('discount')
-                                                if item.get('discount') else item.get('price')),2)})
+            # item['discount_price'] = round(item.get('price') - item.get('price') * item.get('discount'), 2) if item.get('discount') else round(item.get('price'), 2)
+            if item.get('discount'):
+                item['discount_price'] = round(item.get('price') - item.get('price') * item.get('discount'), 2)
+            else:
+                item['discount_price'] = round(item.get('price'), 2)
             item_reviews = routers.reviews.ReviewActions().get_item_reviews(db=db, id=item.get('id'))
             if item_reviews:
                 result = [item.rating for item in item_reviews if item.rating]
@@ -64,26 +65,44 @@ def get_items(db: Session = Depends(get_session), user: User = Depends(get_curre
                                  'rating_float': float(sum(result) / len(result))})
             else:
                 item.update({'rating': 0, 'review_number': 0, 'rating_float': 0})
+
         items_in_cart = [item for item in items
                                 for k, v in item.get('in_cart').items()
                                 if k == user.username and v.get('in_cart') == True]
         items_liked =  [item for item in items
                                 for k, v in item.get('liked').items()
                                 if k == user.username and v.get('liked') == True]
-        total = sum([item.get('price') for item in items_in_cart])
-        json_items = {'items': items,
-                      'items_in_cart': items_in_cart,
-                      'items_liked': items_liked,
-                      'len_items_in_cart': len(items_in_cart),
-                      'total': total,
-                      'user': user.username,
-                      'user_id': user.id}
-        if items is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No items found")
-        return json_items
-    except Exception as e:
-        logger.error(f"Error fetching items, error message: {e}")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error fetching items")
+        total = sum(item['price'] for item in items_in_cart)
+
+        updated_items = {
+            'items': items,
+            'items_in_cart': items_in_cart,
+            'items_liked': items_liked,
+            'len_items_in_cart': len(items_in_cart),
+            'total': total,
+            'user': user.username,
+            'user_id': user.id
+        }
+        return updated_items
+
+def update_item_props(item: Item, db: Session):
+        item = jsonable_encoder(item)
+        if item.get('discount'):
+                item['discount_price'] = round(item.get('price') - item.get('price') * item.get('discount'), 2)
+        else:
+            item['discount_price'] = round(item.get('price'), 2)
+        item_reviews = routers.reviews.ReviewActions().get_item_reviews(db=db, id=item.get('id'))
+        if item_reviews:
+            result = [item.rating for item in item_reviews if item.rating]
+            if result:
+                rating = sum(result) / len(result)
+                item.update({'rating':round(rating),
+                                'review_number': len(result),
+                                'rating_float': float(sum(result) / len(result))})
+        else:
+            item.update({'rating': 0, 'review_number': 0, 'rating_float': 0})
+
+        return item
 
 @items_router.get("/search/")
 async def read_items(q: List[str] = Query(None), db: Session = Depends(get_session)):
