@@ -56,6 +56,7 @@
                   />
                 </td>
                 <td
+                  v-if="product"
                   style="cursor: pointer; padding-top: 1%"
                   @click="redirectToItemFromCart(product.id)"
                 >
@@ -242,6 +243,7 @@ export default {
       this.$store.dispatch('redirectToItem', itemId)
     },
     truncateName(description, maxLength) {
+      if (!description) return ''
       if (description.length > maxLength) {
         return description.substring(0, maxLength) + '..'
       }

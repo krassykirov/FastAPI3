@@ -27,7 +27,7 @@ import os, base64
 from os.path import abspath
 from my_logger import detailed_logger
 from decimal import Decimal
-from prometheus_fastapi_instrumentator import Instrumentator
+# from prometheus_fastapi_instrumentator import Instrumentator
 
 PROJECT_ROOT = Path(__file__).parent.parent # /
 BASE_DIR = Path(__file__).resolve().parent # / src
@@ -42,10 +42,10 @@ app.include_router(oauth_router)
 app.include_router(profile_router)
 # app.include_router(cart_router)
 origins = [
-    "https://salmon-grass-011456d03.4.azurestaticapps.net"
+    "https://polite-coast-0407c3703-preview.westeurope.5.azurestaticapps.net"
 ]
 
-instrumentator = Instrumentator().instrument(app)
+# instrumentator = Instrumentator().instrument(app)
 
 app.add_middleware(
     CORSMiddleware,
@@ -61,7 +61,6 @@ logger = detailed_logger()
 def on_startup():
     SQLModel.metadata.create_all(engine)
     create_categories(engine)
-    instrumentator.expose(app)
     app.mount("/static", StaticFiles(directory=Path(BASE_DIR, 'static'),html=True),name="static")
 
 @app.get("/", include_in_schema=False)

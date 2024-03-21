@@ -33,19 +33,19 @@ export default {
         store.dispatch('inactiveLogout')
       }
     }
-    const handlePopstate = function (event) {
-      if (event.state && event.state.current === '/products') {
-        window.location.assign('/products')
-      }
-    }
-    const handlePopstate2 = function (event) {
-      if (event.state && event.state.current.startsWith('/category')) {
-        let navigateTo = event.state.current
-        window.location.assign(navigateTo)
-      }
-    }
-    window.addEventListener('popstate', handlePopstate)
-    window.addEventListener('popstate', handlePopstate2)
+    // const handlePopstate = function (event) {
+    //   if (event.state && event.state.current === '/products') {
+    //     window.location.assign('/products')
+    //   }
+    // }
+    // const handlePopstate2 = function (event) {
+    //   if (event.state && event.state.current.startsWith('/category')) {
+    //     let navigateTo = event.state.current
+    //     window.location.assign(navigateTo)
+    //   }
+    // }
+    // window.addEventListener('popstate', handlePopstate)
+    // window.addEventListener('popstate', handlePopstate2)
 
     onMounted(() => {
       idle.value = false
@@ -56,8 +56,8 @@ export default {
       clearInterval(intervalId)
       lastActiveDate.value = new Date()
       inactiveTime.value = 0
-      window.removeEventListener('popstate', handlePopstate)
-      window.removeEventListener('popstate2', handlePopstate2)
+      // window.removeEventListener('popstate', handlePopstate)
+      // window.removeEventListener('popstate2', handlePopstate2)
     })
 
     watch(lastActive, () => {
