@@ -394,6 +394,8 @@ INPUT[type="checkbox"]:disabled {
 
 .apply-filter-container {
   border: 1px solid #cfcdcd !important;
+  align-items: left !important;
+  text-align: left !important;
   width: 85.5% !important;
   margin-top: 0 !important;
   padding-top: 5px !important;

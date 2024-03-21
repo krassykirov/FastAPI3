@@ -326,7 +326,7 @@
       </template>
       <div class="main-filter-container">
         <template v-if="appliedFilters && appliedFilters.length > 0">
-          <div class="apply-filter-container">
+          <div class="apply-filter-container card">
             <div>
               <div
                 style="
