@@ -70,10 +70,10 @@
             class="form-control"
             type="search"
             id="filter"
-            v-on:keyup="Search()"
             placeholder="Search by Keyword"
             aria-label="Search"
             v-model="searchQuery"
+            required
           />
           <div class="input-group-append">
             <button type="submit" class="btn btn-outline-success">
@@ -569,33 +569,8 @@ export default {
         })
       this.hideCategories()
     },
-    Search() {
-      if (
-        this.$route.path.startsWith('/category') ||
-        this.$route.path === '/products'
-      ) {
-        var input, filter, cards, cardContainer, title, i
-        input = document.getElementById('filter')
-        filter = input.value.toUpperCase()
-        cardContainer = document.getElementById('mycard')
-        cards = cardContainer.getElementsByClassName('card')
-        for (i = 0; i < cards.length; i++) {
-          title = cards[i].querySelector('.card-body h6.card-title')
-          if (title.innerText.toUpperCase().indexOf(filter) > -1) {
-            cards[i].style.display = ''
-          } else {
-            cards[i].style.display = 'none'
-          }
-        }
-      }
-    },
     async search() {
-      if (
-        this.searchQuery.trim() === '' ||
-        !this.searchQuery ||
-        this.$route.path === '/products' ||
-        this.$route.path.startsWith('/category')
-      ) {
+      if (this.searchQuery.trim() === '' || !this.searchQuery) {
         return
       }
       try {
@@ -615,10 +590,12 @@ export default {
           })
           this.$store.dispatch(
             'updateMessage',
-            `Found ${products.length} results for '${this.searchQuery}'`
+            `Found ${products.length} results for ${this.searchQuery}'`
           )
           this.$router.push('/search')
         } else {
+          document.getElementById('filter').value =
+            `No results found for "${this.searchQuery}"`
           this.$store.dispatch(
             'updateMessage',
             `Found ${products.length} results for '${this.searchQuery}'`
