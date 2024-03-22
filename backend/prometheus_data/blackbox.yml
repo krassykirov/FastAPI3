@@ -1,0 +1,50 @@
+modules:
+  http_2xx:
+    prober: http
+    http:
+  http_post_2xx:
+    prober: http
+    http:
+      method: POST
+
+  icmp:
+    prober: icmp
+    timeout: 5s
+    icmp:
+      preferred_ip_protocol: ip4
+      # payload_size: 64
+      ip_protocol_fallback: false
+      # source_ip_address: 127.0.0.1
+
+  www.google.com:
+    prober: dns
+    timeout: 5s
+    dns:
+      transport_protocol: "udp"
+      preferred_ip_protocol: "ip4"
+      query_name: "www.google.com"
+      query_type: "A"
+      valid_rcodes:
+        - NOERROR
+
+  www.microsoft.com:
+    prober: dns
+    timeout: 5s
+    dns:
+      transport_protocol: "udp"
+      preferred_ip_protocol: "ip4"
+      query_name: "www.microsoft.com"
+      query_type: "A"
+      valid_rcodes:
+        - NOERROR
+
+  # www.vmware.com:
+  #   prober: dns
+  #   timeout: 5s
+  #   dns:
+  #     transport_protocol: "udp"
+  #     preferred_ip_protocol: "ip4"
+  #     query_name: "www.vmware.com"
+  #     query_type: "A"
+  #     valid_rcodes:
+  #       - NOERROR
