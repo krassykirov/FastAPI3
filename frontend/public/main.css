@@ -66,7 +66,7 @@ padding-right: -17px;
   margin-left: 1px !important;
   margin-right: 1px !important;
   width: 17vw !important;
-  height: 23.4vw !important;
+  height: 22.6vw !important;
   justify-content: left !important;
   /* border: 2px solid #969696; */
   text-align: center !important;
@@ -361,7 +361,7 @@ INPUT[type="checkbox"]:disabled {
 .filter-products-container {
   display: flex !important;
   flex-direction: column !important;
-  margin-left: 4% !important;
+  margin-left: 5.5% !important;
   margin-top: 0 !important;
 }
 
@@ -396,10 +396,10 @@ INPUT[type="checkbox"]:disabled {
   border: 1px solid #cfcdcd !important;
   align-items: left !important;
   text-align: left !important;
-  width: 85.5% !important;
+  width: 87% !important;
   margin-top: 0 !important;
   padding-top: 5px !important;
-  padding-left: 5px !important;
+  padding-left: 10px !important;
   max-height: 200px !important;
 }
 
@@ -535,7 +535,7 @@ INPUT[type="checkbox"]:disabled {
     display: flex;
     justify-content: left;
     align-items: center;
-    margin-left: 5.5%;
+    margin-left: 6.5%;
     margin-top: 3.5%;
     margin-bottom: 0;
     height: 50px !important;

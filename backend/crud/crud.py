@@ -94,6 +94,10 @@ class CategoryActions:
 
 class ReviewActions:
 
+     def get_reviews(self, db: Session):
+        reviews = db.query(Review).all()
+        return reviews
+
      def get_review_by_id(self, db: Session, id: int):
         comment = db.query(Review).filter(Review.id == id).first()
         # comment = db.get(Review, id)

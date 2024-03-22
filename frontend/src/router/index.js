@@ -19,15 +19,15 @@ const routes = [
       isIdle: route.params.isIdle,
       lastActiveDate: route.params.lastActiveDate,
       inactiveTime: route.params.inactiveTime
-    }),
-    beforeEnter: async (to, from, next) => {
-      try {
-        await store.dispatch('getProducts')
-        next()
-      } catch (error) {
-        console.log('error', error)
-      }
-    }
+    })
+    // beforeEnter: async (to, from, next) => {
+    //   try {
+    //     await store.dispatch('getProducts')
+    //     next()
+    //   } catch (error) {
+    //     console.log('error', error)
+    //   }
+    // }
   },
   {
     path: '/',
@@ -44,16 +44,16 @@ const routes = [
     path: '/category/:category',
     name: 'category',
     component: CategoryComponent,
-    props: true,
-    beforeEnter: async (to, from, next) => {
-      try {
-        await store.dispatch('getProducts')
-        await store.dispatch('getProfile')
-        next()
-      } catch (error) {
-        // console.log('error', error)
-      }
-    }
+    props: true
+    // beforeEnter: async (to, from, next) => {
+    //   try {
+    //     await store.dispatch('getProducts')
+    //     await store.dispatch('getProfile')
+    //     next()
+    //   } catch (error) {
+    //     // console.log('error', error)
+    //   }
+    // }
   },
   {
     path: '/search',

@@ -151,25 +151,25 @@ async def login_access_token(*, request: Request, form_data: OAuth2PasswordReque
 #     response = templates.TemplateResponse("login.html",{"request":request})
 #     return response
 
-# @oauth_router.post("/signup", status_code=status.HTTP_201_CREATED, include_in_schema=False)
-# async def signup(request: Request, db: Session = Depends(get_session)):
-#     form_data = await request.form()
-#     username = form_data.get('username')
-#     passwd = form_data.get('password')
-#     passwd2 = form_data.get('password2')
-#     if (username and passwd and passwd2) and passwd == passwd2:
-#         query = select(models.User).where(models.User.username == username)
-#         user = db.exec(query).first()
-#         if user:
-#             logger.error(f"User with that name already exists!")
-#             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail=f"User with that email address already exists!")
-#         user = models.User(username=username)
-#         user.set_password(passwd)
-#         db.add(user)
-#         db.commit()
-#     # response = templates.TemplateResponse("login.html",{"request":request})
-#         return True
-#     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail=f"Password did not match!")
+@oauth_router.post("/signup", status_code=status.HTTP_201_CREATED, include_in_schema=False)
+async def signup(request: Request, db: Session = Depends(get_session)):
+    form_data = await request.form()
+    username = form_data.get('username')
+    passwd = form_data.get('password')
+    passwd2 = form_data.get('password2')
+    if (username and passwd and passwd2) and passwd == passwd2:
+        query = select(models.User).where(models.User.username == username)
+        user = db.exec(query).first()
+        if user:
+            logger.error(f"User with that name already exists!")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail=f"User with that email address already exists!")
+        user = models.User(username=username)
+        user.set_password(passwd)
+        db.add(user)
+        db.commit()
+    # response = templates.TemplateResponse("login.html",{"request":request})
+        return True
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail=f"Password did not match!")
 
 # @oauth_router.get("/signup", include_in_schema=False)
 # def login(request: Request):

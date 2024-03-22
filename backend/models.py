@@ -3,8 +3,8 @@ from datetime import date
 import decimal
 from pydantic import BaseModel, EmailStr
 from typing import Optional, Union, Dict, Any
-from sqlmodel import SQLModel, Field, Relationship, Column, VARCHAR
-from sqlalchemy import JSON
+from sqlmodel import SQLModel, Field, Relationship, Column, VARCHAR, Session
+from sqlalchemy import JSON, func
 from sqlalchemy_utils import ChoiceType
 import enum
 from typing import Optional, List
@@ -13,6 +13,7 @@ import uuid, base64
 from enum import Enum
 from auth.oauth import pwd_context
 from helper import default_avatar_base64
+from db import get_session
 
 
 class BaseSQLModel(SQLModel):
@@ -51,7 +52,6 @@ class UserRead(SQLModel):
     id: int
     username: Optional[str]
 
-
 class UserProfile(BaseSQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
     profile_id: int = Field(default=None, foreign_key="user.id", unique=True)
@@ -63,24 +63,44 @@ class UserProfile(BaseSQLModel, table=True):
     avatar:  Optional[str]
 
 class Item(SQLModel, table=True):
-    id:           Optional[int] = Field(default=None, primary_key=True)
-    name:         Optional[str] = Field(default=None, unique=True)
-    product_code: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, nullable=False)
-    date:         Optional[datetime.datetime] = Field(default=datetime.datetime.now().replace(microsecond=0), nullable=False)
-    price:        Optional[decimal.Decimal] = Field(default=0, max_digits=6, decimal_places=2)
-    image:        Optional[str] = Field(default="no-image.png")
-    image_base64: Optional[str] = Field(default=None)
-    reviews:      Optional[List['Review']] = Relationship(sa_relationship_kwargs={"cascade": "delete"}, back_populates='item')
-    category_id:  Optional[int] = Field(default=None, foreign_key="category.id")
-    category:     Optional['Category'] = Relationship(back_populates='items')
-    owner:        Optional[User] = Relationship(back_populates="items")
-    username:     Optional[str] = Field(default=None, foreign_key="user.username")
-    description:  Optional[str]
-    in_cart:      Optional[Dict[Any,Any]] = Field(default={}, sa_column=Column(JSON))
-    liked:        Optional[Dict[Any,Any]] = Field(default={}, sa_column=Column(JSON))
-    discount:     Optional[decimal.Decimal]
-    quantity:     Optional[int] = Field(default=1)
-    brand:        Optional[str] = Field(default=None)
+    id:             Optional[int] = Field(default=None, primary_key=True)
+    name:           Optional[str] = Field(default=None, unique=True)
+    product_code:   Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, nullable=False)
+    date:           Optional[datetime.datetime] = Field(default=datetime.datetime.now().replace(microsecond=0), nullable=False)
+    price:          Optional[decimal.Decimal] = Field(default=0, max_digits=6, decimal_places=2)
+    image:          Optional[str] = Field(default="no-image.png")
+    image_base64:   Optional[str] = Field(default=None)
+    reviews:        Optional[List['Review']] = Relationship(sa_relationship_kwargs={"cascade": "delete"}, back_populates='item')
+    category_id:    Optional[int] = Field(default=None, foreign_key="category.id")
+    category:       Optional['Category'] = Relationship(back_populates='items')
+    owner:          Optional[User] = Relationship(back_populates="items")
+    username:       Optional[str] = Field(default=None, foreign_key="user.username")
+    description:    Optional[str]
+    in_cart:        Optional[Dict[Any,Any]] = Field(default={}, sa_column=Column(JSON))
+    liked:          Optional[Dict[Any,Any]] = Field(default={}, sa_column=Column(JSON))
+    discount:       Optional[decimal.Decimal]
+    discount_price: Optional[decimal.Decimal]
+    quantity:       Optional[int] = Field(default=1)
+    brand:          Optional[str] = Field(default=None)
+    rating:         Optional[int] = Field(default=0)
+    review_number:  Optional[int] = Field(default=0)
+    rating_float:   Optional[decimal.Decimal] = Field(default=decimal.Decimal(0))
+
+
+    def update_aggregates(self, db: Session):
+        result = db.query(func.avg(Review.rating).label("avg_rating"),
+                          func.count(Review.id).label("review_count")).filter(Review.item_id == self.id).one()
+        self.rating = round(result.avg_rating or 0)
+        self.review_number = result.review_count or 0
+        self.rating_float = decimal.Decimal(result.avg_rating or 0)
+        db.commit()
+
+    def update_discount(self):
+        if self.discount:
+            self.discount_price = round((self.price - self.price  * self.discount), 2)
+        else:
+            self.discount_price = round((self.price), 2)
+
     class Config:
         arbitrary_types_allowed = True
 
@@ -107,7 +127,7 @@ class Review(SQLModel, table=True):
     text:         Optional[str]    = Field(default=None)
     item:         Optional['Item'] = Relationship(back_populates='reviews')
     item_id:      Optional[int]    = Field(default=None, foreign_key="item.id")
-    rating:       Optional[int]    = Field(default=None)
+    rating:       Optional[int]    = Field(default=0)
     created_by:   Optional[str]    = Field(default=None, foreign_key="user.username")
     user:         Optional['User'] = Relationship(back_populates='reviews')
     user_avatar:  Optional[str]    = Field(default=None)

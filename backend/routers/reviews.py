@@ -17,6 +17,12 @@ reviews_router = APIRouter(prefix='/api/reviews', tags=["reviews"],
                             responses={404: {"description": "Not found"}},)
 
 
+@reviews_router.get("/all", status_code=status.HTTP_200_OK, response_model=list[Review])
+def get_reviews(db: Session = Depends(get_session)):
+    """ Return all reviews"""
+    reviews = ReviewActions().get_reviews(db=db)
+    return reviews
+
 @reviews_router.get("/{id}", status_code=status.HTTP_200_OK, response_model=Review)
 def get_review_by_id( id: int, db: Session = Depends(get_session)):
     """ Return review by given id"""

@@ -325,7 +325,9 @@
         </div>
       </template>
       <div class="main-filter-container">
-        <template v-if="appliedFilters && appliedFilters.length > 0">
+        <template
+          v-if="!isLoading && appliedFilters && appliedFilters.length > 0"
+        >
           <div class="apply-filter-container card">
             <div>
               <div
@@ -586,7 +588,7 @@ export default {
         this.$store.commit('UPDATE_USER', user)
         this.$store.commit('UPDATE_USER_ID', user_id)
       } else {
-        this.errorMessage = 'Session expired'
+        this.errorMessage = 'Please Login'
         router.push('/login')
       }
     }
@@ -959,9 +961,6 @@ export default {
       this.currentPage = 1
     },
     nextPage() {
-      // console.log('this.currentPage', this.currentPage)
-      // console.log('this.total', this.total)
-      // console.log('this.visiblePages', this.visiblePages)
       if (this.currentPage < this.totalPages) {
         this.currentPage++
       }
@@ -975,7 +974,6 @@ export default {
     },
     setCurrentPage(page) {
       this.currentPage = page
-      console.log('this.currentPage ', this.currentPage)
       window.scrollTo({ top: 0, behavior: 'auto' })
     },
     updateProductRange() {

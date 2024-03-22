@@ -27,7 +27,7 @@ import os, base64
 from os.path import abspath
 from my_logger import detailed_logger
 from decimal import Decimal
-# from prometheus_fastapi_instrumentator import Instrumentator
+from prometheus_fastapi_instrumentator import Instrumentator
 
 PROJECT_ROOT = Path(__file__).parent.parent # /
 BASE_DIR = Path(__file__).resolve().parent # / src
@@ -45,7 +45,7 @@ origins = [
     "https://polite-coast-0407c3703-preview.westeurope.5.azurestaticapps.net"
 ]
 
-# instrumentator = Instrumentator().instrument(app)
+instrumentator = Instrumentator().instrument(app)
 
 app.add_middleware(
     CORSMiddleware,
@@ -61,6 +61,7 @@ logger = detailed_logger()
 def on_startup():
     SQLModel.metadata.create_all(engine)
     create_categories(engine)
+    instrumentator.expose(app)
     app.mount("/static", StaticFiles(directory=Path(BASE_DIR, 'static'),html=True),name="static")
 
 @app.get("/", include_in_schema=False)
@@ -91,7 +92,6 @@ def get_products(request: Request, db: Session = Depends(get_session), user: Use
 async def create_item(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
         """ Create an Item """
         form_data = await request.form()
-        print('form_data', form_data)
         item = dict(form_data)
         file = form_data['file']
         filename = form_data['file'].filename
@@ -107,13 +107,14 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         try:
             logger.info(f"Add to DB Item {item}")
             item = Item(**item, category=category, image=filename, image_base64=encoded_string, username=user.username)
+            item.update_discount()
             db.add(item)
             db.commit()
             db.refresh(item)
         except Exception as e:
             logger.info(f"ERROR OCCURED to DB Item {e}")
             db.rollback()
-        logger.info(f"Item Created! {item}")
+        logger.info(f"Item Created!")
         return item
         # redirect_url = request.url_for('get_products')
         # response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)
@@ -226,10 +227,10 @@ async def create_review_ajax(request: Request, db: Session=Depends(get_session),
     if not review_exist:
         try:
             review = Review(**data, item=item)
-            logger.info(f"Creating review {review}")
             db.add(review)
             db.commit()
             db.refresh(review)
+            item.update_aggregates(db=db)
             return review
         except Exception as e:
             db.rollback()

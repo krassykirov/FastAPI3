@@ -204,14 +204,6 @@ export default createStore({
         resolve(selectedPriceRanges)
       })
     },
-    formattedPrice() {
-      const price = this.product.discount_price
-      const [integerPart, decimalPart] = price.toString().split('.')
-      return {
-        integerPart: parseInt(integerPart).toLocaleString(),
-        decimalPart: decimalPart || '00'
-      }
-    },
     updateItemRating({ commit, state }, { itemId, rating }) {
       const itemIndex = state.products.findIndex(item => item.id === itemId)
       if (itemIndex !== -1) {

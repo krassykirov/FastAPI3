@@ -13,9 +13,9 @@
             <span
               class="badge bg-danger position-absolute top-0 start-0"
               v-if="product.discount >= 0.01"
-              style="font-size: 0.8rem; margin: 1%; top: 0; start-0"
-              >-{{ Math.floor(product.discount * 100) }}%</span
-            >
+              style="font-size: 0.8rem; margin: 1%; top: 0; start: 0"
+              >-{{ Math.floor(product.discount * 100) }}%
+            </span>
             <span
               :class="getHeartClasses(product)"
               @click="addTofavorites(product)"
@@ -65,14 +65,9 @@
               <span
                 :id="'overall-rating' + product.id + '-float'"
                 class="overall-rating"
-                style="font-family: Arial"
                 >&nbsp;{{ parseFloat(product.rating_float).toFixed(2) }}</span
               >
-              <span
-                :id="'overall-rating' + product.id"
-                class="overall-rating2"
-                style="font-family: Arial"
-              >
+              <span :id="'overall-rating' + product.id" class="overall-rating2">
                 ({{ product.review_number }})
               </span>
             </p>
@@ -85,6 +80,7 @@
                 flex-direction: column;
               "
             >
+              <!-- prettier-ignore -->
               <span
                 style="
                   font-size: 0.95rem;
@@ -95,12 +91,10 @@
                   margin-left: -12px;
                 "
               >
-                <div v-if="product.discount_price">
-                  <span style="font-size: 1rem">$</span>
-                  <span style="font-size: 1rem">
-                    {{ product.discount_price }}
-                  </span>
-                </div>
+              <!-- prettier-ignore -->
+              <span style="font-size: 1rem;">$</span>
+              <span style="font-size: 1rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
+              <span style="font-size: 0.7rem; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
               </span>
               <span v-if="product.discount >= 0.01" class="old-price">
                 ${{ Math.floor(product.price) }}
@@ -190,6 +184,21 @@ export default {
     }
   },
   methods: {
+    formatPrice(price) {
+      if (price !== null || price !== undefined) {
+        const [integerPart, decimalPart] = price.toFixed(2).split('.')
+        const formattedIntegerPart = integerPart.replace(
+          /\B(?=(\d{3})+(?!\d))/g,
+          '.'
+        ) // Add dots for every 3 digits
+        const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
+
+        return {
+          integerPart: formattedIntegerPart,
+          decimalPart: formattedDecimalPart
+        }
+      }
+    },
     redirectToItemFromProduct(itemId) {
       this.$store.dispatch('redirectToItem', itemId)
     },
