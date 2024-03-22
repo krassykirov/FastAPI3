@@ -2,9 +2,12 @@
 __pycache__/
 __pycache__
 __pycache__/
+backend/builders/__pycache__/
+backend/builders/__pycache__/**
+builders/__pycache__/
 auth/__pycache__/
 crud/__pycache__/
- routers/__pycache__/
+routers/__pycache__/
 .pytest_cache/
 venv/
 venv

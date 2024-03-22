@@ -87,7 +87,7 @@ class Item(SQLModel, table=True):
     rating_float:   Optional[decimal.Decimal] = Field(default=decimal.Decimal(0))
 
 
-    def update_aggregates(self, db: Session):
+    def update_ratings(self, db: Session):
         result = db.query(func.avg(Review.rating).label("avg_rating"),
                           func.count(Review.id).label("review_count")).filter(Review.item_id == self.id).one()
         self.rating = round(result.avg_rating or 0)

@@ -40,7 +40,6 @@ def get_item_by_id( item_id: int, db: Session = Depends(get_session), user: User
 def get_items(db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     try:
         items_db = ItemActions().get_items(db=db)
-        # items= [item.update_discount() for item in items_db]
         items = jsonable_encoder(items_db)
         items_in_cart = [item for item in items
                                 for k, v in item.get('in_cart').items()
@@ -55,46 +54,15 @@ def get_items(db: Session = Depends(get_session), user: User = Depends(get_curre
             'items_in_cart': items_in_cart,
             'items_liked': items_liked,
             'len_items_in_cart': len(items_in_cart),
-            'total': total,
-            'user': user.username,
-            'user_id': user.id
+            'total': total
         }
         return updated_items
     except Exception as e:
         logger.error(f"Error fetching items, error message: {e}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error fetching items")
 
-# def update_items(items: List[Item], db: Session , user: User):
-#         items = jsonable_encoder(items)
-#         items_in_cart = [item for item in items
-#                                 for k, v in item.get('in_cart').items()
-#                                 if k == user.username and v.get('in_cart') == True]
-#         items_liked =  [item for item in items
-#                                 for k, v in item.get('liked').items()
-#                                 if k == user.username and v.get('liked') == True]
-#         total = sum(item['price'] for item in items_in_cart)
-
-#         updated_items = {
-#             'items': items,
-#             'items_in_cart': items_in_cart,
-#             'items_liked': items_liked,
-#             'len_items_in_cart': len(items_in_cart),
-#             'total': total,
-#             'user': user.username,
-#             'user_id': user.id
-#         }
-#         return updated_items
-
-# def update_item_props(item: Item, db: Session):
-#         item = jsonable_encoder(item)
-#         if item.get('discount'):
-#                 item['discount_price'] = round(item.get('price') - item.get('price') * item.get('discount'), 2)
-#         else:
-#             item['discount_price'] = round(item.get('price'), 2)
-#         return item
-
 @items_router.get("/search/")
-async def read_items(q: List[str] = Query(None), db: Session = Depends(get_session)):
+async def search_items(q: List[str] = Query(None), db: Session = Depends(get_session)):
     query_filters = []
     categories_user_input = ["Laptops", "Smartphones", "Tablets", "Smartwatches", "TV"]
     if q:
@@ -165,24 +133,6 @@ def delete_item_by_id(item_id: int, background_tasks: BackgroundTasks, db: Sessi
     else:
         logger.error(f"Directory does not exist: {dir_to_delete}")
 
-@items_router.get("/user-items-in-cart", status_code=status.HTTP_200_OK, include_in_schema=True)
-def get_user_items_in_cart(db: Session=Depends(get_session), user: User = Depends(get_current_user)):
-    try:
-        items = ItemActions().get_items(db=db)
-        items_in_cart =  [item for item in items
-                            for k, v in item.in_cart.items()
-                            if k == user.username and v['in_cart'] == True]
-        items_liked =  [item for item in items
-                            for k, v in item.liked.items()
-                            if k == user.username and v['liked'] == True]
-        total = sum([item.price for item in items_in_cart])
-        json_items = {'items': items_in_cart, 'items_liked': items_liked, 'items_in_cart': len(items_in_cart),
-                'total': total, 'user': user.username, 'user_id': user.id}
-        return json_items
-    except Exception as e:
-            logger.error(f"Error getting items in cart, error message: {e}")
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error getting items in cart")
-
 @items_router.post("/update-basket", status_code=status.HTTP_200_OK,  include_in_schema=False)
 async def update_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     data = await request.json()
@@ -192,9 +142,10 @@ async def update_basket(request: Request, db: Session = Depends(get_session), us
     item.in_cart = basket
     db.commit()
     db.refresh(item)
-    result = get_user_items_in_cart(db=db, user=user)
-    total = jsonable_encoder(result.get('total'))
-    return total
+    return True
+    # result = get_user_items_in_cart(db=db, user=user)
+    # total = jsonable_encoder(result.get('total'))
+    # return total
 
 @items_router.post("/update-favorites", status_code=status.HTTP_200_OK,  include_in_schema=False)
 async def update_favorites(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -205,8 +156,9 @@ async def update_favorites(request: Request, db: Session = Depends(get_session),
     item.liked = favorites
     db.commit()
     db.refresh(item)
-    result = get_user_items_in_cart(db=db, user=user)
-    return result
+    return True
+    # result = get_user_items_in_cart(db=db, user=user)
+    # return result
 
 @items_router.post("/remove-from-favorites", status_code=status.HTTP_200_OK,  include_in_schema=True)
 async def remove_from_favorites(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
@@ -218,7 +170,7 @@ async def remove_from_favorites(request: Request, db: Session = Depends(get_sess
     item.liked = favorites
     db.commit()
     db.refresh(item)
-    return item
+    return True
 
 @items_router.post("/checkout", status_code=status.HTTP_200_OK,  include_in_schema=True)
 async def checkout(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
