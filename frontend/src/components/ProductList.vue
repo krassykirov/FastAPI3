@@ -26,7 +26,14 @@
         "
       ></span>
       <img
-        :src="`data:image/jpeg;base64,${product.image_base64}`"
+        :src="
+          `${backendEndpoint}/static/img/` +
+          product.username +
+          '/' +
+          product.name +
+          '/' +
+          product.image
+        "
         class="card-img-top"
         @click="redirectToItemFromProduct(product.id)"
         style="cursor: pointer"
@@ -69,7 +76,6 @@
       </p>
       <input type="number" :data-price="product.price" hidden />
       <div style="margin: 0; padding: 0; display: flex; flex-direction: column">
-        <!-- prettier-ignore -->
         <span
           style="
             font-size: 0.95rem;
@@ -81,11 +87,14 @@
           "
         >
           <!-- prettier-ignore -->
+          <div>
+          <!-- prettier-ignore -->
           <span style="font-size: 1rem;">$</span>
           <span style="font-size: 1rem;">{{ formattedPrice.integerPart }}</span>
           <span style="font-size: 0.7em; position: relative; top: -0.4em;">.{{ formattedPrice.decimalPart }}</span>
+        </div>
         </span>
-        <span v-if="product.discount >= 0.01" class="old-price">
+        <span v-if="product.discount >= 0.1" class="old-price">
           ${{ Math.floor(product.price) }}
         </span>
         <span v-else style="font-size: 1em; margin-top: 1%">&nbsp;</span>

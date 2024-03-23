@@ -49,7 +49,7 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -102,11 +102,16 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         if item_db:
             logger.error(f"Item with that name already exists!")
             raise HTTPException(status_code=403,detail=f"Item with that name already exists!")
+        IMG_DIR = os.path.join(BASE_DIR, f'static/img/{user.username}')
         content = await file.read()
-        encoded_string = base64.b64encode(content).decode("utf-8")
+        path = os.path.join(IMG_DIR, item_name)
+        if not os.path.exists(path):
+               os.makedirs(path,exist_ok=True)
+        with open(f"{BASE_DIR}/static/img/{user.username}/{item_name}/{filename}", 'wb') as f:
+            f.write(content)
         try:
             logger.info(f"Add to DB Item {item}")
-            item = Item(**item, category=category, image=filename, image_base64=encoded_string, username=user.username)
+            item = Item(**item, category=category, image=filename, username=user.username)
             item.update_discount()
             db.add(item)
             db.commit()
@@ -268,8 +273,12 @@ async def create_profile(request: Request, db: Session = Depends(get_session), u
     user_db = db.exec(query).first()
     if user_db:
         try:
-           content = await file.read()
-           encoded_string = base64.b64encode(content).decode("utf-8")
+            IMG_DIR = os.path.join(PROJECT_ROOT, f'backend/static/img/{user.username}/profile')
+            content = await file.read()
+            if not os.path.exists(IMG_DIR):
+                os.makedirs(IMG_DIR, exist_ok=True)
+            with open(f"static/img/{user.username}/profile/{filename}", 'wb') as f:
+                f.write(content)
         except Exception as e:
             logger.error(f"Something went wrong, error: {e}")
         user_profile = UserProfile(profile_id=user.id,
@@ -277,7 +286,7 @@ async def create_profile(request: Request, db: Session = Depends(get_session), u
                                    number=number,
                                    primary_email=primary_email,
                                    address=address,
-                                   avatar=encoded_string)
+                                   avatar=filename)
         try:
             db.add(user_profile)
             db.commit()
@@ -305,10 +314,11 @@ async def update_profile(request: Request, db: Session = Depends(get_session), u
         try:
             if form_data['file'].filename:
                 content = await form_data['file'].read()
-                encoded_string = base64.b64encode(content).decode("utf-8")
+                with open(f"static/img/{user.username}/profile/{form_data['file'].filename}", 'wb') as f:
+                    f.write(content)
         except Exception as e:
             logger.error(f"Something went wrong, error: {e}")
-        new_data = UserProfile(**dict(json_data), user=user, avatar=encoded_string if filename else None).dict(exclude_unset=True,
+        new_data = UserProfile(**dict(json_data), user=user, avatar=filename if filename else None).dict(exclude_unset=True,
                                                                                                           exclude_none=True)
         for key, value in new_data.items():
             setattr(db_profile, key, value)

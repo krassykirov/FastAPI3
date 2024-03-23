@@ -38,10 +38,10 @@ def delete_item_dir(path):
     return True
 
 
-def encode_image_to_base64(image_path):
-    with open(image_path, 'rb') as file:
-        content = file.read()
-        return base64.b64encode(content).decode("utf-8")
+# def encode_image_to_base64(image_path):
+#     with open(image_path, 'rb') as file:
+#         content = file.read()
+#         return base64.b64encode(content).decode("utf-8")
 
-default_avatar_path = 'static/img/img_avatar.png'
-default_avatar_base64 = encode_image_to_base64(default_avatar_path)
+# default_avatar_path = 'static/img/img_avatar.png'
+# default_avatar_base64 = encode_image_to_base64(default_avatar_path)

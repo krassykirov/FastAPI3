@@ -49,7 +49,7 @@
               <tr v-for="product in favorites" :key="product.id">
                 <td style="padding-top: 1%">
                   <img
-                    :src="`data:image/jpeg;base64,${product.image_base64}`"
+                    :src="`${backendEndpoint}/static/img/${product.username}/${product.name}/${product.image}`"
                     class="img-fluid"
                     alt="Product Image"
                     style="max-width: 270px; height: 150px; object-fit: cover"
@@ -98,8 +98,8 @@
                 <!-- prettier-ignore -->
                 <td style="padding-top: 5.3%; padding-right: 10px">
                   <span style="font-size: 1.1rem;">$</span>
-                  <span style="font-size: 1.1rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
-                  <span style="font-size: 0.8em; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
+                  <span v-if="product.discount_price" style="font-size: 1.1rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
+                  <span v-if="product.discount_price" style="font-size: 0.8em; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
                 </td>
                 <td style="padding: 15px; padding-top: 5%">
                   <button

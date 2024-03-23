@@ -41,35 +41,35 @@
             </span>
             <img
               class="img-fluid"
-              :src="`data:image/jpeg;base64,${item.image_base64}`"
+              :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
               alt="ProductS"
             />
             <div class="row my-3 previews">
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`data:image/jpeg;base64,${item.image_base64}`"
+                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`data:image/jpeg;base64,${item.image_base64}`"
+                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`data:image/jpeg;base64,${item.image_base64}`"
+                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`data:image/jpeg;base64,${item.image_base64}`"
+                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
@@ -89,8 +89,8 @@
             <div class="price-area my-4" v-if="item">
               <p class="new-price text-bold mb-1">
                 <span style="font-size: 1.2rem;">$</span>
-                <span style="font-size: 1.2rem;">{{ formatPrice(item.discount_price).integerPart }}</span>
-                <span style="font-size: 0.7rem; position: relative; top: -0.6em;">.{{ formatPrice(item.discount_price).decimalPart }}</span>
+                <span v-if="item.discount_price" style="font-size: 1.2rem;">{{ formatPrice(item.discount_price).integerPart }}</span>
+                <span v-if="item.discount_price" style="font-size: 0.7rem; position: relative; top: -0.6em;">.{{ formatPrice(item.discount_price).decimalPart }}</span>
               </p>
               <p v-if="item.discount">
                 <del style="font-size: 0.9rem">${{ item.price }} </del>
@@ -279,7 +279,7 @@
               <div style="flex: 1; display: flex; align-items: center">
                 <img
                   v-if="review.user_avatar"
-                  :src="`data:image/jpeg;base64,${review.user_avatar}`"
+                  :src="`${backendEndpoint}/static/img/${profile.primary_email}/profile/${profile.avatar}`"
                   width="50"
                   height="50"
                   class="rounded-circle"

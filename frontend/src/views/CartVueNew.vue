@@ -60,7 +60,7 @@
               <tr v-for="product in cart" :key="product.id">
                 <td>
                   <img
-                    :src="`data:image/jpeg;base64,${product.image_base64}`"
+                    :src="`${backendEndpoint}/static/img/${product.username}/${product.name}/${product.image}`"
                     class="img-fluid"
                     alt="Product Image"
                     style="max-width: 50px; max-height: 50px"
@@ -196,7 +196,7 @@
                       <tr v-for="product in cart" :key="product.id">
                         <td>
                           <img
-                            :src="`data:image/jpeg;base64,${product.image_base64}`"
+                            :src="`${backendEndpoint}/static/img/${product.username}/${product.name}/${product.image}`"
                             class="img-fluid"
                             alt="Product Image"
                             style="

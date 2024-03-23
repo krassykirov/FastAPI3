@@ -12,7 +12,7 @@ import datetime
 import uuid, base64
 from enum import Enum
 from auth.oauth import pwd_context
-from helper import default_avatar_base64
+# from helper import default_avatar_base64
 from db import get_session
 
 
@@ -69,7 +69,6 @@ class Item(SQLModel, table=True):
     date:           Optional[datetime.datetime] = Field(default=datetime.datetime.now().replace(microsecond=0), nullable=False)
     price:          Optional[decimal.Decimal] = Field(default=0, max_digits=6, decimal_places=2)
     image:          Optional[str] = Field(default="no-image.png")
-    image_base64:   Optional[str] = Field(default=None)
     reviews:        Optional[List['Review']] = Relationship(sa_relationship_kwargs={"cascade": "delete"}, back_populates='item')
     category_id:    Optional[int] = Field(default=None, foreign_key="category.id")
     category:       Optional['Category'] = Relationship(back_populates='items')

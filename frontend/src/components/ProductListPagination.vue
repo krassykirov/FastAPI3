@@ -30,7 +30,7 @@
               "
             ></span>
             <img
-              :src="`data:image/jpeg;base64,${product.image_base64}`"
+              :src="`${backendEndpoint}/static/img/${product.username}/${product.name}/${product.image}`"
               class="card-img-top"
               @click="redirectToItemFromProduct(product.id)"
               style="cursor: pointer"
@@ -92,9 +92,9 @@
                 "
               >
               <!-- prettier-ignore -->
-              <span style="font-size: 1rem;">$</span>
-              <span style="font-size: 1rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
-              <span style="font-size: 0.7rem; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
+              <span style="font-size: 1.2rem;">$</span>
+              <span v-if="product.discount_price" style="font-size: 1.2rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
+              <span v-if="product.discount_price" style="font-size: 0.7rem; position: relative; top: -0.6em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
               </span>
               <span v-if="product.discount >= 0.01" class="old-price">
                 ${{ Math.floor(product.price) }}
@@ -149,20 +149,6 @@ export default {
     }
   },
   computed: {
-    formattedPrice() {
-      const price = Number(this.product.discount_price) || 0 // Convert to number and handle NaN
-      const [integerPart, decimalPart] = price.toFixed(2).split('.')
-      const formattedIntegerPart = integerPart.replace(
-        /\B(?=(\d{3})+(?!\d))/g,
-        '.'
-      ) // Add dots for every 3 digits
-      const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
-
-      return {
-        integerPart: formattedIntegerPart,
-        decimalPart: formattedDecimalPart
-      }
-    },
     filteredProducts() {
       return this.$store.getters.filteredProducts
     },
@@ -190,8 +176,8 @@ export default {
         const formattedIntegerPart = integerPart.replace(
           /\B(?=(\d{3})+(?!\d))/g,
           '.'
-        ) // Add dots for every 3 digits
-        const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
+        )
+        const formattedDecimalPart = decimalPart || '00'
 
         return {
           integerPart: formattedIntegerPart,

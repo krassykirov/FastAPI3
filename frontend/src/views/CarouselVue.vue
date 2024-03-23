@@ -37,7 +37,7 @@
                 >
                 </span>
                 <img
-                  :src="`data:image/jpeg;base64,${product.image_base64}`"
+                  :src="`${backendEndpoint}/static/img/${product.username}/${product.name}/${product.image}`"
                   class="card-img-top"
                   @click="redirectToItemFromProduct(product.id)"
                   style="cursor: pointer; margin-bottom: 10px"
@@ -92,8 +92,8 @@
                     "
                   >
                   <span style="font-size: 0.9rem;">$</span>
-                  <span style="font-size: 0.9rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
-                  <span style="font-size: 0.7em; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
+                  <span v-if="product.discount_price" style="font-size: 0.9rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
+                  <span v-if="product.discount_price" style="font-size: 0.7em; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
                   </span>
                   <button
                     type="button"
