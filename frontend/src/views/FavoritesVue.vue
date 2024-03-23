@@ -81,7 +81,7 @@
                     <span
                       :id="'overall-rating' + product.id + '-float'"
                       class="overall-rating"
-                      style="font-size: 0.9rem; font-familly: sans-serif"
+                      style="font-size: 0.9rem"
                       >&nbsp;{{
                         parseFloat(product.rating_float).toFixed(2)
                       }}</span
@@ -89,7 +89,7 @@
                     <span
                       :id="'overall-rating' + product.id"
                       class="overall-rating2"
-                      style="font-size: 0.9rem; font-familly: sans-serif"
+                      style="font-size: 0.9rem"
                     >
                       ({{ product.review_number }})
                     </span>
@@ -98,8 +98,8 @@
                 <!-- prettier-ignore -->
                 <td style="padding-top: 5.3%; padding-right: 10px">
                   <span style="font-size: 1.1rem;">$</span>
-                  <span v-if="product.discount_price" style="font-size: 1.1rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
-                  <span v-if="product.discount_price" style="font-size: 0.8em; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
+                  <span v-if="product.discount_price" style="font-size: 1.1rem;">{{ formattedPrice(product.discount_price).integerPart }}</span>
+                  <span v-if="product.discount_price" style="font-size: 0.8rem; position: relative; top: -0.4em;">.{{ formattedPrice(product.discount_price).decimalPart }}</span>
                 </td>
                 <td style="padding: 15px; padding-top: 5%">
                   <button
@@ -182,6 +182,9 @@ export default {
     this.$store.dispatch('fetchCategories')
   },
   computed: {
+    formattedPrice() {
+      return this.$store.getters.formattedPrice
+    },
     categories() {
       return this.$store.getters.categories
     },
@@ -205,21 +208,6 @@ export default {
     }
   },
   methods: {
-    formatPrice(price) {
-      if (price !== null || price !== undefined) {
-        const [integerPart, decimalPart] = price.toFixed(2).split('.')
-        const formattedIntegerPart = integerPart.replace(
-          /\B(?=(\d{3})+(?!\d))/g,
-          '.'
-        ) // Add dots for every 3 digits
-        const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
-
-        return {
-          integerPart: formattedIntegerPart,
-          decimalPart: formattedDecimalPart
-        }
-      }
-    },
     getStarClasses(index, rating) {
       const filledStars = Math.floor(rating)
       if (index <= filledStars) {

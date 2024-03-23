@@ -92,8 +92,8 @@
                     "
                   >
                   <span style="font-size: 0.9rem;">$</span>
-                  <span v-if="product.discount_price" style="font-size: 0.9rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
-                  <span v-if="product.discount_price" style="font-size: 0.7em; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
+                  <span v-if="product.discount_price" style="font-size: 0.9rem;">{{ formattedPrice(product.discount_price).integerPart }}</span>
+                  <span v-if="product.discount_price" style="font-size: 0.7rem; position: relative; top: -0.4em;">.{{ formattedPrice(product.discount_price).decimalPart }}</span>
                   </span>
                   <button
                     type="button"
@@ -167,6 +167,9 @@ export default {
     ])
   },
   computed: {
+    formattedPrice() {
+      return this.$store.getters.formattedPrice
+    },
     errorMessage() {
       return this.$store.state.errorMessage
     },
@@ -190,21 +193,6 @@ export default {
     }
   },
   methods: {
-    formatPrice(price) {
-      if (price !== null || price !== undefined) {
-        const [integerPart, decimalPart] = price.toFixed(2).split('.')
-        const formattedIntegerPart = integerPart.replace(
-          /\B(?=(\d{3})+(?!\d))/g,
-          '.'
-        ) // Add dots for every 3 digits
-        const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
-
-        return {
-          integerPart: formattedIntegerPart,
-          decimalPart: formattedDecimalPart
-        }
-      }
-    },
     getStarClasses(index, rating) {
       const filledStars = Math.floor(rating)
       if (index <= filledStars) {

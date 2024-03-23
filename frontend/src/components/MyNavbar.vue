@@ -151,8 +151,8 @@
                 <div style="font-size: 0.8rem; width: 150px; margin-left: 0">
                   {{ truncateDescription(item.name, 35) }}
                   <span style="font-size: 0.8rem;">$</span>
-                  <span style="font-size: 0.8rem;">{{ formatPrice(item.price).integerPart }}</span>
-                  <span style="font-size: 0.6rem; position: relative; top: -0.4em;">.{{ formatPrice(item.price).decimalPart }}</span>
+                  <span v-if="item.discount_price" style="font-size: 0.8rem;">{{ formattedPrice(item.discount_price).integerPart }}</span>
+                  <span v-if="item.discount_price" style="font-size: 0.6rem; position: relative; top: -0.4em;">.{{ formattedPrice(item.discount_price).decimalPart }}</span>
                 </div>
               </div>
             </div>
@@ -239,8 +239,8 @@
                   x{{ item.quantity }}
                   {{ truncateDescription(item.name, 35) }}
                   <span style="font-size: 0.8rem;">$</span>
-                  <span style="font-size: 0.8rem;">{{ formatPrice(item.price).integerPart }}</span>
-                  <span style="font-size: 0.6rem; position: relative; top: -0.4em;">.{{ formatPrice(item.price).decimalPart }}</span>
+                  <span v-if="item.discount_price" style="font-size: 0.8rem;">{{ formattedPrice(item.price).integerPart }}</span>
+                  <span v-if="item.discount_price" style="font-size: 0.6rem; position: relative; top: -0.4em;">.{{ formattedPrice(item.price).decimalPart}}</span>
                 </div>
               </div>
             </div>
@@ -488,6 +488,9 @@ export default {
     }
   },
   computed: {
+    formattedPrice() {
+      return this.$store.getters.formattedPrice
+    },
     errorMessage() {
       return this.$store.getters.errorMessage
     },
@@ -508,21 +511,6 @@ export default {
     }
   },
   methods: {
-    formatPrice(price) {
-      if (price !== null || price !== undefined) {
-        const [integerPart, decimalPart] = price.toFixed(2).split('.')
-        const formattedIntegerPart = integerPart.replace(
-          /\B(?=(\d{3})+(?!\d))/g,
-          '.'
-        )
-        const formattedDecimalPart = decimalPart || '00'
-
-        return {
-          integerPart: formattedIntegerPart,
-          decimalPart: formattedDecimalPart
-        }
-      }
-    },
     goHome() {
       this.$router.push({ name: 'NewHome' })
     },

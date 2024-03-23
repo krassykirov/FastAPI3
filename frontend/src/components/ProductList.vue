@@ -90,8 +90,8 @@
           <div>
           <!-- prettier-ignore -->
           <span style="font-size: 1rem;">$</span>
-          <span style="font-size: 1rem;">{{ formattedPrice.integerPart }}</span>
-          <span style="font-size: 0.7em; position: relative; top: -0.4em;">.{{ formattedPrice.decimalPart }}</span>
+          <span v-if="product.discount_price" style="font-size: 1.2rem;">{{ formattedPrice(product.discount_price).integerPart }}</span>
+          <span v-if="product.discount_price" style="font-size: 0.7rem; position: relative; top: -0.6em;">.{{ formattedPrice(product.discount_price).decimalPart }}</span>
         </div>
         </span>
         <span v-if="product.discount >= 0.1" class="old-price">
@@ -126,18 +126,7 @@ export default {
   },
   computed: {
     formattedPrice() {
-      const price = Number(this.product.discount_price) || 0 // Convert to number and handle NaN
-      const [integerPart, decimalPart] = price.toFixed(2).split('.')
-      const formattedIntegerPart = integerPart.replace(
-        /\B(?=(\d{3})+(?!\d))/g,
-        '.'
-      ) // Add dots for every 3 digits
-      const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
-
-      return {
-        integerPart: formattedIntegerPart,
-        decimalPart: formattedDecimalPart
-      }
+      return this.$store.getters.formattedPrice
     },
     filteredProducts() {
       return this.$store.getters.filteredProducts

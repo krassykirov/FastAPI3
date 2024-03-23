@@ -93,8 +93,8 @@
               >
               <!-- prettier-ignore -->
               <span style="font-size: 1.2rem;">$</span>
-              <span v-if="product.discount_price" style="font-size: 1.2rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
-              <span v-if="product.discount_price" style="font-size: 0.7rem; position: relative; top: -0.6em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
+              <span v-if="product.discount_price" style="font-size: 1.2rem;">{{ formattedPrice(product.discount_price).integerPart }}</span>
+              <span v-if="product.discount_price" style="font-size: 0.7rem; position: relative; top: -0.6em;">.{{ formattedPrice(product.discount_price).decimalPart }}</span>
               </span>
               <span v-if="product.discount >= 0.01" class="old-price">
                 ${{ Math.floor(product.price) }}
@@ -149,6 +149,9 @@ export default {
     }
   },
   computed: {
+    formattedPrice() {
+      return this.$store.getters.formattedPrice
+    },
     filteredProducts() {
       return this.$store.getters.filteredProducts
     },
@@ -170,21 +173,6 @@ export default {
     }
   },
   methods: {
-    formatPrice(price) {
-      if (price !== null || price !== undefined) {
-        const [integerPart, decimalPart] = price.toFixed(2).split('.')
-        const formattedIntegerPart = integerPart.replace(
-          /\B(?=(\d{3})+(?!\d))/g,
-          '.'
-        )
-        const formattedDecimalPart = decimalPart || '00'
-
-        return {
-          integerPart: formattedIntegerPart,
-          decimalPart: formattedDecimalPart
-        }
-      }
-    },
     redirectToItemFromProduct(itemId) {
       this.$store.dispatch('redirectToItem', itemId)
     },

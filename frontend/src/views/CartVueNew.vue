@@ -74,10 +74,9 @@
                 </td>
                 <!-- prettier-ignore -->
                 <td style="width: 100px">
-                   <!-- prettier-ignore -->
                   <span style="font-size: 1rem;">$</span>
-                  <span style="font-size: 1rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
-                  <span style="font-size: 0.7em; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
+                  <span v-if="product.discount_price" style="font-size: 1rem;">{{ formattedPrice(product.discount_price).integerPart }}</span>
+                  <span v-if="product.discount_price" style="font-size: 0.7rem; position: relative; top: -0.4em;">.{{ formattedPrice(product.discount_price).decimalPart }}</span>
                 </td>
                 <td class="align-left text-left">
                   <div
@@ -257,8 +256,8 @@
                           <!-- prettier-ignore -->
                           <div>
                           <span style="font-size: 0.9rem;">$</span>
-                          <span style="font-size: 0.9rem;">{{ formatPrice(product.discount_price).integerPart }}</span>
-                          <span style="font-size: 0.6em; position: relative; top: -0.4em;">.{{ formatPrice(product.discount_price).decimalPart }}</span>
+                          <span v-if="product.discount_price" style="font-size: 0.9rem;">{{ formattedPrice(product.discount_price).integerPart }}</span>
+                          <span v-if="product.discount_price" style="font-size: 0.6rem; position: relative; top: -0.4em;">.{{ formattedPrice(product.discount_price).decimalPart }}</span>
                         </div>
                         </td>
                         <td>
@@ -480,6 +479,9 @@ export default {
     this.$store.dispatch('fetchCategories')
   },
   computed: {
+    formattedPrice() {
+      return this.$store.getters.formattedPrice
+    },
     categories() {
       return this.$store.getters.categories
     },
@@ -503,21 +505,6 @@ export default {
     }
   },
   methods: {
-    formatPrice(price) {
-      if (price !== null || price !== undefined) {
-        const [integerPart, decimalPart] = price.toFixed(2).split('.')
-        const formattedIntegerPart = integerPart.replace(
-          /\B(?=(\d{3})+(?!\d))/g,
-          '.'
-        ) // Add dots for every 3 digits
-        const formattedDecimalPart = decimalPart || '00' // Ensure two decimal places
-
-        return {
-          integerPart: formattedIntegerPart,
-          decimalPart: formattedDecimalPart
-        }
-      }
-    },
     formatTotal(price) {
       const [integerPart, decimalPart] = price.toString().split('.')
       return {

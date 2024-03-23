@@ -818,6 +818,25 @@ export default createStore({
         )
       })
     },
+    formattedPrice: () => price => {
+      if (price !== null && price !== undefined) {
+        const [integerPart, decimalPart] = price.toFixed(2).split('.')
+        const formattedIntegerPart = integerPart.replace(
+          /\B(?=(\d{3})+(?!\d))/g,
+          '.'
+        )
+        const formattedDecimalPart = decimalPart || '00'
+        return {
+          integerPart: formattedIntegerPart,
+          decimalPart: formattedDecimalPart
+        }
+      } else {
+        return {
+          integerPart: '',
+          decimalPart: ''
+        }
+      }
+    },
     accessToken: state => state.accessToken,
     user: state => state.user,
     user_id: state => state.user_id,
