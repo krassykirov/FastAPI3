@@ -454,8 +454,6 @@
 <script>
 import NavBar from '@/components/MyNavbar.vue'
 import Footer from '@/views/FooterVue.vue'
-// import MessageArea from '@/views/MessageAreaVue.vue'
-import errorHandlingMixin from '../errorHandlingMixin'
 import $ from 'jquery'
 import config from '@/config'
 
@@ -465,7 +463,6 @@ export default {
     Footer
     // MessageArea
   },
-  mixins: [errorHandlingMixin],
   props: ['profile'],
   data() {
     return {

@@ -95,7 +95,6 @@
 
 <script>
 import router from '@/router'
-import errorHandlingMixin from '../errorHandlingMixin'
 import config from '@/config'
 
 export default {
@@ -107,7 +106,6 @@ export default {
       backendEndpoint: `${config.backendEndpoint}`
     }
   },
-  mixins: [errorHandlingMixin],
   watch: {
     errorMessage(newVal) {
       this.errorMessage = newVal

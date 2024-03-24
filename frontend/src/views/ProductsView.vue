@@ -419,7 +419,6 @@
         <template v-if="filteredProducts && filteredProducts.length > 0">
           <div class="product-list" id="mycard">
             <transition-group name="product-fade">
-              <!-- Render ProductList if there are filteredProducts -->
               <ProductList
                 :products="paginatedProducts"
                 :key="products"
@@ -521,11 +520,7 @@ import { jwtDecode } from 'jwt-decode'
 import ProductList from '@/components/ProductListPagination.vue'
 import MyNavbar from '@/components/MyNavbar.vue'
 import Footer from '@/views/FooterVue.vue'
-// import PriceSlider from '@/views/PriceSlider.vue'
-// import MessageArea from '@/views/MessageAreaVue.vue'
-import errorHandlingMixin from '../errorHandlingMixin'
 import config from '@/config'
-// import { handleError } from 'vue'
 
 export default {
   name: 'HomeView',
@@ -539,7 +534,6 @@ export default {
     lastActiveDate: Date,
     inactiveTime: Number
   },
-  mixins: [errorHandlingMixin],
   data() {
     return {
       isChecked: this.$store.state.isDiscountedChecked,
@@ -548,8 +542,6 @@ export default {
       itemsPerPage: 32,
       options: ['32 per page', '64 per page', '100 per page'],
       visiblePageRange: 5,
-      // totalPages: 1,
-      // visiblePages: [],
       isLoading: true,
       appliedFilters: [],
       priceRanges: [
@@ -564,9 +556,6 @@ export default {
     filteredProducts() {
       this.updateAppliedFilters()
     }
-    // paginatedProducts(newValue) {
-    //   this.updatePaginationControls(newValue)
-    // }
   },
   updated() {
     this.updateAppliedFilters()
@@ -605,6 +594,9 @@ export default {
           // console.error('error', error)
         }
       })
+    if (this.filteredProducts && this.filteredProducts.length > 0) {
+      this.isLoading = false
+    }
   },
   computed: {
     isPriceRangesSelected() {

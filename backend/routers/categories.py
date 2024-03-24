@@ -26,6 +26,14 @@ def get_category_by_id(request: Request, id: int, db: Session = Depends(get_sess
     return category
 
 @category_router.get("/", status_code=status.HTTP_200_OK)
+def get_categories_items_len(request: Request, db: Session = Depends(get_session)):
+    """ Return all items in a category """
+    categories = CategoryActions().get_categories_len(db=db)
+    if categories is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No categories found")
+    return JSONResponse(content=jsonable_encoder(categories))
+
+@category_router.get("/categories", status_code=status.HTTP_200_OK)
 def get_categories(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):
     """ Return all categories """
     categories = CategoryActions().get_categories_name_id(db=db)
@@ -41,15 +49,6 @@ def get_category_items(name: str, db: Session = Depends(get_session)):
     if category is None:
         raise HTTPException(status_code=404, detail=f"No category  found for {name}")
     return category
-
-@category_router.get("/category_items_len/", status_code=status.HTTP_200_OK)
-def get_categories_items_len(request: Request, db: Session = Depends(get_session)):
-    """ Return all items in a category """
-    categories = CategoryActions().get_categories_len(db=db)
-    if categories is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No categories found")
-    return JSONResponse(content=jsonable_encoder(categories))
-
 
 @category_router.post("/", status_code=status.HTTP_201_CREATED, response_model=CategoryRead, include_in_schema=False)
 def create_category(request: Request, category: CategoryCreate, db: Session = Depends(get_session)):

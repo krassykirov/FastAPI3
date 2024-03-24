@@ -276,8 +276,6 @@
 import $ from 'jquery'
 import NavBar from '@/components/MyNavbar.vue'
 import Footer from '@/views/FooterVue.vue'
-// import MessageArea from '@/views/MessageAreaVue.vue'
-import errorHandlingMixin from '../errorHandlingMixin'
 import config from '@/config'
 import VueCookies from 'vue-cookies'
 import { jwtDecode } from 'jwt-decode'
@@ -291,7 +289,6 @@ export default {
   },
   props: ['cart', 'total', 'avatar', 'favorites', 'profile'],
   emits: ['addToCart'],
-  mixins: [errorHandlingMixin],
   data() {
     return {
       item: this.item,

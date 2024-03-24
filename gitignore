@@ -20,3 +20,12 @@ test/
 env
 env/
 .env
+backend/.DS_Store
+backend/Log.txt
+backend/__pycache__/
+backend/auth/__pycache__/
+backend/backend.db
+backend/crud/__pycache__/
+backend/env/
+backend/routers/__pycache__/
+backend/scripts/.DS_Store

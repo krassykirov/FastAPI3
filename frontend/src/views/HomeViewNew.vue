@@ -223,10 +223,7 @@ import VueCookies from 'vue-cookies'
 import { jwtDecode } from 'jwt-decode'
 import MyNavbar from '@/components/MyNavbar.vue'
 import CarouselMain from '@/views/CarouselMainNew.vue'
-import errorHandlingMixin from '../errorHandlingMixin'
 // /* global bootstrap */
-// import config from '@/config'
-
 export default {
   name: 'NewHome',
   components: {
@@ -243,7 +240,6 @@ export default {
       hover: false
     }
   },
-  mixins: [errorHandlingMixin],
   created() {
     if (!this.$store.state.accessToken) {
       const accessToken = VueCookies.get('access_token')
@@ -659,8 +655,6 @@ button.white:hover {
   background-color: #088178;
   color: #fff;
   white-space: nowrap;
-  border-left-right-radius: 0;
-  border-left-right-radius: 0;
 }
 #newsletter .form {
   display: flex;

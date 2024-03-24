@@ -279,7 +279,7 @@
               <div style="flex: 1; display: flex; align-items: center">
                 <img
                   v-if="review.user_avatar"
-                  :src="`${backendEndpoint}/static/img/${profile.primary_email}/profile/${profile.avatar}`"
+                  :src="`${backendEndpoint}/static/img/${review.created_by}/profile/${review.user_avatar}`"
                   width="50"
                   height="50"
                   class="rounded-circle"
@@ -441,13 +441,8 @@
 import $ from 'jquery'
 import MessageArea from '@/views/MessageAreaVue.vue'
 import Footer from '@/views/FooterVue.vue'
-// import Carousel from '@/views/CarouselVue.vue'
-import errorHandlingMixin from '../errorHandlingMixin'
 import config from '@/config'
 import NavBar from '../components/MyNavbar.vue'
-// import router from '@/router'
-// import VueCookies from 'vue-cookies'
-// import { jwtDecode } from 'jwt-decode'
 
 export default {
   components: {
@@ -455,7 +450,6 @@ export default {
     MessageArea,
     Footer
   },
-  mixins: [errorHandlingMixin],
   props: ['cart', 'profile', 'favorites'],
   emits: ['addToCart', 'redirectToItem'],
   data() {

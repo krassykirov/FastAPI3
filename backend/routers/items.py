@@ -25,7 +25,7 @@ items_router = APIRouter(prefix='/api/items', tags=["items"],
                           responses={404: {"description": "Not found"}})
 
 @items_router.get("/item/{item_id}", status_code=status.HTTP_200_OK)
-def get_item_by_id( item_id: int, db: Session = Depends(get_session)) -> schemas.ItemRead:
+def get_item_by_id(item_id: int, db: Session = Depends(get_session)) -> schemas.ItemRead:
     try:
         item = ItemActions().get_item_by_id(db=db, id=item_id)
         if item:
@@ -40,11 +40,14 @@ def get_item_by_id( item_id: int, db: Session = Depends(get_session)) -> schemas
 def get_items(db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     try:
         items_db = ItemActions().get_items(db=db)
+        items_liked = jsonable_encoder([item for item in items_db if item.liked])
+        items_in_cart = jsonable_encoder([item for item in items_db if item.in_cart])
         items = jsonable_encoder(items_db)
-        items_in_cart = [item for item in items
+
+        items_in_cart = [item for item in items_in_cart
                                 for k, v in item.get('in_cart').items()
                                 if k == user.username and v.get('in_cart') == True]
-        items_liked =  [item for item in items
+        items_liked =  [item for item in items_liked
                                 for k, v in item.get('liked').items()
                                 if k == user.username and v.get('liked') == True]
         total = sum(item['price'] for item in items_in_cart)
@@ -56,24 +59,6 @@ def get_items(db: Session = Depends(get_session), user: User = Depends(get_curre
             'len_items_in_cart': len(items_in_cart),
             'total': total
         }
-        # print('json_items', items)
-        # items_in_cart = [item for item in items
-        #                         for k, v in item.get('in_cart').items()
-        #                         if k == user.username and v.get('in_cart') == True]
-        # print('items_in_cart', items_in_cart)
-        # items_liked =  [item for item in items
-        #                         for k, v in item.get('liked').items()
-        #                         if k == user.username and v.get('liked') == True]
-        # total = sum(item['price'] for item in items_in_cart)
-
-        # updated_items = {
-        #     'items': items,
-        #     'items_in_cart': [],
-        #     'items_liked': [],
-        #     'len_items_in_cart': 0,
-        #     'total': 0
-        # }
-
         return updated_items
     except Exception as e:
         logger.error(f"Error fetching items, error message: {e}")
@@ -161,9 +146,17 @@ async def update_basket(request: Request, db: Session = Depends(get_session), us
     db.commit()
     db.refresh(item)
     return True
-    # result = get_user_items_in_cart(db=db, user=user)
-    # total = jsonable_encoder(result.get('total'))
-    # return total
+
+@items_router.post("/remove-from-basket", status_code=status.HTTP_200_OK,  include_in_schema=False)
+async def remove_from_basket(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+    data = await request.json()
+    item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
+    new_dict = {user.username: {"in_cart": False}}
+    basket = dict(item.in_cart, **new_dict )
+    item.in_cart = basket
+    db.commit()
+    db.refresh(item)
+    return True
 
 @items_router.post("/update-favorites", status_code=status.HTTP_200_OK,  include_in_schema=False)
 async def update_favorites(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):

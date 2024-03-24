@@ -161,11 +161,9 @@ async def read_item(request: Request, id: int, db: Session=Depends(get_session),
         else:
             avatar = jsonable_encoder(profile).get('avatar')
             avatar = f"/static/img/{user.username}/profile/{avatar}"
-        items = get_user_items_in_cart(db=db, user=user)
         item = jsonable_encoder(item)
         return templates.TemplateResponse("item_details.html", {"request":request,
                                                                 'current_user': user.username,
-                                                                'items': items,
                                                                 'item': item,
                                                                 'rating' : item_rating,
                                                                 'avatar' : avatar,

@@ -112,13 +112,11 @@
 </template>
 
 <script>
-import errorHandlingMixin from '../errorHandlingMixin'
 import config from '@/config'
 
 export default {
   props: ['product', 'min', 'max', 'cart', 'favorites', 'products'],
   emits: ['addToCart', 'redirectToItem', 'addTofavorites'],
-  mixins: [errorHandlingMixin],
   data() {
     return {
       backendEndpoint: `${config.backendEndpoint}`

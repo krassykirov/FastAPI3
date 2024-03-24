@@ -127,7 +127,6 @@
 </template>
 
 <script>
-import errorHandlingMixin from '../errorHandlingMixin'
 import config from '@/config'
 
 export default {
@@ -142,7 +141,6 @@ export default {
     itemsPerPage: { type: Number, required: true }
   },
   emits: ['addToCart', 'redirectToItem', 'addTofavorites'],
-  mixins: [errorHandlingMixin],
   data() {
     return {
       backendEndpoint: `${config.backendEndpoint}`

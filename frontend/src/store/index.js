@@ -453,7 +453,7 @@ export default createStore({
     async fetchCategories({ commit }) {
       try {
         const response = await axios.get(
-          `${config.backendEndpoint}/api/categories/category_items_len/`
+          `${config.backendEndpoint}/api/categories`
         )
         const categories = await response.data
         commit('SET_CATEGORIES', categories)
@@ -726,7 +726,7 @@ export default createStore({
     async removeFromCart({ commit, state }, itemId) {
       try {
         const response = await axios.post(
-          `${config.backendEndpoint}/user/remove-from-basket`,
+          `${config.backendEndpoint}/api/items/remove-from-basket`,
           {
             item_id: itemId
           }

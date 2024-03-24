@@ -162,8 +162,6 @@
 
 <script>
 import NavBar from '@/components/MyNavbar.vue'
-// import MessageArea from '@/views/MessageAreaVue.vue'
-import errorHandlingMixin from '../errorHandlingMixin'
 import Footer from '@/views/FooterVue.vue'
 import config from '@/config'
 
@@ -179,7 +177,6 @@ export default {
       backendEndpoint: `${config.backendEndpoint}`
     }
   },
-  mixins: [errorHandlingMixin],
   created() {
     this.$store.dispatch('fetchCategories')
   },

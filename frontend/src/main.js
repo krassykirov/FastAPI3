@@ -3,7 +3,6 @@ import axios from 'axios'
 import store from '@/store/index.js'
 import App from './App.vue'
 import VueCookies from 'vue-cookies'
-import errorHandlingMixin from './errorHandlingMixin'
 import $ from 'jquery'
 window.$ = window.jQuery = $
 import 'bootstrap'
@@ -71,5 +70,4 @@ axios.interceptors.request.use(
 )
 
 const app = createApp(App)
-app.mixin(errorHandlingMixin)
 app.use(router).use(store).use(VueCookies).mount('#app')

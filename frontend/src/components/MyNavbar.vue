@@ -48,6 +48,7 @@
               >
                 {{ category[0] }}
               </a>
+              <li class="dropdown-divider"></li>
               <a
                 class="dropdown-item"
                 type="button"
@@ -467,7 +468,6 @@
 <script>
 import $ from 'jquery'
 import axios from 'axios'
-import errorHandlingMixin from '../errorHandlingMixin'
 import VueCookies from 'vue-cookies'
 import config from '@/config'
 import router from '@/router'
@@ -475,7 +475,6 @@ import router from '@/router'
 export default {
   props: ['cart', 'avatar', 'profile', 'favorites'],
   emits: ['removeFromCart'],
-  mixins: [errorHandlingMixin],
   data() {
     return {
       displayCart: true,
