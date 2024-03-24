@@ -400,7 +400,7 @@
                   id="discount-price"
                   placeholder="0.8"
                   max="0.95"
-                  min="0.1"
+                  min="0.01"
                 />
               </div>
               <div class="form-group">
