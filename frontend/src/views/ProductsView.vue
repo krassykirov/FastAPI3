@@ -241,7 +241,7 @@
                 @change="handleDiscountChange"
                 style="
                   font-size: 0.9rem;
-                  margin-bottom: 9px;
+                  margin-bottom: 12px;
                   margin-left: -17px;
                 "
               />

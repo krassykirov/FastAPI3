@@ -8,7 +8,7 @@ window.$ = window.jQuery = $
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.css'
 
-axios.defaults.baseURL = process.env.VUE_APP_API_BASE_URL || 'localhost:8081'
+axios.defaults.baseURL = process.env.BASE_URL || 'localhost:8081'
 import router from './router'
 
 let isRefreshing = false

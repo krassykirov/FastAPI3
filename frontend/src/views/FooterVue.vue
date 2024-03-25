@@ -221,7 +221,6 @@ button.normal {
 
 #sm-banner {
   display: flex;
-  justify-content: space-between;
   flex-wrap: wrap;
 }
 
@@ -269,7 +268,6 @@ button.white:hover {
 
 #banner3 {
   display: flex;
-  justify-content: space-between;
   flex-wrap: wrap;
   padding: 0 80px;
 }
@@ -302,7 +300,6 @@ button.white:hover {
 
 #newsletter {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   background-repeat: no-repeat;
@@ -312,7 +309,6 @@ button.white:hover {
 
 #newsletter2 {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   background-repeat: no-repeat;

@@ -75,7 +75,7 @@ async def get_image(image_path: str):
     with open(full_image_path, "rb") as file:
         image_content = file.read()
     response = Response(content=image_content)
-    response.headers["Cache-Control"] = "max-age=3600"  # Cache for 1 hour
+    response.headers["Cache-Control"] = "max-age=3600"
     response.headers["Expires"] = (datetime.utcnow() + timedelta(hours=1)).strftime("%a, %d %b %Y %H:%M:%S GMT")
     return response
 

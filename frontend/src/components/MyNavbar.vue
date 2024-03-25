@@ -12,12 +12,12 @@
             aria-expanded="false"
             @click="goHome"
           >
-            <i class="fa fa-home" style="font-size: 1.6rem"></i>
+            <i class="fa-solid fa-shop" style="font-size: 0.9rem">&nbsp;HOME</i>
           </button>
         </li>
         <ul
           class="navbar-nav mb-1 mb-lg-0 categories-menu"
-          style="padding-left: 40%; margin-top: 9%"
+          style="padding-left: 40%; margin-top: 8%"
         >
           <li class="nav-item dropdown" @mouseleave="hideCategories">
             <button

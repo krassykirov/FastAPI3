@@ -82,6 +82,7 @@
                     :src="require('@/assets/cloud-chessboard.jpg')"
                     class="img-fluid"
                     alt="Sample image"
+                    style="border-radius: 5em"
                   />
                 </div>
               </div>

@@ -25,7 +25,7 @@
     <section id="sm-banner" class="section-p1">
       <div class="banner-box">
         <h4>Laptops</h4>
-        <h2>Up to 50% Discount</h2>
+        <!-- <h2>Up to 50% Discount</h2> -->
         <!-- <span>The best classic dress is on sales at cara</span> -->
         <div style="margin-top: 47%">
           <button class="btn white" @click="goToCategory('Laptops')">
@@ -33,7 +33,7 @@
           </button>
         </div>
       </div>
-      <div class="banner-box2 banner-box">
+      <div class="banner-box2 banner-box" style="margin-left: 5px">
         <h4>Smartphones</h4>
         <h2>Special Offers</h2>
         <!-- <span>The best classic dress is on sales at cara</span> -->
@@ -43,7 +43,7 @@
           </button>
         </div>
       </div>
-      <div class="banner-box3 banner-box">
+      <div class="banner-box3 banner-box" style="margin-left: 5px">
         <h4>Tablets</h4>
         <h2>Special Offers</h2>
         <!-- <span>The best classic dress is on sales at cara</span> -->
@@ -63,22 +63,21 @@
           </button>
         </div>
       </div>
-      <div class="banner-box4 banner-box">
-        <!-- <h4>Smartwatches</h4>
+      <div class="banner-box4 banner-box" style="margin-left: 5px">
+        <!-- <h2>Up to 50% Discount</h2> -->
+        <!-- <span>The best classic dress is on sales at cara</span> -->
+        <div style="margin-top: 66%">
+          <button class="btn white" @click="goToAllProducts()">SHOP NOW</button>
+        </div>
+      </div>
+      <div class="banner-box6 banner-box" style="margin-left: 5px">
+        <!-- <h4>Discounts</h4>
         <h2>Special Offers</h2> -->
         <!-- <span>The best classic dress is on sales at cara</span> -->
         <div style="margin-top: 66%">
           <button class="btn white" @click="goToCategory('Smartwatches')">
             SHOP NOW
           </button>
-        </div>
-      </div>
-      <div class="banner-box6 banner-box">
-        <!-- <h4>Discounts</h4>
-        <h2>Special Offers</h2> -->
-        <!-- <span>The best classic dress is on sales at cara</span> -->
-        <div style="margin-top: 65%">
-          <button class="btn white" @click="goToAllProducts()">SHOP NOW</button>
         </div>
       </div>
     </section>
@@ -515,7 +514,7 @@ button.normal {
   background-image: url('../assets/ipad.jpeg');
 }
 #sm-banner .banner-box4 {
-  background-image: url('../assets/smart-watch-banner.jpg');
+  background-image: url('../assets/sale-grab.jpeg');
 }
 #sm-banner .banner-box5 {
   background-image: url('../assets/tv-banner.webp');
@@ -526,7 +525,8 @@ button.normal {
 
 #sm-banner {
   display: flex;
-  justify-content: space-between;
+  justify-content: left;
+  margin: 30px;
   flex-wrap: wrap;
 }
 

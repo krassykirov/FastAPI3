@@ -58,7 +58,7 @@
               <tr v-for="product in searchResults" :key="product.id">
                 <td style="padding-top: 1%">
                   <img
-                    :src="`${backendEndpoint}/static/img/${product.username}/${product.name}/${product.image}`"
+                    :src="`${backendEndpoint}/static/img/${product.name}/${product.image}`"
                     class="img-fluid"
                     alt="Product Image"
                     style="
