@@ -134,7 +134,7 @@
           >
             <div class="d-flex align-items-center">
               <img
-                :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
+                :src="`${backendEndpoint}/static/img/${item.name}/${item.image}`"
                 class="mr-2"
                 style="
                   width: 45px;
@@ -221,7 +221,7 @@
           >
             <div class="d-flex align-items-center">
               <img
-                :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
+                :src="`${backendEndpoint}/static/img/${item.name}/${item.image}`"
                 class="mr-2"
                 style="
                   width: 45px;
@@ -431,11 +431,11 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="Description" class="col-form-label"
+                <label for="description" class="col-form-label"
                   >Description:</label
                 >
                 <textarea
-                  name="Description"
+                  name="description"
                   id="add-description"
                   rows="4"
                   cols="50"

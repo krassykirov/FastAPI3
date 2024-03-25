@@ -1,4 +1,4 @@
-from fastapi import Depends,HTTPException,Request, APIRouter, status, Form, BackgroundTasks
+from fastapi import Depends, HTTPException,Request, Response, status, Form, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import RedirectResponse, JSONResponse
@@ -27,6 +27,7 @@ import os, base64
 from os.path import abspath
 from my_logger import detailed_logger
 from decimal import Decimal
+from datetime import datetime, timedelta
 # from prometheus_fastapi_instrumentator import Instrumentator
 
 PROJECT_ROOT = Path(__file__).parent.parent # /
@@ -68,6 +69,16 @@ def on_startup():
 async def home(request: Request, user: User = Depends(get_current_user)):
     return templates.TemplateResponse("base_old.html", {"request": request, 'current_user': user.username})
 
+@app.get("/static/img/{image_path:path}")
+async def get_image(image_path: str):
+    full_image_path = f"static/img/{image_path}"
+    with open(full_image_path, "rb") as file:
+        image_content = file.read()
+    response = Response(content=image_content)
+    response.headers["Cache-Control"] = "max-age=3600"  # Cache for 1 hour
+    response.headers["Expires"] = (datetime.utcnow() + timedelta(hours=1)).strftime("%a, %d %b %Y %H:%M:%S GMT")
+    return response
+
 @app.get("/products", include_in_schema=False, status_code=status.HTTP_200_OK, response_model=schemas.ItemRead)
 def get_products(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     """ Return all Items """
@@ -92,6 +103,7 @@ def get_products(request: Request, db: Session = Depends(get_session), user: Use
 async def create_item(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
         """ Create an Item """
         form_data = await request.form()
+        print('form_data', form_data)
         item = dict(form_data)
         file = form_data['file']
         filename = form_data['file'].filename
@@ -102,12 +114,12 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         if item_db:
             logger.error(f"Item with that name already exists!")
             raise HTTPException(status_code=403,detail=f"Item with that name already exists!")
-        IMG_DIR = os.path.join(BASE_DIR, f'static/img/{user.username}')
+        IMG_DIR = os.path.join(BASE_DIR, f'static/img')
         content = await file.read()
         path = os.path.join(IMG_DIR, item_name)
         if not os.path.exists(path):
                os.makedirs(path,exist_ok=True)
-        with open(f"{BASE_DIR}/static/img/{user.username}/{item_name}/{filename}", 'wb') as f:
+        with open(f"{BASE_DIR}/static/img/{item_name}/{filename}", 'wb') as f:
             f.write(content)
         try:
             logger.info(f"Add to DB Item {item}")
@@ -119,7 +131,6 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         except Exception as e:
             logger.info(f"ERROR OCCURED to DB Item {e}")
             db.rollback()
-        logger.info(f"Item Created!")
         return item
         # redirect_url = request.url_for('get_products')
         # response = RedirectResponse(redirect_url, status_code=status.HTTP_303_SEE_OTHER)

@@ -30,7 +30,7 @@
               "
             ></span>
             <img
-              :src="`${backendEndpoint}/static/img/${product.username}/${product.name}/${product.image}`"
+              :src="`${backendEndpoint}/static/img/${product.name}/${product.image}`"
               class="card-img-top"
               @click="redirectToItemFromProduct(product.id)"
               style="cursor: pointer"

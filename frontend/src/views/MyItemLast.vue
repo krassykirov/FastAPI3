@@ -41,35 +41,35 @@
             </span>
             <img
               class="img-fluid"
-              :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
+              :src="`${backendEndpoint}/static/img/${item.name}/${item.image}`"
               alt="ProductS"
             />
             <div class="row my-3 previews">
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${backendEndpoint}/static/img/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${backendEndpoint}/static/img/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${backendEndpoint}/static/img/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
               <div class="col-md-3">
                 <img
                   class="img-fluid"
-                  :src="`${backendEndpoint}/static/img/${item.username}/${item.name}/${item.image}`"
+                  :src="`${backendEndpoint}/static/img/${item.name}/${item.image}`"
                   alt="Sale"
                 />
               </div>
