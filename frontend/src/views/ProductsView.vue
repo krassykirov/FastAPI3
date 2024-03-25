@@ -326,7 +326,7 @@
       </template>
       <div class="main-filter-container">
         <template
-          v-if="!isLoading && appliedFilters && appliedFilters.length > 0"
+          v-if="!isLoading && filteredProducts && filteredProducts.length > 0"
         >
           <div class="apply-filter-container card">
             <div>
@@ -376,7 +376,7 @@
               style="display: flex; flex-direction: row; justify-content: left"
             >
               <button
-                v-if="appliedFilters.length > 0"
+                v-if="appliedFilters.length > 1"
                 class="shadow btn custom-btn remove-filter-btn"
                 @click="removeAllFilters"
                 style="margin-bottom: 15px; width: 135px"
@@ -555,6 +555,9 @@ export default {
   watch: {
     filteredProducts() {
       this.updateAppliedFilters()
+      if (this.filteredProducts && this.filteredProducts.length > 0) {
+        this.isLoading = false
+      }
     }
   },
   updated() {
