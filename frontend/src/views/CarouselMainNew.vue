@@ -3,7 +3,7 @@
     id="carouselExampleFade"
     class="carousel slide carousel-fade"
     data-bs-ride="carousel"
-    style="width: 1420px"
+    style="width: 1420px; margin-left: 3.5%"
   >
     <div class="carousel-indicators">
       <button

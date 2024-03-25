@@ -215,8 +215,6 @@
 </template>
 
 <script>
-// import $ from 'jquery'
-// import 'bootstrap'
 import router from '@/router'
 import VueCookies from 'vue-cookies'
 import { jwtDecode } from 'jwt-decode'

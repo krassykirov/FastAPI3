@@ -461,7 +461,6 @@ export default {
   components: {
     NavBar,
     Footer
-    // MessageArea
   },
   props: ['profile'],
   data() {

@@ -102,10 +102,7 @@
 
 <script>
 import Carousel from '@/views/CarouselVue.vue'
-// import CarouselMain from '@/views/CarouselMain.vue'
-// import NavBar from '../components/MyNavbar.vue'
 import config from '@/config'
-// import axios from 'axios'
 /* global bootstrap */
 
 export default {

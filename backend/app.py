@@ -69,7 +69,7 @@ def on_startup():
 async def home(request: Request, user: User = Depends(get_current_user)):
     return templates.TemplateResponse("base_old.html", {"request": request, 'current_user': user.username})
 
-@app.get("/static/img/{image_path:path}")
+@app.get("/static/img/{image_path:path}", include_in_schema=False)
 async def get_image(image_path: str):
     full_image_path = f"static/img/{image_path}"
     with open(full_image_path, "rb") as file:

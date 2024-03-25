@@ -97,6 +97,8 @@
 <script>
 import router from '@/router'
 import config from '@/config'
+import VueCookies from 'vue-cookies'
+// import { jwtDecode } from 'jwt-decode'
 
 export default {
   data() {
@@ -105,6 +107,14 @@ export default {
       password: '',
       rememberMe: '',
       backendEndpoint: `${config.backendEndpoint}`
+    }
+  },
+  created() {
+    if (this.$store.state.accessToken) {
+      const accessToken = VueCookies.get('access_token')
+      if (accessToken) {
+        router.push({ name: 'home' })
+      }
     }
   },
   watch: {
