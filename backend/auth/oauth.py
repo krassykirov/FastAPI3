@@ -75,7 +75,7 @@ def create_refresh_token(user_id: int, username: str, minutes: str):
     return refresh_token
 
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_session)):
+def get_current_user(request: Request, token: str = Depends(oauth2_scheme), db: Session = Depends(get_session)):
     credentials_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authorized") # , headers = {"Location": "/login"}
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -140,16 +140,10 @@ async def login_access_token(*, request: Request, form_data: OAuth2PasswordReque
         else:
             access_token = create_access_token(
             data={"sub": user.username, 'user_id': user.id}, expires_delta=token_expires)
-            refresh_token = create_refresh_token(user.id, user.username, minutes=ACCESS_TOKEN_EXPIRE_MINUTES * 5)
+            refresh_token = create_refresh_token(user.id, user.username, minutes=ACCESS_TOKEN_EXPIRE_MINUTES * 10)
             return {"access_token": access_token, "token_type": "bearer", "refresh_token": refresh_token}
     else:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Username or password are incorrect!")
-
-
-# @oauth_router.get("/login", include_in_schema=False)
-# def login(request: Request):
-#     response = templates.TemplateResponse("login.html",{"request":request})
-#     return response
 
 @oauth_router.post("/signup", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 async def signup(request: Request, db: Session = Depends(get_session)):
@@ -167,7 +161,7 @@ async def signup(request: Request, db: Session = Depends(get_session)):
         user.set_password(passwd)
         db.add(user)
         db.commit()
-    # response = templates.TemplateResponse("login.html",{"request":request})
+        logger.info(f'New user {user.username} has been created')
         return True
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail=f"Password did not match!")
 

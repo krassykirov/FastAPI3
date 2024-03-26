@@ -236,7 +236,6 @@ export default createStore({
       router.push('/login')
     },
     async refreshAccessToken({ commit, dispatch, state }) {
-      // console.log('Refreshing token..')
       try {
         const response = await axios.post(
           `${config.backendEndpoint}/api/token/refresh`,
@@ -245,7 +244,6 @@ export default createStore({
           }
         )
         if (response.status !== 200) {
-          // console.log('response.status !== 200', response)
           dispatch('setErrorMessage', 'Session has expired. Please log in')
           dispatch('logout')
           throw new Error('Token has expired')
@@ -267,7 +265,6 @@ export default createStore({
         commit('setAccessToken', data.access_token)
         commit('UPDATE_USER', user)
         commit('UPDATE_USER_ID', user_id)
-        // dispatch('startExpirationCheckTimer')
         return data.access_token
       } catch (error) {
         dispatch('setErrorMessage', 'Session has expired. Please log in')
@@ -319,7 +316,7 @@ export default createStore({
         commit('UPDATE_USER_ID', user_id)
         commit('setAccessToken', data.access_token)
         commit('setRefreshToken', data.refresh_token)
-        router.push('/')
+        router.push({ name: 'NewHome' })
       } catch (error) {
         // catch: Cannot read properties of undefined (reading 'data') if no response.data
         if (error.message.startsWith('Cannot read')) {
@@ -348,7 +345,7 @@ export default createStore({
       if (state.products.length === 0) {
         try {
           const response = await axios.get(
-            `${config.backendEndpoint}/api/items`
+            `${config.backendEndpoint}/api/items/`
           )
           const products = response.data
           commit('SET_PRODUCTS', products.items)
@@ -453,7 +450,7 @@ export default createStore({
     async fetchCategories({ commit }) {
       try {
         const response = await axios.get(
-          `${config.backendEndpoint}/api/categories`
+          `${config.backendEndpoint}/api/categories/`
         )
         const categories = await response.data
         commit('SET_CATEGORIES', categories)

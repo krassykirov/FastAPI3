@@ -83,8 +83,33 @@ def get_item_reviews_rating_new(request: Request, db: Session=Depends(get_sessio
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Unable to fetch items reviews!")
     return all_reviews
 
+@reviews_router.post("/create_review", status_code=status.HTTP_200_OK, response_model=Review, include_in_schema=False)
+async def create_review_ajax(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)) -> Review:
+    data = await request.json()
+    item = ItemActions().get_item_by_id(db=db, id=data.get('item_id'))
+    if not item:
+        logger.error("Item not found")
+        raise HTTPException(status_code=404, detail="Item not found")
+    review_exist =  [item for item in item.reviews if item.created_by == user.username]
+    logger.error(f"review_exist {review_exist}")
+    if not review_exist:
+        try:
+            review = Review(**data, item=item)
+            db.add(review)
+            db.commit()
+            db.refresh(review)
+            item.update_ratings(db=db)
+            return review
+        except Exception as e:
+            db.rollback()
+            return HTTPException(status_code=400, detail=f"Something went wrong, error {e}")
+    logger.info('Review_exist, You can write only one review for this item')
+    raise HTTPException(status_code=403, 
+                        detail=f"You can write only one review for this item.",
+                        headers={"X-Error": "You can write only one review for this item"},)
 
-@reviews_router.post('/create_review/{item_id}')
+
+@reviews_router.post('/create_review_old/{item_id}')
 async def create_review(text: str, item_id: int, db: Session=Depends(get_session), user: User = Depends(get_current_user)):
     """ Create a review for an Item """
     item = ItemActions().get_item_by_id(db=db, id=item_id)

@@ -74,11 +74,6 @@ class CategoryActions:
         categories = [(dict(c).get('name').split('.')[0], len(c.items), c.id) for c in categories]
         return categories
 
-    def get_categories_name_id(self, db: Session):
-        categories = db.exec(select(Category)).all()
-        categories_others = [c for c in categories]
-        return categories
-
     def create_category(self, db: Session, category: Category):
         db.add(category)
         db.commit()

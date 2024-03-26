@@ -337,7 +337,7 @@ export default {
         e.preventDefault()
         const formData = new FormData(e.target)
         $.ajax({
-          url: `${config.backendEndpoint}/user/update_profile`,
+          url: `${config.backendEndpoint}/api/profile/update_profile`,
           type: 'POST',
           processData: false,
           contentType: false,
@@ -371,7 +371,7 @@ export default {
         e.preventDefault()
         const formData = new FormData(e.target)
         $.ajax({
-          url: `${config.backendEndpoint}/create_profile`,
+          url: `${config.backendEndpoint}/api/profile/create_profile`,
           type: 'POST',
           processData: false,
           contentType: false,

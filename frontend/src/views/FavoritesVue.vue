@@ -99,7 +99,7 @@
                 <td style="padding-top: 5.3%; padding-right: 10px">
                   <span style="font-size: 1.1rem;">$</span>
                   <span v-if="product.discount_price" style="font-size: 1.1rem;">{{ formattedPrice(product.discount_price).integerPart }}</span>
-                  <span v-if="product.discount_price" style="font-size: 0.8rem; position: relative; top: -0.4em;">.{{ formattedPrice(product.discount_price).decimalPart }}</span>
+                  <span v-if="product.discount_price" style="font-size: 0.7rem; position: relative; top: -0.4em;">{{ formattedPrice(product.discount_price).decimalPart }}</span>
                 </td>
                 <td style="padding: 15px; padding-top: 5%">
                   <button

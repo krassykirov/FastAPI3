@@ -76,7 +76,7 @@
                 <td style="width: 100px">
                   <span style="font-size: 1rem;">$</span>
                   <span v-if="product.discount_price" style="font-size: 1rem;">{{ formattedPrice(product.discount_price).integerPart }}</span>
-                  <span v-if="product.discount_price" style="font-size: 0.7rem; position: relative; top: -0.4em;">.{{ formattedPrice(product.discount_price).decimalPart }}</span>
+                  <span v-if="product.discount_price" style="font-size: 0.7rem; position: relative; top: -0.4em;"> {{ formattedPrice(product.discount_price).decimalPart }}</span>
                 </td>
                 <td class="align-left text-left">
                   <div
@@ -257,7 +257,7 @@
                           <div>
                           <span style="font-size: 0.9rem;">$</span>
                           <span v-if="product.discount_price" style="font-size: 0.9rem;">{{ formattedPrice(product.discount_price).integerPart }}</span>
-                          <span v-if="product.discount_price" style="font-size: 0.6rem; position: relative; top: -0.4em;">.{{ formattedPrice(product.discount_price).decimalPart }}</span>
+                          <span v-if="product.discount_price" style="font-size: 0.6rem; position: relative; top: -0.4em;">{{ formattedPrice(product.discount_price).decimalPart }}</span>
                         </div>
                         </td>
                         <td>
@@ -294,7 +294,7 @@
                           <!-- Total: ${{ total }} -->
                           <span style="font-size: 1.3rem;">$</span>
                           <span style="font-size: 1.3rem;">{{ formatTotal(total).integerPart }}</span>
-                          <span style="font-size: 0.8rem; position: relative; top: -0.6em;">.{{ formatTotal(total).decimalPart }}</span>
+                          <span style="font-size: 0.8rem; position: relative; top: -0.6em;">{{ formatTotal(total).decimalPart }}</span>
                         </h4>
                       </div>
                     </div>

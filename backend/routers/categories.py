@@ -17,14 +17,6 @@ category_router = APIRouter(prefix='/api/categories', tags=["categories"],
 
 logger = detailed_logger()
 
-@category_router.get("/{id}", status_code=status.HTTP_200_OK, response_model=CategoryRead)
-def get_category_by_id(request: Request, id: int, db: Session = Depends(get_session)):
-    """ Return category by given id"""
-    category = CategoryActions().get_category_by_id(db=db, id=id)
-    if category is None:
-        raise HTTPException(status_code=404, detail=f"No category with id {id} found")
-    return category
-
 @category_router.get("/", status_code=status.HTTP_200_OK)
 def get_categories_items_len(request: Request, db: Session = Depends(get_session)):
     """ Return all items in a category """
@@ -33,14 +25,14 @@ def get_categories_items_len(request: Request, db: Session = Depends(get_session
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No categories found")
     return JSONResponse(content=jsonable_encoder(categories))
 
-@category_router.get("/categories", status_code=status.HTTP_200_OK)
-def get_categories(request: Request, skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):
-    """ Return all categories """
-    categories = CategoryActions().get_categories_name_id(db=db)
-    if categories is None:
-        logger.info("No categories found")
-        raise HTTPException(status_code=404, detail=f"No categories found")
-    return categories # JSONResponse(content= categories)
+@category_router.get("/{id}", status_code=status.HTTP_200_OK, response_model=CategoryRead)
+def get_category_by_id(request: Request, id: int, db: Session = Depends(get_session)):
+    """ Return category by given id"""
+    category = CategoryActions().get_category_by_id(db=db, id=id)
+    if category is None:
+        raise HTTPException(status_code=404, detail=f"No category with id {id} found")
+    return category
+
 
 @category_router.get("/category_items/", status_code=status.HTTP_200_OK, response_model=CategoryItems)
 def get_category_items(name: str, db: Session = Depends(get_session)):

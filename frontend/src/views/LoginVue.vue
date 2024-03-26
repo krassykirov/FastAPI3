@@ -113,7 +113,7 @@ export default {
     if (this.$store.state.accessToken) {
       const accessToken = VueCookies.get('access_token')
       if (accessToken) {
-        router.push({ name: 'home' })
+        router.push({ name: 'NewHome' })
       }
     }
   },

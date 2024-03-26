@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Response, BackgroundTasks
+from fastapi import APIRouter, Query, Response, BackgroundTasks, Header
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi import Request, Depends, HTTPException, status
@@ -6,6 +6,7 @@ from db import get_session
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from models import Item, User
+from pydantic import Field
 import schemas
 from crud.crud import ItemActions, CategoryActions
 from typing import Optional, List, Annotated, Union
@@ -17,6 +18,10 @@ import routers.reviews
 import re, os
 from datetime import datetime, timedelta
 from os.path import abspath
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).parent.parent # /
+BASE_DIR = Path(__file__).resolve().parent # / src
 
 PROTECTED = [Depends(get_current_user)]
 
@@ -38,7 +43,7 @@ def get_item_by_id(item_id: int, db: Session = Depends(get_session)) -> schemas.
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error fetching item {e}")
 
 @items_router.get("/", status_code=status.HTTP_200_OK)
-def get_items(db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+def get_items(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     try:
         items_db = ItemActions().get_items(db=db)
         items_liked = jsonable_encoder([item for item in items_db if item.liked])
@@ -64,6 +69,43 @@ def get_items(db: Session = Depends(get_session), user: User = Depends(get_curre
     except Exception as e:
         logger.error(f"Error fetching items, error message: {e}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error fetching items")
+
+@items_router.post("/create_item", status_code=status.HTTP_201_CREATED, response_model=schemas.ItemRead, include_in_schema=False)
+@items_router.post("/products/create_item", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
+@items_router.post("/user_items_in_cart/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
+@items_router.post("/user/profile/create_item", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
+async def create_item(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
+        """ Create an Item """
+        form_data = await request.form()
+        item = dict(form_data)
+        file = form_data['file']
+        filename = form_data['file'].filename
+        item_name =form_data['name']
+        category_select = form_data['Category']
+        category = CategoryActions().get_category_by_name(db=db, name=category_select)
+        item_db = db.query(Item).where(Item.name == item_name).first()
+        if item_db:
+            logger.error(f"Item with that name already exists!")
+            raise HTTPException(status_code=403,detail=f"Item with that name already exists!")
+        IMG_DIR = os.path.join(PROJECT_ROOT, f'static/img')
+        content = await file.read()
+        path = os.path.join(IMG_DIR, item_name)
+        print('path', path)
+        if not os.path.exists(path):
+               os.makedirs(path,exist_ok=True)
+        with open(f"{PROJECT_ROOT}/static/img/{item_name}/{filename}", 'wb') as f:
+            f.write(content)
+        try:
+            logger.info(f"Add to DB Item {item}")
+            item = Item(**item, category=category, image=filename, username=user.username)
+            item.update_discount()
+            db.add(item)
+            db.commit()
+            db.refresh(item)
+        except Exception as e:
+            logger.info(f"ERROR OCCURED to DB Item {e}")
+            db.rollback()
+        return item
 
 @items_router.get("/search/")
 async def search_items(q: List[str] = Query(None), db: Session = Depends(get_session)):
@@ -183,6 +225,37 @@ async def remove_from_favorites(request: Request, db: Session = Depends(get_sess
     db.commit()
     db.refresh(item)
     return True
+
+@items_router.post("/update_product_ajax", status_code=status.HTTP_200_OK, include_in_schema=False, response_model=schemas.ItemRead)
+async def update_item_api(request: Request, db: Session=Depends(get_session), user: User = Depends(get_current_user)) -> schemas.ItemRead:
+    data = await request.json()
+    category_select = data.get('category')
+    price = data.get('price')
+    description = data.get('description')
+    new_category = CategoryActions().get_category_by_name(db= db, name=category_select)
+    item = ItemActions().get_item_by_id(db=db, id=data.get('id'))
+    if not item:
+        logger.error("Item not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
+    if not new_category:
+        logger.error("Category not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Category not found")
+    if user.username != item.username:
+        logger.info('You cannot update this item')
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"User cannot update this item")
+    try:
+        if new_category:
+            item.category=new_category
+        if price:
+            item.price=price
+        if description:
+            item.description=description
+        db.commit()
+        db.refresh(item)
+    except Exception as e:
+        db.rollback()
+        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Something went wrong, error {e}")
+    return item
 
 @items_router.post("/checkout", status_code=status.HTTP_200_OK,  include_in_schema=True)
 async def checkout(request: Request, db: Session = Depends(get_session), user: User = Depends(get_current_user)):

@@ -37,6 +37,8 @@ def delete_item_dir(path):
         logger.error(f"Something went wrong, error: {e}")
     return True
 
+def send_notification():
+    pass
 
 # def encode_image_to_base64(image_path):
 #     with open(image_path, 'rb') as file:

@@ -90,7 +90,7 @@
               <p class="new-price text-bold mb-1">
                 <span style="font-size: 1.2rem;">$</span>
                 <span v-if="item.discount_price" style="font-size: 1.2rem;">{{ formatPrice(item.discount_price).integerPart }}</span>
-                <span v-if="item.discount_price" style="font-size: 0.7rem; position: relative; top: -0.6em;">.{{ formatPrice(item.discount_price).decimalPart }}</span>
+                <span v-if="item.discount_price" style="font-size: 0.7rem; position: relative; top: -0.6em;">{{ formatPrice(item.discount_price).decimalPart }}</span>
               </p>
               <p v-if="item.discount">
                 <del style="font-size: 0.9rem">${{ item.price }} </del>
@@ -703,7 +703,10 @@ export default {
           created_by: username
         })
       }
-      fetch(`${config.backendEndpoint}/create_review_ajax`, requestOptions)
+      fetch(
+        `${config.backendEndpoint}/api/reviews/create_review`,
+        requestOptions
+      )
         .then(response => {
           if (!response.ok) {
             if (response.status === 403) {

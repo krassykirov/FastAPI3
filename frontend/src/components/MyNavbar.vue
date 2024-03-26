@@ -671,7 +671,7 @@ export default {
     createItem() {
       const formData = new FormData(document.getElementById('createItem'))
       axios
-        .post(`${config.backendEndpoint}/products/create_item`, formData, {})
+        .post(`${config.backendEndpoint}/api/items/create_item`, formData, {})
         .then(response => {
           if (response.status === 201) {
             // router.push('/')

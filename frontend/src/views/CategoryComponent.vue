@@ -332,9 +332,7 @@
         </div>
       </template>
       <template
-        v-else-if="
-          !isLoading && selectedProducts && selectedProducts.length === 0
-        "
+        v-if="!isLoading && selectedProducts && selectedProducts.length === 0"
       >
         <div style="align-items: center; margin-left: 10%; margin-top: 3%">
           <img :src="require('@/assets/no_result.gif')" />

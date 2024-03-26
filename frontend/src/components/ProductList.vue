@@ -84,9 +84,9 @@
           <!-- prettier-ignore -->
           <div>
           <!-- prettier-ignore -->
-          <span style="font-size: 1rem;">$</span>
-          <span v-if="product.discount_price" style="font-size: 1.2rem;">{{ formattedPrice(product.discount_price).integerPart }}</span>
-          <span v-if="product.discount_price" style="font-size: 0.7rem; position: relative; top: -0.6em;">.{{ formattedPrice(product.discount_price).decimalPart }}</span>
+          <span style="font-size: 1rem">$</span>
+          <span v-if="product.discount_price" style="font-size: 1rem">{{ formattedPrice(product.discount_price).integerPart }}</span>
+          <span v-if="product.discount_price" style="font-size: 0.7rem; position: relative; top: -0.4em">{{ formattedPrice(product.discount_price).decimalPart }}</span>
         </div>
         </span>
         <span v-if="product.discount >= 0.01" class="old-price">
