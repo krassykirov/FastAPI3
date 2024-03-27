@@ -109,7 +109,7 @@ export default {
       backendEndpoint: `${config.backendEndpoint}`
     }
   },
-  created() {
+  beforeMount() {
     if (this.$store.state.accessToken) {
       const accessToken = VueCookies.get('access_token')
       if (accessToken) {

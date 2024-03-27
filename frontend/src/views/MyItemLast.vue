@@ -43,35 +43,22 @@
               class="img-fluid"
               :src="`${backendEndpoint}/static/img/${item.name}/${item.image}`"
               alt="ProductS"
+              ref="mainImage"
             />
             <div class="row my-3 previews">
-              <div class="col-md-3">
-                <img
-                  class="img-fluid"
-                  :src="`${backendEndpoint}/static/img/${item.name}/${item.image}`"
-                  alt="Sale"
-                />
-              </div>
-              <div class="col-md-3">
-                <img
-                  class="img-fluid"
-                  :src="`${backendEndpoint}/static/img/${item.name}/${item.image}`"
-                  alt="Sale"
-                />
-              </div>
-              <div class="col-md-3">
-                <img
-                  class="img-fluid"
-                  :src="`${backendEndpoint}/static/img/${item.name}/${item.image}`"
-                  alt="Sale"
-                />
-              </div>
-              <div class="col-md-3">
-                <img
-                  class="img-fluid"
-                  :src="`${backendEndpoint}/static/img/${item.name}/${item.image}`"
-                  alt="Sale"
-                />
+              <div class="row my-3">
+                <div
+                  class="col-md-3"
+                  v-for="(image, index) in item.images.images"
+                  :key="index"
+                  @click="changeMainImage(image)"
+                >
+                  <img
+                    class="img-fluid"
+                    :src="`${backendEndpoint}/static/img/${item.name}/${image}`"
+                    alt="Sale"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -82,7 +69,6 @@
               Category: {{ getCategoryNameById(item.category_id) }}
             </div>
             <div class="product-title text-bold my-3" v-if="item">
-              <!-- {{ item.name }} -->
               {{ truncateName(item.name, 60) }}
             </div>
             <!-- prettier-ignore -->
@@ -95,9 +81,6 @@
               <p v-if="item.discount">
                 <del style="font-size: 0.9rem">${{ item.price }} </del>
                 <span class="text-danger" v-if="item.discount">&nbsp;</span>
-                <!-- <span style="font-size: 0.7rem" class="badge bg-danger"
-                  >- {{ Math.floor(item.discount * 100) }}%</span
-                > -->
               </p>
             </div>
             <p
@@ -143,7 +126,6 @@
               {{ item.description }}
             </p>
           </div>
-
           <div class="row questions bg-light p-3">
             <div class="col-md-1 icon">
               <i class="fa-brands fa-rocketchat questions-icon"></i>
@@ -532,6 +514,9 @@ export default {
     }
   },
   methods: {
+    changeMainImage(image) {
+      this.$refs.mainImage.src = `${this.backendEndpoint}/static/img/${this.item.name}/${image}`
+    },
     truncateName(name, maxLength) {
       if (!name) return '' // Add this guard clause
       if (name.length > maxLength) {

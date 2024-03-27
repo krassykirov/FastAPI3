@@ -342,6 +342,16 @@
             >
               Add Product
             </a>
+            <a
+              class="dropdown-item"
+              v-if="user === 'krassy@mail.bg'"
+              data-toggle="modal"
+              data-target="#patchItem"
+              href="#"
+              style="font-family: inherit; margin-top: 14%"
+            >
+              Update Product
+            </a>
           </div>
         </li>
       </ul>
@@ -420,6 +430,20 @@
                   required
                 />
               </div>
+              <div class="form-group" form-group-file>
+                <label for="files" class="col-form-label">Upload Photos:</label>
+                <input
+                  type="file"
+                  id="files"
+                  name="files"
+                  class="form-control"
+                  data-filesize="1000000"
+                  data-filesize-error="File must be smaller than 1MB"
+                  accept="image/*"
+                  required
+                  multiple
+                />
+              </div>
               <div class="form-group">
                 <label for="Category" class="col-form-label">Category:</label>
                 <select name="Category">
@@ -449,6 +473,63 @@
               >
                 Save
               </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+                id="close-modal"
+              >
+                Close
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="modal fade"
+      id="patchItem"
+      role="dialog"
+      aria-labelledby="updateItemLabel"
+      aria-hidden="true"
+      data-backdrop="false"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="updateItemLabel">Update Product</h5>
+          </div>
+          <div class="modal-body">
+            <form
+              enctype="multipart/form-data"
+              data-toggle="validator"
+              id="updateItem"
+              @submit.prevent="updateItem"
+            >
+              <div class="form-group" form-group-file>
+                <label for="files" class="col-form-label">Upload Photos:</label>
+                <input
+                  type="file"
+                  id="files"
+                  name="files"
+                  class="form-control"
+                  data-filesize="1000000"
+                  data-filesize-error="File must be smaller than 1MB"
+                  accept="image/*"
+                  required
+                  multiple
+                />
+              </div>
+              <div class="form-group">
+                <label for="itemID" class="col-form-label">Item ID: </label>
+                <input
+                  type="number"
+                  name="itemID"
+                  id="itemID"
+                  placeholder="itemID"
+                />
+              </div>
+              <button id="update-button" class="btn btn-primary">Save</button>
               <button
                 type="button"
                 class="btn btn-secondary"
@@ -672,6 +753,22 @@ export default {
       const formData = new FormData(document.getElementById('createItem'))
       axios
         .post(`${config.backendEndpoint}/api/items/create_item`, formData, {})
+        .then(response => {
+          if (response.status === 201) {
+            // router.push('/')
+            window.location.href = '/'
+          }
+        })
+        .catch(error => {
+          if (error.response.status === 403) {
+            $('#error').text('Item with that name already exists!')
+          }
+        })
+    },
+    updateItem() {
+      const formData = new FormData(document.getElementById('updateItem'))
+      axios
+        .post(`${config.backendEndpoint}/api/items/update_item`, formData, {})
         .then(response => {
           if (response.status === 201) {
             // router.push('/')

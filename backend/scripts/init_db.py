@@ -1,7 +1,8 @@
 import json
 from sqlmodel import SQLModel, Session, create_engine
-from models import Item, User, Categories, Category, UserProfile, Review
+from models import Item, User, Categories, Category
 import os
+
 
 engine = create_engine(
     os.getenv('SQLALCHEMY_DATABASE_URL',"sqlite:///backend.db"),
@@ -25,13 +26,13 @@ if __name__ == "__main__":
                 session.add(category)
             session.commit()
             session.refresh(category)
-    f = open('category.json')
-    data = json.load(f)
-    with Session(engine) as session:
-        for item_data in data:
-            item = User(**item_data)
-            session.add(item)
-        session.commit()
+    # f = open('category.json')
+    # data = json.load(f)
+    # with Session(engine) as session:
+    #     for item_data in data:
+    #         item = Category(**item_data)
+    #         session.add(item)
+    #     session.commit()
     f = open('item.json')
     data = json.load(f)
     with Session(engine) as session:

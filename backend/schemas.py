@@ -40,6 +40,7 @@ class ItemRead(BaseModel):
     date: Optional[datetime.datetime]
     price: Optional[decimal.Decimal]
     image: Optional[str]
+    images: Optional[Dict[Any,Any]]
     username: Optional[str]
     reviews: Optional[List]
     description:  Optional[str]

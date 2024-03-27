@@ -4,7 +4,8 @@ import decimal
 from pydantic import BaseModel, EmailStr
 from typing import Optional, Union, Dict, Any
 from sqlmodel import SQLModel, Field, Relationship, Column, VARCHAR, Session
-from sqlalchemy import JSON, func
+from sqlalchemy import JSON, func, Column
+from sqlalchemy import ARRAY, String
 from sqlalchemy_utils import ChoiceType
 import enum
 from typing import Optional, List
@@ -69,6 +70,7 @@ class Item(SQLModel, table=True):
     date:           Optional[datetime.datetime] = Field(default=datetime.datetime.now().replace(microsecond=0), nullable=False)
     price:          Optional[decimal.Decimal] = Field(default=0, max_digits=6, decimal_places=2)
     image:          Optional[str] = Field(default="no-image.png")
+    images:         Optional[Dict[Any,Any]] = Field(default={}, sa_column=Column(JSON))
     reviews:        Optional[List['Review']] = Relationship(sa_relationship_kwargs={"cascade": "delete"}, back_populates='item')
     category_id:    Optional[int] = Field(default=None, foreign_key="category.id")
     category:       Optional['Category'] = Relationship(back_populates='items')

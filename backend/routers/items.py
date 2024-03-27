@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Response, BackgroundTasks, Header
+from fastapi import APIRouter, Query, Response, BackgroundTasks, UploadFile
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi import Request, Depends, HTTPException, status
@@ -70,7 +70,7 @@ def get_items(request: Request, db: Session = Depends(get_session), user: User =
         logger.error(f"Error fetching items, error message: {e}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error fetching items")
 
-@items_router.post("/create_item", status_code=status.HTTP_201_CREATED, response_model=schemas.ItemRead, include_in_schema=False)
+@items_router.post("/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @items_router.post("/products/create_item", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
 @items_router.post("/user_items_in_cart/create_item", status_code=status.HTTP_201_CREATED, include_in_schema=False)
 @items_router.post("/user/profile/create_item", status_code=status.HTTP_201_CREATED,  include_in_schema=False)
@@ -79,8 +79,11 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         form_data = await request.form()
         item = dict(form_data)
         file = form_data['file']
+        files_initial: List[UploadFile] = form_data.getlist('files')
+        files = [file.filename for file in files_initial]
+        files_dict = {'images': files}
         filename = form_data['file'].filename
-        item_name =form_data['name']
+        item_name = form_data['name']
         category_select = form_data['Category']
         category = CategoryActions().get_category_by_name(db=db, name=category_select)
         item_db = db.query(Item).where(Item.name == item_name).first()
@@ -90,14 +93,18 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         IMG_DIR = os.path.join(PROJECT_ROOT, f'static/img')
         content = await file.read()
         path = os.path.join(IMG_DIR, item_name)
-        print('path', path)
         if not os.path.exists(path):
                os.makedirs(path,exist_ok=True)
         with open(f"{PROJECT_ROOT}/static/img/{item_name}/{filename}", 'wb') as f:
             f.write(content)
+        if files_initial:
+            for file in files_initial:
+                content = await file.read()
+                with open(f"{PROJECT_ROOT}/static/img/{item_name}/{file.filename}", 'wb') as f:
+                    f.write(content)
         try:
             logger.info(f"Add to DB Item {item}")
-            item = Item(**item, category=category, image=filename, username=user.username)
+            item = Item(**item, category=category, image=filename, images=files_dict, username=user.username)
             item.update_discount()
             db.add(item)
             db.commit()
@@ -107,66 +114,24 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
             db.rollback()
         return item
 
-@items_router.get("/search/")
-async def search_items(q: List[str] = Query(None), db: Session = Depends(get_session)):
-    query_filters = []
-    categories_user_input = ["Laptops", "Smartphones", "Tablets", "Smartwatches", "TV"]
-    if q:
-        for category_name in categories_user_input:
-            if category_name.lower().startswith(q[0].lower()):
-                items_in_category = get_category_items(db=db, name=category_name)
-                return items_in_category.items
-    if q:
-        for param in q:
-            query_filters.append(Item.name.ilike(f"%{param}%"))
-
-    query = db.query(Item)
-    if query_filters:
-        query = query.filter(or_(*query_filters))
-
-    results = query.all()
-    results = jsonable_encoder(results)
-    for item in results:
-        item.update({'discount_price' : round((item.get('price')
-                                                - item.get('price') * item.get('discount')
-                                                if item.get('discount') else item.get('price')),2)})
-        item_reviews = routers.reviews.ReviewActions().get_item_reviews(db=db, id=item.get('id'))
-        if item_reviews:
-            result = [item.rating for item in item_reviews if item.rating]
-            if result:
-                rating = sum(result) / len(result)
-                item.update({'rating':round(rating),
-                             'review_number': len(result),
-                             'rating_float': float(sum(result) / len(result))})
-        else:
-            item.update({'rating': 0, 'review_number': 0, 'rating_float': 0})
-    return results
-
-@items_router.get("/by-category", status_code=status.HTTP_200_OK, response_model=list[schemas.ItemRead])
-async def get_items_by_category( request: Request, category_id: int, db: Session=Depends(get_session)):
-    items = ItemActions().get_items_by_category_id(db=db, category_id=category_id)
-    json_compatible_item_data = jsonable_encoder(items)
-    return JSONResponse(content = json_compatible_item_data)
-
-@items_router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.ItemRead)
-def create_item(item: schemas.ItemCreate, db: Session = Depends(get_session), user: User = Depends(get_current_user)) -> schemas.ItemRead:
-    item = Item.from_orm(item, {'username': user.username})
-    db.add(item)
-    db.commit()
-    db.refresh(item)
-    return item
-
-@items_router.put("/update_item/{item_id}", include_in_schema=True, response_model=schemas.ItemRead)
-async def update_item(request: Request, item_id: int, item_update: schemas.ItemUpdate, db: Session=Depends(get_session)) -> schemas.ItemRead:
-    data = await request.json()
+@items_router.post("/update_item", include_in_schema=True)
+async def update_item(request: Request, db: Session=Depends(get_session)):
+    form_data = await request.form()
+    item_id = form_data['itemID']
     item = ItemActions().get_item_by_id(db=db, id=item_id)
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
-    new_data = Item(**dict(item_update), id=item, quantity=data.get('quantity')).dict(exclude_unset=True, exclude_none=True)
-    for key, value in new_data.items():
-        setattr(item, key, value)
-        db.commit()
-        db.refresh(item)
+    files_initial: List[UploadFile] = form_data.getlist('files')
+    files = [file.filename for file in files_initial]
+    files_dict = {'images': files}
+    if files_initial:
+        for file in files_initial:
+            content = await file.read()
+            with open(f"{PROJECT_ROOT}/static/img/{item.name}/{file.filename}", 'wb') as f:
+                f.write(content)
+    item.images = files_dict
+    db.commit()
+    db.refresh(item)
     return item
 
 @items_router.delete("/delete/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -270,3 +235,51 @@ async def checkout(request: Request, db: Session = Depends(get_session), user: U
     # db.refresh(item)
     # result = get_user_items_in_cart(db=db, user=user)
     # return result
+@items_router.get("/search/")
+async def search_items(q: List[str] = Query(None), db: Session = Depends(get_session)):
+    query_filters = []
+    categories_user_input = ["Laptops", "Smartphones", "Tablets", "Smartwatches", "TV"]
+    if q:
+        for category_name in categories_user_input:
+            if category_name.lower().startswith(q[0].lower()):
+                items_in_category = get_category_items(db=db, name=category_name)
+                return items_in_category.items
+    if q:
+        for param in q:
+            query_filters.append(Item.name.ilike(f"%{param}%"))
+
+    query = db.query(Item)
+    if query_filters:
+        query = query.filter(or_(*query_filters))
+
+    results = query.all()
+    results = jsonable_encoder(results)
+    for item in results:
+        item.update({'discount_price' : round((item.get('price')
+                                                - item.get('price') * item.get('discount')
+                                                if item.get('discount') else item.get('price')),2)})
+        item_reviews = routers.reviews.ReviewActions().get_item_reviews(db=db, id=item.get('id'))
+        if item_reviews:
+            result = [item.rating for item in item_reviews if item.rating]
+            if result:
+                rating = sum(result) / len(result)
+                item.update({'rating':round(rating),
+                             'review_number': len(result),
+                             'rating_float': float(sum(result) / len(result))})
+        else:
+            item.update({'rating': 0, 'review_number': 0, 'rating_float': 0})
+    return results
+
+@items_router.get("/by-category", status_code=status.HTTP_200_OK, response_model=list[schemas.ItemRead])
+async def get_items_by_category( request: Request, category_id: int, db: Session=Depends(get_session)):
+    items = ItemActions().get_items_by_category_id(db=db, category_id=category_id)
+    json_compatible_item_data = jsonable_encoder(items)
+    return JSONResponse(content = json_compatible_item_data)
+
+@items_router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.ItemRead)
+def create_item(item: schemas.ItemCreate, db: Session = Depends(get_session), user: User = Depends(get_current_user)) -> schemas.ItemRead:
+    item = Item.from_orm(item, {'username': user.username})
+    db.add(item)
+    db.commit()
+    db.refresh(item)
+    return item
