@@ -186,20 +186,6 @@ export default {
     goToItem(itemId) {
       this.$router.push({ name: 'Item', params: { itemId } })
     },
-    // selectBrand() {
-    //   const category = this.categories[0][0]
-    //   console.log('category', category)
-    //   this.$router.push({ name: 'category', params: { category } })
-    //   this.$nextTick(() => {
-    //     const checkbox = document.querySelector(
-    //       '.brand-checkbox[data-brand="ASUS"]'
-    //     )
-    //     if (checkbox) {
-    //       console.log('checkbox', checkbox)
-    //       checkbox.checked = true
-    //     }
-    //   })
-    // },
     getStarClasses(index, rating) {
       const filledStars = Math.floor(rating)
       if (index <= filledStars) {

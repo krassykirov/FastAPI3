@@ -506,6 +506,27 @@
               id="updateItem"
               @submit.prevent="updateItem"
             >
+              <div class="form-group">
+                <label for="itemID" class="col-form-label">Item ID: </label>
+                <input
+                  type="number"
+                  name="itemID"
+                  id="itemID"
+                  placeholder="itemID"
+                />
+              </div>
+              <div class="form-group" form-group-file>
+                <label for="file" class="col-form-label">Upload Photo:</label>
+                <input
+                  type="file"
+                  id="file"
+                  name="file"
+                  class="form-control"
+                  data-filesize="1000000"
+                  data-filesize-error="File must be smaller then 1MB"
+                  accept="image/*"
+                />
+              </div>
               <div class="form-group" form-group-file>
                 <label for="files" class="col-form-label">Upload Photos:</label>
                 <input
@@ -516,18 +537,46 @@
                   data-filesize="1000000"
                   data-filesize-error="File must be smaller than 1MB"
                   accept="image/*"
-                  required
                   multiple
                 />
               </div>
               <div class="form-group">
-                <label for="itemID" class="col-form-label">Item ID: </label>
+                <label for="description" class="col-form-label"
+                  >Description:</label
+                >
+                <textarea
+                  name="description"
+                  id="add-description"
+                  rows="4"
+                  cols="50"
+                  maxlength="250"
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label for="Category" class="col-form-label">Category:</label>
+                <select name="Category">
+                  <option value="Laptops">Laptops</option>
+                  <option value="Smartphones">Smartphones</option>
+                  <option value="Tablets">Tablets</option>
+                  <option value="Smartwatches">Smart Watches</option>
+                  <option value="TV">TV</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="discount" class="col-form-label">Discount: </label>
                 <input
                   type="number"
-                  name="itemID"
-                  id="itemID"
-                  placeholder="itemID"
+                  step="0.01"
+                  name="discount"
+                  id="discount-price"
+                  placeholder="0.8"
+                  max="0.95"
+                  min="0.01"
                 />
+              </div>
+              <div class="form-group">
+                <label for="brand" class="col-form-label">Brand: </label>
+                <input type="text" name="brand" id="brand" placeholder="ASUS" />
               </div>
               <button id="update-button" class="btn btn-primary">Save</button>
               <button

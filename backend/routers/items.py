@@ -79,10 +79,8 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
         form_data = await request.form()
         item = dict(form_data)
         file = form_data['file']
+        filename = form_data['filename']
         files_initial: List[UploadFile] = form_data.getlist('files')
-        files = [file.filename for file in files_initial]
-        files_dict = {'images': files}
-        filename = form_data['file'].filename
         item_name = form_data['name']
         category_select = form_data['Category']
         category = CategoryActions().get_category_by_name(db=db, name=category_select)
@@ -91,13 +89,16 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
             logger.error(f"Item with that name already exists!")
             raise HTTPException(status_code=403,detail=f"Item with that name already exists!")
         IMG_DIR = os.path.join(PROJECT_ROOT, f'static/img')
-        content = await file.read()
-        path = os.path.join(IMG_DIR, item_name)
-        if not os.path.exists(path):
-               os.makedirs(path,exist_ok=True)
-        with open(f"{PROJECT_ROOT}/static/img/{item_name}/{filename}", 'wb') as f:
-            f.write(content)
+        if file:
+            content = await file.read()
+            path = os.path.join(IMG_DIR, item_name)
+            if not os.path.exists(path):
+                os.makedirs(path,exist_ok=True)
+            with open(f"{PROJECT_ROOT}/static/img/{item_name}/{filename}", 'wb') as f:
+                f.write(content)
         if files_initial:
+            files = [file.filename for file in files_initial]
+            files_dict = {'images': files}
             for file in files_initial:
                 content = await file.read()
                 with open(f"{PROJECT_ROOT}/static/img/{item_name}/{file.filename}", 'wb') as f:
@@ -118,18 +119,36 @@ async def create_item(request: Request, db: Session = Depends(get_session), user
 async def update_item(request: Request, db: Session=Depends(get_session)):
     form_data = await request.form()
     item_id = form_data['itemID']
+    file = form_data.get('file')
+    filename = form_data.get('file').filename
+    discount = form_data.get('discount')
+    brand = form_data.get('brand')
+    category_select = form_data['Category']
+    files_initial: List[UploadFile] = form_data.getlist('files')
     item = ItemActions().get_item_by_id(db=db, id=item_id)
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
-    files_initial: List[UploadFile] = form_data.getlist('files')
+    if filename:
+        with open(f"{PROJECT_ROOT}/static/img/{item.name}/{filename}", 'wb') as f:
+            content = await file.read()
+            f.write(content)
+        item.image  = filename
     files = [file.filename for file in files_initial]
-    files_dict = {'images': files}
-    if files_initial:
+    if (len(files) > 1):
+        files_dict = {'images': files}
         for file in files_initial:
             content = await file.read()
             with open(f"{PROJECT_ROOT}/static/img/{item.name}/{file.filename}", 'wb') as f:
                 f.write(content)
-    item.images = files_dict
+        item.images = files_dict
+    print(brand, discount)
+    if discount:
+        item.discount = discount
+    if brand:
+        item.brand = brand
+    if not (category_select == (item.category.name).split('.')[0]):
+        category = CategoryActions().get_category_by_name(db=db, name=category_select)
+        item.category = category
     db.commit()
     db.refresh(item)
     return item
@@ -138,7 +157,7 @@ async def update_item(request: Request, db: Session=Depends(get_session)):
 def delete_item_by_id(item_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_session), user: User = Depends(get_current_user)):
     item = ItemActions().get_item_by_id(db=db, id=item_id)
     ItemActions().delete_item_by_id(db=db, id=item_id)
-    dir_to_delete = os.path.abspath(os.path.join('static/img', user.username, item.name))
+    dir_to_delete = os.path.abspath(os.path.join('static/img', item.name))
     if os.path.exists(dir_to_delete):
         background_tasks.add_task(delete_item_dir, path=dir_to_delete)
     else:

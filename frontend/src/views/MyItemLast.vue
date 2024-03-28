@@ -31,43 +31,29 @@
     <!-- <MessageArea /> -->
     <div class="container my-5">
       <div class="row">
-        <div class="col-md-5" style="min-height: 550px; max-height: 550px">
+        <div class="col-md-5" style="min-height: 550px; max-height: 500px">
           <div class="main-img" v-if="item" :id="'main-image-' + item.id">
             <span
               class="badge bg-danger position-absolute top-5 start-5"
               v-if="item.discount >= 0.01"
-              style="font-size: 0.9em; margin: 1%; top: 5; start: 5"
+              style="font-size: 0.9em; margin: 1%; top: 5"
               >-{{ Math.floor(item.discount * 100) }}%
             </span>
-            <img
-              class="img-fluid"
-              :src="`${backendEndpoint}/static/img/${item.name}/${item.image}`"
-              alt="ProductS"
-              ref="mainImage"
-            />
-            <div class="row my-3 previews">
-              <div class="row my-3">
-                <div
-                  class="col-md-3"
-                  v-for="(image, index) in item.images.images"
-                  :key="index"
-                  @click="changeMainImage(image)"
-                >
-                  <img
-                    class="img-fluid"
-                    :src="`${backendEndpoint}/static/img/${item.name}/${image}`"
-                    alt="Sale"
+            <div v-if="item" class="row my-3 previews" style="margin-left: 4%">
+              <div class="row my-9" style="margin-top: 0; padding-top: 0">
+                <div class="col-md-9">
+                  <MyCarousel
+                    :backendEndpoint="backendEndpoint"
+                    :item="item"
+                    @click="handleImageClick"
                   />
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-md-7" style="min-height: 550px; max-height: 550px">
+        <div class="col-md-7" style="margin-top: 5%">
           <div class="main-description px-2">
-            <div class="category text-bold" v-if="item">
-              Category: {{ getCategoryNameById(item.category_id) }}
-            </div>
             <div class="product-title text-bold my-3" v-if="item">
               {{ truncateName(item.name, 60) }}
             </div>
@@ -127,13 +113,11 @@
             </p>
           </div>
           <div class="row questions bg-light p-3">
-            <div class="col-md-1 icon">
-              <i class="fa-brands fa-rocketchat questions-icon"></i>
-            </div>
             <div class="col-md-11 text">
               Have a question about our products at E-Store? Feel free to
               contact our representatives via live chat or email.
             </div>
+            <i class="fa-brands fa-rocketchat questions-icon"></i>
           </div>
           <div class="delivery my-4">
             <p class="font-weight-bold mb-0">
@@ -422,6 +406,7 @@
 /* global bootstrap */
 import $ from 'jquery'
 import MessageArea from '@/views/MessageAreaVue.vue'
+import MyCarousel from '@/views/CarouselMyItem.vue'
 import Footer from '@/views/FooterVue.vue'
 import config from '@/config'
 import NavBar from '../components/MyNavbar.vue'
@@ -430,14 +415,16 @@ export default {
   components: {
     NavBar,
     MessageArea,
-    Footer
+    Footer,
+    MyCarousel
   },
   props: ['cart', 'profile', 'favorites'],
-  emits: ['addToCart', 'redirectToItem'],
+  emits: ['addToCart', 'redirectToItem', 'prev-slide', 'next-slide'],
   data() {
     return {
       item: this.item,
       itemId: this.itemId,
+      selectedImageIndex: 0,
       reviewsData: [],
       activeTab: 'reviews',
       currentPage: 1,
@@ -456,6 +443,7 @@ export default {
     this.setReviewsRating(this.itemId)
     this.$store.dispatch('getProfile')
     this.$store.dispatch('getProfiles')
+    this.item
   },
   mounted() {
     const carousels = document.querySelectorAll('.carousel')
@@ -514,8 +502,18 @@ export default {
     }
   },
   methods: {
-    changeMainImage(image) {
-      this.$refs.mainImage.src = `${this.backendEndpoint}/static/img/${this.item.name}/${image}`
+    handleImageClick(index) {
+      console.log('index:', index)
+      console.log('item.images.images:', this.item.images.images)
+      const image = this.item.images.images[index]
+      console.log('image:', image)
+      this.$refs.mainImage.src = `${this.backendEndpoint}/static/img/${this.item.name}/${this.item.images.images[index]}`
+    },
+    prevSlide() {
+      this.$emit('prev-slide')
+    },
+    nextSlide() {
+      this.$emit('next-slide')
     },
     truncateName(name, maxLength) {
       if (!name) return '' // Add this guard clause
@@ -787,9 +785,10 @@ text-color {
 
 /* Main image - left */
 .main-img {
+  margin-top: 1%;
   padding: 0;
   margin: 0;
-  width: 90% !important;
+  width: 100% !important;
   height: 100% !important;
   max-height: 550px !important;
 }
@@ -800,7 +799,8 @@ text-color {
 
 /* Preview images */
 .previews img {
-  width: 90% !important;
+  margin-top: 1%;
+  width: 100% !important;
   height: auto !important;
   max-height: 200px !important;
 }
@@ -905,6 +905,8 @@ text-color {
 }
 
 .container.my-5 {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
   min-width: 1200px !important;
   max-width: 100% !important;
   height: 550px !important;

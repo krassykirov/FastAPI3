@@ -18,6 +18,7 @@ from models import Category, Categories
 from os.path import abspath
 from my_logger import detailed_logger
 from datetime import datetime, timedelta
+import os
 # from prometheus_fastapi_instrumentator import Instrumentator
 
 PROJECT_ROOT = Path(__file__).parent.parent # /
@@ -59,7 +60,7 @@ def on_startup():
 
 @app.get("/static/img/{image_path:path}", include_in_schema=False)
 async def get_image(image_path: str):
-    full_image_path = f"static/img/{image_path}"
+    full_image_path = os.path.join(BASE_DIR, f'static/img/{image_path}')
     with open(full_image_path, "rb") as file:
         image_content = file.read()
     response = Response(content=image_content)
