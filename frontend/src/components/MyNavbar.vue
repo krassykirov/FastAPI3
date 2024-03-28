@@ -551,7 +551,6 @@
                   placeholder="99.99"
                   max="10000"
                   min="1"
-                  required
                 />
               </div>
               <div class="form-group">
