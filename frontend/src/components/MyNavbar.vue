@@ -513,6 +513,7 @@
                   name="itemID"
                   id="itemID"
                   placeholder="itemID"
+                  required
                 />
               </div>
               <div class="form-group" form-group-file>
@@ -538,6 +539,19 @@
                   data-filesize-error="File must be smaller than 1MB"
                   accept="image/*"
                   multiple
+                />
+              </div>
+              <div class="form-group">
+                <label for="price" class="col-form-label">Price: </label>
+                <input
+                  type="number"
+                  step="any"
+                  name="price"
+                  id="item-price"
+                  placeholder="99.99"
+                  max="10000"
+                  min="1"
+                  required
                 />
               </div>
               <div class="form-group">

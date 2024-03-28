@@ -15,6 +15,7 @@ from my_logger import detailed_logger
 from routers.categories import get_category_items
 from helper import delete_item_dir
 import routers.reviews
+import decimal
 import re, os
 from datetime import datetime, timedelta
 from os.path import abspath
@@ -123,6 +124,7 @@ async def update_item(request: Request, db: Session=Depends(get_session)):
     filename = form_data.get('file').filename
     discount = form_data.get('discount')
     brand = form_data.get('brand')
+    price = form_data.get('price')
     category_select = form_data['Category']
     files_initial: List[UploadFile] = form_data.getlist('files')
     item = ItemActions().get_item_by_id(db=db, id=item_id)
@@ -141,14 +143,16 @@ async def update_item(request: Request, db: Session=Depends(get_session)):
             with open(f"{PROJECT_ROOT}/static/img/{item.name}/{file.filename}", 'wb') as f:
                 f.write(content)
         item.images = files_dict
-    print(brand, discount)
     if discount:
-        item.discount = discount
+        item.discount = decimal.Decimal(discount)
     if brand:
         item.brand = brand
+    if price:
+        item.price = decimal.Decimal(price)
     if not (category_select == (item.category.name).split('.')[0]):
         category = CategoryActions().get_category_by_name(db=db, name=category_select)
         item.category = category
+    item.update_discount()
     db.commit()
     db.refresh(item)
     return item
